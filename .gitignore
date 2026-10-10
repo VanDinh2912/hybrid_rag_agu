@@ -1,0 +1,33 @@
+# ===== Secrets / cấu hình cá nhân (KHÔNG push) =====
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# ===== Môi trường ảo Python =====
+venv/
+.venv/
+env/
+ENV/
+
+# ===== Cache / dữ liệu tự sinh (xóa được, tái tạo lại được) =====
+.generation_cache/
+.ocr_cache/
+chroma_db/
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===== Log / file tạm =====
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+desktop.ini

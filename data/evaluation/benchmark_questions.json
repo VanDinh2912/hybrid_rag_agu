@@ -1,0 +1,86 @@
+{
+  "version": "1.0",
+  "description": "Bộ câu hỏi benchmark kiểm thử Hybrid RAG, gắn với corpus data/corpus/. Mỗi câu gồm: raw_query (văn phong đời thường của sinh viên), normalized_query (kỳ vọng sau khi Qwen chuẩn hóa), expected_answer (đáp án tham chiếu rút trực tiếp từ Điều/Khoản), expected_citations (trích dẫn ground truth dùng tính Citation_F1). Câu có in_corpus=false kiểm tra khả năng từ chối trả lời khi tài liệu không đủ.",
+  "questions": [
+    {
+      "id": "Q01",
+      "category": "buộc thôi học",
+      "in_corpus": true,
+      "source_document": "quy_che_dao_tao_mau.txt",
+      "raw_query": "Ê ad, tui bị ĐTBHK dưới 1.0 thì có bị đuổi học luôn không hay sao?",
+      "normalized_query": "Sinh viên có điểm trung bình học kỳ dưới 1.0 có bị buộc thôi học không?",
+      "expected_answer": "Không bị buộc thôi học ngay. Điểm trung bình học kỳ dưới 1.0 là điều kiện bị cảnh báo học vụ (Điều 12 Khoản 2); chỉ bị buộc thôi học khi số lần bị cảnh báo học vụ vượt quá 2 lần liên tiếp trong toàn khóa học (Điều 12 Khoản 3).",
+      "expected_citations": ["Điều 12 Khoản 2", "Điều 12 Khoản 3"]
+    },
+    {
+      "id": "Q02",
+      "category": "cảnh báo học vụ",
+      "in_corpus": true,
+      "source_document": "quy_che_dao_tao_mau.txt",
+      "raw_query": "Cho em hỏi cảnh báo học vụ có mục đích gì ạ?",
+      "normalized_query": "Cảnh báo học vụ có mục đích gì?",
+      "expected_answer": "Cảnh báo học vụ được thực hiện theo từng học kỳ, nhằm giúp sinh viên biết kết quả học tập yếu kém của mình (Điều 12 Khoản 1).",
+      "expected_citations": ["Điều 12 Khoản 1"]
+    },
+    {
+      "id": "Q03",
+      "category": "cảnh báo học vụ",
+      "in_corpus": true,
+      "source_document": "quy_che_dao_tao_mau.txt",
+      "raw_query": "Cảnh báo học vụ là thực hiện theo từng năm hay từng học kỳ vậy mọi người?",
+      "normalized_query": "Cảnh báo học vụ được thực hiện theo năm học hay theo học kỳ?",
+      "expected_answer": "Cảnh báo học vụ được thực hiện theo từng học kỳ (Điều 12 Khoản 1).",
+      "expected_citations": ["Điều 12 Khoản 1"]
+    },
+    {
+      "id": "Q04",
+      "category": "cảnh báo học vụ",
+      "in_corpus": true,
+      "source_document": "quy_che_dao_tao_mau.txt",
+      "raw_query": "Điểm trung bình học kỳ cỡ nào thì dính cảnh báo học vụ?",
+      "normalized_query": "Điểm trung bình học kỳ bao nhiêu thì sinh viên bị cảnh báo học vụ?",
+      "expected_answer": "Sinh viên bị cảnh báo học vụ nếu điểm trung bình học kỳ (ĐTBHK) đạt dưới 1.0 (Điều 12 Khoản 2).",
+      "expected_citations": ["Điều 12 Khoản 2"]
+    },
+    {
+      "id": "Q05",
+      "category": "buộc thôi học",
+      "in_corpus": true,
+      "source_document": "quy_che_dao_tao_mau.txt",
+      "raw_query": "bị cảnh báo mấy lần thì nghỉ học vậy ad",
+      "normalized_query": "Sinh viên bị cảnh báo học vụ bao nhiêu lần thì bị buộc thôi học?",
+      "expected_answer": "Sinh viên bị buộc thôi học nếu số lần bị cảnh báo học vụ vượt quá 2 lần liên tiếp trong toàn khóa học (Điều 12 Khoản 3).",
+      "expected_citations": ["Điều 12 Khoản 3"]
+    },
+    {
+      "id": "Q06",
+      "category": "buộc thôi học",
+      "in_corpus": true,
+      "source_document": "quy_che_dao_tao_mau.txt",
+      "raw_query": "Cho mình hỏi 'vượt quá 2 lần liên tiếp' trong quy định buộc thôi học được hiểu thế nào?",
+      "normalized_query": "Quy định buộc thôi học khi số lần cảnh báo học vụ 'vượt quá 2 lần liên tiếp' được hiểu thế nào?",
+      "expected_answer": "Quy chế quy định sinh viên bị buộc thôi học nếu số lần bị cảnh báo học vụ vượt quá 2 lần liên tiếp trong toàn khóa học (Điều 12 Khoản 3).",
+      "expected_citations": ["Điều 12 Khoản 3"]
+    },
+    {
+      "id": "Q07",
+      "category": "cảnh báo học vụ",
+      "in_corpus": true,
+      "source_document": "quy_che_dao_tao_mau.txt",
+      "raw_query": "bro ơi điểm kỳ này của tui dưới 1 điểm rồi, có bị cho thôi học khỏi?",
+      "normalized_query": "Sinh viên có điểm trung bình học kỳ dưới 1.0 có bị buộc thôi học không?",
+      "expected_answer": "Không bị buộc thôi học ngay; ĐTBHK dưới 1.0 là điều kiện bị cảnh báo học vụ (Điều 12 Khoản 2). Buộc thôi học chỉ áp dụng khi số lần cảnh báo vượt quá 2 lần liên tiếp (Điều 12 Khoản 3).",
+      "expected_citations": ["Điều 12 Khoản 2", "Điều 12 Khoản 3"]
+    },
+    {
+      "id": "Q08",
+      "category": "ngoài phạm vi",
+      "in_corpus": false,
+      "source_document": null,
+      "raw_query": "Điểm cộng ngoại khóa hoạt động Đoàn - Hội được quy đổi thế nào?",
+      "normalized_query": "Điểm cộng ngoại khóa hoạt động Đoàn - Hội được quy đổi như thế nào?",
+      "expected_answer": "Tài liệu hiện có không đủ thông tin.",
+      "expected_citations": []
+    }
+  ]
+}

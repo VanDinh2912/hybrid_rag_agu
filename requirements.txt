@@ -1,0 +1,30 @@
+# Embedding (bge-m3) & Vector DB
+sentence-transformers>=3.0.0
+transformers>=4.45.0
+chromadb>=0.5.0
+
+# LangChain (vector_db.py import trực tiếp)
+langchain-community>=0.4.0
+langchain-core>=1.0.0
+
+# Đọc tài liệu đa định dạng (loader.py)
+pypdf>=4.0.0
+python-docx>=1.1.0
+
+# OCR cho PDF scan ảnh (loader.py) — thuần pip, không cần Tesseract/Poppler hệ thống.
+# pypdfium2 render trang thành ảnh (thay cho pdf2image, vốn bắt buộc cài Poppler);
+# rapidocr-onnxruntime nhận diện tiếng Việt bằng model PP-OCR ONNX kèm sẵn.
+pypdfium2>=4.30.0
+rapidocr-onnxruntime>=1.2.3
+Pillow>=10.0.0
+
+# Local SLM - Ollama (Qwen)
+ollama>=0.3.0
+
+# Gemini API - backend sinh chữ
+google-generativeai>=0.8.0
+
+# Môi trường & tiện ích
+python-dotenv>=1.0.0
+numpy>=1.26.0
+tqdm>=4.66.0

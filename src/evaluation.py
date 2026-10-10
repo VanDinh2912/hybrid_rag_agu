@@ -1,0 +1,517 @@
+"""Module đánh giá định lượng Hybrid RAG trên tập benchmark chuẩn hóa.
+
+Với mỗi câu hỏi trong `data/evaluation/benchmark_questions.json`, chạy đúng pipeline
+sản xuất (Qwen chuẩn hóa → ChromaDB truy xuất → Gemini trả lời) rồi đo:
+
+Tầng truy xuất:
+- Hit@3 / Hit@5 / Hit@K: Top-K có chứa chunk thuộc `source_document` ground truth không
+  (so khớp tên nguồn sau khi bỏ dấu thanh, vì OCR có thể làm sai lệch tên file).
+- MRR (Mean Reciprocal Rank): 1/thứ hạng của chunk đúng đầu tiên.
+
+Tầng sinh & trích dẫn:
+- Citation Precision / Recall / F1 / Exact Match: tập mã "Điều N [Khoản M]" trích từ
+  câu trả lời so với `expected_citations` (so khớp sau khi bỏ dấu, nên "Điều 12
+  Khoản 2" khớp cả dạng "dieu 12 khoan 2" do OCR).
+- Faithfulness: LLM giám khảo (Gemini không mang system instruction của Generator,
+  temperature 0, chế độ JSON) tách câu trả lời thành các khẳng định nguyên tố và
+  kết luận từng khẳng định có được hỗ trợ trực tiếp bởi ngữ cảnh không. Điểm = tỉ lệ
+  khẳng định được hỗ trợ. Câu trả lời dạng từ chối coi như trung thực (không có
+  khẳng định nào để phản bội). Kèm chỉ số phụ `number_support` không tốn API: tỉ lệ
+  con số trong câu trả lời xuất hiện trong ngữ cảnh.
+- Câu `in_corpus=false` kiểm tra hành vi từ chối: hệ thống trả lời bằng câu chứa
+  REFUSAL_MARKER là đúng; ngược lại đánh dấu là ảo giác ngoài corpus.
+
+Xuất: `outputs/evaluation_results.json` (chi tiết từng câu) và
+`outputs/evaluation_summary.md` (bảng Markdown đưa thẳng vào bài báo), đồng thời in
+bảng đó ra terminal. Câu hỏi lỗi (hết quota, mất mạng...) được ghi nhận và bỏ qua,
+không làm chết cả lượt đánh giá; Ctrl+C giữa chừng vẫn ghi kết quả phần đã chạy.
+
+Cách chạy (từ thư mục gốc dự án):
+    python src/evaluation.py                  # đủ 8 câu, top_k=5, có giám khảo
+    python src/evaluation.py -k 3             # truy xuất Top-3 (Hit@5 vẫn đo được)
+    python src/evaluation.py --limit 2        # chạy thử nhanh 2 câu đầu
+    python src/evaluation.py --no-judge       # bỏ tầng giám khảo, tiết kiệm quota
+    python src/evaluation.py --judge-model gemini-3.5-flash-lite
+        # giám khảo dùng model khác: free tier Gemini giới hạn quota THEO TỪNG MODEL,
+        # tách model giám khảo để Generator không bị đụng ngân sách
+"""
+
+import argparse
+import json
+import os
+import re
+import sys
+import time
+import unicodedata
+from datetime import datetime
+from pathlib import Path
+
+if __package__ in (None, ""):  # cho phép chạy trực tiếp: python src/evaluation.py
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import google.generativeai as genai
+
+from src.generator import REFUSAL_MARKER, RETRYABLE_MARKERS, GeneratorError, GeminiGenerator
+from src.local_slm import LocalSLM
+from src.pipeline import HybridRAGPipeline
+from src.vector_db import VectorStoreManager
+
+BENCHMARK_PATH = Path("data/evaluation/benchmark_questions.json")
+RESULTS_PATH = Path("outputs/evaluation_results.json")
+SUMMARY_PATH = Path("outputs/evaluation_summary.md")
+DEFAULT_TOP_K = 5
+# Luôn lấy tối thiểu 5 chunk để tính đồng thời Hit@3 và Hit@5 từ MỘT lượt truy xuất.
+MIN_TOP_K = 5
+JUDGE_MAX_TOKENS = 4096
+# Lỗi tạm thời (429 quota-phút, 5xx) của giám khảo được thử lại với chờ 15s/30s —
+# đủ phủ hạn free tier ~5 request/phút khi chạy liên tiếp nhiều câu.
+JUDGE_MAX_RETRIES = 2
+
+CITATION_RE = re.compile(r"dieu\s*(\d+)(?:\s*[,;:]?\s*khoan\s*(\d+))?", re.IGNORECASE)
+NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)?")
+
+JUDGE_PROMPT = """Bạn là giám khảo độc lập đánh giá ĐỘ TRUNG THỰC (faithfulness) của một câu trả lời.
+
+NGỮ CẢNH ĐÃ TRUY XUẤT (toàn bộ bằng chứng được phép dùng):
+{context_block}
+
+CÂU TRẢ LỜI CẦN KIỂM:
+{answer}
+
+Nhiệm vụ:
+1. Tách câu trả lời thành các khẳng định nguyên tố — mỗi mệnh đề kiểm chứng được độc lập là một khẳng định.
+2. Với từng khẳng định, quyết định nó có được HỖ TRỢ TRỰC TIẾP bởi NGỮ CẢNH hay không. CHỈ được dựa vào ngữ cảnh, tuyệt đối cấm dùng kiến thức riêng của bạn: thông tin không tìm thấy trong ngữ cảnh, hoặc mâu thuẫn với ngữ cảnh, đều là supported=false.
+3. Diễn đạt lại đúng ý ngữ cảnh hoặc trích dẫn đúng Điều/Khoản có trong ngữ cảnh là supported=true.
+
+Chỉ trả về DUY NHẤT một JSON hợp lệ theo đúng lược đồ dưới đây, không thêm bất kỳ chữ nào khác:
+{{"claims": [{{"text": "<khẳng định thứ nhất>", "supported": true}}, {{"text": "<khẳng định thứ hai>", "supported": false}}]}}"""
+
+
+def fold(text: str) -> str:
+    """Bỏ dấu thanh + chữ thường + gom khoảng trắng, để so khớp không phân biệt dấu.
+
+    Cần thiết vì văn bản OCR ở Tầng 1 mất dấu thanh: "Điều 12" và "dieu 12" phải
+    được coi là cùng một trích dẫn. Lưu ý: "Đ" (U+0110) là chữ cái độc lập, NFD
+    KHÔNG tách thành "d" + dấu — phải tự thay "đ"→"d", nếu không regex "dieu"
+    sẽ bỏ sót mọi trích dẫn.
+    """
+    decomposed = unicodedata.normalize("NFD", str(text).lower())
+    stripped = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+    return re.sub(r"\s+", " ", stripped.replace("đ", "d")).strip()
+
+
+def extract_citations(text: str) -> set[str]:
+    """Rút tập mã trích dẫn "dieu N [khoan M]" từ văn bản (đã bỏ dấu).
+
+    Cả câu trả lời của Gemini lẫn `expected_citations` trong benchmark được quy về
+    cùng không gian token này nên so tập hợp được.
+    """
+    return {
+        f"dieu {article}" + (f" khoan {clause}" if clause else "")
+        for article, clause in CITATION_RE.findall(fold(text))
+    }
+
+
+def citation_scores(expected: set[str], predicted: set[str]) -> dict:
+    """Precision / Recall / F1 / Exact Match giữa hai tập trích dẫn."""
+    true_positive = len(expected & predicted)
+    precision = true_positive / len(predicted) if predicted else 0.0
+    recall = true_positive / len(expected) if expected else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+    return {
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "f1": round(f1, 4),
+        "exact_match": 1.0 if expected == predicted else 0.0,
+    }
+
+
+def source_match(chunk_source: str, expected_document: str) -> bool:
+    """Chunk đúng nguồn nếu tên file ground truth nằm trong tên nguồn (hoặc ngược lại)."""
+    a, b = fold(chunk_source), fold(expected_document)
+    return bool(a and b) and (b in a or a in b)
+
+
+def number_support(answer: str, contexts: list[str]) -> float | None:
+    """Tỉ lệ con số trong câu trả lời xuất hiện trong ngữ cảnh (proxy trung thực, miễn phí)."""
+    numbers = NUMBER_RE.findall(fold(answer))
+    if not numbers:
+        return None
+    pool = fold(" ".join(contexts))
+    return round(sum(1 for n in numbers if n in pool) / len(numbers), 4)
+
+
+def _strip_code_fence(raw: str) -> str:
+    text = raw.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```[a-zA-Z]*\s*", "", text)
+        text = re.sub(r"\s*```$", "", text)
+    return text.strip()
+
+
+def _parse_judge_json(raw: str) -> list | None:
+    text = _strip_code_fence(raw)
+    start, end = text.find("{"), text.rfind("}")
+    if start == -1 or end <= start:
+        return None
+    try:
+        claims = json.loads(text[start : end + 1]).get("claims")
+    except (json.JSONDecodeError, AttributeError):
+        return None
+    return claims if isinstance(claims, list) else None
+
+
+def judge_faithfulness(judge_model, contexts: list[str], answer: str) -> tuple[float | None, list[str], str]:
+    """Chấm độ trung thực bằng LLM giám khảo. Trả về (điểm, khẳng định không được hỗ trợ, lỗi)."""
+    if REFUSAL_MARKER in fold(answer):
+        return 1.0, [], "refusal"  # từ chối = không khẳng định gì, không có gì để phản bội
+
+    context_block = "\n\n".join(f"[Ngữ cảnh {i}] {content}" for i, content in enumerate(contexts, start=1))
+    prompt = JUDGE_PROMPT.format(context_block=context_block, answer=answer)
+
+    # Lần 1 dùng JSON mode để máy đọc được; lần 2 (nếu model trả văn thừa) parse mềm.
+    for use_json_mode in (True, False):
+        config: dict = {"temperature": 0.0, "max_output_tokens": JUDGE_MAX_TOKENS}
+        if use_json_mode:
+            config["response_mime_type"] = "application/json"
+        raw = None
+        for attempt in range(JUDGE_MAX_RETRIES + 1):
+            try:
+                raw = judge_model.generate_content(prompt, generation_config=config).text
+                break
+            except Exception as exc:
+                message = str(exc).lower()
+                if "perday" in message:  # hết quota ngày — chờ 15s/30s không cứu được
+                    return None, [], "lỗi gọi LLM giám khảo (hết quota ngày của model giám khảo)"
+                transient = any(marker in message for marker in RETRYABLE_MARKERS)
+                if not transient or attempt == JUDGE_MAX_RETRIES:
+                    return None, [], f"lỗi gọi LLM giám khảo ({type(exc).__name__}: {exc})"
+                wait = 15 * (attempt + 1)
+                print(f"[Judge] Lỗi tạm thời ({type(exc).__name__}), thử lại sau {wait}s — lần {attempt + 1}/{JUDGE_MAX_RETRIES}.")
+                time.sleep(wait)
+        claims = _parse_judge_json(raw)
+        if claims is None:
+            continue
+        clean = [c for c in claims if isinstance(c, dict) and isinstance(c.get("text"), str)]
+        if not clean:
+            return None, [], "giám khảo trả về danh sách khẳng định rỗng/lệch lược đồ"
+        unsupported = [c["text"] for c in clean if c.get("supported") is not True]
+        score = round((len(clean) - len(unsupported)) / len(clean), 4)
+        return score, unsupported, ""
+    return None, [], "không phân tích được JSON từ LLM giám khảo sau 2 lần thử"
+
+
+def load_benchmark(path: Path) -> list[dict]:
+    if not path.exists():
+        raise SystemExit(f"Không tìm thấy benchmark '{path}'.")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"Benchmark '{path}' hỏng định dạng JSON: {exc}")
+    questions = data.get("questions")
+    if not isinstance(questions, list) or not questions:
+        raise SystemExit(f"Benchmark '{path}' không có danh sách 'questions' nào.")
+    for index, question in enumerate(questions):
+        if not isinstance(question.get("raw_query"), str) or not question["raw_query"].strip():
+            raise SystemExit(f"Benchmark lỗi: questions[{index}] thiếu trường 'raw_query'.")
+    return questions
+
+
+def evaluate_question(pipeline: HybridRAGPipeline, judge_model, question: dict, top_k: int) -> dict:
+    """Chạy đúng pipeline sản xuất cho 1 câu rồi đo mọi chỉ số."""
+    t0 = time.perf_counter()
+    result = pipeline.run(question["raw_query"], top_k=top_k)
+    elapsed = round(time.perf_counter() - t0, 2)
+
+    sources, contexts, answer = result["sources"], result["contexts"], result["answer"]
+    expected_document = question.get("source_document")
+    hits = [source_match(s["source"], expected_document) for s in sources] if expected_document else []
+    matched_rank = next((i + 1 for i, hit in enumerate(hits) if hit), None)
+
+    expected_citations = {fold(c) for c in question.get("expected_citations") or []}
+    predicted_citations = extract_citations(answer)
+    refusal_expected = question.get("in_corpus") is False
+    is_refusal = REFUSAL_MARKER in fold(answer)
+
+    entry = {
+        "id": question.get("id", "?"),
+        "category": question.get("category", ""),
+        "raw_query": question["raw_query"],
+        "normalized_query_expected": question.get("normalized_query"),
+        "normalized_query_system": result["normalized_query"],
+        "normalization_match": (
+            fold(result["normalized_query"]) == fold(question["normalized_query"])
+            if question.get("normalized_query")
+            else None
+        ),
+        "retrieval": {
+            "top_k": len(sources),
+            "hit_at_3": any(hits[:3]) if expected_document else None,
+            "hit_at_5": any(hits[:5]) if expected_document else None,
+            "hit_at_k": any(hits) if expected_document else None,
+            "reciprocal_rank": round(1.0 / matched_rank, 4) if matched_rank else 0.0,
+            "matched_rank": matched_rank,
+            "retrieved": [
+                {"rank": s["rank"], "source": s["source"], "tier": s["tier"], "chunk_id": s["chunk_id"]}
+                for s in sources
+            ],
+        },
+        "answer": answer,
+        "is_refusal_answer": is_refusal,
+        "citations": None,
+        "predicted_citations": sorted(predicted_citations),
+        "refusal_expected": refusal_expected,
+        "refusal_correct": (is_refusal if refusal_expected else None),
+        "hallucinated_on_unanswerable": bool(refusal_expected and not is_refusal),
+        "faithfulness": {"score": None, "unsupported_claims": [], "method": None, "error": None},
+        "number_support": number_support(answer, contexts) if not is_refusal else None,
+        "latency_seconds": elapsed,
+        "error": None,
+    }
+
+    if expected_citations:
+        entry["citations"] = {
+            "expected": question.get("expected_citations", []),
+            **citation_scores(expected_citations, predicted_citations),
+        }
+
+    if judge_model is not None:
+        score, unsupported, judge_error = judge_faithfulness(judge_model, contexts, answer)
+        entry["faithfulness"] = {
+            "score": score,
+            "unsupported_claims": unsupported,
+            "method": "refusal" if score is not None and not judge_error and not unsupported and is_refusal else ("llm_judge" if score is not None else None),
+            "error": judge_error or None,
+        }
+    return entry
+
+
+def _mean(values: list) -> float | None:
+    valid = [v for v in values if v is not None]
+    return round(sum(valid) / len(valid), 4) if valid else None
+
+
+def aggregate(entries: list[dict], top_k: int) -> dict:
+    scored = [e for e in entries if e["error"] is None]
+    citation_entries = [e for e in scored if e["citations"] is not None]
+    refusal_entries = [e for e in scored if e["refusal_expected"]]
+    return {
+        "n_total": len(entries),
+        "n_ok": len(scored),
+        f"hit_at_{top_k}": _mean([e["retrieval"]["hit_at_k"] for e in scored]),
+        "hit_at_3": _mean([e["retrieval"]["hit_at_3"] for e in scored]),
+        "hit_at_5": _mean([e["retrieval"]["hit_at_5"] for e in scored]),
+        "mrr": _mean([e["retrieval"]["reciprocal_rank"] for e in scored]),
+        "n_retrieval_scored": sum(1 for e in scored if e["retrieval"]["hit_at_k"] is not None),
+        "citation_precision": _mean([e["citations"]["precision"] for e in citation_entries]),
+        "citation_recall": _mean([e["citations"]["recall"] for e in citation_entries]),
+        "citation_f1": _mean([e["citations"]["f1"] for e in citation_entries]),
+        "citation_exact_match": _mean([e["citations"]["exact_match"] for e in citation_entries]),
+        "n_citation_scored": len(citation_entries),
+        "faithfulness_llm": _mean([e["faithfulness"]["score"] for e in scored]),
+        "n_faithfulness_scored": sum(1 for e in scored if e["faithfulness"]["score"] is not None),
+        "number_support": _mean([e["number_support"] for e in scored]),
+        "normalization_accuracy": _mean([e["normalization_match"] for e in scored]),
+        "n_normalization_checked": sum(1 for e in scored if e["normalization_match"] is not None),
+        "refusal_correct_rate": _mean([e["refusal_correct"] for e in refusal_entries]),
+        "n_refusal_cases": len(refusal_entries),
+        "hallucination_on_unanswerable": sum(1 for e in refusal_entries if e["hallucinated_on_unanswerable"]),
+        "avg_latency_seconds": _mean([e["latency_seconds"] for e in scored]),
+        "errors": [f"{e['id']}: {e['error']}" for e in entries if e["error"] is not None],
+    }
+
+
+def _pct(value: float | None) -> str:
+    return "n/a" if value is None else f"{value * 100:.1f}%"
+
+
+def format_summary_md(aggregates: dict, entries: list[dict], top_k: int, meta: dict) -> str:
+    lines = [
+        "# Kết quả đánh giá Hybrid RAG",
+        "",
+        f"Benchmark: `{meta['benchmark']}` · {meta['n_questions']} câu · Top-K = {top_k} · "
+        f"Judge = {'bật' if meta['judge_enabled'] else 'tắt'} · {meta['timestamp']}",
+        f"Model: Generator `{meta['generator_model']}` · Local SLM `{meta['local_slm_model']}` · Embedding `BAAI/bge-m3`",
+        "",
+        "## Chỉ số tổng hợp",
+        "",
+        "| Chỉ số | Giá trị |",
+        "|---|---|",
+        f"| Số câu chạy được | {aggregates['n_ok']}/{aggregates['n_total']} |",
+        f"| Hit@3 | {_pct(aggregates['hit_at_3'])} |",
+        f"| Hit@5 | {_pct(aggregates['hit_at_5'])} |",
+        *([] if top_k in (3, 5) else [f"| Hit@{top_k} | {_pct(aggregates[f'hit_at_{top_k}'])} |"]),
+        f"| MRR@{top_k} | {aggregates['mrr'] if aggregates['mrr'] is not None else 'n/a'} |",
+        f"| Citation Precision | {_pct(aggregates['citation_precision'])} |",
+        f"| Citation Recall | {_pct(aggregates['citation_recall'])} |",
+        f"| Citation F1 | {_pct(aggregates['citation_f1'])} |",
+        f"| Citation Exact Match | {_pct(aggregates['citation_exact_match'])} |",
+        f"| Faithfulness (LLM judge) | {_pct(aggregates['faithfulness_llm'])} |",
+        f"| Number support (không cần API) | {_pct(aggregates['number_support'])} |",
+        f"| Chuẩn hóa Qwen khớp benchmark | {_pct(aggregates['normalization_accuracy'])} |",
+        f"| Từ chối đúng (câu ngoài corpus) | {_pct(aggregates['refusal_correct_rate'])} "
+        f"({aggregates['n_refusal_cases']} câu) |",
+        f"| Ảo giác trên câu ngoài corpus | {aggregates['hallucination_on_unanswerable']} câu |",
+        f"| Thời gian trung bình / câu | {aggregates['avg_latency_seconds']}s |",
+        "",
+        "## Kết quả theo câu",
+        "",
+        "| ID | Hit@5 | RR | Citation F1 | Faithfulness | Ghi chú |",
+        "|---|---|---|---|---|---|",
+    ]
+    for entry in entries:
+        if entry["error"] is not None:
+            note = f"LỖI: {entry['error']}"
+            cells = ["—", "—", "—", "—"]
+        else:
+            retrieval = entry["retrieval"]
+            hit5 = "—" if retrieval["hit_at_5"] is None else str(retrieval["hit_at_5"])
+            cells = [
+                hit5,
+                f"{retrieval['reciprocal_rank']:.2f}",
+                "—" if entry["citations"] is None else f"{entry['citations']['f1']:.2f}",
+                "—" if entry["faithfulness"]["score"] is None else f"{entry['faithfulness']['score']:.2f}",
+            ]
+            if entry["hallucinated_on_unanswerable"]:
+                note = "ẢO GIÁC: trả lời câu ngoài corpus thay vì từ chối"
+            elif entry["refusal_correct"]:
+                note = "từ chối đúng"
+            elif entry["citations"] is not None and entry["citations"]["exact_match"] < 1.0:
+                note = f"trích dẫn lệch: {', '.join(entry['predicted_citations']) or '(không có)'}"
+            else:
+                note = ""
+        lines.append(f"| {entry['id']} | {' | '.join(cells)} | {note} |")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Đánh giá định lượng Hybrid RAG trên data/evaluation/benchmark_questions.json."
+    )
+    parser.add_argument("-k", "--top-k", type=int, default=DEFAULT_TOP_K,
+                        help=f"số chunk truy xuất mỗi câu (mặc định {DEFAULT_TOP_K}; luôn lấy ≥{MIN_TOP_K} để đo Hit@5)")
+    parser.add_argument("--limit", type=int, default=None, help="chỉ chạy N câu đầu (test nhanh, tiết kiệm quota)")
+    parser.add_argument("--no-judge", action="store_true", help="bỏ tầng giám khảo Faithfulness (không gọi thêm Gemini)")
+    parser.add_argument("--judge-model", type=str, default=None,
+                        help="model giám khảo Faithfulness (cờ > GEMINI_JUDGE_MODEL > model Generator). "
+                             "Dùng model KHÁC để tận dụng ngân sách quota riêng — free tier Gemini giới hạn theo từng model.")
+    parser.add_argument("--benchmark", type=Path, default=BENCHMARK_PATH, help="đường dẫn file benchmark")
+    parser.add_argument("--output", type=Path, default=RESULTS_PATH, help="nơi ghi kết quả chi tiết JSON")
+    return parser.parse_args()
+
+
+def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    args = parse_args()
+    top_k = max(1, int(args.top_k))
+    retrieve_k = max(top_k, MIN_TOP_K)
+
+    questions = load_benchmark(args.benchmark)
+    if args.limit is not None:
+        questions = questions[: max(1, args.limit)]
+    print(f"--- ĐÁNH GIÁ ĐỊNH LƯỢNG HYBRID RAG ---")
+    print(f"Benchmark: {args.benchmark} ({len(questions)} câu) · Top-K = {retrieve_k} · Judge = {'tắt' if args.no_judge else 'bật'}\n")
+
+    print("[1/2] Nối ChromaDB đã persist (không nạp lại corpus)...")
+    vector_db = VectorStoreManager().load_vector_store()
+    indexed = vector_db._collection.count()
+    if indexed == 0:
+        raise SystemExit("ChromaDB rỗng — chạy 'python ingest.py' trước khi đánh giá.")
+    print(f"      Đã nối collection ('{indexed}' chunks).")
+
+    local_slm = LocalSLM()
+    ollama_ok, ollama_message = local_slm.check_connection()
+    print(f"[2/2] Ollama: {'sẵn sàng' if ollama_ok else 'CẢNH BÁO — ' + ollama_message}")
+    if not ollama_ok:
+        print("      Số liệu vẫn chạy được (dùng câu hỏi gốc) nhưng 'normalization_accuracy' sẽ mất ý nghĩa.")
+
+    generator = GeminiGenerator()
+    # Tắt Qwen-fallback CHỈ trong lượt đánh giá: nếu Gemini hết quota mà câu trả lời
+    # lại do Qwen tổng hợp thì Hit/Citation/Faithfulness sẽ đo nhầm chất lượng fallback
+    # thay vì chất lượng pipeline Gemini của đề tài. Caching vẫn giữ nguyên để chạy lại
+    # benchmark không tốn thêm quota cho các câu đã trả lời thành công trước đó.
+    generator.qwen_fallback = False
+    print("      Qwen-fallback: TẮT trong lượt đánh giá (số liệu chỉ phản ánh câu trả lời Gemini).")
+    judge_model = None
+    judge_name = None
+    if not args.no_judge:
+        judge_name = args.judge_model or os.getenv("GEMINI_JUDGE_MODEL") or generator.model_name
+        # genai đã được GeminiGenerator cấu hình; giám khảo KHÔNG mang system instruction
+        # của Generator (nó phải phán xét độc lập, không được "bênh" hệ thống).
+        judge_model = genai.GenerativeModel(model_name=judge_name)
+        if judge_name != generator.model_name:
+            print(f"      Giám khảo Faithfulness: {judge_name} — khác model Generator nên dùng ngân sách quota riêng.")
+
+    pipeline = HybridRAGPipeline(local_slm=local_slm, vector_db=vector_db, generator=generator)
+
+    entries: list[dict] = []
+    interrupted = False
+    print(f"\nChạy {len(questions)} câu (mỗi câu: chuẩn hóa → truy xuất → Gemini → giám khảo)...\n")
+    try:
+        for position, question in enumerate(questions, start=1):
+            label = question.get("id", f"q{position}")
+            try:
+                entry = evaluate_question(pipeline, judge_model, question, retrieve_k)
+                entries.append(entry)
+                retrieval, faith = entry["retrieval"], entry["faithfulness"]
+                cit_f1 = "—" if entry["citations"] is None else f"{entry['citations']['f1']:.2f}"
+                faith_text = "—" if faith["score"] is None else f"{faith['score']:.2f}"
+                print(f"[{label}/{len(questions)}] hit@{retrieve_k}={int(bool(retrieval['hit_at_k'])) if retrieval['hit_at_k'] is not None else '—'} "
+                      f"rr={retrieval['reciprocal_rank']:.2f} citF1={cit_f1} faith={faith_text} ({entry['latency_seconds']}s)")
+            except Exception as exc:  # hết quota, mất mạng, lỗi model... — bỏ qua câu này, chạy tiếp
+                entries.append({
+                    "id": label, "category": question.get("category", ""), "raw_query": question["raw_query"],
+                    "normalized_query_expected": question.get("normalized_query"), "normalized_query_system": None,
+                    "normalization_match": None, "retrieval": {}, "answer": None, "is_refusal_answer": None,
+                    "citations": None, "predicted_citations": [], "refusal_expected": question.get("in_corpus") is False,
+                    "refusal_correct": None, "hallucinated_on_unanswerable": False,
+                    "faithfulness": {"score": None, "unsupported_claims": [], "method": None, "error": None},
+                    "number_support": None, "latency_seconds": None,
+                    "error": f"{type(exc).__name__}: {exc}",
+                })
+                print(f"[{label}/{len(questions)}] LỖI — bỏ qua: {type(exc).__name__}: {exc}")
+                if "perday" in str(exc).lower():
+                    print(f"\n[Quota] Hết quota NGÀY của model — {len(questions) - position} câu còn lại sẽ dính lỗi tương tự, dừng sớm để giữ kết quả đã chạy.")
+                    break
+    except KeyboardInterrupt:
+        interrupted = True
+        print("\n[Ngắt bởi người dùng] — vẫn ghi kết quả phần đã chạy.")
+
+    aggregates = aggregate(entries, retrieve_k)
+    meta = {
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "benchmark": str(args.benchmark),
+        "n_questions": len(questions),
+        "top_k": retrieve_k,
+        "judge_enabled": judge_model is not None,
+        "judge_model": judge_name,
+        "generator_model": generator.model_name,
+        "local_slm_model": local_slm.model_name,
+        "ollama_available": ollama_ok,
+        "interrupted": interrupted,
+    }
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(
+        json.dumps({"meta": meta, "aggregates": aggregates, "per_question": entries}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    summary = format_summary_md(aggregates, entries, retrieve_k, meta)
+    SUMMARY_PATH.write_text(summary, encoding="utf-8")
+    print(f"\nĐã lưu chi tiết: {args.output}")
+    print(f"Đã lưu tóm tắt : {SUMMARY_PATH}\n")
+    print(summary)
+    if aggregates["errors"]:
+        print("Câu bị lỗi (không tính vào chỉ số):")
+        for message in aggregates["errors"]:
+            print(f"  - {message}")
+
+
+if __name__ == "__main__":
+    main()
