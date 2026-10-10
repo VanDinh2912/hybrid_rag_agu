@@ -45,9 +45,14 @@ DEFAULT_MAX_RETRIES = 2
 REFUSAL_TEXT = "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này."
 REFUSAL_MARKER = "không đủ thông tin"
 
+# Phiên bản prompt: đưa vào cache key để mọi thay đổi SYSTEM_INSTRUCTION/PROMPT_RULES
+# (nằm NGOÀI chuỗi prompt truyền vào) đều tự làm cache cũ vô hiệu — bump khi sửa prompt.
+PROMPT_VERSION = "v1.0"
+
 # --- Response caching: lưu câu trả lời đã sinh vào ./.generation_cache/ ---
-# Key là SHA-1 của {model, temperature, prompt} nên corpus re-ingest hay sửa
-# prompt đều tự làm cache cũ vô hiệu (self-invalidating), không cần dọn tay.
+# Key là SHA-1 của {model, temperature, prompt_version, prompt} nên corpus re-ingest,
+# sửa prompt hay sửa system instruction đều tự làm cache cũ vô hiệu (self-invalidating),
+# không cần dọn tay.
 GENERATION_CACHE_DIR = "./.generation_cache"
 
 # --- Fallback Local Qwen: tầng dự phòng khi Gemini lỗi quota / sự cố ---
@@ -58,6 +63,7 @@ DEFAULT_OLLAMA_TIMEOUT = 90.0
 # Dấu hiệu lỗi hết quota (429 / ResourceExhausted) — dùng để chọn nhãn cảnh báo.
 QUOTA_MARKERS = ("429", "resource_exhausted", "resource exhausted", "too many requests", "quota")
 
+FALLBACK_NOTICE_PREFIX = "[Cảnh báo:"
 QWEN_FALLBACK_NOTICE = (
     "[Cảnh báo: {reason} — câu trả lời này được tổng hợp tạm thời bằng Local Qwen ({model}) "
     "để phục vụ demo. Hãy đối chiếu với văn bản gốc trước khi sử dụng.]"
@@ -117,6 +123,11 @@ def is_quota_error(exc: Exception) -> bool:
     """Nhận diện lỗi hết quota (429/ResourceExhausted) để chọn nhãn cảnh báo phù hợp."""
     message = str(exc).lower()
     return any(marker in message for marker in QUOTA_MARKERS)
+
+
+def is_fallback_answer(answer: Any) -> bool:
+    """Nhận diện phản hồi do tầng fallback Local Qwen tổng hợp — để CLI gắn nhãn đúng nguồn sinh."""
+    return isinstance(answer, str) and answer.lstrip().startswith(FALLBACK_NOTICE_PREFIX)
 
 
 def _env_float(name: str, default: float) -> float:
@@ -349,7 +360,12 @@ class GeminiGenerator:
     def _cache_key(self, prompt: str, temperature: float) -> str:
         """SHA-1 của {model, temperature, prompt} — đổi model/prompt/corpus là tự miss cache."""
         payload = json.dumps(
-            {"model": self.model_name, "temperature": temperature, "prompt": prompt},
+            {
+                "model": self.model_name,
+                "temperature": temperature,
+                "prompt_version": PROMPT_VERSION,
+                "prompt": prompt,
+            },
             ensure_ascii=False,
             sort_keys=True,
         )

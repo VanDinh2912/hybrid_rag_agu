@@ -27,7 +27,7 @@ bảng đó ra terminal. Câu hỏi lỗi (hết quota, mất mạng...) đượ
 không làm chết cả lượt đánh giá; Ctrl+C giữa chừng vẫn ghi kết quả phần đã chạy.
 
 Cách chạy (từ thư mục gốc dự án):
-    python src/evaluation.py                  # đủ 8 câu, top_k=5, có giám khảo
+    python src/evaluation.py                  # đủ 8 câu, top_k=4, có giám khảo
     python src/evaluation.py -k 3             # truy xuất Top-3 (Hit@5 vẫn đo được)
     python src/evaluation.py --limit 2        # chạy thử nhanh 2 câu đầu
     python src/evaluation.py --no-judge       # bỏ tầng giám khảo, tiết kiệm quota
@@ -63,7 +63,7 @@ from src.vector_db import VectorStoreManager
 BENCHMARK_PATH = Path("data/evaluation/benchmark_questions.json")
 RESULTS_PATH = Path("outputs/evaluation_results.json")
 SUMMARY_PATH = Path("outputs/evaluation_summary.md")
-DEFAULT_TOP_K = 5
+DEFAULT_TOP_K = 4
 # Luôn lấy tối thiểu 5 chunk để tính đồng thời Hit@3 và Hit@5 từ MỘT lượt truy xuất.
 MIN_TOP_K = 5
 JUDGE_MAX_TOKENS = 4096
@@ -134,6 +134,40 @@ def source_match(chunk_source: str, expected_document: str) -> bool:
     """Chunk đúng nguồn nếu tên file ground truth nằm trong tên nguồn (hoặc ngược lại)."""
     a, b = fold(chunk_source), fold(expected_document)
     return bool(a and b) and (b in a or a in b)
+
+
+ARTICLE_CLAUSE_TOKEN_RE = re.compile(r"(?:dieu|khoan)\s*\d+", re.IGNORECASE)
+PLAIN_NUMBER_TOKEN_RE = re.compile(r"\d+(?:\.\d+)?")
+
+
+def _decimal_comma_to_dot(text: str) -> str:
+    """'1,0' → '1.0': tiếng Việt viết thập phân bằng dấu phẩy; quy về dấu chấm để so khớp."""
+    return re.sub(r"(\d),(\d)", r"\1.\2", text)
+
+
+def normalization_preservation(raw_query: str, normalized_query: str) -> dict:
+    """Tỉ lệ thực thể (số Điều/Khoản, con số) trong câu hỏi gốc còn nguyên sau chuẩn hóa.
+
+    So khớp chuỗi con sau khi fold(): tầng chuẩn hóa được phép diễn đạt lại câu hỏi;
+    điều nguy hiểm thật sự là làm mất hay sai lệch con số/số Điều/Khoản — đó mới là
+    lỗi chuẩn hóa làm hỏng kết quả truy xuất. Hạn chế: số viết bằng chữ ("hai lần")
+    không được quy về dạng chữ số nên có thể bị tính là mất.
+    """
+    raw = fold(_decimal_comma_to_dot(raw_query))
+    norm = fold(_decimal_comma_to_dot(normalized_query))
+    article_tokens = ARTICLE_CLAUSE_TOKEN_RE.findall(raw)
+    remainder = ARTICLE_CLAUSE_TOKEN_RE.sub(" ", raw)
+    tokens = article_tokens + PLAIN_NUMBER_TOKEN_RE.findall(remainder)
+    if not tokens:
+        return {"score": None, "total": 0, "preserved": 0, "lost": []}
+    lost = [token for token in tokens if token not in norm]
+    preserved = len(tokens) - len(lost)
+    return {
+        "score": round(preserved / len(tokens), 4),
+        "total": len(tokens),
+        "preserved": preserved,
+        "lost": lost,
+    }
 
 
 def number_support(answer: str, contexts: list[str]) -> float | None:
@@ -221,16 +255,22 @@ def load_benchmark(path: Path) -> list[dict]:
     return questions
 
 
-def evaluate_question(pipeline: HybridRAGPipeline, judge_model, question: dict, top_k: int) -> dict:
-    """Chạy đúng pipeline sản xuất cho 1 câu rồi đo mọi chỉ số."""
+def evaluate_question(pipeline: HybridRAGPipeline, judge_model, question: dict,
+                      top_k: int, retrieve_k: int) -> dict:
+    """Chạy đúng pipeline sản xuất cho 1 câu hỏi rồi đo mọi chỉ số.
+
+    `retrieve_k` ≥ `top_k`: luôn truy xuất dư (tối thiểu MIN_TOP_K) để tính Hit@5 từ
+    cùng một lượt, còn Hit@K/MRR@K (K = top_k) chỉ xét trong top_k đầu — đúng định
+    nghĩa chỉ số, tránh đánh giá bị "phóng to" bởi các chunk truy xuất dư ra ngoài K.
+    """
     t0 = time.perf_counter()
-    result = pipeline.run(question["raw_query"], top_k=top_k)
+    result = pipeline.run(question["raw_query"], top_k=retrieve_k)
     elapsed = round(time.perf_counter() - t0, 2)
 
     sources, contexts, answer = result["sources"], result["contexts"], result["answer"]
     expected_document = question.get("source_document")
     hits = [source_match(s["source"], expected_document) for s in sources] if expected_document else []
-    matched_rank = next((i + 1 for i, hit in enumerate(hits) if hit), None)
+    matched_rank = next((i + 1 for i, hit in enumerate(hits[:top_k]) if hit), None)
 
     expected_citations = {fold(c) for c in question.get("expected_citations") or []}
     predicted_citations = extract_citations(answer)
@@ -243,16 +283,15 @@ def evaluate_question(pipeline: HybridRAGPipeline, judge_model, question: dict, 
         "raw_query": question["raw_query"],
         "normalized_query_expected": question.get("normalized_query"),
         "normalized_query_system": result["normalized_query"],
-        "normalization_match": (
-            fold(result["normalized_query"]) == fold(question["normalized_query"])
-            if question.get("normalized_query")
-            else None
+        "normalization_preservation": normalization_preservation(
+            question["raw_query"], result["normalized_query"]
         ),
         "retrieval": {
-            "top_k": len(sources),
+            "top_k": top_k,
+            "retrieved_k": len(sources),
             "hit_at_3": any(hits[:3]) if expected_document else None,
             "hit_at_5": any(hits[:5]) if expected_document else None,
-            "hit_at_k": any(hits) if expected_document else None,
+            "hit_at_k": any(hits[:top_k]) if expected_document else None,
             "reciprocal_rank": round(1.0 / matched_rank, 4) if matched_rank else 0.0,
             "matched_rank": matched_rank,
             "retrieved": [
@@ -315,8 +354,16 @@ def aggregate(entries: list[dict], top_k: int) -> dict:
         "faithfulness_llm": _mean([e["faithfulness"]["score"] for e in scored]),
         "n_faithfulness_scored": sum(1 for e in scored if e["faithfulness"]["score"] is not None),
         "number_support": _mean([e["number_support"] for e in scored]),
-        "normalization_accuracy": _mean([e["normalization_match"] for e in scored]),
-        "n_normalization_checked": sum(1 for e in scored if e["normalization_match"] is not None),
+        "normalization_preservation": _mean(
+            [e["normalization_preservation"]["score"] for e in scored]
+        ),
+        "normalization_full_preservation": _mean(
+            [1.0 if e["normalization_preservation"]["score"] == 1.0 else 0.0
+             for e in scored if e["normalization_preservation"]["score"] is not None]
+        ),
+        "n_normalization_checked": sum(
+            1 for e in scored if e["normalization_preservation"]["score"] is not None
+        ),
         "refusal_correct_rate": _mean([e["refusal_correct"] for e in refusal_entries]),
         "n_refusal_cases": len(refusal_entries),
         "hallucination_on_unanswerable": sum(1 for e in refusal_entries if e["hallucinated_on_unanswerable"]),
@@ -352,7 +399,8 @@ def format_summary_md(aggregates: dict, entries: list[dict], top_k: int, meta: d
         f"| Citation Exact Match | {_pct(aggregates['citation_exact_match'])} |",
         f"| Faithfulness (LLM judge) | {_pct(aggregates['faithfulness_llm'])} |",
         f"| Number support (không cần API) | {_pct(aggregates['number_support'])} |",
-        f"| Chuẩn hóa Qwen khớp benchmark | {_pct(aggregates['normalization_accuracy'])} |",
+        f"| Bảo toàn thực thể sau chuẩn hóa (Qwen) | {_pct(aggregates['normalization_preservation'])} |",
+        f"| Bảo toàn đủ 100% thực thể | {_pct(aggregates['normalization_full_preservation'])} |",
         f"| Từ chối đúng (câu ngoài corpus) | {_pct(aggregates['refusal_correct_rate'])} "
         f"({aggregates['n_refusal_cases']} câu) |",
         f"| Ảo giác trên câu ngoài corpus | {aggregates['hallucination_on_unanswerable']} câu |",
@@ -416,7 +464,7 @@ def main() -> None:
     if args.limit is not None:
         questions = questions[: max(1, args.limit)]
     print(f"--- ĐÁNH GIÁ ĐỊNH LƯỢNG HYBRID RAG ---")
-    print(f"Benchmark: {args.benchmark} ({len(questions)} câu) · Top-K = {retrieve_k} · Judge = {'tắt' if args.no_judge else 'bật'}\n")
+    print(f"Benchmark: {args.benchmark} ({len(questions)} câu) · Top-K = {top_k} (truy xuất {retrieve_k} để tính Hit@5) · Judge = {'tắt' if args.no_judge else 'bật'}\n")
 
     print("[1/2] Nối ChromaDB đã persist (không nạp lại corpus)...")
     vector_db = VectorStoreManager().load_vector_store()
@@ -429,7 +477,7 @@ def main() -> None:
     ollama_ok, ollama_message = local_slm.check_connection()
     print(f"[2/2] Ollama: {'sẵn sàng' if ollama_ok else 'CẢNH BÁO — ' + ollama_message}")
     if not ollama_ok:
-        print("      Số liệu vẫn chạy được (dùng câu hỏi gốc) nhưng 'normalization_accuracy' sẽ mất ý nghĩa.")
+        print("      Số liệu vẫn chạy được (dùng câu hỏi gốc) nhưng 'normalization_preservation' sẽ mất ý nghĩa.")
 
     generator = GeminiGenerator()
     # Tắt Qwen-fallback CHỈ trong lượt đánh giá: nếu Gemini hết quota mà câu trả lời
@@ -457,18 +505,18 @@ def main() -> None:
         for position, question in enumerate(questions, start=1):
             label = question.get("id", f"q{position}")
             try:
-                entry = evaluate_question(pipeline, judge_model, question, retrieve_k)
+                entry = evaluate_question(pipeline, judge_model, question, top_k, retrieve_k)
                 entries.append(entry)
                 retrieval, faith = entry["retrieval"], entry["faithfulness"]
                 cit_f1 = "—" if entry["citations"] is None else f"{entry['citations']['f1']:.2f}"
                 faith_text = "—" if faith["score"] is None else f"{faith['score']:.2f}"
-                print(f"[{label}/{len(questions)}] hit@{retrieve_k}={int(bool(retrieval['hit_at_k'])) if retrieval['hit_at_k'] is not None else '—'} "
+                print(f"[{label}/{len(questions)}] hit@{top_k}={int(bool(retrieval['hit_at_k'])) if retrieval['hit_at_k'] is not None else '—'} "
                       f"rr={retrieval['reciprocal_rank']:.2f} citF1={cit_f1} faith={faith_text} ({entry['latency_seconds']}s)")
             except Exception as exc:  # hết quota, mất mạng, lỗi model... — bỏ qua câu này, chạy tiếp
                 entries.append({
                     "id": label, "category": question.get("category", ""), "raw_query": question["raw_query"],
                     "normalized_query_expected": question.get("normalized_query"), "normalized_query_system": None,
-                    "normalization_match": None, "retrieval": {}, "answer": None, "is_refusal_answer": None,
+                    "normalization_preservation": None, "retrieval": {}, "answer": None, "is_refusal_answer": None,
                     "citations": None, "predicted_citations": [], "refusal_expected": question.get("in_corpus") is False,
                     "refusal_correct": None, "hallucinated_on_unanswerable": False,
                     "faithfulness": {"score": None, "unsupported_claims": [], "method": None, "error": None},
@@ -483,12 +531,13 @@ def main() -> None:
         interrupted = True
         print("\n[Ngắt bởi người dùng] — vẫn ghi kết quả phần đã chạy.")
 
-    aggregates = aggregate(entries, retrieve_k)
+    aggregates = aggregate(entries, top_k)
     meta = {
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "benchmark": str(args.benchmark),
         "n_questions": len(questions),
-        "top_k": retrieve_k,
+        "top_k": top_k,
+        "retrieve_k": retrieve_k,
         "judge_enabled": judge_model is not None,
         "judge_model": judge_name,
         "generator_model": generator.model_name,
@@ -502,7 +551,7 @@ def main() -> None:
         json.dumps({"meta": meta, "aggregates": aggregates, "per_question": entries}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    summary = format_summary_md(aggregates, entries, retrieve_k, meta)
+    summary = format_summary_md(aggregates, entries, top_k, meta)
     SUMMARY_PATH.write_text(summary, encoding="utf-8")
     print(f"\nĐã lưu chi tiết: {args.output}")
     print(f"Đã lưu tóm tắt : {SUMMARY_PATH}\n")

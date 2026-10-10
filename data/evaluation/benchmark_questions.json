@@ -1,76 +1,76 @@
 {
-  "version": "1.0",
-  "description": "Bộ câu hỏi benchmark kiểm thử Hybrid RAG, gắn với corpus data/corpus/. Mỗi câu gồm: raw_query (văn phong đời thường của sinh viên), normalized_query (kỳ vọng sau khi Qwen chuẩn hóa), expected_answer (đáp án tham chiếu rút trực tiếp từ Điều/Khoản), expected_citations (trích dẫn ground truth dùng tính Citation_F1). Câu có in_corpus=false kiểm tra khả năng từ chối trả lời khi tài liệu không đủ.",
+  "version": "1.1",
+  "description": "Bộ câu hỏi benchmark kiểm thử Hybrid RAG, gắn với corpus data/corpus/. Mỗi câu gồm: raw_query (văn phong đời thường của sinh viên), normalized_query (kỳ vọng sau khi Qwen chuẩn hóa), expected_answer (đáp án tham chiếu rút trực tiếp từ Điều/Khoản), expected_citations (trích dẫn ground truth dùng tính Citation_F1). Câu có in_corpus=false kiểm tra khả năng từ chối trả lời khi tài liệu không đủ. Phiên bản 1.1: viết lại Q01–Q07 theo nội dung thật của Quy chế công tác sinh viên (1054/QĐ-ĐHAG) và Quy chế đánh giá kết quả rèn luyện sinh viên (1059/QĐ-ĐHAG) sau khi file mẫu được chuyển khỏi corpus.",
   "questions": [
     {
       "id": "Q01",
-      "category": "buộc thôi học",
+      "category": "kỷ luật sinh viên",
       "in_corpus": true,
-      "source_document": "quy_che_dao_tao_mau.txt",
-      "raw_query": "Ê ad, tui bị ĐTBHK dưới 1.0 thì có bị đuổi học luôn không hay sao?",
-      "normalized_query": "Sinh viên có điểm trung bình học kỳ dưới 1.0 có bị buộc thôi học không?",
-      "expected_answer": "Không bị buộc thôi học ngay. Điểm trung bình học kỳ dưới 1.0 là điều kiện bị cảnh báo học vụ (Điều 12 Khoản 2); chỉ bị buộc thôi học khi số lần bị cảnh báo học vụ vượt quá 2 lần liên tiếp trong toàn khóa học (Điều 12 Khoản 3).",
-      "expected_citations": ["Điều 12 Khoản 2", "Điều 12 Khoản 3"]
+      "source_document": "1054-qd-dhag-2020-09-28.pdf",
+      "raw_query": "Ê ad, sinh viên vi phạm lần đầu mà mức độ nhẹ thì có bị kỷ luật nặng không hay sao?",
+      "normalized_query": "Sinh viên vi phạm lần đầu với mức độ nhẹ bị áp dụng hình thức kỷ luật nào?",
+      "expected_answer": "Chỉ bị khiển trách. Đây là hình thức kỷ luật nhẹ nhất, áp dụng đối với sinh viên có hành vi vi phạm lần đầu nhưng mức độ nhẹ (Điều 17 Khoản 1).",
+      "expected_citations": ["Điều 17 Khoản 1"]
     },
     {
       "id": "Q02",
-      "category": "cảnh báo học vụ",
+      "category": "kỷ luật sinh viên",
       "in_corpus": true,
-      "source_document": "quy_che_dao_tao_mau.txt",
-      "raw_query": "Cho em hỏi cảnh báo học vụ có mục đích gì ạ?",
-      "normalized_query": "Cảnh báo học vụ có mục đích gì?",
-      "expected_answer": "Cảnh báo học vụ được thực hiện theo từng học kỳ, nhằm giúp sinh viên biết kết quả học tập yếu kém của mình (Điều 12 Khoản 1).",
-      "expected_citations": ["Điều 12 Khoản 1"]
+      "source_document": "1054-qd-dhag-2020-09-28.pdf",
+      "raw_query": "Cho em hỏi trường có những hình thức kỷ luật sinh viên nào vậy ạ?",
+      "normalized_query": "Sinh viên vi phạm kỷ luật có thể bị áp dụng những hình thức kỷ luật nào?",
+      "expected_answer": "Tùy tính chất, mức độ, hậu quả của hành vi vi phạm, sinh viên có thể bị nhắc nhở, phê bình hoặc chịu một trong các hình thức kỷ luật sau: khiển trách, cảnh cáo, đình chỉ học tập có thời hạn, buộc thôi học (Điều 17 Khoản 1).",
+      "expected_citations": ["Điều 17 Khoản 1"]
     },
     {
       "id": "Q03",
-      "category": "cảnh báo học vụ",
+      "category": "kỷ luật sinh viên",
       "in_corpus": true,
-      "source_document": "quy_che_dao_tao_mau.txt",
-      "raw_query": "Cảnh báo học vụ là thực hiện theo từng năm hay từng học kỳ vậy mọi người?",
-      "normalized_query": "Cảnh báo học vụ được thực hiện theo năm học hay theo học kỳ?",
-      "expected_answer": "Cảnh báo học vụ được thực hiện theo từng học kỳ (Điều 12 Khoản 1).",
-      "expected_citations": ["Điều 12 Khoản 1"]
+      "source_document": "1054-qd-dhag-2020-09-28.pdf",
+      "raw_query": "Bạn mình đang trong thời gian bị cảnh cáo mà dính lỗi tiếp luôn, có bị đình chỉ học tập không mọi người?",
+      "normalized_query": "Sinh viên đang trong thời gian bị cảnh cáo mà vẫn vi phạm kỷ luật có bị đình chỉ học tập có thời hạn không?",
+      "expected_answer": "Có. Đình chỉ học tập có thời hạn áp dụng đối với những sinh viên đang trong thời gian bị cảnh cáo mà vẫn vi phạm kỷ luật hoặc vi phạm nghiêm trọng các hành vi sinh viên không được làm (Điều 17 Khoản 1).",
+      "expected_citations": ["Điều 17 Khoản 1"]
     },
     {
       "id": "Q04",
-      "category": "cảnh báo học vụ",
+      "category": "kỷ luật sinh viên",
       "in_corpus": true,
-      "source_document": "quy_che_dao_tao_mau.txt",
-      "raw_query": "Điểm trung bình học kỳ cỡ nào thì dính cảnh báo học vụ?",
-      "normalized_query": "Điểm trung bình học kỳ bao nhiêu thì sinh viên bị cảnh báo học vụ?",
-      "expected_answer": "Sinh viên bị cảnh báo học vụ nếu điểm trung bình học kỳ (ĐTBHK) đạt dưới 1.0 (Điều 12 Khoản 2).",
-      "expected_citations": ["Điều 12 Khoản 2"]
+      "source_document": "1054-qd-dhag-2020-09-28.pdf",
+      "raw_query": "bị kỷ luật mức nào thì trường lưu hồ sơ và báo cho gia đình vậy ad",
+      "normalized_query": "Hình thức kỷ luật nào trở lên được lưu vào hồ sơ quản lý sinh viên và thông báo cho gia đình?",
+      "expected_answer": "Hình thức kỷ luật của sinh viên từ cảnh cáo trở lên được lưu vào hồ sơ quản lý sinh viên và thông báo cho gia đình sinh viên. Trường hợp bị đình chỉ học tập có thời hạn hoặc buộc thôi học, nhà trường còn gửi thông báo cho địa phương và gia đình biết để phối hợp quản lý, giáo dục (Điều 17 Khoản 2).",
+      "expected_citations": ["Điều 17 Khoản 2"]
     },
     {
       "id": "Q05",
-      "category": "buộc thôi học",
+      "category": "phân loại rèn luyện",
       "in_corpus": true,
-      "source_document": "quy_che_dao_tao_mau.txt",
-      "raw_query": "bị cảnh báo mấy lần thì nghỉ học vậy ad",
-      "normalized_query": "Sinh viên bị cảnh báo học vụ bao nhiêu lần thì bị buộc thôi học?",
-      "expected_answer": "Sinh viên bị buộc thôi học nếu số lần bị cảnh báo học vụ vượt quá 2 lần liên tiếp trong toàn khóa học (Điều 12 Khoản 3).",
-      "expected_citations": ["Điều 12 Khoản 3"]
+      "source_document": "1059-qd-dhag-2020-09-29.pdf",
+      "raw_query": "điểm rèn luyện của tui có 62 điểm thôi, vậy xếp loại gì và có bị coi là không đạt không ad?",
+      "normalized_query": "Sinh viên có 62 điểm rèn luyện được xếp loại gì và có đạt không?",
+      "expected_answer": "62 điểm nằm trong khoảng từ 50 đến dưới 65 điểm nên xếp loại Trung bình. Sinh viên có kết quả rèn luyện xếp loại từ Trung bình trở lên là đạt (Điều 10 Khoản 1, Khoản 2).",
+      "expected_citations": ["Điều 10 Khoản 1", "Điều 10 Khoản 2"]
     },
     {
       "id": "Q06",
-      "category": "buộc thôi học",
+      "category": "đánh giá rèn luyện",
       "in_corpus": true,
-      "source_document": "quy_che_dao_tao_mau.txt",
-      "raw_query": "Cho mình hỏi 'vượt quá 2 lần liên tiếp' trong quy định buộc thôi học được hiểu thế nào?",
-      "normalized_query": "Quy định buộc thôi học khi số lần cảnh báo học vụ 'vượt quá 2 lần liên tiếp' được hiểu thế nào?",
-      "expected_answer": "Quy chế quy định sinh viên bị buộc thôi học nếu số lần bị cảnh báo học vụ vượt quá 2 lần liên tiếp trong toàn khóa học (Điều 12 Khoản 3).",
-      "expected_citations": ["Điều 12 Khoản 3"]
+      "source_document": "1059-qd-dhag-2020-09-29.pdf",
+      "raw_query": "Kết quả rèn luyện được đánh giá định kỳ theo học kỳ hay theo năm học vậy mọi người?",
+      "normalized_query": "Kết quả rèn luyện của sinh viên được đánh giá định kỳ theo học kỳ chính, năm học hay toàn khóa học?",
+      "expected_answer": "Việc đánh giá kết quả rèn luyện của sinh viên được tiến hành định kỳ theo học kỳ chính, năm học và toàn khóa học (Điều 9 Khoản 1).",
+      "expected_citations": ["Điều 9 Khoản 1"]
     },
     {
       "id": "Q07",
-      "category": "cảnh báo học vụ",
+      "category": "kỷ luật và rèn luyện",
       "in_corpus": true,
-      "source_document": "quy_che_dao_tao_mau.txt",
-      "raw_query": "bro ơi điểm kỳ này của tui dưới 1 điểm rồi, có bị cho thôi học khỏi?",
-      "normalized_query": "Sinh viên có điểm trung bình học kỳ dưới 1.0 có bị buộc thôi học không?",
-      "expected_answer": "Không bị buộc thôi học ngay; ĐTBHK dưới 1.0 là điều kiện bị cảnh báo học vụ (Điều 12 Khoản 2). Buộc thôi học chỉ áp dụng khi số lần cảnh báo vượt quá 2 lần liên tiếp (Điều 12 Khoản 3).",
-      "expected_citations": ["Điều 12 Khoản 2", "Điều 12 Khoản 3"]
+      "source_document": "1059-qd-dhag-2020-09-29.pdf",
+      "raw_query": "bro ơi đang bị kỷ luật cảnh cáo, kỳ này điểm rèn luyện có bị giới hạn xếp loại không?",
+      "normalized_query": "Sinh viên đang bị kỷ luật mức cảnh cáo có bị giới hạn kết quả rèn luyện khi đánh giá không?",
+      "expected_answer": "Có. Trong thời gian sinh viên bị kỷ luật mức cảnh cáo, khi đánh giá kết quả rèn luyện không được vượt quá loại Trung bình (Điều 11 Khoản 2).",
+      "expected_citations": ["Điều 11 Khoản 2"]
     },
     {
       "id": "Q08",

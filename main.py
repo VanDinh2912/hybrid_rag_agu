@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 
 load_dotenv()  # Nạp .env (GEMINI_API_KEY, OLLAMA_HOST, CHROMA_PERSIST_DIR...)
 
-from src.generator import GeminiGenerator, GeneratorError
+from src.generator import GeminiGenerator, GeneratorError, is_fallback_answer
 from src.local_slm import LocalSLM, LocalSLMError
 from src.pipeline import HybridRAGPipeline
 from src.vector_db import VectorStoreManager
@@ -129,7 +129,8 @@ def print_result(result: dict, elapsed: float) -> None:
               f"(chunk_id={src['chunk_id']}, {src['chars']:,} ký tự)")
         print(f"         \"{src['preview']}\"")
 
-    print(f"[4] CÂU TRẢ LỜI (Gemini) :")
+    engine_label = "Local Qwen — FALLBACK" if is_fallback_answer(result["answer"]) else "Gemini"
+    print(f"[4] CÂU TRẢ LỜI ({engine_label}) :")
     print(THIN)
     print(result["answer"])
     print(THIN)

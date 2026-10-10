@@ -41,7 +41,10 @@ def append_note(question: str, correction: str) -> None:
     os.makedirs(os.path.dirname(NOTES_PATH), exist_ok=True)
     if os.path.exists(NOTES_PATH):
         with open(NOTES_PATH, "r", encoding="utf-8") as f:
-            numbers = [int(n) for n in re.findall(r"Điều\s+(\d+)\.", f.read())]
+            # Chỉ quét heading do chính hệ thống sinh ("Điều N. Ghi chú học thêm ..."):
+            # quét mọi mốc "Điều N." sẽ đếm nhầm cả trích dẫn ngườê dùng dán trong phần chỉnh sửa,
+            # làm bộ đếm nhảy loạn và ghi đè mất Điều cũ.
+            numbers = [int(n) for n in re.findall(r"Điều\s+(\d+)\.\s+Ghi chú học thêm", f.read())]
         article_no = max(numbers, default=1000) + 1
     else:
         with open(NOTES_PATH, "w", encoding="utf-8") as f:
@@ -102,7 +105,7 @@ def main():
             break
 
         try:
-            result = pipeline.run(question, top_k=2)
+            result = pipeline.run(question, top_k=4)
         except KeyboardInterrupt:
             print("\n[Đã hủy] Ngắt lượt hỏi này (Ctrl+C).\n")
             continue

@@ -41,7 +41,7 @@ class HybridRAGPipeline:
         self.local_slm = local_slm
         self.generator = generator
 
-    def run(self, question: str, top_k: int = 5) -> dict:
+    def run(self, question: str, top_k: int = 4) -> dict:
         """Xử lý một câu hỏi.
 
         Trả về: raw_query, normalized_query, contexts (nội dung chunk),
