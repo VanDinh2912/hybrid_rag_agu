@@ -10,10 +10,21 @@ Nguyên tắc chịu lỗi: Local SLM chỉ là bước *tối ưu* truy xuất,
 bắt buộc. Mọi sự cố (Ollama chưa chạy, model chưa pull, timeout, model sinh nội
 dung lạc đề) đều được bắt và suy giảm mềm về chính câu hỏi gốc kèm cảnh báo,
 để pipeline luôn trả lời được.
+
+Guardrail chống lệch nghĩa: Qwen 1.5B đôi khi "drift" — viết lại thành một câu
+hỏi KHÁC chủ đề (thường là nhại lại câu hỏi trong ví dụ few-shot) — khiến tầng
+truy xuất sa vào tài liệu sai. Sau khi Qwen xuất câu chuẩn hóa, module đối chiếu
+với câu gốc bằng hai tín hiệu tính trên văn bản đã fold (bỏ dấu thanh):
+(1) bảo toàn con số: mọi số của câu gốc phải còn xuất hiện và không được bịa
+số mới; (2) tỉ lệ token: phần từ của câu chuẩn hóa phải bắt nguồn từ câu gốc
+đạt ngưỡng tối thiểu. Vi phạm → fallback ngay về câu hỏi gốc kèm log
+`[LocalSLM-Guardrail]`, vì truy xuất bằng câu gốc sai văn phong vẫn an toàn hơn
+truy xuất bằng một câu hỏi bịa chủ đề khác.
 """
 
 import os
 import re
+import unicodedata
 from typing import Optional
 
 import ollama
@@ -60,25 +71,37 @@ LABEL_PREFIX_RE = re.compile(
 def build_normalize_prompt(raw_query: str) -> str:
     """Dựng prompt few-shot cho tác vụ chuẩn hóa câu hỏi.
 
-    Few-shot cố định 3 mẫu (tiếng lóng / viết tắt không dấu / sai chính tả) vì
-    Qwen2.5-1.5B dễ bịa khi nhận câu hỏi nằm ngoài phân bố ví dụ đã cho.
+    Few-shot cố định 4 mẫu (tiếng lóng có số liệu / viết tắt không dấu / sai
+    chính tả / cụm danh từ không phải câu hỏi) vì Qwen2.5-1.5B dễ bịa khi nhận
+    câu hỏi nằm ngoài phân bố ví dụ đã cho.
     """
     return (
         "Bạn là bộ chuẩn hóa câu hỏi cho hệ thống tra cứu quy chế đào tạo đại học.\n"
         "Nhiệm vụ: viết lại câu hỏi đời thường của sinh viên thành MỘT câu hỏi trang trọng,\n"
-        "rõ nghĩa pháp lý, dùng đúng thuật ngữ học vụ, giữ nguyên mọi con số/mốc thời gian,\n"
-        "để hệ thống tìm kiếm vector truy xuất đúng điều khoản quy chế.\n"
+        "rõ nghĩa pháp lý, dùng đúng thuật ngữ học vụ.\n"
+        "QUY TẮC BẢO TOÀN THỰC THỂ (bắt buộc):\n"
+        "- Chỉ được sửa lỗi chính tả, bỏ tiếng lóng, làm sạch văn phong.\n"
+        "- Giữ nguyên vẹn mọi con số, điểm số, mốc thời gian (1.0, 2.0, 2020, 5 tốt...).\n"
+        "- Giữ nguyên vẹn từ khóa pháp lý/học vụ; được phép mở rộng đúng nghĩa:\n"
+        "  'ĐTBHK' → 'điểm trung bình học kỳ', 'cảnh báo học vụ', 'buộc thôi học',\n"
+        "  'mã học phần', tên danh hiệu, tên quy chế.\n"
+        "- Không được đổi chủ đề: câu viết lại phải hỏi đúng điều sinh viên đang hỏi.\n"
+        "- Nếu câu gốc là cụm từ (không phải câu hỏi), chỉ chuyển thành câu hỏi về\n"
+        "  chính nội dung đó, không thêm chủ đề mới.\n"
         "Ràng buộc: chỉ xuất ra DUY NHẤT một dòng là câu hỏi đã viết lại. "
         "Không giải thích, không trả lời câu hỏi, không thêm chữ nào khác.\n\n"
         "Ví dụ 1:\n"
-        'Câu hỏi thô: "Ê ad, tui bị ĐTBHK dưới 1.0 thì có bị đuổi học luôn không hay sao?"\n'
-        'Câu hỏi chuẩn hóa: "Sinh viên có điểm trung bình học kỳ dưới 1.0 có bị buộc thôi học không?"\n\n'
+        'Câu hỏi thô: "Ê ad, tui bị ĐTBHK dưới 1.0 thì có bị đuổi học luôn không?"\n'
+        'Câu hỏi chuẩn hóa: "Điểm trung bình học kỳ dưới 1.0 có bị buộc thôi học không?"\n\n'
         "Ví dụ 2:\n"
         'Câu hỏi thô: "cho e hỏi mún xin hoãn học phí thì lm đơn j nộp ở đâu z ạ"\n'
         'Câu hỏi chuẩn hóa: "Sinh viên cần làm đơn gì và nộp ở đâu để được gia hạn học phí?"\n\n'
         "Ví dụ 3:\n"
         'Câu hỏi thô: "rớt môn tiên quyết r thì có đc đkí môn đó lại hk ad"\n'
         'Câu hỏi chuẩn hóa: "Sinh viên chưa đạt môn học tiên quyết có được đăng ký học lại môn đó không?"\n\n'
+        "Ví dụ 4:\n"
+        'Câu hỏi thô: "quy che danh hieu Sinh vien 5 tot"\n'
+        'Câu hỏi chuẩn hóa: "Sinh viên cần đạt tiêu chuẩn gì để được xét danh hiệu Sinh viên 5 tốt?"\n\n'
         f'Câu hỏi thô: "{raw_query}"\n'
         "Câu hỏi chuẩn hóa:"
     )
@@ -142,6 +165,68 @@ def is_acceptable(normalized: str) -> Optional[str]:
     return None
 
 
+# --- Guardrail chống lệch nghĩa (drift) -------------------------------------
+# Đối chiếu trên văn bản đã fold (bỏ dấu thanh) để không đánh lừa do khác dấu;
+# "Đ"/U+0110 là chữ cái độc lập, NFD không tách được nên phải replace thủ công
+# (bẫy đã gặp khi xây fold() trong src/evaluation.py).
+
+# Tỉ lệ token (đã fold) của câu chuẩn hóa phải bắt nguồn từ câu hỏi gốc.
+# Thực nghiệm trên 4 cặp few-shot: hợp lệ ≥ 0.4; ca drift quan sát được = 0.14.
+MIN_TOKEN_OVERLAP = 0.3
+
+_NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)?")
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+
+def _fold(text: str) -> str:
+    """Thường hóa văn bản: chữ thường, bỏ dấu thanh, đ→d, gọn khoảng trắng.
+
+    Bản sao nội bộ của fold() trong src/evaluation.py — không import qua lại
+    để tránh circular import (evaluation.py đã import module này).
+    """
+    decomposed = unicodedata.normalize("NFD", str(text).lower())
+    stripped = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+    return re.sub(r"\s+", " ", stripped.replace("đ", "d")).strip()
+
+
+def _extract_numbers(folded_text: str) -> set[str]:
+    """Trích tập con số từ văn bản đã fold; '1,0' và '1.0' là cùng một số."""
+    return {token.replace(",", ".") for token in _NUMBER_RE.findall(folded_text)}
+
+
+def guardrail_violation(
+    raw_query: str, normalized_query: str, min_overlap: float = MIN_TOKEN_OVERLAP
+) -> Optional[str]:
+    """Trả về lý do nếu câu chuẩn hóa bị lệch nghĩa so với câu gốc, None nếu an toàn.
+
+    Hai tín hiệu trên văn bản đã fold:
+    1. Bảo toàn con số: mất số của câu gốc hoặc bịa số mới đều là lệch nghĩa
+       (Qwen từng biến "5 tốt" thành "dưới 2.0").
+    2. Tỉ lệ token: phần từ từ của câu chuẩn hóa phải trùng câu gốc; quá thấp
+       nghĩa là model đã đặt lại thành câu hỏi khác chủ đề.
+    """
+    raw_folded = _fold(raw_query)
+    norm_folded = _fold(normalized_query)
+
+    raw_numbers = _extract_numbers(raw_folded)
+    norm_numbers = _extract_numbers(norm_folded)
+    if raw_numbers - norm_numbers:
+        return f"mất con số {', '.join(sorted(raw_numbers - norm_numbers))} có trong câu hỏi gốc"
+    if norm_numbers - raw_numbers:
+        return f"bịa thêm con số {', '.join(sorted(norm_numbers - raw_numbers))} không có trong câu hỏi gốc"
+
+    norm_tokens = set(_TOKEN_RE.findall(norm_folded))
+    if not norm_tokens:
+        return "câu chuẩn hóa không còn token sau khi fold"
+    overlap = len(set(_TOKEN_RE.findall(raw_folded)) & norm_tokens) / len(norm_tokens)
+    if overlap < min_overlap:
+        return (
+            f"chỉ {overlap:.0%} token của câu chuẩn hóa có trong câu hỏi gốc "
+            f"(ngưỡng {min_overlap:.0%}) — nghi đặt lại chủ đề"
+        )
+    return None
+
+
 class LocalSLM:
     """Bao bọc mô hình Qwen chạy cục bộ qua Ollama."""
 
@@ -153,6 +238,7 @@ class LocalSLM:
         probe_timeout: float = DEFAULT_PROBE_TIMEOUT,
         num_predict: int = DEFAULT_NUM_PREDICT,
         max_retries: int = DEFAULT_MAX_RETRIES,
+        min_token_overlap: float = MIN_TOKEN_OVERLAP,
     ):
         self.model_name = model_name or os.getenv("OLLAMA_MODEL") or DEFAULT_MODEL
         self.host = host or os.getenv("OLLAMA_HOST") or DEFAULT_HOST
@@ -160,6 +246,7 @@ class LocalSLM:
         self.probe_timeout = probe_timeout
         self.num_predict = num_predict
         self.max_retries = max(0, max_retries)
+        self.min_token_overlap = min_token_overlap
         try:
             self.client = ollama.Client(host=self.host, timeout=self.timeout)
         except Exception as exc:  # host sai định dạng, thiếu quyền...
@@ -233,9 +320,17 @@ class LocalSLM:
             normalized = clean_output(output)
             reason = is_acceptable(normalized)
             if reason is None:
-                if attempt:
-                    print(f"[LocalSLM] Chuẩn hóa thành công ở lần thử {attempt + 1}.")
-                return normalized
+                violation = guardrail_violation(question, normalized, self.min_token_overlap)
+                if violation is None:
+                    if attempt:
+                        print(f"[LocalSLM] Chuẩn hóa thành công ở lần thử {attempt + 1}.")
+                    return normalized
+                print(
+                    "[LocalSLM-Guardrail] Phát hiện Qwen làm lệch nghĩa — fallback về câu gốc "
+                    f"({violation})."
+                )
+                print("[LocalSLM] Suy giảm mềm: dùng nguyên câu hỏi gốc để truy xuất.")
+                return question
 
             print(f"[LocalSLM] Lần thử {attempt + 1} bị loại — {reason}.")
             if attempt < self.max_retries:
