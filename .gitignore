@@ -31,3 +31,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ===== Cache tạm do công cụ Python/VS Code tự sinh =====
+Python/_cache/
+
