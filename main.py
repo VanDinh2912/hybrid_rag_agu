@@ -24,7 +24,7 @@ from src.local_slm import LocalSLM, LocalSLMError
 from src.pipeline import HybridRAGPipeline
 from src.vector_db import VectorStoreManager
 
-DEFAULT_TOP_K = 4
+DEFAULT_TOP_K = 6
 EXIT_WORDS = {"exit", "quit", "thoat", "thoát", "q"}
 HELP_WORDS = {"help", "h", "?", "hd", "huong dan"}
 

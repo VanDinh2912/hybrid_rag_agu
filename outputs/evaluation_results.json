@@ -1,9 +1,10 @@
 {
   "meta": {
-    "timestamp": "2026-10-10T10:48:59",
+    "timestamp": "2026-10-11T08:11:41",
     "benchmark": "data\\evaluation\\benchmark_questions.json",
     "n_questions": 8,
-    "top_k": 5,
+    "top_k": 4,
+    "retrieve_k": 5,
     "judge_enabled": true,
     "judge_model": "gemini-3.5-flash-lite",
     "generator_model": "gemini-2.5-flash",
@@ -12,55 +13,653 @@
     "interrupted": false
   },
   "aggregates": {
-    "n_total": 1,
-    "n_ok": 0,
-    "hit_at_5": null,
-    "hit_at_3": null,
-    "mrr": null,
-    "n_retrieval_scored": 0,
-    "citation_precision": null,
-    "citation_recall": null,
-    "citation_f1": null,
-    "citation_exact_match": null,
-    "n_citation_scored": 0,
-    "faithfulness_llm": null,
-    "n_faithfulness_scored": 0,
-    "number_support": null,
-    "normalization_accuracy": null,
-    "n_normalization_checked": 0,
-    "refusal_correct_rate": null,
-    "n_refusal_cases": 0,
-    "hallucination_on_unanswerable": 0,
-    "avg_latency_seconds": null,
-    "errors": [
-      "Q01: GeneratorError: Gọi Gemini API thất bại: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 20h10m55.435555948s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.5-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 72655\n}\n]. Đã hết quota Gemini — chờ reset hoặc dùng key khác."
-    ]
+    "n_total": 8,
+    "n_ok": 8,
+    "hit_at_4": 0.1429,
+    "hit_at_3": 0.1429,
+    "hit_at_5": 0.1429,
+    "mrr": 0.0625,
+    "n_retrieval_scored": 7,
+    "citation_precision": 0.0,
+    "citation_recall": 0.0,
+    "citation_f1": 0.0,
+    "citation_exact_match": 0.0,
+    "n_citation_scored": 7,
+    "faithfulness_llm": 1.0,
+    "n_faithfulness_scored": 8,
+    "number_support": 1.0,
+    "normalization_preservation": 1.0,
+    "normalization_full_preservation": 1.0,
+    "n_normalization_checked": 1,
+    "refusal_correct_rate": 0.0,
+    "n_refusal_cases": 1,
+    "hallucination_on_unanswerable": 1,
+    "avg_latency_seconds": 8.995,
+    "errors": []
   },
   "per_question": [
     {
       "id": "Q01",
-      "category": "buộc thôi học",
-      "raw_query": "Ê ad, tui bị ĐTBHK dưới 1.0 thì có bị đuổi học luôn không hay sao?",
-      "normalized_query_expected": "Sinh viên có điểm trung bình học kỳ dưới 1.0 có bị buộc thôi học không?",
-      "normalized_query_system": null,
-      "normalization_match": null,
-      "retrieval": {},
-      "answer": null,
-      "is_refusal_answer": null,
-      "citations": null,
+      "category": "kỷ luật sinh viên",
+      "raw_query": "Ê ad, sinh viên vi phạm lần đầu mà mức độ nhẹ thì có bị kỷ luật nặng không hay sao?",
+      "normalized_query_expected": "Sinh viên vi phạm lần đầu với mức độ nhẹ bị áp dụng hình thức kỷ luật nào?",
+      "normalized_query_system": "Sinh viên vi phạm quy chế lần đầu với mức độ nhẹ có bị kỷ luật nặng không?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 4,
+        "retrieved_k": 5,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 350
+          },
+          {
+            "rank": 2,
+            "source": "don-gia-han-hoc-phi-3.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 366
+          },
+          {
+            "rank": 3,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 228
+          },
+          {
+            "rank": 4,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 5,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 275
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. Thông tin còn thiếu là quy định cụ thể về các hình thức xử lý kỷ luật và mức độ áp dụng đối với các vi phạm quy chế, đặc biệt là đối với vi phạm lần đầu và mức độ nhẹ.",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 17 Khoản 1"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
       "predicted_citations": [],
       "refusal_expected": false,
       "refusal_correct": null,
       "hallucinated_on_unanswerable": false,
       "faithfulness": {
-        "score": null,
+        "score": 1.0,
         "unsupported_claims": [],
-        "method": null,
+        "method": "llm_judge",
         "error": null
       },
       "number_support": null,
-      "latency_seconds": null,
-      "error": "GeneratorError: Gọi Gemini API thất bại: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 20h10m55.435555948s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.5-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 72655\n}\n]. Đã hết quota Gemini — chờ reset hoặc dùng key khác."
+      "latency_seconds": 13.56,
+      "error": null
+    },
+    {
+      "id": "Q02",
+      "category": "kỷ luật sinh viên",
+      "raw_query": "Cho em hỏi trường có những hình thức kỷ luật sinh viên nào vậy ạ?",
+      "normalized_query_expected": "Sinh viên vi phạm kỷ luật có thể bị áp dụng những hình thức kỷ luật nào?",
+      "normalized_query_system": "Điều kiện kỷ luật sinh viên của trường có bao gồm các hình thức nào?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 4,
+        "retrieved_k": 5,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 2,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 350
+          },
+          {
+            "rank": 3,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 351
+          },
+          {
+            "rank": 4,
+            "source": "don-gia-han-hoc-phi-3.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 366
+          },
+          {
+            "rank": 5,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 228
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. Tài liệu chỉ đề cập rằng Nhà trường sẽ \"xử lý theo quy định\" nếu phát hiện gian lận (TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf) hoặc sinh viên sẽ \"chịu mọi hình thức xử lý kỷ luật của Nhà trường theo quy định\" nếu vi phạm cam kết nộp học phí (don-gia-han-hoc-phi-3.docx), nhưng không liệt kê cụ thể các hình thức kỷ luật đó.",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 17 Khoản 1"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 5.93,
+      "error": null
+    },
+    {
+      "id": "Q03",
+      "category": "kỷ luật sinh viên",
+      "raw_query": "Bạn mình đang trong thời gian bị cảnh cáo mà dính lỗi tiếp luôn, có bị đình chỉ học tập không mọi người?",
+      "normalized_query_expected": "Sinh viên đang trong thời gian bị cảnh cáo mà vẫn vi phạm kỷ luật có bị đình chỉ học tập có thời hạn không?",
+      "normalized_query_system": "Bạn mình đang trong thời gian bị cảnh cáo mà dính lỗi tiếp luôn, có bị đình chỉ học tập không mọi người?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 4,
+        "retrieved_k": 5,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "don-gia-han-hoc-phi-3.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 366
+          },
+          {
+            "rank": 2,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 99
+          },
+          {
+            "rank": 3,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 128
+          },
+          {
+            "rank": 4,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 108
+          },
+          {
+            "rank": 5,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 87
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. Tài liệu chỉ đề cập đến việc sinh viên bị xếp loại rèn luyện Yếu hai học kỳ chính liên tiếp lần thứ nhất thì xem xét kỷ luật mức độ cảnh cáo, và nếu bị xếp loại rèn luyện Yếu hai học kỳ chính liên tiếp lần thứ hai sẽ bị buộc thôi học (Điều 14, 1059-qd-dhag-2020-09-29.pdf). Thông tin về việc bị đình chỉ học tập khi đang trong thời gian cảnh cáo mà dính lỗi tiếp theo không được nêu rõ.",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 17 Khoản 1"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
+      "predicted_citations": [
+        "dieu 14"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 8.38,
+      "error": null
+    },
+    {
+      "id": "Q04",
+      "category": "kỷ luật sinh viên",
+      "raw_query": "bị kỷ luật mức nào thì trường lưu hồ sơ và báo cho gia đình vậy ad",
+      "normalized_query_expected": "Hình thức kỷ luật nào trở lên được lưu vào hồ sơ quản lý sinh viên và thông báo cho gia đình?",
+      "normalized_query_system": "Sinh viên bị kỷ luật mức nào sẽ bị lưu hồ sơ và thông báo cho gia đình biết?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 4,
+        "retrieved_k": 5,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "don-gia-han-hoc-phi-3.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 366
+          },
+          {
+            "rank": 2,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 350
+          },
+          {
+            "rank": 3,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 277
+          },
+          {
+            "rank": 4,
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 287
+          },
+          {
+            "rank": 5,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. Thông tin còn thiếu là các quy định cụ thể về các mức độ kỷ luật sinh viên, hậu quả của từng mức độ kỷ luật (như việc lưu hồ sơ) và khi nào cần thông báo cho gia đình.",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 17 Khoản 2"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": null,
+      "latency_seconds": 5.69,
+      "error": null
+    },
+    {
+      "id": "Q05",
+      "category": "phân loại rèn luyện",
+      "raw_query": "điểm rèn luyện của tui có 62 điểm thôi, vậy xếp loại gì và có bị coi là không đạt không ad?",
+      "normalized_query_expected": "Sinh viên có 62 điểm rèn luyện được xếp loại gì và có đạt không?",
+      "normalized_query_system": "Điểm rèn luyện đạt 62 điểm thuộc về loại nào và có bị coi là không đạt không?",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 1,
+        "preserved": 1,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 4,
+        "retrieved_k": 5,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.5,
+        "matched_rank": 2,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 357
+          },
+          {
+            "rank": 2,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 80
+          },
+          {
+            "rank": 3,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 108
+          },
+          {
+            "rank": 4,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 356
+          },
+          {
+            "rank": 5,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 128
+          }
+        ]
+      },
+      "answer": "Dựa trên ngữ cảnh được cung cấp:\n\n*   Điểm rèn luyện đạt 62 điểm thuộc loại \"Trung bình\" (Điều 10. - 1059-qd-dhag-2020-09-29.pdf).\n*   Sinh viên có kết quả rèn luyện xếp loại từ \"Trung bình\" trở lên là đạt (Điều 10. - 1059-qd-dhag-2020-09-29.pdf). Do đó, 62 điểm rèn luyện (loại Trung bình) được coi là đạt.",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 10 Khoản 1",
+          "Điều 10 Khoản 2"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
+      "predicted_citations": [
+        "dieu 10"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 4.87,
+      "error": null
+    },
+    {
+      "id": "Q06",
+      "category": "đánh giá rèn luyện",
+      "raw_query": "Kết quả rèn luyện được đánh giá định kỳ theo học kỳ hay theo năm học vậy mọi người?",
+      "normalized_query_expected": "Kết quả rèn luyện của sinh viên được đánh giá định kỳ theo học kỳ chính, năm học hay toàn khóa học?",
+      "normalized_query_system": "Điểm trung bình học kỳ được đánh giá định kỳ theo học kỳ hay theo năm học?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 4,
+        "retrieved_k": 5,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 357
+          },
+          {
+            "rank": 2,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 266
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 271
+          },
+          {
+            "rank": 5,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 276
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. Thông tin còn thiếu là quy định về việc đánh giá điểm trung bình học kỳ theo định kỳ học kỳ hay năm học.",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 9 Khoản 1"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": null,
+      "latency_seconds": 8.34,
+      "error": null
+    },
+    {
+      "id": "Q07",
+      "category": "kỷ luật và rèn luyện",
+      "raw_query": "bro ơi đang bị kỷ luật cảnh cáo, kỳ này điểm rèn luyện có bị giới hạn xếp loại không?",
+      "normalized_query_expected": "Sinh viên đang bị kỷ luật mức cảnh cáo có bị giới hạn kết quả rèn luyện khi đánh giá không?",
+      "normalized_query_system": "Điểm rèn luyện trong kỳ này có bị giới hạn xếp loại không?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 4,
+        "retrieved_k": 5,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 357
+          },
+          {
+            "rank": 2,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 128
+          },
+          {
+            "rank": 3,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 129
+          },
+          {
+            "rank": 4,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 99
+          },
+          {
+            "rank": 5,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 130
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. Thông tin còn thiếu là quy định về \"điểm rèn luyện\" và các giới hạn xếp loại của nó. Ngữ cảnh chỉ đề cập đến \"Thang điểm và cách xếp loại kết quả học tập\" cho \"điểm đánh giá môn học\" (ban-mo-ta-ctdt-nganh-cntt-2021.pdf) và \"Khung kỹ năng thực hành xã hội cho sinh viên\" liên quan đến danh hiệu \"Sinh viên 5 Tốt\" (118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf).",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 11 Khoản 2"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 10.17,
+      "error": null
+    },
+    {
+      "id": "Q08",
+      "category": "ngoài phạm vi",
+      "raw_query": "Điểm cộng ngoại khóa hoạt động Đoàn - Hội được quy đổi thế nào?",
+      "normalized_query_expected": "Điểm cộng ngoại khóa hoạt động Đoàn - Hội được quy đổi như thế nào?",
+      "normalized_query_system": "Điểm cộng ngoại khóa hoạt động Đoàn - Hội được quy đổi thành điểm trung bình học kỳ như thế nào?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 4,
+        "retrieved_k": 5,
+        "hit_at_3": null,
+        "hit_at_5": null,
+        "hit_at_k": null,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 357
+          },
+          {
+            "rank": 2,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 276
+          },
+          {
+            "rank": 3,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 271
+          },
+          {
+            "rank": 4,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 92
+          },
+          {
+            "rank": 5,
+            "source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 367
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. Thông tin còn thiếu là quy định về việc quy đổi điểm cộng hoạt động ngoại khóa (bao gồm hoạt động Đoàn - Hội) thành điểm trung bình học kỳ.\n\nNgữ cảnh có đề cập đến các hoạt động ngoại khóa và mức điểm hoặc lợi ích tương ứng (ví dụ: \"Tham gia các chương trình tọa đàm, báo cáo chuyên đề, hội thảo khoa học,.. (2 điểm/hoạt động)\", \"Tham gia hội nghị học tốt hoặc rèn luyện nghiệp vụ chuyên ngành (cộng 02 học kỳ)\", \"Tham gia các kỳ thi, cuộc thi học thuật (2 điểm/cuộc thi)\") (Điều 16. — 1059-qd-dhag-2020-09-29.pdf), nhưng không nêu rõ cách thức quy đổi các điểm này vào điểm trung bình học kỳ.",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [
+        "dieu 16"
+      ],
+      "refusal_expected": true,
+      "refusal_correct": false,
+      "hallucinated_on_unanswerable": true,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 15.02,
+      "error": null
     }
   ]
 }

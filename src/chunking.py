@@ -5,6 +5,12 @@ Hai chiến lược, tự chọn theo cấu trúc văn bản:
   OCR mất dấu "Dieu N.") → mỗi Điều một chunk, bảo toàn phân cấp Điều/Khoản.
 - fallback_chunking: văn bản hành chính (thông báo, kế hoạch, công văn, đơn, bản mô
   tả CTĐT) không có "Điều" → cắt theo câu/đoạn văn rồi gộp tới ngưỡng ký tự.
+
+Sliding-window overlap (overlap_chars):
+  Khi một Điều/đoạn phải cắt thành nhiều phần, phần sau sẽ lặp lại một đoạn cuối
+  của phần trước (tối đa overlap_chars ký tự, cắt ở ranh giới câu). Điều này giúp
+  thông tin nằm ở biên giữa hai chunk không bị "tách đôi" — embedding của mỗi chunk
+  mang đủ ngữ cảnh để cosine similarity với câu hỏi vẫn đủ cao, tránh miss Hit@K.
 """
 
 import re
@@ -33,12 +39,15 @@ def canonical_article(raw_heading: str) -> str:
 class DocumentChunker:
     """Cắt văn bản thành chunk; mọi chunk đều mang tiền tố [Tên văn bản] để giữ ngữ cảnh."""
 
-    def __init__(self, max_chars: int = 1000, min_chars: int = 20):
-        # max_chars ~ 512 token bge-m3: corpus tiếng Việt đo được 2.0-3.5 ký tự/token
-        # (văn bản viết hoa nhiều cho tỷ lệ thấp nhất) nên lấy mốc bảo thủ 2.0.
+    def __init__(self, max_chars: int = 1200, min_chars: int = 20, overlap_chars: int = 150):
+        # max_chars ~ 600 token bge-m3 (tăng từ 1000→1200 để mỗi Điều có thêm chỗ
+        # trước khi phải cắt; tiếng Việt ~2.0 ký tự/token nên 1200 ≈ 600 token).
         # min_chars để loại chunk vụn (số trang, "Nơi nhận:", chữ ký).
+        # overlap_chars: số ký tự lặp lại ở đầu chunk kế tiếp khi cắt dài —
+        #   cắt ở ranh giới câu gần nhất để không tách giữa câu.
         self.max_chars = max_chars
         self.min_chars = min_chars
+        self.overlap_chars = max(0, min(overlap_chars, max_chars // 3))
 
     def chunk_document(self, doc: dict) -> list[dict]:
         """doc = {"title", "content", "tier"} → [{"text", "tier", "source"}, ...]."""
@@ -71,7 +80,8 @@ class DocumentChunker:
 
             # Điều quá dài (thường do nuốt cả Phụ lục/bảng biểu phía sau) phải cắt nhỏ,
             # nếu không embedding của nó là trung bình mờ của hàng nghìn dòng và không
-            # thể truy xuất chính xác.
+            # thể truy xuất chính xác. Overlap đảm bảo Khoản cuối của một phần vẫn xuất
+            # hiện ở đầu phần kế để không mất tín hiệu điều khoản tại biên cắt.
             pieces = self._pack_text(article_content)
             for part, piece in enumerate(pieces, start=1):
                 chunks.append(f"[{doc_title}] - [{article_title}] (phần {part}/{len(pieces)}) \n {piece}")
@@ -82,24 +92,46 @@ class DocumentChunker:
         """Chia văn bản không có 'Điều' theo đoạn văn, gộp đến max_chars."""
         return [f"[{doc_title}]\n{piece}" for piece in self._pack_text(text)]
 
-    def _pack_text(self, text: str) -> list[str]:
-        """Cắt văn bản tự do thành các khúc ≤ max_chars.
+    def _overlap_prefix(self, prev_chunk: str) -> str:
+        """Trích đoạn cuối của prev_chunk (≤ overlap_chars) làm tiền tố overlap.
 
-        PDF trích xuất ra thường không có dòng trống (mỗi dòng một '\n'), nên đoạn văn
+        Cắt ở ranh giới câu (dấu chấm/hỏi/cảm) để không nhúng câu dở dang.
+        Nếu không tìm được ranh giới câu nào trong vùng overlap, lấy nguyên đoạn.
+        """
+        if not self.overlap_chars or not prev_chunk:
+            return ""
+        tail = prev_chunk[-self.overlap_chars:]
+        # Tìm ranh giới câu sớm nhất trong đoạn tail để bắt đầu từ câu hoàn chỉnh
+        match = SENTENCE_RE.search(tail)
+        if match:
+            tail = tail[match.start():].lstrip()
+        return tail
+
+    def _pack_text(self, text: str) -> list[str]:
+        """Cắt văn bản tự do thành các khúc ≤ max_chars với sliding-window overlap.
+
+        PDF trích xuất ra thường không có dòng trống (mỗi dòng một '\\n'), nên đoạn văn
         dài được cắt tiếp ở ranh giới câu — việc này đồng thời nối lại các dòng bị
         xuống dòng cứng giữa câu.
+
+        Overlap: khi một đoạn phải sang chunk mới, chunk mới bắt đầu bằng đoạn cuối
+        của chunk trước (≤ overlap_chars ký tự, cắt ở ranh giới câu). Giúp tín hiệu
+        liên quan đến điều khoản nằm ở biên được "nhân đôi" trong không gian vector.
         """
         paragraphs = [p.strip() for p in PARAGRAPH_RE.split(text) if p.strip()]
         blocks = [block for p in paragraphs for block in self._split_oversized(p)]
 
-        chunks = []
+        chunks: list[str] = []
         buffer = ""
         for block in blocks:
-            if buffer and len(buffer) + len(block) + 2 > self.max_chars:
+            candidate = f"{buffer}\n\n{block}" if buffer else block
+            if buffer and len(candidate) > self.max_chars:
                 chunks.append(buffer)
-                buffer = block
+                # Bắt đầu buffer mới từ overlap của chunk cũ + block hiện tại
+                prefix = self._overlap_prefix(buffer)
+                buffer = f"{prefix}\n\n{block}".lstrip() if prefix else block
             else:
-                buffer = f"{buffer}\n\n{block}" if buffer else block
+                buffer = candidate
         if buffer:
             chunks.append(buffer)
 
@@ -122,11 +154,15 @@ class DocumentChunker:
         pieces = []
         buffer = ""
         for sentence in sentences:
-            if buffer and len(buffer) + len(sentence) + 1 > self.max_chars:
+            candidate = f"{buffer} {sentence}" if buffer else sentence
+            if buffer and len(candidate) > self.max_chars:
                 pieces.append(buffer)
-                buffer = sentence
+                # Overlap ở cấp câu: bắt đầu chunk mới từ câu cuối của chunk trước
+                prefix = self._overlap_prefix(buffer)
+                buffer = f"{prefix} {sentence}".lstrip() if prefix else sentence
             else:
-                buffer = f"{buffer} {sentence}" if buffer else sentence
+                buffer = candidate
         if buffer:
             pieces.append(buffer)
         return pieces
+

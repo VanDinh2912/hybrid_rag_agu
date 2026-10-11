@@ -24,10 +24,11 @@ truy xuất bằng một câu hỏi bịa chủ đề khác.
 
 import os
 import re
-import unicodedata
 from typing import Optional
 
 import ollama
+
+from src.text_utils import fold
 
 
 class LocalSLMError(RuntimeError):
@@ -167,8 +168,7 @@ def is_acceptable(normalized: str) -> Optional[str]:
 
 # --- Guardrail chống lệch nghĩa (drift) -------------------------------------
 # Đối chiếu trên văn bản đã fold (bỏ dấu thanh) để không đánh lừa do khác dấu;
-# "Đ"/U+0110 là chữ cái độc lập, NFD không tách được nên phải replace thủ công
-# (bẫy đã gặp khi xây fold() trong src/evaluation.py).
+# fold() dùng chung từ src/text_utils.py — xem docstring tại đó về bẫy "Đ"/U+0110.
 
 # Tỉ lệ token (đã fold) của câu chuẩn hóa phải bắt nguồn từ câu hỏi gốc.
 # Thực nghiệm trên 4 cặp few-shot: hợp lệ ≥ 0.4; ca drift quan sát được = 0.14.
@@ -176,17 +176,6 @@ MIN_TOKEN_OVERLAP = 0.3
 
 _NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)?")
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
-
-
-def _fold(text: str) -> str:
-    """Thường hóa văn bản: chữ thường, bỏ dấu thanh, đ→d, gọn khoảng trắng.
-
-    Bản sao nội bộ của fold() trong src/evaluation.py — không import qua lại
-    để tránh circular import (evaluation.py đã import module này).
-    """
-    decomposed = unicodedata.normalize("NFD", str(text).lower())
-    stripped = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
-    return re.sub(r"\s+", " ", stripped.replace("đ", "d")).strip()
 
 
 def _extract_numbers(folded_text: str) -> set[str]:
@@ -205,8 +194,8 @@ def guardrail_violation(
     2. Tỉ lệ token: phần từ từ của câu chuẩn hóa phải trùng câu gốc; quá thấp
        nghĩa là model đã đặt lại thành câu hỏi khác chủ đề.
     """
-    raw_folded = _fold(raw_query)
-    norm_folded = _fold(normalized_query)
+    raw_folded = fold(raw_query)
+    norm_folded = fold(normalized_query)
 
     raw_numbers = _extract_numbers(raw_folded)
     norm_numbers = _extract_numbers(norm_folded)

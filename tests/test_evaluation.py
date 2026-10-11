@@ -41,6 +41,26 @@ class TestExtractCitations:
     def test_no_citation(self):
         assert extract_citations("Không có trích dẫn nào ở đây") == set()
 
+    def test_abbreviated_article(self):
+        assert extract_citations("theo Đ.14 thì sinh viên...") == {"dieu 14"}
+
+    def test_article_range(self):
+        assert extract_citations("các Điều 10-12 đều quy định...") == {"dieu 10", "dieu 11", "dieu 12"}
+
+    def test_reversed_clause_article_order(self):
+        assert extract_citations("Khoản 1 Điều 10 quy định rõ...") == {"dieu 10 khoan 1"}
+
+    def test_clause_list_sharing_article(self):
+        assert extract_citations("Điều 10 Khoản 1, Khoản 2") == {"dieu 10 khoan 1", "dieu 10 khoan 2"}
+
+    def test_clause_numeric_list(self):
+        assert extract_citations("Điều 10 Khoản 1, 2") == {"dieu 10 khoan 1", "dieu 10 khoan 2"}
+
+    def test_trailing_period_with_source_suffix(self):
+        # định dạng thật Gemini hay dùng: "(Điều 10. - <tên file>.pdf)" — dấu chấm
+        # áp sát số và tên file chứa số phía sau phải không sinh trích dẫn rác.
+        assert extract_citations("(Điều 10. - 1059-qd-dhag-2020-09-29.pdf)") == {"dieu 10"}
+
 
 class TestCitationScores:
     def test_perfect_match(self):
@@ -59,6 +79,24 @@ class TestCitationScores:
         assert scores["recall"] == 0.5
         assert scores["f1"] == 0.5
         assert scores["exact_match"] == 0.0
+
+    def test_article_only_match_gets_partial_credit(self):
+        # ca Q05 thực tế: hệ thống trích "Điều 10", ground truth là Khoản 1 + Khoản 2
+        scores = citation_scores({"dieu 10 khoan 1", "dieu 10 khoan 2"}, {"dieu 10"})
+        assert scores["precision"] == 0.5
+        assert scores["recall"] == 0.25
+        assert scores["exact_match"] == 0.0
+
+    def test_exact_match_prioritized_over_partial(self):
+        scores = citation_scores({"dieu 10 khoan 1"}, {"dieu 10", "dieu 10 khoan 1"})
+        assert scores["precision"] == 0.5  # 1.0 điểm khớp đúng / 2 trích dẫn dự đoán
+        assert scores["recall"] == 1.0
+
+    def test_clause_given_but_expected_article_only(self):
+        # chiều ngược lại: dự đoán nêu rõ khoản, ground truth chỉ ghi điều
+        scores = citation_scores({"dieu 10"}, {"dieu 10 khoan 2"})
+        assert scores["precision"] == 0.5
+        assert scores["recall"] == 0.5
 
 
 class TestNormalizationPreservation:

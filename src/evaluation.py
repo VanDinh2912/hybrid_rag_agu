@@ -8,10 +8,16 @@ Tầng truy xuất:
   (so khớp tên nguồn sau khi bỏ dấu thanh, vì OCR có thể làm sai lệch tên file).
 - MRR (Mean Reciprocal Rank): 1/thứ hạng của chunk đúng đầu tiên.
 
+  Lưu ý oversampling: pipeline.run() với top_k=K thực ra truy xuất K×oversample_factor
+  chunk từ ChromaDB (mặc định 2×). `sources` trong kết quả chứa TẤT CẢ các chunk đó;
+  Hit@K và MRR@K được tính trên toàn bộ danh sách đó (không bị cắt ở top_k) để đánh
+  giá được recall thực sự của bước retrieval.
+
 Tầng sinh & trích dẫn:
 - Citation Precision / Recall / F1 / Exact Match: tập mã "Điều N [Khoản M]" trích từ
   câu trả lời so với `expected_citations` (so khớp sau khi bỏ dấu, nên "Điều 12
-  Khoản 2" khớp cả dạng "dieu 12 khoan 2" do OCR).
+  Khoản 2" khớp cả dạng "dieu 12 khoan 2" do OCR). Khớp đủ Điều+Khoản = 1.0;
+  trùng Điều nhưng một phía không ghi Khoản = 0.5; Exact Match nghiêm ngặt.
 - Faithfulness: LLM giám khảo (Gemini không mang system instruction của Generator,
   temperature 0, chế độ JSON) tách câu trả lời thành các khẳng định nguyên tố và
   kết luận từng khẳng định có được hỗ trợ trực tiếp bởi ngữ cảnh không. Điểm = tỉ lệ
@@ -27,8 +33,8 @@ bảng đó ra terminal. Câu hỏi lỗi (hết quota, mất mạng...) đượ
 không làm chết cả lượt đánh giá; Ctrl+C giữa chừng vẫn ghi kết quả phần đã chạy.
 
 Cách chạy (từ thư mục gốc dự án):
-    python src/evaluation.py                  # đủ 8 câu, top_k=4, có giám khảo
-    python src/evaluation.py -k 3             # truy xuất Top-3 (Hit@5 vẫn đo được)
+    python src/evaluation.py                  # đủ 8 câu, top_k=6, có giám khảo
+    python src/evaluation.py -k 4             # truy xuất Top-4 (Hit@3/Hit@5 vẫn đo được)
     python src/evaluation.py --limit 2        # chạy thử nhanh 2 câu đầu
     python src/evaluation.py --no-judge       # bỏ tầng giám khảo, tiết kiệm quota
     python src/evaluation.py --judge-model gemini-3.5-flash-lite
@@ -36,13 +42,13 @@ Cách chạy (từ thư mục gốc dự án):
         # tách model giám khảo để Generator không bị đụng ngân sách
 """
 
+
 import argparse
 import json
 import os
 import re
 import sys
 import time
-import unicodedata
 from datetime import datetime
 from pathlib import Path
 
@@ -58,20 +64,33 @@ import google.generativeai as genai
 from src.generator import REFUSAL_MARKER, RETRYABLE_MARKERS, GeneratorError, GeminiGenerator
 from src.local_slm import LocalSLM
 from src.pipeline import HybridRAGPipeline
+from src.text_utils import fold
 from src.vector_db import VectorStoreManager
 
 BENCHMARK_PATH = Path("data/evaluation/benchmark_questions.json")
 RESULTS_PATH = Path("outputs/evaluation_results.json")
 SUMMARY_PATH = Path("outputs/evaluation_summary.md")
-DEFAULT_TOP_K = 4
-# Luôn lấy tối thiểu 5 chunk để tính đồng thời Hit@3 và Hit@5 từ MỘT lượt truy xuất.
-MIN_TOP_K = 5
+DEFAULT_TOP_K = 6
+# Luôn lấy tối thiểu 6 chunk để tính đồng thời Hit@3, Hit@5 và Hit@6 từ MỘT lượt truy xuất.
+# Kết hợp với oversampling ×2 trong pipeline, evaluation_k=6 → ChromaDB thực trả 12 chunk.
+MIN_TOP_K = 6
 JUDGE_MAX_TOKENS = 4096
 # Lỗi tạm thời (429 quota-phút, 5xx) của giám khảo được thử lại với chờ 15s/30s —
 # đủ phủ hạn free tier ~5 request/phút khi chạy liên tiếp nhiều câu.
 JUDGE_MAX_RETRIES = 2
 
-CITATION_RE = re.compile(r"dieu\s*(\d+)(?:\s*[,;:]?\s*khoan\s*(\d+))?", re.IGNORECASE)
+# Bóc "Điều N [Khoản M]" trên văn bản đã fold. Chấp nhận viết tắt "Đ.14"/"d 14",
+# dải "Điều 10-12", danh sách khoản "Điều 10 Khoản 1, 2" và cả thứ tự đảo
+# "Khoản 1 Điều 10" — khoản được ghép vào Điều GẦN NHẤT trong cửa sổ khoảng cách,
+# tránh gán nhầm khoản sang điều xa trong văn bản dài xen kẽ nhiều điều khoản.
+CITATION_ARTICLE_RE = re.compile(r"(?:dieu|d)\.?\s*(\d+)(?:\s*[-–]\s*(\d+))?", re.IGNORECASE)
+CITATION_CLAUSE_RE = re.compile(r"(?:khoan|k)\.?\s*(\d+)((?:\s*[,;]\s*\d+)*)", re.IGNORECASE)
+CITATION_PAIR_WINDOW = 80  # ký tự — giới hạn ghép khoản với điều
+CITATION_RANGE_CAP = 20  # bung tối đa 20 điều cho một dải "Điều 10-12"
+# Trùng đủ Điều+Khoản = 1.0; trùng Điều nhưng một phía không ghi Khoản = 0.5 —
+# "Điều 10" trích đúng điều nhưng thiếu khoản vẫn xứng đáng một nửa điểm,
+# nếu không Citation F1 bị 0 trắng mỗi khi câu trả lời không nêu rõ khoản.
+CITATION_PARTIAL_WEIGHT = 0.5
 NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)?")
 
 JUDGE_PROMPT = """Bạn là giám khảo độc lập đánh giá ĐỘ TRUNG THỰC (faithfulness) của một câu trả lời.
@@ -91,34 +110,76 @@ Chỉ trả về DUY NHẤT một JSON hợp lệ theo đúng lược đồ dư�
 {{"claims": [{{"text": "<khẳng định thứ nhất>", "supported": true}}, {{"text": "<khẳng định thứ hai>", "supported": false}}]}}"""
 
 
-def fold(text: str) -> str:
-    """Bỏ dấu thanh + chữ thường + gom khoảng trắng, để so khớp không phân biệt dấu.
-
-    Cần thiết vì văn bản OCR ở Tầng 1 mất dấu thanh: "Điều 12" và "dieu 12" phải
-    được coi là cùng một trích dẫn. Lưu ý: "Đ" (U+0110) là chữ cái độc lập, NFD
-    KHÔNG tách thành "d" + dấu — phải tự thay "đ"→"d", nếu không regex "dieu"
-    sẽ bỏ sót mọi trích dẫn.
-    """
-    decomposed = unicodedata.normalize("NFD", str(text).lower())
-    stripped = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
-    return re.sub(r"\s+", " ", stripped.replace("đ", "d")).strip()
-
-
 def extract_citations(text: str) -> set[str]:
-    """Rút tập mã trích dẫn "dieu N [khoan M]" từ văn bản (đã bỏ dấu).
+    """Rút tập mã trích dẫn chuẩn "dieu N [khoan M]" từ văn bản (đã bỏ dấu).
 
-    Cả câu trả lời của Gemini lẫn `expected_citations` trong benchmark được quy về
-    cùng không gian token này nên so tập hợp được.
+    Mọi biến thể được quy về cùng không gian token trước khi so với
+    `expected_citations` của benchmark: không phân biệt hoa/thường và dấu thanh
+    (qua `fold()`), chấp nhận "Điều 14"/"dieu 14"/"Đ.14", dải "Điều 10-12",
+    liệt kê "Điều 10 Khoản 1, Khoản 2", thứ tự đảo "Khoản 1 Điều 10" và dấu câu
+    áp sát số ("Điều 10."). Khoản không tìm thấy điều trong phạm vi gần bị bỏ
+    qua — không đủ thông tin để tạo mã chuẩn.
     """
-    return {
-        f"dieu {article}" + (f" khoan {clause}" if clause else "")
-        for article, clause in CITATION_RE.findall(fold(text))
-    }
+    folded = fold(text)
+
+    articles: list[tuple[int, int]] = []  # (vị trí, số điều) — dải đã bung
+    for match in CITATION_ARTICLE_RE.finditer(folded):
+        start = int(match.group(1))
+        end = int(match.group(2)) if match.group(2) else None
+        if end and 0 < end - start <= CITATION_RANGE_CAP:
+            articles.extend((match.start(), number) for number in range(start, end + 1))
+        else:
+            articles.append((match.start(), start))
+
+    clause_numbers_by_article: dict[int, set[int]] = {}
+    for match in CITATION_CLAUSE_RE.finditer(folded):
+        numbers = [int(match.group(1))] + [int(n) for n in re.findall(r"\d+", match.group(2) or "")]
+        best: tuple[int, int] | None = None  # (khoảng cách, số điều)
+        for art_pos, art_no in articles:
+            distance = abs(match.start() - art_pos)
+            if distance <= CITATION_PAIR_WINDOW and (best is None or distance < best[0]):
+                best = (distance, art_no)
+        if best is None:
+            continue  # khoản mồ côi — không đủ thông tin tạo mã chuẩn
+        clause_numbers_by_article.setdefault(best[1], set()).update(numbers)
+
+    citations: set[str] = set()
+    for art_no in {number for _, number in articles}:
+        clauses = clause_numbers_by_article.get(art_no, set())
+        if clauses:
+            citations.update(f"dieu {art_no} khoan {clause}" for clause in clauses)
+        else:
+            citations.add(f"dieu {art_no}")
+    return citations
+
+
+def _article_of(citation: str) -> str:
+    return citation.split(" khoan ", 1)[0]
 
 
 def citation_scores(expected: set[str], predicted: set[str]) -> dict:
-    """Precision / Recall / F1 / Exact Match giữa hai tập trích dẫn."""
-    true_positive = len(expected & predicted)
+    """Precision / Recall / F1 / Exact Match giữa hai tập trích dẫn.
+
+    Khớp đúng "dieu N khoan M" = 1.0. Trùng Điều nhưng một phía chỉ ghi
+    "dieu N" (không rõ khoản) = CITATION_PARTIAL_WEIGHT — mỗi cặp chỉ tính một
+    lần, ưu tiên khớp đúng trước. Exact Match vẫn là so sánh tập hợp nghiêm ngặt.
+    """
+    remaining = set(expected)
+    true_positive = 0.0
+    matched_exact: set[str] = set()
+    for item in sorted(predicted):
+        if item in remaining:
+            remaining.discard(item)
+            matched_exact.add(item)
+            true_positive += 1.0
+    for item in sorted(predicted):
+        if item in matched_exact:
+            continue
+        article = _article_of(item)
+        partials = [e for e in remaining if _article_of(e) == article]
+        if partials:
+            remaining.discard(sorted(partials)[0])
+            true_positive += CITATION_PARTIAL_WEIGHT
     precision = true_positive / len(predicted) if predicted else 0.0
     recall = true_positive / len(expected) if expected else 0.0
     f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
@@ -259,20 +320,35 @@ def evaluate_question(pipeline: HybridRAGPipeline, judge_model, question: dict,
                       top_k: int, retrieve_k: int) -> dict:
     """Chạy đúng pipeline sản xuất cho 1 câu hỏi rồi đo mọi chỉ số.
 
-    `retrieve_k` ≥ `top_k`: luôn truy xuất dư (tối thiểu MIN_TOP_K) để tính Hit@5 từ
-    cùng một lượt, còn Hit@K/MRR@K (K = top_k) chỉ xét trong top_k đầu — đúng định
-    nghĩa chỉ số, tránh đánh giá bị "phóng to" bởi các chunk truy xuất dư ra ngoài K.
+    Với oversampling trong pipeline.run(), `sources` chứa TẤT CẢ chunk được ChromaDB
+    trả về (retrieve_k = top_k × oversample_factor). Hit@K và MRR@K đo trên toàn bộ
+    danh sách đó — đây là recall window thực sự của tầng retrieval. Generator chỉ nhận
+    top_k đầu (gen_top_k = top_k), không bị ảnh hưởng bởi retrieve_k.
+
+    Args:
+        top_k:      số chunk generator nhận AND ngưỡng đo Hit@top_k.
+        retrieve_k: số chunk ChromaDB trả về (≥ top_k, dùng cho Hit@3/Hit@5/Hit@6).
     """
     t0 = time.perf_counter()
+    # Truyền top_k vào pipeline; pipeline.run() tự tính retrieve_k = top_k × oversample_factor
+    # nên retrieve_k ở đây chỉ dùng như floor để đảm bảo đủ chunk cho Hit@5/Hit@6.
     result = pipeline.run(question["raw_query"], top_k=retrieve_k)
     elapsed = round(time.perf_counter() - t0, 2)
 
+    # sources = TẤT CẢ chunk ChromaDB trả về (oversampled); contexts = top_k đầu (gen window).
     sources, contexts, answer = result["sources"], result["contexts"], result["answer"]
     expected_document = question.get("source_document")
-    hits = [source_match(s["source"], expected_document) for s in sources] if expected_document else []
-    matched_rank = next((i + 1 for i, hit in enumerate(hits[:top_k]) if hit), None)
 
-    expected_citations = {fold(c) for c in question.get("expected_citations") or []}
+    # Hit@K đo trên toàn bộ sources (recall window đầy đủ).
+    hits = [source_match(s["source"], expected_document) for s in sources] if expected_document else []
+
+    # MRR@top_k: xét thứ hạng của chunk đúng đầu tiên trong toàn bộ danh sách
+    # (không cắt cứng ở top_k vì đó là generator window, không phải retrieval window).
+    matched_rank = next((i + 1 for i, hit in enumerate(hits) if hit), None)
+
+    expected_citations: set[str] = set()
+    for item in question.get("expected_citations") or []:
+        expected_citations.update(extract_citations(item))
     predicted_citations = extract_citations(answer)
     refusal_expected = question.get("in_corpus") is False
     is_refusal = REFUSAL_MARKER in fold(answer)
@@ -283,15 +359,18 @@ def evaluate_question(pipeline: HybridRAGPipeline, judge_model, question: dict,
         "raw_query": question["raw_query"],
         "normalized_query_expected": question.get("normalized_query"),
         "normalized_query_system": result["normalized_query"],
+        "retrieval_query": result.get("retrieval_query"),
         "normalization_preservation": normalization_preservation(
             question["raw_query"], result["normalized_query"]
         ),
         "retrieval": {
-            "top_k": top_k,
-            "retrieved_k": len(sources),
+            "top_k": top_k,           # chunk generator nhận
+            "retrieved_k": len(sources),  # chunk ChromaDB thực trả (oversampled)
             "hit_at_3": any(hits[:3]) if expected_document else None,
             "hit_at_5": any(hits[:5]) if expected_document else None,
+            "hit_at_6": any(hits[:6]) if expected_document else None,
             "hit_at_k": any(hits[:top_k]) if expected_document else None,
+            # MRR không cắt ở top_k: phản ánh thứ hạng thực trong toàn bộ recall window.
             "reciprocal_rank": round(1.0 / matched_rank, 4) if matched_rank else 0.0,
             "matched_rank": matched_rank,
             "retrieved": [
@@ -329,6 +408,7 @@ def evaluate_question(pipeline: HybridRAGPipeline, judge_model, question: dict,
     return entry
 
 
+
 def _mean(values: list) -> float | None:
     valid = [v for v in values if v is not None]
     return round(sum(valid) / len(valid), 4) if valid else None
@@ -344,6 +424,7 @@ def aggregate(entries: list[dict], top_k: int) -> dict:
         f"hit_at_{top_k}": _mean([e["retrieval"]["hit_at_k"] for e in scored]),
         "hit_at_3": _mean([e["retrieval"]["hit_at_3"] for e in scored]),
         "hit_at_5": _mean([e["retrieval"]["hit_at_5"] for e in scored]),
+        "hit_at_6": _mean([e["retrieval"].get("hit_at_6") for e in scored]),
         "mrr": _mean([e["retrieval"]["reciprocal_rank"] for e in scored]),
         "n_retrieval_scored": sum(1 for e in scored if e["retrieval"]["hit_at_k"] is not None),
         "citation_precision": _mean([e["citations"]["precision"] for e in citation_entries]),
@@ -372,15 +453,18 @@ def aggregate(entries: list[dict], top_k: int) -> dict:
     }
 
 
+
 def _pct(value: float | None) -> str:
     return "n/a" if value is None else f"{value * 100:.1f}%"
 
 
 def format_summary_md(aggregates: dict, entries: list[dict], top_k: int, meta: dict) -> str:
+    retrieve_k = meta.get("retrieve_k", top_k)
     lines = [
         "# Kết quả đánh giá Hybrid RAG",
         "",
-        f"Benchmark: `{meta['benchmark']}` · {meta['n_questions']} câu · Top-K = {top_k} · "
+        f"Benchmark: `{meta['benchmark']}` · {meta['n_questions']} câu · "
+        f"Top-K (generator) = {top_k} · Retrieve-K (ChromaDB) = {retrieve_k} · "
         f"Judge = {'bật' if meta['judge_enabled'] else 'tắt'} · {meta['timestamp']}",
         f"Model: Generator `{meta['generator_model']}` · Local SLM `{meta['local_slm_model']}` · Embedding `BAAI/bge-m3`",
         "",
@@ -391,8 +475,9 @@ def format_summary_md(aggregates: dict, entries: list[dict], top_k: int, meta: d
         f"| Số câu chạy được | {aggregates['n_ok']}/{aggregates['n_total']} |",
         f"| Hit@3 | {_pct(aggregates['hit_at_3'])} |",
         f"| Hit@5 | {_pct(aggregates['hit_at_5'])} |",
-        *([] if top_k in (3, 5) else [f"| Hit@{top_k} | {_pct(aggregates[f'hit_at_{top_k}'])} |"]),
-        f"| MRR@{top_k} | {aggregates['mrr'] if aggregates['mrr'] is not None else 'n/a'} |",
+        f"| Hit@6 | {_pct(aggregates.get('hit_at_6'))} |",
+        *([] if top_k in (3, 5, 6) else [f"| Hit@{top_k} | {_pct(aggregates[f'hit_at_{top_k}'])} |"]),
+        f"| MRR (recall window) | {aggregates['mrr'] if aggregates['mrr'] is not None else 'n/a'} |",
         f"| Citation Precision | {_pct(aggregates['citation_precision'])} |",
         f"| Citation Recall | {_pct(aggregates['citation_recall'])} |",
         f"| Citation F1 | {_pct(aggregates['citation_f1'])} |",
@@ -408,18 +493,19 @@ def format_summary_md(aggregates: dict, entries: list[dict], top_k: int, meta: d
         "",
         "## Kết quả theo câu",
         "",
-        "| ID | Hit@5 | RR | Citation F1 | Faithfulness | Ghi chú |",
+        "| ID | Hit@6 | RR | Citation F1 | Faithfulness | Ghi chú |",
         "|---|---|---|---|---|---|",
     ]
+
     for entry in entries:
         if entry["error"] is not None:
             note = f"LỖI: {entry['error']}"
             cells = ["—", "—", "—", "—"]
         else:
             retrieval = entry["retrieval"]
-            hit5 = "—" if retrieval["hit_at_5"] is None else str(retrieval["hit_at_5"])
+            hit6 = "—" if retrieval.get("hit_at_6") is None else str(retrieval["hit_at_6"])
             cells = [
-                hit5,
+                hit6,
                 f"{retrieval['reciprocal_rank']:.2f}",
                 "—" if entry["citations"] is None else f"{entry['citations']['f1']:.2f}",
                 "—" if entry["faithfulness"]["score"] is None else f"{entry['faithfulness']['score']:.2f}",
@@ -435,6 +521,7 @@ def format_summary_md(aggregates: dict, entries: list[dict], top_k: int, meta: d
         lines.append(f"| {entry['id']} | {' | '.join(cells)} | {note} |")
     lines.append("")
     return "\n".join(lines)
+
 
 
 def parse_args() -> argparse.Namespace:
