@@ -61,7 +61,14 @@ load_dotenv()
 
 import google.generativeai as genai
 
-from src.generator import REFUSAL_MARKER, RETRYABLE_MARKERS, GeneratorError, GeminiGenerator
+from src.generator import (
+    REFUSAL_MARKER,
+    RETRYABLE_MARKERS,
+    GeneratorError,
+    GeminiGenerator,
+    QwenGenerator,
+    _env_flag,
+)
 from src.local_slm import LocalSLM
 from src.pipeline import HybridRAGPipeline
 from src.text_utils import fold
@@ -262,42 +269,52 @@ def _parse_judge_json(raw: str) -> list | None:
 
 def judge_faithfulness(judge_model, contexts: list[str], answer: str) -> tuple[float | None, list[str], str]:
     """Chấm độ trung thực bằng LLM giám khảo. Trả về (điểm, khẳng định không được hỗ trợ, lỗi)."""
-    if REFUSAL_MARKER in fold(answer):
-        return 1.0, [], "refusal"  # từ chối = không khẳng định gì, không có gì để phản bội
+    try:
+        if REFUSAL_MARKER in fold(answer):
+            return 1.0, [], "refusal"  # từ chối = không khẳng định gì, không có gì để phản bội
 
-    context_block = "\n\n".join(f"[Ngữ cảnh {i}] {content}" for i, content in enumerate(contexts, start=1))
-    prompt = JUDGE_PROMPT.format(context_block=context_block, answer=answer)
+        context_block = "\n\n".join(f"[Ngữ cảnh {i}] {content}" for i, content in enumerate(contexts, start=1))
+        prompt = JUDGE_PROMPT.format(context_block=context_block, answer=answer)
 
-    # Lần 1 dùng JSON mode để máy đọc được; lần 2 (nếu model trả văn thừa) parse mềm.
-    for use_json_mode in (True, False):
-        config: dict = {"temperature": 0.0, "max_output_tokens": JUDGE_MAX_TOKENS}
-        if use_json_mode:
-            config["response_mime_type"] = "application/json"
-        raw = None
-        for attempt in range(JUDGE_MAX_RETRIES + 1):
-            try:
-                raw = judge_model.generate_content(prompt, generation_config=config).text
-                break
-            except Exception as exc:
-                message = str(exc).lower()
-                if "perday" in message:  # hết quota ngày — chờ 15s/30s không cứu được
-                    return None, [], "lỗi gọi LLM giám khảo (hết quota ngày của model giám khảo)"
-                transient = any(marker in message for marker in RETRYABLE_MARKERS)
-                if not transient or attempt == JUDGE_MAX_RETRIES:
-                    return None, [], f"lỗi gọi LLM giám khảo ({type(exc).__name__}: {exc})"
-                wait = 15 * (attempt + 1)
-                print(f"[Judge] Lỗi tạm thời ({type(exc).__name__}), thử lại sau {wait}s — lần {attempt + 1}/{JUDGE_MAX_RETRIES}.")
-                time.sleep(wait)
-        claims = _parse_judge_json(raw)
-        if claims is None:
-            continue
-        clean = [c for c in claims if isinstance(c, dict) and isinstance(c.get("text"), str)]
-        if not clean:
-            return None, [], "giám khảo trả về danh sách khẳng định rỗng/lệch lược đồ"
-        unsupported = [c["text"] for c in clean if c.get("supported") is not True]
-        score = round((len(clean) - len(unsupported)) / len(clean), 4)
-        return score, unsupported, ""
-    return None, [], "không phân tích được JSON từ LLM giám khảo sau 2 lần thử"
+        # Lần 1 dùng JSON mode để máy đọc được; lần 2 (nếu model trả văn thừa) parse mềm.
+        for use_json_mode in (True, False):
+            config: dict = {"temperature": 0.0, "max_output_tokens": JUDGE_MAX_TOKENS}
+            if use_json_mode:
+                config["response_mime_type"] = "application/json"
+            raw = None
+            for attempt in range(JUDGE_MAX_RETRIES + 1):
+                try:
+                    raw = judge_model.generate_content(prompt, generation_config=config).text
+                    break
+                except Exception as exc:
+                    message = str(exc).lower()
+                    if "perday" in message or "resource_exhausted" in message or "429" in message or "quota" in message:
+                        return None, [], f"Gemini Judge Quota Exceeded ({type(exc).__name__}) - Bỏ qua chấm điểm Faithfulness"
+                    if "404" in message or "not found" in message:
+                        return None, [], f"Gemini Judge Model Not Found ({type(exc).__name__}) - Bỏ qua chấm điểm Faithfulness"
+                    transient = any(marker in message for marker in RETRYABLE_MARKERS)
+                    if not transient or attempt == JUDGE_MAX_RETRIES:
+                        return None, [], f"lỗi gọi LLM giám khảo ({type(exc).__name__}: {exc})"
+                    wait = 15 * (attempt + 1)
+                    print(f"[Judge] Lỗi tạm thời ({type(exc).__name__}), thử lại sau {wait}s — lần {attempt + 1}/{JUDGE_MAX_RETRIES}.")
+                    time.sleep(wait)
+            claims = _parse_judge_json(raw)
+            if claims is None:
+                continue
+            clean = [c for c in claims if isinstance(c, dict) and isinstance(c.get("text"), str)]
+            if not clean:
+                return None, [], "giám khảo trả về danh sách khẳng định rỗng/lệch lược đồ"
+            unsupported = [c["text"] for c in clean if c.get("supported") is not True]
+            score = round((len(clean) - len(unsupported)) / len(clean), 4)
+            return score, unsupported, ""
+        return None, [], "không phân tích được JSON từ LLM giám khảo sau 2 lần thử"
+    except Exception as exc:
+        msg = str(exc).lower()
+        if any(marker in msg for marker in ("429", "resource_exhausted", "resourceexhausted", "quota", "perday")):
+            return None, [], f"Gemini Judge Quota Exceeded ({type(exc).__name__}) - Bỏ qua chấm điểm Faithfulness"
+        if "404" in msg or "not found" in msg:
+            return None, [], f"Gemini Judge Model Not Found ({type(exc).__name__}) - Bỏ qua chấm điểm Faithfulness"
+        return None, [], f"lỗi ngoại lệ LLM giám khảo ({type(exc).__name__}: {exc})"
 
 
 def load_benchmark(path: Path) -> list[dict]:
@@ -516,6 +533,8 @@ def format_summary_md(aggregates: dict, entries: list[dict], top_k: int, meta: d
                 note = "từ chối đúng"
             elif entry["citations"] is not None and entry["citations"]["exact_match"] < 1.0:
                 note = f"trích dẫn lệch: {', '.join(entry['predicted_citations']) or '(không có)'}"
+            elif entry.get("faithfulness", {}).get("error"):
+                note = f"{entry['faithfulness']['error']}"
             else:
                 note = ""
         lines.append(f"| {entry['id']} | {' | '.join(cells)} | {note} |")
@@ -535,6 +554,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--judge-model", type=str, default=None,
                         help="model giám khảo Faithfulness (cờ > GEMINI_JUDGE_MODEL > model Generator). "
                              "Dùng model KHÁC để tận dụng ngân sách quota riêng — free tier Gemini giới hạn theo từng model.")
+    parser.add_argument("--use-qwen-generator", action="store_true",
+                        default=_env_flag("USE_QWEN_GENERATOR", False),
+                        help="Dùng Local Qwen (qwen2.5:1.5b-instruct qua Ollama) làm Generator sinh câu trả lời (offline 100%%, không tốn quota Gemini)")
     parser.add_argument("--benchmark", type=Path, default=BENCHMARK_PATH, help="đường dẫn file benchmark")
     parser.add_argument("--output", type=Path, default=RESULTS_PATH, help="nơi ghi kết quả chi tiết JSON")
     return parser.parse_args()
@@ -551,7 +573,8 @@ def main() -> None:
     if args.limit is not None:
         questions = questions[: max(1, args.limit)]
     print(f"--- ĐÁNH GIÁ ĐỊNH LƯỢNG HYBRID RAG ---")
-    print(f"Benchmark: {args.benchmark} ({len(questions)} câu) · Top-K = {top_k} (truy xuất {retrieve_k} để tính Hit@5) · Judge = {'tắt' if args.no_judge else 'bật'}\n")
+    print(f"Benchmark: {args.benchmark} ({len(questions)} câu) · Top-K = {top_k} (truy xuất {retrieve_k} để tính Hit@5) · Judge = {'tắt' if args.no_judge else 'bật'}")
+    print(f"Chế độ Generator: {'Local Qwen (Ollama - Offline)' if args.use_qwen_generator else 'Gemini API'}\n")
 
     print("[1/2] Nối ChromaDB đã persist (không nạp lại corpus)...")
     vector_db = VectorStoreManager().load_vector_store()
@@ -566,28 +589,41 @@ def main() -> None:
     if not ollama_ok:
         print("      Số liệu vẫn chạy được (dùng câu hỏi gốc) nhưng 'normalization_preservation' sẽ mất ý nghĩa.")
 
-    generator = GeminiGenerator()
-    # Tắt Qwen-fallback CHỈ trong lượt đánh giá: nếu Gemini hết quota mà câu trả lời
-    # lại do Qwen tổng hợp thì Hit/Citation/Faithfulness sẽ đo nhầm chất lượng fallback
-    # thay vì chất lượng pipeline Gemini của đề tài. Caching vẫn giữ nguyên để chạy lại
-    # benchmark không tốn thêm quota cho các câu đã trả lời thành công trước đó.
-    generator.qwen_fallback = False
-    print("      Qwen-fallback: TẮT trong lượt đánh giá (số liệu chỉ phản ánh câu trả lời Gemini).")
+    if args.use_qwen_generator:
+        generator = QwenGenerator()
+        print(f"      Generator chính: {generator.model_name} (chạy offline qua Ollama, không tốn quota API).")
+    else:
+        generator = GeminiGenerator()
+        # Tắt Qwen-fallback CHỈ trong lượt đánh giá chế độ Gemini: nếu Gemini hết quota mà câu trả lời
+        # lại do Qwen tổng hợp thì Hit/Citation/Faithfulness sẽ đo nhầm chất lượng fallback
+        # thay vì chất lượng pipeline Gemini của đề tài. Caching vẫn giữ nguyên để chạy lại
+        # benchmark không tốn thêm quota cho các câu đã trả lời thành công trước đó.
+        generator.qwen_fallback = False
+        print("      Generator chính: Gemini API (Qwen-fallback: TẮT trong lượt đánh giá).")
+
     judge_model = None
     judge_name = None
     if not args.no_judge:
-        judge_name = args.judge_model or os.getenv("GEMINI_JUDGE_MODEL") or generator.model_name
-        # genai đã được GeminiGenerator cấu hình; giám khảo KHÔNG mang system instruction
-        # của Generator (nó phải phán xét độc lập, không được "bênh" hệ thống).
-        judge_model = genai.GenerativeModel(model_name=judge_name)
-        if judge_name != generator.model_name:
-            print(f"      Giám khảo Faithfulness: {judge_name} — khác model Generator nên dùng ngân sách quota riêng.")
+        judge_name = args.judge_model or os.getenv("GEMINI_JUDGE_MODEL") or "gemini-3.5-flash-lite"
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if gemini_api_key and gemini_api_key.strip() not in {"your_gemini_api_key_here", "<your_api_key>"}:
+            try:
+                genai.configure(api_key=gemini_api_key)
+                judge_model = genai.GenerativeModel(model_name=judge_name)
+                print(f"      Giám khảo Faithfulness: {judge_name} (Gemini LLM-Judge độc lập).")
+            except Exception as exc:
+                print(f"      [Judge] Cảnh báo: không khởi tạo được Gemini Judge ({exc}) — tự động bỏ qua chấm điểm Faithfulness.")
+                judge_model = None
+        else:
+            print("      [Judge] Cảnh báo: không có GEMINI_API_KEY hợp lệ — bỏ qua giám khảo Faithfulness.")
+            judge_model = None
 
     pipeline = HybridRAGPipeline(local_slm=local_slm, vector_db=vector_db, generator=generator)
 
     entries: list[dict] = []
     interrupted = False
-    print(f"\nChạy {len(questions)} câu (mỗi câu: chuẩn hóa → truy xuất → Gemini → giám khảo)...\n")
+    generator_desc = "Local Qwen" if args.use_qwen_generator else "Gemini"
+    print(f"\nChạy {len(questions)} câu (mỗi câu: chuẩn hóa → truy xuất → {generator_desc} → LLM giám khảo)...\n")
     try:
         for position, question in enumerate(questions, start=1):
             label = question.get("id", f"q{position}")
@@ -597,9 +633,12 @@ def main() -> None:
                 retrieval, faith = entry["retrieval"], entry["faithfulness"]
                 cit_f1 = "—" if entry["citations"] is None else f"{entry['citations']['f1']:.2f}"
                 faith_text = "—" if faith["score"] is None else f"{faith['score']:.2f}"
+                note_judge = ""
+                if faith.get("error"):
+                    note_judge = f" [Judge: {faith['error'][:50]}...]"
                 print(f"[{label}/{len(questions)}] hit@{top_k}={int(bool(retrieval['hit_at_k'])) if retrieval['hit_at_k'] is not None else '—'} "
-                      f"rr={retrieval['reciprocal_rank']:.2f} citF1={cit_f1} faith={faith_text} ({entry['latency_seconds']}s)")
-            except Exception as exc:  # hết quota, mất mạng, lỗi model... — bỏ qua câu này, chạy tiếp
+                      f"rr={retrieval['reciprocal_rank']:.2f} citF1={cit_f1} faith={faith_text} ({entry['latency_seconds']}s){note_judge}")
+            except Exception as exc:  # hết quota Generator, mất mạng, lỗi model... — bỏ qua câu này, chạy tiếp
                 entries.append({
                     "id": label, "category": question.get("category", ""), "raw_query": question["raw_query"],
                     "normalized_query_expected": question.get("normalized_query"), "normalized_query_system": None,
@@ -611,8 +650,8 @@ def main() -> None:
                     "error": f"{type(exc).__name__}: {exc}",
                 })
                 print(f"[{label}/{len(questions)}] LỖI — bỏ qua: {type(exc).__name__}: {exc}")
-                if "perday" in str(exc).lower():
-                    print(f"\n[Quota] Hết quota NGÀY của model — {len(questions) - position} câu còn lại sẽ dính lỗi tương tự, dừng sớm để giữ kết quả đã chạy.")
+                if "perday" in str(exc).lower() and not args.use_qwen_generator:
+                    print(f"\n[Quota] Hết quota NGÀY của Generator — {len(questions) - position} câu còn lại sẽ dính lỗi tương tự, dừng sớm để giữ kết quả đã chạy.")
                     break
     except KeyboardInterrupt:
         interrupted = True

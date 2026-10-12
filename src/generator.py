@@ -558,3 +558,146 @@ class GeminiGenerator:
         if self.use_cache:
             self._cache_put(key, prompt, resolved_temperature, question, answer)
         return answer
+
+
+class QwenGenerator:
+    """Lớp sinh câu trả lời bằng Local SLM (Qwen chạy trên Ollama).
+    
+    Chạy 100% offline, không tốn token Gemini và không bị giới hạn quota API.
+    Có hỗ trợ response caching để tăng tốc đánh giá lặp lại.
+    """
+
+    def __init__(
+        self,
+        ollama_host: Optional[str] = None,
+        ollama_model: Optional[str] = None,
+        timeout: Optional[float] = None,
+        temperature: float = QWEN_FALLBACK_TEMPERATURE,
+        use_cache: Optional[bool] = None,
+    ):
+        self.ollama_host = ollama_host or os.getenv("OLLAMA_HOST") or DEFAULT_OLLAMA_HOST
+        self.ollama_model = ollama_model or os.getenv("OLLAMA_MODEL") or DEFAULT_OLLAMA_MODEL
+        self.timeout = timeout if timeout is not None else _env_float("OLLAMA_TIMEOUT", DEFAULT_OLLAMA_TIMEOUT)
+        self.temperature = temperature
+        self.model_name = f"local-qwen ({self.ollama_model})"
+        self.use_cache = _env_flag("GENERATION_CACHE", True) if use_cache is None else use_cache
+        self.cache_dir = Path(os.getenv("GENERATION_CACHE_DIR") or GENERATION_CACHE_DIR)
+
+    def _build_prompt(self, question: str, docs: list[dict]) -> str:
+        parts: list[str] = []
+        total = 0
+        for i, doc in enumerate(docs, start=1):
+            block = (
+                f"[{i}] {doc['source']} (Tầng {doc['tier']}):\n"
+                f"{doc['content'][:QWEN_MAX_BLOCK_CHARS]}"
+            )
+            if parts and total + len(block) > QWEN_MAX_TOTAL_CHARS:
+                break
+            parts.append(block)
+            total += len(block)
+        context = "\n\n".join(parts)
+        return (
+            "Bạn là trợ lý học vụ Trường Đại học An Giang (AGU). Chỉ được dùng thông tin trong "
+            "NGỮ CẢNH dưới đây, tuyệt đối không dùng kiến thức bên ngoài, không bịa số Điều/Khoản.\n"
+            "Trả lời bằng tiếng Việt, ngắn gọn (dưới 200 từ), mỗi ý nêu căn cứ dạng "
+            "(Điều N, Khoản M — tên văn bản) nếu ngữ cảnh có đánh số.\n"
+            f'Nếu NGỮ CẢNH không đủ căn cứ, trả lời đúng một câu: "{REFUSAL_TEXT}"\n\n'
+            f"NGỮ CẢNH:\n{context}\n\n"
+            f"CÂU HỎI: {question}\n"
+            "TRẢ LỜI:"
+        )
+
+    def _cache_key(self, prompt: str, temperature: float) -> str:
+        payload = json.dumps(
+            {
+                "model": self.ollama_model,
+                "temperature": temperature,
+                "prompt_version": PROMPT_VERSION,
+                "prompt": prompt,
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+        return hashlib.sha1(payload.encode("utf-8")).hexdigest()
+
+    def _cache_get(self, key: str) -> Optional[str]:
+        path = self.cache_dir / f"{key}.json"
+        try:
+            entry = json.loads(path.read_text(encoding="utf-8"))
+            answer = entry["answer"]
+        except (OSError, ValueError, KeyError, TypeError):
+            return None
+        if not isinstance(answer, str) or not answer.strip():
+            return None
+        return answer
+
+    def _cache_put(self, key: str, prompt: str, temperature: float, question: str, answer: str) -> None:
+        entry = {
+            "prompt_sha1": key,
+            "model": self.ollama_model,
+            "temperature": temperature,
+            "query": question,
+            "answer": answer,
+            "created_at": datetime.now().isoformat(timespec="seconds"),
+        }
+        try:
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
+            path = self.cache_dir / f"{key}.json"
+            tmp_path = self.cache_dir / f"{key}.json.tmp"
+            tmp_path.write_text(json.dumps(entry, ensure_ascii=False, indent=2), encoding="utf-8")
+            tmp_path.replace(path)
+        except OSError as exc:
+            print(f"[Cache] Cảnh báo: không ghi được cache ({exc}).")
+
+    def generate_answer(self, query: str, retrieved_docs: list, temperature: Optional[float] = None) -> str:
+        """Sinh câu trả lời trực tiếp qua Ollama Qwen."""
+        if not isinstance(query, str):
+            raise TypeError(f"query phải là str, nhận được {type(query).__name__}.")
+        question = query.strip()
+        if not question:
+            raise ValueError("Câu hỏi rỗng — không có gì để trả lời.")
+
+        try:
+            docs = normalize_docs(retrieved_docs)
+        except TypeError as exc:
+            raise GeneratorError(str(exc)) from exc
+
+        if not docs:
+            print("[QwenGenerator] Cảnh báo: không truy xuất được ngữ cảnh nào — từ chối trả lời.")
+            return REFUSAL_TEXT
+
+        resolved_temp = self.temperature if temperature is None else temperature
+        prompt = self._build_prompt(question, docs)
+
+        if self.use_cache:
+            key = self._cache_key(prompt, resolved_temp)
+            cached = self._cache_get(key)
+            if cached is not None:
+                print(f"[Cache] Trúng cache Qwen ./.generation_cache/{key[:12]}...")
+                return cached
+
+        try:
+            client = ollama.Client(host=self.ollama_host, timeout=self.timeout)
+            response = client.generate(
+                model=self.ollama_model,
+                prompt=prompt,
+                options={
+                    "temperature": resolved_temp,
+                    "num_predict": QWEN_FALLBACK_NUM_PREDICT,
+                    "num_ctx": QWEN_FALLBACK_NUM_CTX,
+                },
+                stream=False,
+            )
+        except Exception as exc:
+            raise GeneratorError(
+                f"Local Qwen ({self.ollama_model} @ {self.ollama_host}) thất bại: {exc}"
+            ) from exc
+
+        text = response.get("response") if isinstance(response, dict) else getattr(response, "response", "")
+        text = (text or "").strip()
+        if not text:
+            raise GeneratorError(f"Local Qwen trả về nội dung rỗng cho câu hỏi: {question}")
+
+        if self.use_cache:
+            self._cache_put(key, prompt, resolved_temp, question, text)
+        return text

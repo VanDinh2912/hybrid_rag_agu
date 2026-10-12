@@ -1,0 +1,107 @@
+[
+  {
+    "id": "Q01",
+    "query": "Môn học Thiết kế và cài đặt mạng có mã môn học là gì, thời lượng mấy tín chỉ và có môn học trước là môn nào?",
+    "ground_truth_answer": "Môn Thiết kế và cài đặt mạng có mã MH là CON915, khối lượng 2 tín chỉ (1 lý thuyết, 1 thực hành thí nghiệm), thuộc học kỳ V và yêu cầu học môn trước là Mạng máy tính (mã CON301).",
+    "ground_truth_citation": "Khung CTĐT ngành CNTT (Khoá tuyển sinh 2021) - Trang 7, Bảng Mục 8, STT 57",
+    "source_document": "Khung CTĐT CNTT"
+  },
+  {
+    "id": "Q02",
+    "query": "Điểm học phần theo thang điểm 10 từ 7,0 đến cận 8,0 và từ 8,0 đến cận 9,0 được quy đổi sang thang điểm 4, điểm chữ và xếp loại như thế nào?",
+    "ground_truth_answer": "- Thang điểm 10 từ 7,0 đến cận 8,0: Thang điểm 4 là 3,0, Điểm chữ là B, Xếp loại Khá.\n- Thang điểm 10 từ 8,0 đến cận 9,0: Thang điểm 4 là 3,5, Điểm chữ là A, Xếp loại Giỏi.",
+    "ground_truth_citation": "Khung CTĐT ngành CNTT (Khoá tuyển sinh 2021) - Trang 4, Mục 6.5 (Bảng quy đổi thang điểm)",
+    "source_document": "Khung CTĐT CNTT"
+  },
+  {
+    "id": "Q03",
+    "query": "Chuẩn đầu ra ELO 9 về năng lực ngoại ngữ của sinh viên ngành Công nghệ thông tin Trường ĐHAG quy định cụ thể ra sao?",
+    "ground_truth_answer": "Sinh viên tốt nghiệp phải đạt kỹ năng ngoại ngữ bậc 3/6 theo khung năng lực ngoại ngữ của Việt Nam (tương đương B1 theo khung tham chiếu Châu Âu), đồng thời có kỹ năng đọc và hiểu các tài liệu chuyên ngành bằng tiếng Anh.",
+    "ground_truth_citation": "Khung CTĐT ngành CNTT (Khoá tuyển sinh 2021) - Trang 3, Bảng Mục 4 (Chuẩn đầu ra ELO)",
+    "source_document": "Khung CTĐT CNTT"
+  },
+  {
+    "id": "Q04",
+    "query": "Tổng khối lượng kiến thức toàn khóa đào tạo cử nhân ngành Công nghệ thông tin là bao nhiêu tín chỉ và cơ cấu từng khối kiến thức ra sao?",
+    "ground_truth_answer": "Tổng khối lượng kiến thức toàn khóa là 140 tín chỉ, phân bố gồm:\n- Khối kiến thức giáo dục đại cương: 40 tín chỉ (28,6%)\n- Khối kiến thức cơ sở ngành: 42 tín chỉ (30,0%)\n- Khối kiến thức chuyên ngành: 43 tín chỉ (30,7%)\n- Thực tập, khóa luận luận văn tốt nghiệp: 15 tín chỉ (10,7%)",
+    "ground_truth_citation": "Khung CTĐT ngành CNTT (Khoá tuyển sinh 2021) - Trang 4, Mục 7 (Khối lượng kiến thức toàn khóa)",
+    "source_document": "Khung CTĐT CNTT"
+  },
+  {
+    "id": "Q05",
+    "query": "Theo Quyết định số 1504/QĐ-ĐHAG, sinh viên có điểm học phần lần thứ nhất dưới bao nhiêu thì không được xét khen thưởng danh hiệu thi đua cả năm học?",
+    "ground_truth_answer": "Nhà trường không xét khen thưởng đối với sinh viên bị kỷ luật hoặc có điểm trung bình học phần (bao gồm điểm đánh giá bộ phận và điểm thi kết thúc học phần) lần thứ nhất dưới 5.5 trong năm học đó (kể cả Học phần điều kiện gồm: Giáo dục Thể chất và Giáo dục Quốc phòng).",
+    "ground_truth_citation": "Quyết định số 1504/QĐ-ĐHAG (Quy chế CTSV) - Trang 13, Chương V, Điều 14, Khoản 2a",
+    "source_document": "Quy chế CTSV ĐHAG"
+  },
+  {
+    "id": "Q06",
+    "query": "Để tập thể lớp sinh viên đạt danh hiệu Lớp sinh viên Tiên tiến, cần thỏa mãn các tiêu chuẩn cụ thể nào?",
+    "ground_truth_answer": "Cần thỏa mãn đầy đủ các tiêu chuẩn:\n- Có từ 25% sinh viên đạt danh hiệu sinh viên khá trở lên;\n- Có cá nhân đạt danh hiệu sinh viên Giỏi trở lên;\n- Không có cá nhân xếp loại học tập Kém hoặc rèn luyện kém, hoặc bị kỷ luật từ mức cảnh cáo trở lên;\n- Tập thể đoàn kết, giúp đỡ lẫn nhau trong học tập, rèn luyện, tổ chức nhiều hoạt động thi đua và tích cực hưởng ứng phong trào thi đua trong Trường.",
+    "ground_truth_citation": "Quyết định số 1504/QĐ-ĐHAG (Quy chế CTSV) - Trang 13, Chương V, Điều 14, Khoản 2.5",
+    "source_document": "Quy chế CTSV ĐHAG"
+  },
+  {
+    "id": "Q07",
+    "query": "Sinh viên tốt nghiệp đại học toàn trường đạt thủ khoa cần đáp ứng tiêu chuẩn điểm số nào để được xét Bằng khen của Giám đốc ĐHQG-HCM?",
+    "ground_truth_answer": "Thủ khoa tốt nghiệp đại học toàn trường phải có điểm trung bình tích lũy toàn khóa đạt từ 8,0 trở lên và kết quả điểm rèn luyện toàn khóa đạt loại Xuất sắc.",
+    "ground_truth_citation": "Quyết định số 1504/QĐ-ĐHAG - Trang 14, Điều 16, Khoản 11 (Khớp QĐ 1133/QĐ-ĐHQG - Điều 5, Khoản 1.0)",
+    "source_document": "Quy chế CTSV ĐHAG / Khen thưởng ĐHQG"
+  },
+  {
+    "id": "Q08",
+    "query": "Sinh viên có hành vi đăng tải, bình luận, chia sẻ bài viết dung tục, xuyên tạc, bôi nhọ danh dự người khác trên mạng Internet bị xử lý kỷ luật như thế nào?",
+    "ground_truth_answer": "Tùy theo mức độ vi phạm, sinh viên bị xử lý từ khiển trách đến buộc thôi học. Nếu tính chất nghiêm trọng, giao cho cơ quan chức năng xử lý theo quy định của pháp luật.",
+    "ground_truth_citation": "Quyết định số 1504/QĐ-ĐHAG - Trang 21, Phụ lục khung kỷ luật sinh viên, STT 15",
+    "source_document": "Quy chế CTSV ĐHAG"
+  },
+  {
+    "id": "Q09",
+    "query": "Sinh viên có hành vi hút thuốc lá trong giờ học, phòng thí nghiệm và nơi cấm hút thuốc bị xử lý kỷ luật ra sao từ lần vi phạm thứ 3 trở lên?",
+    "ground_truth_answer": "Từ lần vi phạm thứ 3 trở lên, sinh viên bị xử lý kỷ luật từ mức khiển trách đến cảnh cáo.",
+    "ground_truth_citation": "Quyết định số 1504/QĐ-ĐHAG - Trang 22, Phụ lục khung kỷ luật sinh viên, STT 24",
+    "source_document": "Quy chế CTSV ĐHAG"
+  },
+  {
+    "id": "Q10",
+    "query": "Sinh viên không tham gia học tập và sinh hoạt trong Tuần Sinh hoạt công dân - sinh viên sẽ bị đánh giá điểm rèn luyện như thế nào?",
+    "ground_truth_answer": "Sinh viên không tham gia học tập và sinh hoạt trong Tuần Sinh hoạt công dân - sinh viên sẽ bị trừ toàn bộ số điểm quy định tại Điều 5 của Quy định đánh giá kết quả rèn luyện (khung điểm tối đa 20 điểm).",
+    "ground_truth_citation": "Quyết định số 1509/QĐ-ĐHAG (Quy chế Đánh giá KQRL) - Trang 3, Điều 5, Khoản 1c",
+    "source_document": "Quy chế Đánh giá KQRL"
+  },
+  {
+    "id": "Q11",
+    "query": "Sinh viên bị xếp loại rèn luyện Yếu trong bao nhiêu học kỳ chính liên tiếp thì bị buộc thôi học? Thang điểm và tiêu chuẩn phân loại kết quả rèn luyện của sinh viên theo các mức Xuất sắc, Tốt, Khá được quy định như thế nào?",
+    "ground_truth_answer": "- Sinh viên bị xếp loại rèn luyện Yếu trong hai học kỳ chính liên tiếp lần thứ nhất thì xem xét kỷ luật ở mức cảnh cáo, nếu tiếp tục bị xếp loại rèn luyện Yếu hai học kỳ chính liên tiếp lần thứ hai sẽ bị xử lý buộc thôi học.\n- Từ 90 đến 100 điểm: Xếp loại Xuất sắc\n- Từ 80 đến dưới 90 điểm: Xếp loại Tốt\n- Từ 65 đến dưới 80 điểm: Xếp loại Khá\n- Từ 50 đến dưới 65 điểm: Trung bình\n- Dưới 50 điểm: Yếu",
+    "ground_truth_citation": "Quyết định số 1509/QĐ-ĐHAG (Quy chế Đánh giá KQRL) - Trang 7, Chương IV, Điều 14, Khoản 5 & Trang 4, Chương II, Điều 10, Khoản 2",
+    "source_document": "Quy chế Đánh giá KQRL"
+  },
+  {
+    "id": "Q12",
+    "query": "Vị trí cổng ra vào Ký túc xá Trường ĐHAG được điều chỉnh cụ thể ra sao theo Thông báo số 16/TB-TDVKTX ngày 16/7/2026?",
+    "ground_truth_answer": "- Cổng cũ (đối diện cổng phụ, Trường THPT Sư Phạm): Sẽ đóng lại, chỉ sử dụng làm cổng phụ phục vụ các trường hợp khẩn cấp.\n- Cổng mới: Nằm trên trục chính đường Võ Thị Sáu (cạnh phòng Gym Minh Khôi), chính thức phục vụ toàn bộ việc lưu thông, ra vào của viên chức, người lao động, sinh viên và khách liên hệ công tác.",
+    "ground_truth_citation": "Thông báo số 16/TB-TTDVKTX (16/07/2026) - Trang 1, Mục 1 (Vị trí cổng)",
+    "source_document": "Thông báo số 16 KTX"
+  },
+  {
+    "id": "Q13",
+    "query": "Theo Thông báo số 722/TB-ĐHAG ngày 22/05/2026, những đối tượng nào không thuộc diện tham gia khảo sát hỗ trợ học phí và nếu không khảo sát thì bị xử lý ra sao?",
+    "ground_truth_answer": "- Đối tượng không tham gia khảo sát: Sinh viên đã được hưởng chính sách miễn, giảm học phí theo quy định hiện hành của Nhà nước.\n- Chế tài: Trường hợp thuộc đối tượng hỗ trợ nhưng không tham gia khảo sát đúng hạn (hạn chót 31/5/2026), Nhà trường sẽ không xem xét giải quyết chế độ hỗ trợ cho học kỳ đó.",
+    "ground_truth_citation": "Thông báo số 722/TB-ĐHAG (22/05/2026) - Trang 1, Mục 1 (Lưu ý) và Mục 2 (Quyền lợi)",
+    "source_document": "Thông báo 722 Hỗ trợ học phí"
+  },
+  {
+    "id": "Q14",
+    "query": "Hồ sơ đề nghị miễn giảm học phí đối với đối tượng 'Sinh viên mồ côi cả cha lẫn mẹ, không nơi nương tựa' gồm những giấy tờ gì?",
+    "ground_truth_answer": "Hồ sơ gồm 4 loại giấy tờ (bản sao có công chứng):\n1. Đơn đề nghị miễn, giảm học phí (theo mẫu);\n2. Bản sao giấy khai sinh;\n3. Quyết định về việc trợ cấp xã hội của Chủ tịch UBND cấp huyện;\n4. Giấy chứng tử của ba, mẹ.",
+    "ground_truth_citation": "Bảng quy định đối tượng & hồ sơ miễn giảm học phí - Trang 1, Mục 13",
+    "source_document": "Quy định Miễn giảm học phí"
+  },
+  {
+    "id": "Q15",
+    "query": "Quy chế đánh giá kết quả rèn luyện của sinh viên Đại học An Giang quy định khung điểm đánh giá tối đa là bao nhiêu và chia thành mấy mức xếp loại?",
+    "ground_truth_answer": "Khung điểm đánh giá tối đa là 100 điểm và chia thành 5 mức xếp loại: Xuất sắc (90-100), Tốt (80-89), Khá (65-79), Trung bình (50-64), Yếu (dưới 50).",
+    "ground_truth_citation": "Quyết định số 1509/QĐ-ĐHAG (Quy chế Đánh giá KQRL) - Chương II, Điều 10",
+    "source_document": "Quy chế Đánh giá KQRL"
+  }
+]

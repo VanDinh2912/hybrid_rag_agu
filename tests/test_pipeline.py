@@ -55,13 +55,12 @@ def make_pipeline(normalized=NORMALIZED):
 
 class TestRunFoldsQueryBeforeRetrieval:
     def test_similarity_search_receives_folded_query(self):
-        # Chunk Tầng 1 OCR mất dấu: query đưa vào similarity_search PHẢI đã
-        # bỏ dấu, nếu không truy xuất trượt khỏi 1054/1059 (hit@4=14% khi đo).
+        # Khi bật mở rộng từ khóa, query gửi xuống vector_db phải là dạng đã fold của expanded query
         pipeline, vector_db, _ = make_pipeline()
-        pipeline.run("diem ren luyen 62 thi sao?")
+        result = pipeline.run("diem ren luyen 62 thi sao?")
 
         query_sent, k = vector_db.received[0]
-        assert query_sent == fold(NORMALIZED)
+        assert query_sent == fold(result["expanded_query"])
         assert query_sent.isascii()  # fold triệt để: không còn dấu tiếng Việt
         # top_k mặc định (4) × oversample_factor (2) = 8 chunk gửi xuống ChromaDB.
         assert k == 8  # oversampling: generator chỉ dùng 4 đầu, retrieval lấy 8
@@ -69,10 +68,18 @@ class TestRunFoldsQueryBeforeRetrieval:
     def test_retrieval_query_exposed_in_result(self):
         pipeline, _, _ = make_pipeline()
         result = pipeline.run("diem ren luyen 62 thi sao?")
+        assert result["retrieval_query"] == fold(result["expanded_query"])
+
+    def test_expand_query_disabled(self):
+        pipeline, vector_db, _ = make_pipeline()
+        pipeline.expand_query = False
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+        query_sent, _ = vector_db.received[0]
+        assert query_sent == fold(NORMALIZED)
         assert result["retrieval_query"] == fold(result["normalized_query"])
 
     def test_generator_still_gets_normalized_query(self):
-        # Chỉ tầng retrieval fold; generator nhận câu chuẩn hóa nguyên văn có dấu.
+        # Chỉ tầng retrieval fold và mở rộng từ khóa; generator nhận câu chuẩn hóa nguyên văn có dấu.
         pipeline, _, generator = make_pipeline()
         pipeline.run("diem ren luyen 62 thi sao?")
         assert generator.received_query == NORMALIZED
