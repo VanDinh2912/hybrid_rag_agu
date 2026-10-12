@@ -1,11 +1,29 @@
 """Module xử lý truy xuất và mở rộng câu truy vấn (Query Expansion) cho Hybrid RAG.
 
 Trách nhiệm:
-- Xây dựng từ điển `SYNONYM_DICTIONARY` ánh xạ giữa thuật ngữ đời thường / học vụ
+|- Xây dựng từ điển `SYNONYM_DICTIONARY` ánh xạ giữa thuật ngữ đời thường / học vụ
   và các từ đồng nghĩa pháp lý theo Quy chế ĐHAG.
-- `expand_query_with_synonyms(normalized_query: str) -> str`: tự động ghép các từ đồng nghĩa
+|- `expand_query_with_synonyms(normalized_query: str) -> str`: tự động ghép các từ đồng nghĩa
   vào câu truy vấn nhằm tăng độ bao phủ (Recall), giúp True Hybrid Search (BM25 + ChromaDB)
   không bỏ sót các chunk tài liệu chứa thuật ngữ tương đương hoặc khác dị bản.
+
+Vai trò trong kiến trúc Hybrid RAG:
+- Layer 2 của pipeline: Query Expansion sau Normalization
+- Mục tiêu: Tăng Recall bằng cách mở rộng từ khóa đồng nghĩa pháp lý
+- Thuật toán: Dictionary-based expansion với fold (bỏ dấu) để khớp OCR
+
+Thuật toán liên quan:
+- BM25 (Lexical Search): Tìm kiếm từ khóa chính xác dựa trên TF-IDF
+  Công thức: score(D, Q) = Σ IDF(qi) * (f(qi, D) * (k1 + 1)) / (f(qi, D) + k1 * (1 - b + b * |D| / avgdl))
+  Xem chi tiết: SYSTEM_ARCHITECTURE.md - Section 2.1
+
+- BGE-M3 (Vector Search): Embedding đa ngôn ngữ với Cosine Similarity
+  Công thức: similarity(q, d) = (q · d) / (||q|| * ||d||)
+  Xem chi tiết: SYSTEM_ARCHITECTURE.md - Section 2.2
+
+- RRF (Reciprocal Rank Fusion): Dung hợp kết quả BM25 + ChromaDB
+  Công thức: RRF_score(d) = Σ (k / (rank_i(d) + k)), với k = 60
+  Xem chi tiết: SYSTEM_ARCHITECTURE.md - Section 2.3
 """
 
 import re
@@ -14,6 +32,8 @@ from typing import Optional
 from src.text_utils import fold
 
 # Từ điển ánh xạ từ khóa học vụ & từ đồng nghĩa pháp lý theo Quy chế đào tạo ĐHAG.
+# Mỗi key là từ khóa gốc, value là danh sách các từ đồng nghĩa pháp lý tương ứng.
+# Từ điển này được sử dụng trong expand_query_with_synonyms() để tăng Recall.
 SYNONYM_DICTIONARY: dict[str, list[str]] = {
     # 1. Kỷ luật / Thôi học
     "đuổi học": ["buộc thôi học", "thôi học", "kỷ luật"],
@@ -56,15 +76,39 @@ SYNONYM_DICTIONARY: dict[str, list[str]] = {
 def expand_query_with_synonyms(normalized_query: str) -> str:
     """Tự động bổ sung các từ đồng nghĩa pháp lý tương ứng vào câu truy vấn.
 
-    Nguyên tắc:
-    - Tìm kiếm không phân biệt dấu và chữ hoa/thường dựa trên văn bản đã fold.
-    - Tránh lặp lại những từ đã có mặt sẵn trong câu truy vấn.
-    - Giữ nguyên cấu trúc câu ban đầu ở đầu chuỗi để bảo toàn trọng số ngữ nghĩa,
-      ghép các từ đồng nghĩa mở rộng ở cuối chuỗi.
+    Hàm này là giao diện chính của Layer Query Expansion trong kiến trúc Hybrid RAG.
+    Nó sử dụng từ điển đồng nghĩa SYNONYM_DICTIONARY để mở rộng câu truy vấn,
+    giúp tăng độ bao phủ (Recall) của True Hybrid Search (BM25 + ChromaDB).
+
+    Nguyên tắc hoạt động:
+    1. Tìm kiếm không phân biệt dấu và chữ hoa/thường dựa trên văn bản đã fold
+       (bỏ dấu thanh) để khớp với tài liệu OCR có thể mất dấu.
+    2. Tránh lặp lại những từ đã có mặt sẵn trong câu truy vấn.
+    3. Giữ nguyên cấu trúc câu ban đầu ở đầu chuỗi để bảo toàn trọng số ngữ nghĩa,
+       ghép các từ đồng nghĩa mở rộng ở cuối chuỗi.
+    4. Sử dụng regex với word boundary (\b) để khớp chính xác từ khóa (không substring).
 
     Ví dụ:
-        "Sinh viên bị điểm yếu có bị đuổi học không?"
-        -> "Sinh viên bị điểm yếu có bị đuổi học không? buộc thôi học kỷ luật xếp loại rèn luyện Yếu"
+        Input:  "Sinh viên bị điểm yếu có bị đuổi học không?"
+        Output: "Sinh viên bị điểm yếu có bị đuổi học không? buộc thôi học kỷ luật xếp loại rèn luyện Yếu"
+
+    Thuật toán:
+        For each keyword in SYNONYM_DICTIONARY:
+            If keyword (folded) matches in query (folded):
+                For each synonym:
+                    If synonym (folded) not in query (folded) AND not already added:
+                        Add synonym to expansion list
+        Return original_query + " " + " ".join(expansion_list)
+
+    Tham số:
+        normalized_query: Câu hỏi đã chuẩn hóa từ Layer Normalization (Qwen)
+
+    Trả về:
+        Câu truy vấn đã mở rộng với từ đồng nghĩa, hoặc câu gốc nếu không có khớp
+
+    Xem chi tiết:
+        - Từ điển: SYNONYM_DICTIONARY (gần 50 cặp ánh xạ)
+        - Kiến trúc: SYSTEM_ARCHITECTURE.md - Section 2.3 (RRF)
     """
     if not isinstance(normalized_query, str):
         return "" if normalized_query is None else str(normalized_query)

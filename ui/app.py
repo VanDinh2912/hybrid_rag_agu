@@ -48,6 +48,9 @@ from learn import append_note, log_learning
 # Đường dẫn lưu trữ
 FEEDBACK_PATH = ROOT_DIR / "outputs" / "user_feedback.json"
 NOTES_PATH = ROOT_DIR / "data" / "corpus" / "ghi_chu_hoc_them.txt"
+BENCHMARK_PATH = ROOT_DIR / "data" / "evaluation" / "benchmark_questions.json"
+CORPUS_DIR = ROOT_DIR / "data" / "corpus"
+NORMALIZATION_PAIRS_PATH = ROOT_DIR / "data" / "normalization_pairs.json"
 
 # Hằng số giao diện
 APP_TITLE = "Hệ thống Hybrid RAG - Tra cứu Quy chế Đào tạo AGU"
@@ -77,8 +80,8 @@ class RAGApplication(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title(APP_TITLE)
-        self.geometry("960x750")
-        self.minsize(800, 600)
+        self.geometry("1150x750")
+        self.minsize(1000, 650)
 
         # Trạng thái backend
         self.db_manager: VectorStoreManager | None = None
@@ -458,13 +461,56 @@ class RAGApplication(tk.Tk):
     # =========================================================================
     # TAB 3: VỪA TEST VỪA HỌC (FEEDBACK & ACTIVE LEARNING)
     # =========================================================================
+    def _get_corpus_files(self) -> list[str]:
+        """Lấy danh sách file PDF/TXT từ corpus directory cho combobox."""
+        files = []
+        if CORPUS_DIR.exists():
+            for file_path in CORPUS_DIR.rglob("*.pdf"):
+                files.append(file_path.name)
+            for file_path in CORPUS_DIR.rglob("*.txt"):
+                files.append(file_path.name)
+        return sorted(files)
+
     def _build_tab_feedback(self, parent):
         # Biến lưu trữ kết quả lần test gần nhất
         self.current_test_data: dict | None = None
 
+        # Tạo Scrollable Frame cho Tab 3
+        canvas = tk.Canvas(parent, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(parent, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=1100)
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Pack canvas và scrollbar
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Bắt sự kiện cuộn chuột
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+        def _bind_to_mousewheel(event):
+            canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+        def _unbind_from_mousewheel(event):
+            canvas.unbind_all("<MouseWheel>")
+
+        canvas.bind('<Enter>', _bind_to_mousewheel)
+        canvas.bind('<Leave>', _unbind_from_mousewheel)
+
+        # Bây giờ xây dựng nội dung bên trong scrollable_frame
+        inner_parent = scrollable_frame
+
         # 1. Khung kiểm tra
-        test_input_group = ttk.LabelFrame(parent, text=" Câu hỏi thử nghiệm (Quick Test) ", padding="10")
-        test_input_group.pack(fill=tk.X, pady=(0, 10))
+        test_input_group = ttk.LabelFrame(inner_parent, text=" Câu hỏi thử nghiệm (Quick Test) ", padding="8")
+        test_input_group.pack(fill=tk.X, pady=(0, 8))
 
         row1 = ttk.Frame(test_input_group)
         row1.pack(fill=tk.X)
@@ -477,28 +523,28 @@ class RAGApplication(tk.Tk):
         self.btn_test.pack(side=tk.RIGHT)
 
         # 2. Khung kết quả kiểm tra
-        test_res_group = ttk.LabelFrame(parent, text=" Kết quả phản hồi của RAG ", padding="10")
-        test_res_group.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
+        test_res_group = ttk.LabelFrame(inner_parent, text=" Kết quả phản hồi của RAG ", padding="8")
+        test_res_group.pack(fill=tk.BOTH, expand=True, pady=(0, 8))
 
         # Nhãn câu hỏi chuẩn hóa
         norm_box = ttk.Frame(test_res_group)
-        norm_box.pack(fill=tk.X, pady=(0, 4))
+        norm_box.pack(fill=tk.X, pady=(0, 3))
         ttk.Label(norm_box, text="Chuẩn hóa:", style="Bold.TLabel").pack(side=tk.LEFT)
         self.test_norm_var = tk.StringVar(value="—")
         ttk.Label(norm_box, textvariable=self.test_norm_var, foreground="#1e40af").pack(side=tk.LEFT, padx=(6, 0))
 
-        # Hiển thị câu trả lời
+        # Hiển thị câu trả lời (giảm height từ 7 xuống 5)
         self.txt_test_answer = scrolledtext.ScrolledText(
-            test_res_group, wrap=tk.WORD, font=(DEFAULT_FONT_FAMILY, 10), height=7, bg="#ffffff"
+            test_res_group, wrap=tk.WORD, font=(DEFAULT_FONT_FAMILY, 10), height=5, bg="#ffffff"
         )
-        self.txt_test_answer.pack(fill=tk.BOTH, expand=True, pady=(0, 8))
+        self.txt_test_answer.pack(fill=tk.BOTH, expand=True, pady=(0, 5))
 
         # 3. Khung Đánh giá & Phản hồi
-        feedback_group = ttk.LabelFrame(parent, text=" Trọng tài đánh giá & Phản hồi cải thiện ", padding="10")
-        feedback_group.pack(fill=tk.X)
+        feedback_group = ttk.LabelFrame(inner_parent, text=" Trọng tài đánh giá & Phản hồi cải thiện ", padding="8")
+        feedback_group.pack(fill=tk.X, pady=(0, 8))
 
         action_row = ttk.Frame(feedback_group)
-        action_row.pack(fill=tk.X, pady=(0, 6))
+        action_row.pack(fill=tk.X, pady=(0, 4))
 
         ttk.Label(action_row, text="Đánh giá chất lượng đáp án:", style="Bold.TLabel").pack(side=tk.LEFT, padx=(0, 10))
 
@@ -512,24 +558,79 @@ class RAGApplication(tk.Tk):
         )
         self.btn_wrong.pack(side=tk.LEFT)
 
-        # Khung nhập thông tin đúng (khi câu trả lời bị sai)
+        # Khung nhập thông tin chi tiết (khi câu trả lời bị sai)
         self.wrong_frame = ttk.Frame(feedback_group)
         # Ẩn mặc định, chỉ hiện khi ấn nút Sai
 
+        # 1. Đáp án chuẩn (giảm padding)
         ttk.Label(
             self.wrong_frame,
-            text="Nhập đáp án đúng thực tế / Căn cứ Điều Khoản chính xác:",
+            text="1. Đáp án đúng thực tế (Ground Truth Answer):",
             font=FONT_BOLD,
             foreground="#b91c1c",
-        ).pack(anchor=tk.W, pady=(6, 2))
+        ).pack(anchor=tk.W, pady=(4, 1))
 
-        self.txt_correct_info = scrolledtext.ScrolledText(
-            self.wrong_frame, wrap=tk.WORD, font=(DEFAULT_FONT_FAMILY, 10), height=4, bg="#fff1f2"
+        self.txt_ground_truth = scrolledtext.ScrolledText(
+            self.wrong_frame, wrap=tk.WORD, font=(DEFAULT_FONT_FAMILY, 10), height=3, bg="#fff1f2"
         )
-        self.txt_correct_info.pack(fill=tk.X, pady=(0, 6))
+        self.txt_ground_truth.pack(fill=tk.X, pady=(0, 4))
 
+        # 2. Trích dẫn Điều/Khoản (giảm padding)
+        ttk.Label(
+            self.wrong_frame,
+            text="2. Căn cứ Điều / Khoản (Citation):",
+            font=FONT_BOLD,
+            foreground="#b91c1c",
+        ).pack(anchor=tk.W, pady=(2, 1))
+
+        citation_row = ttk.Frame(self.wrong_frame)
+        citation_row.pack(fill=tk.X, pady=(0, 4))
+
+        self.entry_citation = ttk.Entry(citation_row, font=(DEFAULT_FONT_FAMILY, 10))
+        self.entry_citation.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        ttk.Label(citation_row, text="(Ví dụ: Điều 3, Khoản 1)", font=FONT_SUBTITLE, foreground="#64748b").pack(side=tk.LEFT)
+
+        # 3. Tên văn bản nguồn (giảm padding)
+        ttk.Label(
+            self.wrong_frame,
+            text="3. Tên văn bản nguồn (Source Document):",
+            font=FONT_BOLD,
+            foreground="#b91c1c",
+        ).pack(anchor=tk.W, pady=(2, 1))
+
+        source_row = ttk.Frame(self.wrong_frame)
+        source_row.pack(fill=tk.X, pady=(0, 4))
+
+        # Lấy danh sách file PDF/TXT từ corpus
+        corpus_files = self._get_corpus_files()
+        self.source_var = tk.StringVar()
+        self.combo_source = ttk.Combobox(
+            source_row, 
+            textvariable=self.source_var,
+            values=corpus_files,
+            font=(DEFAULT_FONT_FAMILY, 9),
+        )
+        self.combo_source.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        ttk.Label(source_row, text="(Chọn hoặc gõ tên mới)", font=FONT_SUBTITLE, foreground="#64748b").pack(side=tk.LEFT)
+
+        # 4. Câu hỏi chuẩn hóa thực tế (giảm padding)
+        ttk.Label(
+            self.wrong_frame,
+            text="4. Câu hỏi chuẩn hóa thực tế (Normalized Query Ground Truth):",
+            font=FONT_BOLD,
+            foreground="#b91c1c",
+        ).pack(anchor=tk.W, pady=(2, 1))
+
+        norm_row = ttk.Frame(self.wrong_frame)
+        norm_row.pack(fill=tk.X, pady=(0, 4))
+
+        self.entry_normalized_truth = ttk.Entry(norm_row, font=(DEFAULT_FONT_FAMILY, 10))
+        self.entry_normalized_truth.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        ttk.Label(norm_row, text="(Chỉnh sửa nếu Qwen chuẩn hóa chưa đúng)", font=FONT_SUBTITLE, foreground="#64748b").pack(side=tk.LEFT)
+
+        # Checkbox và nút lưu (giảm padding)
         opt_row = ttk.Frame(self.wrong_frame)
-        opt_row.pack(fill=tk.X)
+        opt_row.pack(fill=tk.X, pady=(4, 0))
 
         self.learn_now_var = tk.BooleanVar(value=True)
         chk_learn = ttk.Checkbutton(
@@ -569,10 +670,15 @@ class RAGApplication(tk.Tk):
 
     def _run_test_thread(self, query: str):
         try:
+            print(f"[Test Thread] Bắt đầu xử lý câu hỏi: {query[:50]}...")
             result = self.pipeline.run(query, top_k=6)
+            print(f"[Test Thread] Hoàn tất processing question")
             self.after(0, self._render_test_result, result)
         except Exception as exc:
-            self.after(0, self._render_test_error, str(exc))
+            import traceback
+            error_detail = f"{type(exc).__name__}: {exc}\n\nChi tiết:\n{traceback.format_exc()}"
+            print(f"[Test Thread] Lỗi: {error_detail}")
+            self.after(0, self._render_test_error, error_detail)
 
     def _render_test_result(self, result: dict):
         self.current_test_data = result
@@ -604,47 +710,167 @@ class RAGApplication(tk.Tk):
             messagebox.showwarning("Chưa có dữ liệu", "Vui lòng chạy kiểm tra một câu hỏi trước khi đánh giá!")
             return
 
-        # Hiển thị khung nhập thông tin đúng
+        # Hiển thị khung nhập thông tin chi tiết
         self.wrong_frame.pack(fill=tk.X, pady=(6, 0))
-        self.txt_correct_info.delete("1.0", tk.END)
-        self.txt_correct_info.focus_set()
+        self.txt_ground_truth.delete("1.0", tk.END)
+        self.entry_citation.delete(0, tk.END)
+        self.combo_source.set("")  # Reset selection
+        self.entry_normalized_truth.delete(0, tk.END)
+        
+        # Auto-fill normalized query từ kết quả hiện tại (cho phép chỉnh sửa)
+        current_normalized = self.current_test_data.get("normalized_query", "")
+        self.entry_normalized_truth.insert(0, current_normalized)
+        
+        self.txt_ground_truth.focus_set()
 
     def save_wrong_feedback(self):
         if not self.current_test_data:
             return
 
-        correct_info = self.txt_correct_info.get("1.0", tk.END).strip()
-        if not correct_info:
+        # Lấy thông tin từ 4 trường nhập liệu
+        ground_truth = self.txt_ground_truth.get("1.0", tk.END).strip()
+        citation = self.entry_citation.get().strip()
+        source_doc = self.source_var.get().strip()
+        normalized_truth = self.entry_normalized_truth.get().strip()
+
+        if not ground_truth:
             messagebox.showwarning("Thiếu thông tin", "Vui lòng nhập đáp án đúng thực tế trước khi lưu!")
             return
 
-        # 1. Lưu vào outputs/user_feedback.json
-        self._save_feedback_record(feedback_type="wrong", correct_answer=correct_info)
+        # Gom 4 thông tin thành một chuỗi để lưu
+        feedback_detail = f"Đáp án chuẩn: {ground_truth}\n"
+        if citation:
+            feedback_detail += f"Căn cứ: {citation}\n"
+        if source_doc:
+            feedback_detail += f"Nguồn: {source_doc}\n"
+        if normalized_truth:
+            feedback_detail += f"Chuẩn hóa: {normalized_truth}\n"
 
-        # 2. Nếu người dùng chọn học ngay qua ghi_chu_hoc_them.txt
+        # 1. Lưu vào outputs/user_feedback.json
+        self._save_feedback_record(feedback_type="wrong", correct_answer=feedback_detail)
+
+        # 2. Lưu vào benchmark_questions.json nếu đầy đủ thông tin
+        if citation and source_doc:
+            self._save_to_benchmark(ground_truth, citation, source_doc, normalized_truth)
+
+        # 3. Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file riêng cho Qwen học
+        if normalized_truth:
+            self._save_normalization_pair(self.current_test_data["raw_query"], normalized_truth)
+
+        # 4. Nếu người dùng chọn học ngay qua ghi_chu_hoc_them.txt
         learn_now = self.learn_now_var.get()
         if learn_now:
             raw_query = self.current_test_data["raw_query"]
             wrong_ans = self.current_test_data["answer"]
             chunks_before = self.pipeline.vector_db._collection.count()
 
-            append_note(raw_query, correct_info)
+            # Ghi vào ghi_chu_hoc_them.txt với format có cấu trúc
+            note = f"Câu hỏi: {raw_query}\n"
+            note += f"Đáp án chuẩn: {ground_truth}\n"
+            if citation:
+                note += f"Căn cứ: {citation}\n"
+            if source_doc:
+                note += f"Nguồn: {source_doc}\n"
+            if normalized_truth:
+                note += f"Chuẩn hóa: {normalized_truth}\n"
+            note += "-" * 80 + "\n"
+
+            append_note(note)
 
             # Rebuild nhẹ nhàng không reset thư mục
             try:
                 _db, new_vector_db, _total = run_ingestion(db_manager=self.db_manager, reset=False)
                 self.pipeline.vector_db = new_vector_db
                 chunks_after = new_vector_db._collection.count()
-                log_learning(raw_query, wrong_ans, correct_info, chunks_before, chunks_after)
+                log_learning(raw_query, wrong_ans, feedback_detail, chunks_before, chunks_after)
                 self.status_var.set(f"Đã học bài mới! Chunks: {chunks_before} → {chunks_after}")
             except Exception as e:
                 print(f"[Learn Error] Không thể tự động rebuild: {e}")
 
         self.wrong_frame.pack_forget()
         msg = "Đã lưu phản hồi vào outputs/user_feedback.json!"
+        if normalized_truth:
+            msg += "\nĐã lưu cặp chuẩn hóa cho Qwen học!"
+        if citation and source_doc:
+            msg += "\nĐã cập nhật benchmark_questions.json!"
         if learn_now:
             msg += "\nHệ thống cũng đã cập nhật bài học vào corpus và nạp lại ChromaDB thành công!"
         messagebox.showinfo("Thành công", msg)
+
+    def _save_to_benchmark(self, ground_truth: str, citation: str, source_doc: str, normalized_query: str):
+        """Lưu câu hỏi mới vào benchmark_questions.json với đầy đủ thông tin."""
+        try:
+            # Đọc benchmark hiện tại
+            if BENCHMARK_PATH.exists():
+                with open(BENCHMARK_PATH, "r", encoding="utf-8") as f:
+                    benchmark = json.load(f)
+            else:
+                benchmark = {"version": "2.0", "description": "Bộ câu hỏi benchmark Hybrid RAG AGU", "questions": []}
+
+            # Tạo câu hỏi mới
+            new_question = {
+                "id": f"Q{len(benchmark['questions']) + 1:02d}",
+                "category": "người dùng thêm",
+                "in_corpus": True,
+                "source_document": source_doc,
+                "raw_query": self.current_test_data["raw_query"],
+                "normalized_query": normalized_query,  # Sử dụng normalized query từ người dùng
+                "expected_answer": ground_truth,
+                "expected_citations": [citation] if citation else [],
+                "ground_truth_answer": ground_truth,
+                "ground_truth_citation": f"{source_doc} - {citation}" if citation else source_doc
+            }
+
+            # Thêm vào danh sách
+            benchmark["questions"].append(new_question)
+
+            # Lưu lại
+            BENCHMARK_PATH.parent.mkdir(parents=True, exist_ok=True)
+            with open(BENCHMARK_PATH, "w", encoding="utf-8") as f:
+                json.dump(benchmark, f, ensure_ascii=False, indent=2)
+
+            print(f"[Benchmark] Đã thêm câu hỏi {new_question['id']} vào benchmark_questions.json")
+        except Exception as e:
+            print(f"[Benchmark Error] Không thể lưu vào benchmark: {e}")
+
+    def _save_normalization_pair(self, raw_query: str, normalized_query: str):
+        """Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file normalization_pairs.json để Qwen học."""
+        try:
+            # Đọc pairs hiện tại
+            if NORMALIZATION_PAIRS_PATH.exists():
+                with open(NORMALIZATION_PAIRS_PATH, "r", encoding="utf-8") as f:
+                    pairs = json.load(f)
+            else:
+                pairs = {"version": "1.0", "description": "Cặp câu hỏi chuẩn hóa để Qwen học", "pairs": []}
+
+            # Kiểm tra trùng lặp
+            existing_pairs = {p["raw_query"]: p["normalized_query"] for p in pairs["pairs"]}
+            if raw_query in existing_pairs:
+                print(f"[Normalization] Cặp câu hỏi này đã tồn tại, sẽ cập nhật normalized query")
+                # Cập nhật normalized query nếu đã tồn tại
+                for p in pairs["pairs"]:
+                    if p["raw_query"] == raw_query:
+                        p["normalized_query"] = normalized_query
+                        p["updated_at"] = datetime.now().isoformat(timespec="seconds")
+                        break
+            else:
+                # Thêm cặp mới
+                new_pair = {
+                    "raw_query": raw_query,
+                    "normalized_query": normalized_query,
+                    "created_at": datetime.now().isoformat(timespec="seconds")
+                }
+                pairs["pairs"].append(new_pair)
+                print(f"[Normalization] Đã thêm cặp chuẩn hóa mới: {raw_query[:30]}... -> {normalized_query[:30]}...")
+
+            # Lưu lại
+            NORMALIZATION_PAIRS_PATH.parent.mkdir(parents=True, exist_ok=True)
+            with open(NORMALIZATION_PAIRS_PATH, "w", encoding="utf-8") as f:
+                json.dump(pairs, f, ensure_ascii=False, indent=2)
+
+            print(f"[Normalization] Đã lưu vào {NORMALIZATION_PAIRS_PATH}")
+        except Exception as e:
+            print(f"[Normalization Error] Không thể lưu cặp chuẩn hóa: {e}")
 
     def _save_feedback_record(self, feedback_type: str, correct_answer: str | None):
         """Ghi nhận log đánh giá của người dùng vào outputs/user_feedback.json."""

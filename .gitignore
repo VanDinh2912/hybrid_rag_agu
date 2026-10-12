@@ -35,3 +35,6 @@ desktop.ini
 # ===== Cache tạm do công cụ Python/VS Code tự sinh =====
 Python/_cache/
 
+# ===== File lock tạm của MS Word/Excel/PowerPoint =====
+~$*
+

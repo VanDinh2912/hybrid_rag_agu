@@ -1,0 +1,9 @@
+Export Report
+==============
+
+Source: SYSTEM_ARCHITECTURE.md
+Output files:
+  - TXT: D:\DoAn\hybrid_rag_agu\SYSTEM_ARCHITECTURE.txt
+  - DOCX: D:\DoAn\hybrid_rag_agu\SYSTEM_ARCHITECTURE.docx
+
+Status: Success

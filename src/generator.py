@@ -519,7 +519,56 @@ class GeminiGenerator:
         return f"{notice}\n\n{text}"
 
     def generate_answer(self, query: str, retrieved_docs: list, temperature: Optional[float] = None) -> str:
-        """Sinh câu trả lời: cache → Gemini → (hết quota/sự cố) fallback Local Qwen."""
+        """Sinh câu trả lời: cache → Gemini → (hết quota/sự cố) fallback Local Qwen.
+
+        Hàm này là giao diện chính của Layer Generator trong kiến trúc Hybrid RAG.
+        Nó thực hiện quy trình sau:
+        1. Normalize retrieved_docs → format chuẩn cho prompt
+        2. Soft Refusal: Nếu không có ngữ cảnh → trả về REFUSAL_TEXT ngay
+        3. Check cache: Nếu trúng cache → trả lời ngay (tiết kiệm quota)
+        4. Gọi Gemini API với System Instruction chống ảo giác
+        5. Fallback: Nếu Gemini lỗi → chuyển sang Local Qwen với nhãn cảnh báo
+        6. Save cache: Ghi câu trả lời Gemini (không cache câu fallback)
+
+        Soft Refusal Mechanism:
+        - IF (ngữ cảnh trống OR ngữ cảnh không liên quan) THEN
+            RETURN REFUSAL_TEXT ("Xin lỗi, tài liệu hiện có không đủ thông tin...")
+        - System Prompt ép Gemini từ chối khi không đủ căn cứ
+        - Không đoán, không bịa đặt, không dùng kiến thức ngoài corpus
+
+        Citation Rules (System Instruction):
+        - Mỗi ý trả lời PHẢI kèm: (Điều N, Khoản M — Tên văn bản)
+        - Nếu ngữ cảnh không đánh số → ghi: (<Tên văn bản>)
+        - Dùng TÊN VĂN BẢN THẬT, không viết "(Ngữ cảnh 1)", "(1)"
+        - Ưu tiên tier cao hơn (Tầng 1 = quy chế gốc)
+
+        Response Caching:
+        - Cache key = SHA-1({model, temperature, prompt_version, prompt})
+        - PROMPT_VERSION bump khi sửa SYSTEM_INSTRUCTION/PROMPT_RULES
+        - Chỉ cache câu trả lời từ Gemini (không cache fallback Qwen)
+        - Cache tự invalidating khi đổi model/temperature/prompt
+
+        Fallback Mechanism:
+        - Trigger: Gemini lỗi quota (429) hoặc gặp sự cố
+        - Action: Chuyển sang Local Qwen với nhãn cảnh báo
+        - Label: "[Cảnh báo: Gemini hết quota — câu trả lời do Local Qwen tổng hợp]"
+        - Error handling: Nếu cả Gemini và Qwen đều chết → ném GeneratorError
+
+        Tham số:
+            query: Câu hỏi đã chuẩn hóa từ Layer Normalization
+            retrieved_docs: Danh sách chunk truy xuất từ Layer Retrieval
+            temperature: Nhiệt độ sinh (mặc định 0.0 cho deterministic)
+
+        Trả về:
+            Câu trả lời có trích dẫn, hoặc REFUSAL_TEXT nếu không đủ căn cứ
+
+        Xem chi tiết:
+            - System Prompt: SYSTEM_INSTRUCTION (anti-hallucination)
+            - Prompt Rules: PROMPT_RULES (citation + soft refusal)
+            - Cache: _cache_get(), _cache_put() (line 420-449)
+            - Fallback: _qwen_answer() (line 478-519)
+            - Kiến trúc: SYSTEM_ARCHITECTURE.md - Section 2.5 (Logic Mệnh đề)
+        """
         if not isinstance(query, str):
             raise TypeError(f"query phải là str, nhận được {type(query).__name__}.")
         question = query.strip()
