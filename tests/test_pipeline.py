@@ -29,7 +29,9 @@ class FakeLocalSLM:
     def __init__(self, normalized):
         self._normalized = normalized
 
-    def normalize_query(self, raw):
+    # normalize_user_query() gọi llm_client.generate(); thiếu method này thì nó rơi
+    # xuống nhánh tự tạo ollama.Client và gọi Ollama thật khi chạy test.
+    def generate(self, prompt, temperature=0.0):
         return self._normalized
 
 
