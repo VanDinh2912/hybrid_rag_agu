@@ -1,12 +1,12 @@
 {
   "meta": {
-    "timestamp": "2026-10-12T13:08:26",
-    "benchmark": "data\\evaluation\\benchmark_questions.json",
+    "timestamp": "2026-10-14T11:42:57",
+    "benchmark": "data\\evaluation\\benchmark_50_questions.json",
     "n_questions": 15,
     "top_k": 6,
     "retrieve_k": 6,
-    "judge_enabled": false,
-    "judge_model": null,
+    "judge_enabled": true,
+    "judge_model": "gemini-3.5-flash-lite",
     "generator_model": "local-qwen (qwen2.5:1.5b-instruct)",
     "local_slm_model": "qwen2.5:1.5b-instruct",
     "ollama_available": true,
@@ -15,36 +15,36 @@
   "aggregates": {
     "n_total": 15,
     "n_ok": 15,
-    "hit_at_6": 0.7333,
-    "hit_at_3": 0.5333,
-    "hit_at_5": 0.6,
-    "mrr": 0.4833,
+    "hit_at_6": 0.4667,
+    "hit_at_3": 0.2667,
+    "hit_at_5": 0.3333,
+    "mrr": 0.2138,
     "n_retrieval_scored": 15,
-    "citation_precision": 0.0,
-    "citation_recall": 0.0,
-    "citation_f1": 0.0,
-    "citation_exact_match": 0.0,
-    "n_citation_scored": 6,
-    "faithfulness_llm": null,
-    "n_faithfulness_scored": 0,
-    "number_support": 0.9437,
-    "normalization_preservation": 1.0,
-    "normalization_full_preservation": 1.0,
-    "n_normalization_checked": 6,
+    "citation_precision": 0.6,
+    "citation_recall": 0.6,
+    "citation_f1": 0.6,
+    "citation_exact_match": 0.6,
+    "n_citation_scored": 5,
+    "faithfulness_llm": 0.3667,
+    "n_faithfulness_scored": 15,
+    "number_support": 0.9053,
+    "normalization_preservation": 0.75,
+    "normalization_full_preservation": 0.75,
+    "n_normalization_checked": 4,
     "refusal_correct_rate": null,
     "n_refusal_cases": 0,
     "hallucination_on_unanswerable": 0,
-    "avg_latency_seconds": 13.8773,
+    "avg_latency_seconds": 11.9153,
     "errors": []
   },
   "per_question": [
     {
       "id": "Q01",
-      "category": "khung chương trình đào tạo",
-      "raw_query": "Môn học Thiết kế và cài đặt mạng có mã môn học là gì, thời lượng mấy tín chỉ và có môn học trước là môn nào?",
-      "normalized_query_expected": "Môn học Thiết kế và cài đặt mạng có mã môn học là gì, khối lượng bao nhiêu tín chỉ và môn học trước là môn nào?",
-      "normalized_query_system": "Môn học Thiết kế và cài đặt mạng có mã môn học là gì, thời lượng và tín chỉ tương ứng, và môn học trước là gì?",
-      "retrieval_query": "mon hoc thiet ke va cai dat mang co ma mon hoc la gi, thoi luong va tin chi tuong ung, va mon hoc truoc la gi?",
+      "category": "quy chế công tác sinh viên",
+      "raw_query": "Cố vấn học tập của Khoa được tổ chức họp định kỳ ít nhất bao nhiêu lần mỗi học kỳ?",
+      "normalized_query_expected": "Cố vấn học tập của Khoa họp định kỳ ít nhất mấy lần mỗi học kỳ?",
+      "normalized_query_system": "Sinh viên: Cố vấn học tập của Khoa được tổ chức họp định kỳ ít nhất bao nhiêu lần mỗi học kỳ?",
+      "retrieval_query": "sinh vien: co van hoc tap cua khoa duoc to chuc hop dinh ky it nhat bao nhieu lan moi hoc ky?",
       "normalization_preservation": {
         "score": null,
         "total": 0,
@@ -54,339 +54,123 @@
       "retrieval": {
         "top_k": 6,
         "retrieved_k": 12,
-        "hit_at_3": true,
-        "hit_at_5": true,
-        "hit_at_6": true,
-        "hit_at_k": true,
-        "reciprocal_rank": 1.0,
-        "matched_rank": 1,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
         "retrieved": [
           {
             "rank": 1,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 337
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 272
           },
           {
             "rank": 2,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 332
-          },
-          {
-            "rank": 3,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 335
-          },
-          {
-            "rank": 4,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 329
-          },
-          {
-            "rank": 5,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 333
-          },
-          {
-            "rank": 6,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 336
-          },
-          {
-            "rank": 7,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 327
-          },
-          {
-            "rank": 8,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 338
-          },
-          {
-            "rank": 9,
-            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 314
-          },
-          {
-            "rank": 10,
-            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 309
-          },
-          {
-            "rank": 11,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 334
-          },
-          {
-            "rank": 12,
-            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 319
-          }
-        ]
-      },
-      "answer": "Môn học Thiết kế và cài đặt mạng (CON502) có mã môn học là CON502. Thời lượng và tín chỉ tương ứng là 3 học kỳ, 3 tín chỉ. Môn học trước là Công nghệ Web – PHP (SEE517).",
-      "is_refusal_answer": false,
-      "citations": null,
-      "predicted_citations": [],
-      "refusal_expected": false,
-      "refusal_correct": null,
-      "hallucinated_on_unanswerable": false,
-      "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
-        "error": null
-      },
-      "number_support": 1.0,
-      "latency_seconds": 7.43,
-      "error": null
-    },
-    {
-      "id": "Q02",
-      "category": "quy đổi thang điểm",
-      "raw_query": "Điểm học phần theo thang điểm 10 từ 7,0 đến cận 8,0 và từ 8,0 đến cận 9,0 được quy đổi sang thang điểm 4, điểm chữ và xếp loại như thế nào?",
-      "normalized_query_expected": "Thang điểm 10 từ 7.0 đến cận 8.0 và từ 8.0 đến cận 9.0 được quy đổi sang thang điểm 4, điểm chữ và xếp loại học lực như thế nào?",
-      "normalized_query_system": "Điểm học phần theo thang điểm 10 từ 7,0 đến 8,0 và từ 8,0 đến 9,0 được quy đổi sang thang điểm 4, điểm chữ và xếp loại như thế nào?",
-      "retrieval_query": "diem hoc phan theo thang diem 10 tu 7,0 den 8,0 va tu 8,0 den 9,0 duoc quy doi sang thang diem 4, diem chu va xep loai nhu the nao?",
-      "normalization_preservation": {
-        "score": 1.0,
-        "total": 6,
-        "preserved": 6,
-        "lost": []
-      },
-      "retrieval": {
-        "top_k": 6,
-        "retrieved_k": 12,
-        "hit_at_3": true,
-        "hit_at_5": true,
-        "hit_at_6": true,
-        "hit_at_k": true,
-        "reciprocal_rank": 1.0,
-        "matched_rank": 1,
-        "retrieved": [
-          {
-            "rank": 1,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 331
-          },
-          {
-            "rank": 2,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 254
-          },
-          {
-            "rank": 3,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 255
-          },
-          {
-            "rank": 4,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 330
-          },
-          {
-            "rank": 5,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 258
-          },
-          {
-            "rank": 6,
             "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
             "chunk_id": 256
           },
           {
-            "rank": 7,
+            "rank": 3,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 249
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 252
+          },
+          {
+            "rank": 5,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
+          },
+          {
+            "rank": 6,
             "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
             "chunk_id": 246
           },
           {
-            "rank": 8,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 106
-          },
-          {
-            "rank": 9,
-            "source": "1059-qd-dhag-2020-09-29.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 86
-          },
-          {
-            "rank": 10,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 223
-          },
-          {
-            "rank": 11,
+            "rank": 7,
             "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
             "chunk_id": 259
           },
           {
-            "rank": 12,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 253
-          }
-        ]
-      },
-      "answer": "Xếp loại Thang điểm hệ 10 \nThang điểm hệ 4  \nĐiểm số Điểm chữ \nXuất sắc Từ 9,0 đến 10,0 4,0 A+ \nGiỏi Từ 8,0 đến cận 9,0 3,5 A \nKhá Từ 7,0 đến cận 8,0 3,0 B+ \nTrung bình khá Từ 6,0 đến cận 7,0 2,5 B \nTrung bình Từ 5,0 đến cận 6,0 2,0 C \nYếu Từ 4,0 đến cận 5,0 1,5 D+ \nKém \nTừ 3,0 đến cận 4,0 1,0 D \n< 3,0 0,0 F",
-      "is_refusal_answer": false,
-      "citations": null,
-      "predicted_citations": [],
-      "refusal_expected": false,
-      "refusal_correct": null,
-      "hallucinated_on_unanswerable": false,
-      "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
-        "error": null
-      },
-      "number_support": 1.0,
-      "latency_seconds": 9.55,
-      "error": null
-    },
-    {
-      "id": "Q03",
-      "category": "chuẩn đầu ra",
-      "raw_query": "Chuẩn đầu ra ELO 9 về năng lực ngoại ngữ của sinh viên ngành Công nghệ thông tin Trường ĐHAG quy định cụ thể ra sao?",
-      "normalized_query_expected": "Chuẩn đầu ra ELO 9 về năng lực ngoại ngữ của sinh viên ngành Công nghệ thông tin Trường Đại học An Giang quy định như thế nào?",
-      "normalized_query_system": "Điểm chuẩn đầu ra ELO 9 về năng lực ngoại ngữ của sinh viên ngành Công nghệ thông tin Trường ĐHAG quy định cụ thể là bao nhiêu?",
-      "retrieval_query": "diem chuan dau ra elo 9 ve nang luc ngoai ngu cua sinh vien nganh cong nghe thong tin truong dhag quy dinh cu the la bao nhieu?",
-      "normalization_preservation": {
-        "score": 1.0,
-        "total": 1,
-        "preserved": 1,
-        "lost": []
-      },
-      "retrieval": {
-        "top_k": 6,
-        "retrieved_k": 12,
-        "hit_at_3": true,
-        "hit_at_5": true,
-        "hit_at_6": true,
-        "hit_at_k": true,
-        "reciprocal_rank": 1.0,
-        "matched_rank": 1,
-        "retrieved": [
-          {
-            "rank": 1,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 330
-          },
-          {
-            "rank": 2,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 329
-          },
-          {
-            "rank": 3,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 331
-          },
-          {
-            "rank": 4,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 327
-          },
-          {
-            "rank": 5,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 328
-          },
-          {
-            "rank": 6,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 106
-          },
-          {
-            "rank": 7,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 338
-          },
-          {
             "rank": 8,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
             "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 335
+            "chunk_id": 325
           },
           {
             "rank": 9,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 120
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 255
           },
           {
             "rank": 10,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
             "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 332
+            "chunk_id": 294
           },
           {
             "rank": 11,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 333
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 271
           },
           {
             "rank": 12,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 337
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 279
           }
         ]
       },
       "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.",
       "is_refusal_answer": false,
-      "citations": null,
+      "citations": {
+        "expected": [
+          "Điều 6",
+          "1504",
+          "1 lần/học kỳ"
+        ],
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match": 1.0
+      },
       "predicted_citations": [],
       "refusal_expected": false,
       "refusal_correct": null,
       "hallucinated_on_unanswerable": false,
       "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
+        "score": 0.0,
+        "unsupported_claims": [
+          "Tài liệu hiện có không đủ thông tin để trả lời câu hỏi do người dùng chưa đưa ra câu hỏi cụ thể."
+        ],
+        "method": "llm_judge",
         "error": null
       },
       "number_support": null,
-      "latency_seconds": 13.34,
+      "latency_seconds": 8.39,
       "error": null
     },
     {
-      "id": "Q04",
-      "category": "cơ cấu tín chỉ",
-      "raw_query": "Tổng khối lượng kiến thức toàn khóa đào tạo cử nhân ngành Công nghệ thông tin là bao nhiêu tín chỉ và cơ cấu từng khối kiến thức ra sao?",
-      "normalized_query_expected": "Tổng khối lượng kiến thức toàn khóa đào tạo ngành Công nghệ thông tin là bao nhiêu tín chỉ và phân bố theo từng khối kiến thức ra sao?",
-      "normalized_query_system": "Điểm trung bình toàn khóa đào tạo cử nhân ngành Công nghệ thông tin có mức độ nào là đủ để đạt tiêu chuẩn tốt nghiệp?",
-      "retrieval_query": "diem trung binh toan khoa dao tao cu nhan nganh cong nghe thong tin co muc do nao la du de dat tieu chuan tot nghiep?",
+      "id": "Q02",
+      "category": "quy chế công tác sinh viên",
+      "raw_query": "Lớp sinh viên ở Trường ĐH An Giang được tổ chức theo những hình thức nào và nhiệm kỳ Ban Cán sự lớp chuyên ngành tính như thế nào?",
+      "normalized_query_expected": "Lớp sinh viên Trường ĐH An Giang được tổ chức theo mấy hình thức và nhiệm kỳ Ban Cán sự lớp chuyên ngành tính theo thời gian nào?",
+      "normalized_query_system": "Sinh viên: Lớp sinh viên ở Trường Đại học An Giang được tổ chức theo những hình thức nào và nhiệm kỳ Ban Cán sự lớp chuyên ngành tính như thế nào?",
+      "retrieval_query": "sinh vien: lop sinh vien o truong dai hoc an giang duoc to chuc theo nhung hinh thuc nao va nhiem ky ban can su lop chuyen nganh tinh nhu the nao?",
       "normalization_preservation": {
         "score": null,
         "total": 0,
@@ -396,18 +180,402 @@
       "retrieval": {
         "top_k": 6,
         "retrieved_k": 12,
-        "hit_at_3": true,
-        "hit_at_5": true,
-        "hit_at_6": true,
-        "hit_at_k": true,
-        "reciprocal_rank": 1.0,
-        "matched_rank": 1,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
         "retrieved": [
           {
             "rank": 1,
+            "source": "don-gia-han-hoc-phi-3.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 339
+          },
+          {
+            "rank": 2,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 244
+          },
+          {
+            "rank": 3,
             "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
             "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 327
+            "chunk_id": 329
+          },
+          {
+            "rank": 4,
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 270
+          },
+          {
+            "rank": 5,
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 294
+          },
+          {
+            "rank": 6,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 252
+          },
+          {
+            "rank": 7,
+            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 303
+          },
+          {
+            "rank": 8,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 9,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 243
+          },
+          {
+            "rank": 10,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 246
+          },
+          {
+            "rank": 11,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 323
+          },
+          {
+            "rank": 12,
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 296
+          }
+        ]
+      },
+      "answer": "Sinh viên của Trường Đại học An Giang được tổ chức theo hình thức chính quy, tức là họ đang học tập tại trường theo chương trình đào tạo chính quy. \n\nNhiệm kỳ Ban Cán sự lớp chuyên ngành được tính theo Quyết định số 3620/QĐ-ĐHAG ngày 01/12/2025 của Hiệu trưởng Trường Đại học An Giang, trong đó quy định số lượng chỉ tiêu tuyển sinh và quy mô đào tạo là 180 sinh viên/khóa. (don-gia-han-hoc-phi-3.docx)",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 7",
+          "1504"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
+      "predicted_citations": [
+        "2025",
+        "3620"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 0.5,
+        "unsupported_claims": [
+          "Nhiệm kỳ Ban Cán sự lớp chuyên ngành được tính theo Quyết định số 3620/QĐ-ĐHAG ngày 01/12/2025 của Hiệu trưởng Trường Đại học An Giang, trong đó quy định số lượng chỉ tiêu tuyển sinh và quy mô đào tạo là 180 sinh viên/khóa."
+        ],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 9.33,
+      "error": null
+    },
+    {
+      "id": "Q03",
+      "category": "quy chế công tác sinh viên",
+      "raw_query": "Sinh viên có hoàn cảnh khó khăn được hỗ trợ gì về vay vốn và đóng học phí theo Quy chế công tác sinh viên?",
+      "normalized_query_expected": "Theo quy chế công tác sinh viên, sinh viên có hoàn cảnh khó khăn được hỗ trợ gì về vay vốn ngân hàng và thời gian đóng học phí?",
+      "normalized_query_system": "Sinh viên có hoàn cảnh khó khăn được hỗ trợ gì về vay vốn và đóng học phí theo Quy chế công tác sinh viên?",
+      "retrieval_query": "sinh vien co hoan canh kho khan duoc ho tro gi ve vay von va dong hoc phi theo quy che cong tac sinh vien? ho tro hoc phi mien giam hoc phi che do chinh sach hoc phi",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 323
+          },
+          {
+            "rank": 2,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 324
+          },
+          {
+            "rank": 3,
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 298
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
+          },
+          {
+            "rank": 5,
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 299
+          },
+          {
+            "rank": 6,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 322
+          },
+          {
+            "rank": 7,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 253
+          },
+          {
+            "rank": 8,
+            "source": "don-gia-han-hoc-phi-3.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 339
+          },
+          {
+            "rank": 9,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 325
+          },
+          {
+            "rank": 10,
+            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 303
+          },
+          {
+            "rank": 11,
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 294
+          },
+          {
+            "rank": 12,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 259
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 8",
+          "Khoản 5",
+          "1504"
+        ],
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match": 1.0
+      },
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": null,
+      "latency_seconds": 8.37,
+      "error": null
+    },
+    {
+      "id": "Q04",
+      "category": "khen thưởng sinh viên",
+      "raw_query": "Danh hiệu thi đua cá nhân sinh viên gồm mấy loại? Điều kiện đạt danh hiệu Sinh viên Khá và Sinh viên Giỏi là gì?",
+      "normalized_query_expected": "Danh hiệu thi đua cá nhân sinh viên gồm những loại nào và điều kiện đạt danh hiệu Sinh viên Khá, Sinh viên Giỏi là gì?",
+      "normalized_query_system": "Sinh viên có danh hiệu thi đua cá nhân được chia thành bao nhiêu loại? Điều kiện để đạt danh hiệu Sinh viên Khá và Sinh viên Giỏi là gì?",
+      "retrieval_query": "sinh vien co danh hieu thi dua ca nhan duoc chia thanh bao nhieu loai? dieu kien de dat danh hieu sinh vien kha va sinh vien gioi la gi?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.2,
+        "matched_rank": 5,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
+          },
+          {
+            "rank": 2,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 110
+          },
+          {
+            "rank": 3,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 4,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 116
+          },
+          {
+            "rank": 5,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 38
+          },
+          {
+            "rank": 6,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 90
+          },
+          {
+            "rank": 7,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 259
+          },
+          {
+            "rank": 8,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 108
+          },
+          {
+            "rank": 9,
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 266
+          },
+          {
+            "rank": 10,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 114
+          },
+          {
+            "rank": 11,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 112
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 37
+          }
+        ]
+      },
+      "answer": "Sinh viên có danh hiệu thi đua cá nhân được chia thành 3 loại:\n\n1. Sinh viên Khá: Được chấm điểm từ 8.0 trở lên.\n2. Sinh viên Giỏi: Được chấm điểm từ 9.0 trở lên.\n3. Sinh viên Xuat Sắc: Được chấm điểm từ 10.0 trở lên.\n\nĐiều kiện để đạt danh hiệu Sinh viên Khá là:\n\n- Có điểm trung bình từ 8.0 trở lên.\n\nĐiều kiện để đạt danh hiệu Sinh viên Giỏi là:\n\n- Có điểm trung bình từ 9.0 trở lên.\n\nĐiều kiện để đạt danh hiệu Sinh viên Xuat Sắc là:\n\n- Có điểm trung bình từ 10.0 trở lên.",
+      "is_refusal_answer": false,
+      "citations": {
+        "expected": [
+          "Điều 14",
+          "Khoản 2",
+          "1504"
+        ],
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match": 1.0
+      },
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 0.0,
+        "unsupported_claims": [
+          "Sinh viên có danh hiệu thi đua cá nhân được chia thành 3 loại: Sinh viên Khá, Sinh viên Giỏi, Sinh viên Xuat Sắc.",
+          "Sinh viên Khá: Được chấm điểm từ 8.0 trở lên.",
+          "Sinh viên Giỏi: Được chấm điểm từ 9.0 trở lên.",
+          "Sinh viên Xuat Sắc: Được chấm điểm từ 10.0 trở lên.",
+          "Điều kiện để đạt danh hiệu Sinh viên Khá là: Có điểm trung bình từ 8.0 trở lên.",
+          "Điều kiện để đạt danh hiệu Sinh viên Giỏi là: Có điểm trung bình từ 9.0 trở lên.",
+          "Điều kiện để đạt danh hiệu Sinh viên Xuat Sắc là: Có điểm trung bình từ 10.0 trở lên."
+        ],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 0.4,
+      "latency_seconds": 0.79,
+      "error": null
+    },
+    {
+      "id": "Q05",
+      "category": "khen thưởng sinh viên",
+      "raw_query": "Lớp sinh viên muốn đạt danh hiệu Lớp sinh viên Xuất sắc cần thêm điều kiện gì ngoài các tiêu chuẩn của Lớp sinh viên Tiên tiến?",
+      "normalized_query_expected": "Điều kiện đạt danh hiệu Lớp sinh viên Xuất sắc gồm những gì ngoài tiêu chuẩn Lớp sinh viên Tiên tiến?",
+      "normalized_query_system": "Sinh viên muốn đạt danh hiệu Lớp sinh viên Xuất sắc cần thêm điều kiện gì ngoài các tiêu chuẩn của Lớp sinh viên Tiên tiến?",
+      "retrieval_query": "sinh vien muon dat danh hieu lop sinh vien xuat sac can them dieu kien gi ngoai cac tieu chuan cua lop sinh vien tien tien?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0909,
+        "matched_rank": 11,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 324
           },
           {
             "rank": 2,
@@ -417,94 +585,109 @@
           },
           {
             "rank": 3,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 338
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 266
           },
           {
             "rank": 4,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 331
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
           },
           {
             "rank": 5,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 326
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 91
           },
           {
             "rank": 6,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 337
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 259
           },
           {
             "rank": 7,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 332
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 101
           },
           {
             "rank": 8,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 330
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 271
           },
           {
             "rank": 9,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
             "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 333
+            "chunk_id": 296
           },
           {
             "rank": 10,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 328
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 102
           },
           {
             "rank": 11,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 336
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 38
           },
           {
             "rank": 12,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 335
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
           }
         ]
       },
-      "answer": "Điểm trung bình toàn khóa đào tạo cử nhân ngành Công nghệ thông tin đạt mức độ \"Giỏi\" (3,5 trên 4).",
+      "answer": "Sinh viên muốn đạt danh hiệu Lớp sinh viên Xuất sắc cần thêm điều kiện sau:\n\n- Tính chính xác và trung thực: Sinh viên có trách nhiệm kê khai thông tin đầy đủ, trung thực và chính xác. Nhà trường sẽ tiến hành hậu kiểm, nếu phát hiện gian lận sẽ xử lý theo quy định.\n\n- Quyền lợi: Nhà trường ưu tiên xem xét, giải quyết chế độ hỗ trợ đối với những sinh viên tham gia khảo sát đúng thời hạn. Trường hợp sinh viên thuộc đối tượng hỗ 722/TB-ĐHAG ngày 22 tháng 05 năm 2026\n\n- Tính chính xác và trung thực: Sinh viên có trách nhiệm kê khai thông tin đầy đủ, trung thực và chính xác. Nhà trường sẽ tiến hành hậu kiểm, nếu phát hiện gian lận sẽ xử lý theo quy định.",
       "is_refusal_answer": false,
-      "citations": null,
-      "predicted_citations": [],
+      "citations": {
+        "expected": [
+          "Điều 14",
+          "10%",
+          "1504"
+        ],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match": 0.0
+      },
+      "predicted_citations": [
+        "2026"
+      ],
       "refusal_expected": false,
       "refusal_correct": null,
       "hallucinated_on_unanswerable": false,
       "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
+        "score": 0.0,
+        "unsupported_claims": [
+          "Sinh viên muốn đạt danh hiệu Lớp sinh viên Xuất sắc cần thêm điều kiện: Tính chính xác và trung thực: Sinh viên có trách nhiệm kê khai thông tin đầy đủ, trung thực và chính xác. Nhà trường sẽ tiến hành hậu kiểm, nếu phát hiện gian lận sẽ xử lý theo quy định.",
+          "Quyền lợi: Nhà trường ưu tiên xem xét, giải quyết chế độ hỗ trợ đối với những sinh viên tham gia khảo sát đúng thời hạn. Trường hợp sinh viên thuộc đối tượng hỗ 722/TB-ĐHAG ngày 22 tháng 05 năm 2026"
+        ],
+        "method": "llm_judge",
         "error": null
       },
       "number_support": 1.0,
-      "latency_seconds": 14.4,
+      "latency_seconds": 0.81,
       "error": null
     },
     {
-      "id": "Q05",
-      "category": "khen thưởng sinh viên",
-      "raw_query": "Theo Quyết định số 1504/QĐ-ĐHAG, sinh viên có điểm học phần lần thứ nhất dưới bao nhiêu thì không được xét khen thưởng danh hiệu thi đua cả năm học?",
-      "normalized_query_expected": "Sinh viên có điểm học phần lần thứ nhất dưới bao nhiêu thì không được xét khen thưởng danh hiệu thi đua năm học?",
-      "normalized_query_system": "Điểm học phần lần thứ nhất dưới bao nhiêu điểm không đủ điều kiện xét khen thưởng danh hiệu thi đua cả năm học theo Quyết định số 1504/QĐ-ĐHAG?",
-      "retrieval_query": "diem hoc phan lan thu nhat duoi bao nhieu diem khong du dieu kien xet khen thuong danh hieu thi dua ca nam hoc theo quyet dinh so 1504/qd-dhag?",
+      "id": "Q06",
+      "category": "kỷ luật sinh viên",
+      "raw_query": "Sau bao lâu thì quyết định kỷ luật khiển trách và quyết định kỷ luật cảnh cáo đối với sinh viên được chấm dứt hiệu lực nếu không tái phạm?",
+      "normalized_query_expected": "Quyết định kỷ luật khiển trách và cảnh cáo được chấm dứt hiệu lực sau bao nhiêu tháng nếu sinh viên không tái phạm?",
+      "normalized_query_system": "Sinh viên: Sau bao lâu thì quyết định kỷ luật khiển trách và kỷ luật cảnh cáo đối với sinh viên được chấm dứt hiệu lực nếu không tái phạm?",
+      "retrieval_query": "sinh vien: sau bao lau thi quyet dinh ky luat khien trach va ky luat canh cao doi voi sinh vien duoc cham dut hieu luc neu khong tai pham?",
       "normalization_preservation": {
-        "score": 1.0,
-        "total": 1,
-        "preserved": 1,
+        "score": null,
+        "total": 0,
+        "preserved": 0,
         "lost": []
       },
       "retrieval": {
@@ -519,110 +702,106 @@
         "retrieved": [
           {
             "rank": 1,
-            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 271
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 298
           },
           {
             "rank": 2,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
             "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 331
+            "chunk_id": 324
           },
           {
             "rank": 3,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 253
+            "source": "don-gia-han-hoc-phi-3.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 339
           },
           {
             "rank": 4,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 325
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
           },
           {
             "rank": 5,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 210
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 264
           },
           {
             "rank": 6,
             "source": "1054-qd-dhag-2020-09-28.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 39
+            "chunk_id": 46
           },
           {
             "rank": 7,
             "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
-            "chunk_id": 252
+            "chunk_id": 255
           },
           {
             "rank": 8,
-            "source": "888-qd-dhag-2022-08-08.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 158
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 272
           },
           {
             "rank": 9,
-            "source": "888-qd-dhag-2022-08-08.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 161
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 323
           },
           {
             "rank": 10,
-            "source": "1059-qd-dhag-2020-09-29.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 61
+            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 305
           },
           {
             "rank": 11,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 223
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 266
           },
           {
             "rank": 12,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 211
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 325
           }
         ]
       },
-      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.",
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf)",
       "is_refusal_answer": false,
-      "citations": {
-        "expected": [
-          "Điều 14 Khoản 2"
-        ],
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "exact_match": 0.0
-      },
-      "predicted_citations": [],
+      "citations": null,
+      "predicted_citations": [
+        "1413",
+        "2026",
+        "2027"
+      ],
       "refusal_expected": false,
       "refusal_correct": null,
       "hallucinated_on_unanswerable": false,
       "faithfulness": {
-        "score": null,
+        "score": 1.0,
         "unsupported_claims": [],
-        "method": null,
+        "method": "llm_judge",
         "error": null
       },
-      "number_support": null,
-      "latency_seconds": 15.01,
+      "number_support": 1.0,
+      "latency_seconds": 8.78,
       "error": null
     },
     {
-      "id": "Q06",
-      "category": "thi đua tập thể",
-      "raw_query": "Để tập thể lớp sinh viên đạt danh hiệu Lớp sinh viên Tiên tiến, cần thỏa mãn các tiêu chuẩn cụ thể nào?",
-      "normalized_query_expected": "Tập thể lớp sinh viên cần thỏa mãn những tiêu chuẩn cụ thể nào để đạt danh hiệu Lớp sinh viên Tiên tiến?",
-      "normalized_query_system": "Để đạt danh hiệu Lớp sinh viên Tiên tiến, sinh viên cần đạt các tiêu chuẩn cụ thể như thế nào?",
-      "retrieval_query": "de dat danh hieu lop sinh vien tien tien, sinh vien can dat cac tieu chuan cu the nhu the nao?",
+      "id": "Q07",
+      "category": "đánh giá rèn luyện",
+      "raw_query": "Điểm rèn luyện của sinh viên ĐHAG gồm những nội dung đánh giá nào và mức điểm tối đa của từng nội dung là bao nhiêu?",
+      "normalized_query_expected": "Điểm rèn luyện sinh viên ĐHAG gồm mấy nội dung đánh giá, mỗi nội dung có điểm tối đa bao nhiêu?",
+      "normalized_query_system": "Sinh viên: Điểm rèn luyện của sinh viên ĐHAG gồm những nội dung đánh giá nào và mức điểm tối đa của từng nội dung là bao nhiêu?",
+      "retrieval_query": "sinh vien: diem ren luyen cua sinh vien dhag gom nhung noi dung danh gia nao va muc diem toi da cua tung noi dung la bao nhieu? ket qua ren luyen danh gia ket qua ren luyen xep loai ren luyen",
       "normalization_preservation": {
         "score": null,
         "total": 0,
@@ -634,132 +813,10 @@
         "retrieved_k": 12,
         "hit_at_3": false,
         "hit_at_5": false,
-        "hit_at_6": false,
-        "hit_at_k": false,
-        "reciprocal_rank": 0.0,
-        "matched_rank": null,
-        "retrieved": [
-          {
-            "rank": 1,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 329
-          },
-          {
-            "rank": 2,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 324
-          },
-          {
-            "rank": 3,
-            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 266
-          },
-          {
-            "rank": 4,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 331
-          },
-          {
-            "rank": 5,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 260
-          },
-          {
-            "rank": 6,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 91
-          },
-          {
-            "rank": 7,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 120
-          },
-          {
-            "rank": 8,
-            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 298
-          },
-          {
-            "rank": 9,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 102
-          },
-          {
-            "rank": 10,
-            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 271
-          },
-          {
-            "rank": 11,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 101
-          },
-          {
-            "rank": 12,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 112
-          }
-        ]
-      },
-      "answer": "Để đạt danh hiệu Lớp sinh viên Tiên tiến, sinh viên cần đạt các tiêu chuẩn cụ thể như sau:\n\n- Tính chính xác và trung thực trong kê khai thông tin.\n- Tham gia khảo sát đúng thời hạn.\n- Đóng tiền BHYT đúng theo quy định.\n- Tham gia BHYT và cài đặt ứng dụng VssID-BHXH số.\n- Tự chịu trách nhiệm về kết quả đăng ký của mình.\n- Chủ động nắm rõ quy định, thực hiện đúng quy trình, đúng thời gian và tự chịu trách nhiệm về kết quả đăng ký của mình.\n\nCác tiêu chuẩn này giúp sinh viên hoàn thành tốt khóa học, đáp ứng yêu cầu của chương trình đào tạo và đạt được thành tích cao trong học tập và sinh hoạt.",
-      "is_refusal_answer": false,
-      "citations": {
-        "expected": [
-          "Điều 14 Khoản 2"
-        ],
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "exact_match": 0.0
-      },
-      "predicted_citations": [],
-      "refusal_expected": false,
-      "refusal_correct": null,
-      "hallucinated_on_unanswerable": false,
-      "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
-        "error": null
-      },
-      "number_support": null,
-      "latency_seconds": 14.35,
-      "error": null
-    },
-    {
-      "id": "Q07",
-      "category": "khen thưởng tốt nghiệp",
-      "raw_query": "Sinh viên tốt nghiệp đại học toàn trường đạt thủ khoa cần đáp ứng tiêu chuẩn điểm số nào để được xét Bằng khen của Giám đốc ĐHQG-HCM?",
-      "normalized_query_expected": "Thủ khoa tốt nghiệp đại học toàn trường cần đáp ứng tiêu chuẩn điểm học tập và điểm rèn luyện nào để được tặng Bằng khen của Giám đốc ĐHQG-HCM?",
-      "normalized_query_system": "Sinh viên tốt nghiệp đại học toàn trường đạt thủ khoa cần đáp ứng tiêu chuẩn điểm số nào để được xét Bằng khen của Giám đốc ĐHQG-HCM?",
-      "retrieval_query": "sinh vien tot nghiep dai hoc toan truong dat thu khoa can dap ung tieu chuan diem so nao de duoc xet bang khen cua giam doc dhqg-hcm?",
-      "normalization_preservation": {
-        "score": null,
-        "total": 0,
-        "preserved": 0,
-        "lost": []
-      },
-      "retrieval": {
-        "top_k": 6,
-        "retrieved_k": 12,
-        "hit_at_3": true,
-        "hit_at_5": true,
         "hit_at_6": true,
         "hit_at_k": true,
-        "reciprocal_rank": 0.3333,
-        "matched_rank": 3,
+        "reciprocal_rank": 0.1667,
+        "matched_rank": 6,
         "retrieved": [
           {
             "rank": 1,
@@ -769,219 +826,100 @@
           },
           {
             "rank": 2,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 220
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 263
           },
           {
             "rank": 3,
-            "source": "1054-qd-dhag-2020-09-28.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 41
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 253
           },
           {
             "rank": 4,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 210
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 262
           },
           {
             "rank": 5,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 324
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 96
           },
           {
             "rank": 6,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "source": "1059-qd-dhag-2020-09-29.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 222
+            "chunk_id": 67
           },
           {
             "rank": 7,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 213
-          },
-          {
-            "rank": 8,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 221
-          },
-          {
-            "rank": 9,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 212
-          },
-          {
-            "rank": 10,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 325
-          },
-          {
-            "rank": 11,
             "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
             "tier": "cac_file_bo_xung_khac",
             "chunk_id": 306
           },
           {
-            "rank": 12,
-            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 270
-          }
-        ]
-      },
-      "answer": "Sinh viên tốt nghiệp đại học toàn trường đạt thủ khoa cần đáp ứng tiêu chuẩn điểm số 8,0 trở lên để được xét Bằng khen của Giám đốc ĐHQG-HCM.",
-      "is_refusal_answer": false,
-      "citations": {
-        "expected": [
-          "Điều 16 Khoản 11",
-          "Điều 5 Khoản 1"
-        ],
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "exact_match": 0.0
-      },
-      "predicted_citations": [],
-      "refusal_expected": false,
-      "refusal_correct": null,
-      "hallucinated_on_unanswerable": false,
-      "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
-        "error": null
-      },
-      "number_support": 1.0,
-      "latency_seconds": 14.37,
-      "error": null
-    },
-    {
-      "id": "Q08",
-      "category": "kỷ luật sinh viên",
-      "raw_query": "Sinh viên có hành vi đăng tải, bình luận, chia sẻ bài viết dung tục, xuyên tạc, bôi nhọ danh dự người khác trên mạng Internet bị xử lý kỷ luật như thế nào?",
-      "normalized_query_expected": "Hành vi đăng tải, bình luận, chia sẻ thông tin dung tục, xuyên tạc, bôi nhọ danh dự người khác trên mạng Internet bị xử lý kỷ luật như thế nào?",
-      "normalized_query_system": "Sinh viên vi phạm quy chế về đạo đức, lối sống và có hành vi dung tục, xuyên tạc, bôi nhọ danh dự người khác trên mạng Internet sẽ bị xử lý kỷ luật như thế nào?",
-      "retrieval_query": "sinh vien vi pham quy che ve dao duc, loi song va co hanh vi dung tuc, xuyen tac, boi nho danh du nguoi khac tren mang internet se bi xu ly ky luat nhu the nao?",
-      "normalization_preservation": {
-        "score": null,
-        "total": 0,
-        "preserved": 0,
-        "lost": []
-      },
-      "retrieval": {
-        "top_k": 6,
-        "retrieved_k": 12,
-        "hit_at_3": true,
-        "hit_at_5": true,
-        "hit_at_6": true,
-        "hit_at_k": true,
-        "reciprocal_rank": 0.3333,
-        "matched_rank": 3,
-        "retrieved": [
-          {
-            "rank": 1,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 324
-          },
-          {
-            "rank": 2,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 323
-          },
-          {
-            "rank": 3,
-            "source": "1054-qd-dhag-2020-09-28.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 57
-          },
-          {
-            "rank": 4,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 120
-          },
-          {
-            "rank": 5,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 119
-          },
-          {
-            "rank": 6,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 91
-          },
-          {
-            "rank": 7,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 117
-          },
-          {
             "rank": 8,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 329
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 73
           },
           {
             "rank": 9,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 99
-          },
-          {
-            "rank": 10,
             "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
             "tier": "Tầng 1",
             "chunk_id": 210
           },
           {
-            "rank": 11,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "rank": 10,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 112
+            "chunk_id": 64
+          },
+          {
+            "rank": 11,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 332
           },
           {
             "rank": 12,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 260
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 97
           }
         ]
       },
-      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.",
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)",
       "is_refusal_answer": false,
       "citations": null,
-      "predicted_citations": [],
+      "predicted_citations": [
+        "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+      ],
       "refusal_expected": false,
       "refusal_correct": null,
       "hallucinated_on_unanswerable": false,
       "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
+        "score": 0.0,
+        "unsupported_claims": [
+          "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)"
+        ],
+        "method": "llm_judge",
         "error": null
       },
-      "number_support": null,
-      "latency_seconds": 14.43,
+      "number_support": 1.0,
+      "latency_seconds": 16.2,
       "error": null
     },
     {
-      "id": "Q09",
-      "category": "kỷ luật sinh viên",
-      "raw_query": "Sinh viên có hành vi hút thuốc lá trong giờ học, phòng thí nghiệm và nơi cấm hút thuốc bị xử lý kỷ luật ra sao từ lần vi phạm thứ 3 trở lên?",
-      "normalized_query_expected": "Sinh viên hút thuốc lá trong giờ học, phòng thí nghiệm hoặc nơi cấm hút thuốc bị xử lý kỷ luật như thế nào từ lần vi phạm thứ 3 trở lên?",
-      "normalized_query_system": "Sinh viên vi phạm quy chế về sử dụng thuốc lá trong các môi trường cấm có thể bị xử lý kỷ luật từ lần vi phạm thứ 3 trở lên?",
-      "retrieval_query": "sinh vien vi pham quy che ve su dung thuoc la trong cac moi truong cam co the bi xu ly ky luat tu lan vi pham thu 3 tro len?",
+      "id": "Q08",
+      "category": "đánh giá rèn luyện",
+      "raw_query": "Sinh viên cần đạt bao nhiêu điểm ở tiêu chí 4 (ý thức công dân trong quan hệ cộng đồng) mới được cộng điểm thưởng, và những đối tượng nào được ngoại lệ?",
+      "normalized_query_expected": "Điều kiện được cộng điểm thưởng ở tiêu chí 4 của đánh giá rèn luyện là bao nhiêu điểm và đối tượng nào được ngoại lệ?",
+      "normalized_query_system": "Sinh viên cần đạt bao nhiêu điểm ở tiêu chí 4 (ý thức công dân trong quan hệ cộng đồng) mới được cộng điểm thưởng, và những đối tượng nào được ngoại lệ?",
+      "retrieval_query": "sinh vien can dat bao nhieu diem o tieu chi 4 (y thuc cong dan trong quan he cong dong) moi duoc cong diem thuong, va nhung doi tuong nao duoc ngoai le?",
       "normalization_preservation": {
         "score": 1.0,
         "total": 1,
@@ -992,87 +930,87 @@
         "top_k": 6,
         "retrieved_k": 12,
         "hit_at_3": false,
-        "hit_at_5": true,
-        "hit_at_6": true,
-        "hit_at_k": true,
-        "reciprocal_rank": 0.25,
-        "matched_rank": 4,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0833,
+        "matched_rank": 12,
         "retrieved": [
           {
             "rank": 1,
-            "source": "don-gia-han-hoc-phi-3.docx",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 339
-          },
-          {
-            "rank": 2,
             "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
             "tier": "cac_file_bo_xung_khac",
             "chunk_id": 324
           },
           {
-            "rank": 3,
+            "rank": 2,
             "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
             "tier": "Tầng 2",
             "chunk_id": 264
           },
           {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
             "rank": 4,
-            "source": "1054-qd-dhag-2020-09-28.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 2
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 329
           },
           {
             "rank": 5,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 210
+            "source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 340
           },
           {
             "rank": 6,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 119
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 265
           },
           {
             "rank": 7,
             "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
-            "chunk_id": 255
+            "chunk_id": 250
           },
           {
             "rank": 8,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 258
-          },
-          {
-            "rank": 9,
-            "source": "1059-qd-dhag-2020-09-29.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 63
-          },
-          {
-            "rank": 10,
             "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
             "chunk_id": 120
           },
           {
-            "rank": 11,
-            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "rank": 9,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 223
+            "chunk_id": 119
+          },
+          {
+            "rank": 10,
+            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 262
+          },
+          {
+            "rank": 11,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 330
           },
           {
             "rank": 12,
-            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "source": "1059-qd-dhag-2020-09-29.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 35
+            "chunk_id": 71
           }
         ]
       },
-      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.",
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf)",
       "is_refusal_answer": false,
       "citations": null,
       "predicted_citations": [],
@@ -1080,22 +1018,263 @@
       "refusal_correct": null,
       "hallucinated_on_unanswerable": false,
       "faithfulness": {
-        "score": null,
+        "score": 1.0,
         "unsupported_claims": [],
-        "method": null,
+        "method": "llm_judge",
         "error": null
       },
-      "number_support": null,
-      "latency_seconds": 14.06,
+      "number_support": 1.0,
+      "latency_seconds": 15.09,
+      "error": null
+    },
+    {
+      "id": "Q09",
+      "category": "đánh giá rèn luyện",
+      "raw_query": "Sinh viên đang bị kỷ luật khiển trách hoặc kỷ luật cảnh cáo thì xếp loại rèn luyện học kỳ đó bị giới hạn ở mức nào?",
+      "normalized_query_expected": "Sinh viên bị kỷ luật khiển trách hoặc cảnh cáo thì khi đánh giá rèn luyện không được vượt quá loại nào?",
+      "normalized_query_system": "Sinh viên bị kỷ luật khiển trách hoặc kỷ luật cảnh cáo sẽ bị xếp loại rèn luyện học kỳ đó bị giới hạn ở mức \"Điểm rèn luyện loại yếu\".",
+      "retrieval_query": "sinh vien bi ky luat khien trach hoac ky luat canh cao se bi xep loai ren luyen hoc ky do bi gioi han o muc \"diem ren luyen loai yeu\". xep loai ren luyen yeu ket qua ren luyen danh gia ket qua ren luyen",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.5,
+        "matched_rank": 2,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
+            "rank": 2,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 81
+          },
+          {
+            "rank": 3,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 259
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 258
+          },
+          {
+            "rank": 5,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 75
+          },
+          {
+            "rank": 6,
+            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 304
+          },
+          {
+            "rank": 7,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 324
+          },
+          {
+            "rank": 8,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 91
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 37
+          },
+          {
+            "rank": 10,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 38
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 39
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [
+        "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 15.51,
       "error": null
     },
     {
       "id": "Q10",
       "category": "đánh giá rèn luyện",
-      "raw_query": "Sinh viên không tham gia học tập và sinh hoạt trong Tuần Sinh hoạt công dân - sinh viên sẽ bị đánh giá điểm rèn luyện như thế nào?",
-      "normalized_query_expected": "Sinh viên không tham gia Tuần Sinh hoạt công dân - sinh viên bị trừ bao nhiêu điểm rèn luyện?",
-      "normalized_query_system": "Sinh viên không tham gia học tập và sinh hoạt trong Tuần Sinh hoạt công dân sẽ bị đánh giá điểm rèn luyện như thế nào?",
-      "retrieval_query": "sinh vien khong tham gia hoc tap va sinh hoat trong tuan sinh hoat cong dan se bi danh gia diem ren luyen nhu the nao?",
+      "raw_query": "Quy trình đánh giá kết quả rèn luyện của sinh viên trải qua những bước nào?",
+      "normalized_query_expected": "Quy trình đánh giá kết quả rèn luyện sinh viên gồm những bước nào?",
+      "normalized_query_system": "Sinh viên: Quy trình đánh giá kết quả rèn luyện của sinh viên trải qua những bước nào?",
+      "retrieval_query": "sinh vien: quy trinh danh gia ket qua ren luyen cua sinh vien trai qua nhung buoc nao? diem ren luyen",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.5,
+        "matched_rank": 2,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
+            "rank": 2,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 77
+          },
+          {
+            "rank": 3,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
+          },
+          {
+            "rank": 4,
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 298
+          },
+          {
+            "rank": 5,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 75
+          },
+          {
+            "rank": 6,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 91
+          },
+          {
+            "rank": 7,
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 296
+          },
+          {
+            "rank": 8,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 254
+          },
+          {
+            "rank": 9,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 97
+          },
+          {
+            "rank": 10,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 324
+          },
+          {
+            "rank": 11,
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 271
+          },
+          {
+            "rank": 12,
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 272
+          }
+        ]
+      },
+      "answer": "Trong ngữ cảnh của tài liệu, quy trình đánh giá kết quả rèn luyện của sinh viên được chia thành 6 bước chính:\n\n1. Sinh viên cần tham gia các hoạt động của Ban Thể dục Trung học, theo danh sách được nhà trường quy định.\n2. Sinh viên chủ động nắm rõ quy định và thực hiện đúng quy trình, đúng thời gian, chịu trách nhiệm về kết quả đăng ký của mình.\n3. Ban Thể dục Trung học xem xét, thông báo cho trường về kết quả của sinh viên.\n4. Ban Thể dục Trung học có quyền quyết định kết quả.\n5. Kết quả danh giá và phân loại của sinh viên được thông báo cho sinh viên trước 20 ngày trước khi họ hành động.\n6. Bước 6: Thực hiện thanh toán và xác nhận → Thanh toán hoàn tất.\n\nĐây là quy trình cơ bản để đánh giá và phân loại kết quả rèn luyện của sinh viên theo Quyết định số 262/VBHN-DHAG ngày 18/8/2014 của Hiệu trưởng Trường Đại học An Giang. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [
+        "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 0.0,
+        "unsupported_claims": [
+          "Quy trình đánh giá kết quả rèn luyện của sinh viên được chia thành 6 bước chính",
+          "Sinh viên cần tham gia các hoạt động của Ban Thể dục Trung học, theo danh sách được nhà trường quy định",
+          "Sinh viên chủ động nắm rõ quy định và thực hiện đúng quy trình, đúng thời gian, chịu trách nhiệm về kết quả đăng ký của mình",
+          "Ban Thể dục Trung học xem xét, thông báo cho trường về kết quả của sinh viên",
+          "Ban Thể dục Trung học có quyền quyết định kết quả",
+          "Kết quả danh giá và phân loại của sinh viên được thông báo cho sinh viên trước 20 ngày trước khi họ hành động",
+          "Bước 6: Thực hiện thanh toán và xác nhận → Thanh toán hoàn tất",
+          "Quy trình trên là quy trình cơ bản để đánh giá và phân loại kết quả rèn luyện của sinh viên theo Quyết định số 262/VBHN-DHAG ngày 18/8/2014 của Hiệu trưởng Trường Đại học An Giang"
+        ],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 15.86,
+      "error": null
+    },
+    {
+      "id": "Q11",
+      "category": "đánh giá rèn luyện",
+      "raw_query": "Trong khung điểm rèn luyện, vắng một buổi Sinh hoạt công dân - sinh viên đầu năm bị trừ bao nhiêu điểm và kết quả thu hoạch Tuần Sinh hoạt công dân được quy đổi thế nào?",
+      "normalized_query_expected": "Vắng 1 buổi Sinh hoạt công dân - sinh viên bị trừ bao nhiêu điểm rèn luyện và điểm thu hoạch Tuần SHCD quy đổi ra sao?",
+      "normalized_query_system": "Sinh viên: Trong khung điểm rèn luyện, vắng một buổi Sinh hoạt công dân - sinh viên đầu năm bị trừ bao nhiêu điểm và kết quả thu hoạch Tuần Sinh hoạt công dân được quy đổi thế nào?",
+      "retrieval_query": "sinh vien: trong khung diem ren luyen, vang mot buoi sinh hoat cong dan - sinh vien dau nam bi tru bao nhieu diem va ket qua thu hoach tuan sinh hoat cong dan duoc quy doi the nao? ket qua ren luyen danh gia ket qua ren luyen xep loai ren luyen",
       "normalization_preservation": {
         "score": null,
         "total": 0,
@@ -1114,114 +1293,346 @@
         "retrieved": [
           {
             "rank": 1,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 323
-          },
-          {
-            "rank": 2,
             "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
             "chunk_id": 256
           },
           {
-            "rank": 3,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 247
-          },
-          {
-            "rank": 4,
-            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 264
-          },
-          {
-            "rank": 5,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 325
-          },
-          {
-            "rank": 6,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 260
-          },
-          {
-            "rank": 7,
+            "rank": 2,
             "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
             "chunk_id": 255
           },
           {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
+          },
+          {
+            "rank": 5,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 259
+          },
+          {
+            "rank": 6,
+            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 304
+          },
+          {
+            "rank": 7,
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 271
+          },
+          {
             "rank": 8,
             "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
             "tier": "Tầng 2",
-            "chunk_id": 266
+            "chunk_id": 263
           },
           {
             "rank": 9,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 324
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 247
           },
           {
             "rank": 10,
-            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 272
+            "source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 340
           },
           {
             "rank": 11,
-            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
-            "chunk_id": 262
+            "chunk_id": 250
+          },
+          {
+            "rank": 12,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 324
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (KH To chuc HK 261 - 20260612.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [
+        "kh to chuc hk 261 - 20260612.pdf"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 16.29,
+      "error": null
+    },
+    {
+      "id": "Q12",
+      "category": "sinh viên 5 tốt",
+      "raw_query": "Muốn đạt tiêu chuẩn 'Đạo đức tốt' của danh hiệu Sinh viên 5 tốt cấp Trường, điểm rèn luyện trung bình cả năm học phải đạt bao nhiêu?",
+      "normalized_query_expected": "Điểm rèn luyện trung bình cả năm học phải đạt bao nhiêu để đạt tiêu chuẩn Đạo đức tốt của danh hiệu Sinh viên 5 tốt cấp Trường?",
+      "normalized_query_system": "Sinh viên cần đạt điểm trung bình rèn luyện toàn khóa học ít nhất là 8.0 để đạt tiêu chuẩn 'Đạo đức tốt' của danh hiệu Sinh viên 5 tốt cấp Trường.",
+      "retrieval_query": "sinh vien can dat diem trung binh ren luyen toan khoa hoc it nhat la 8.0 de dat tieu chuan 'dao duc tot' cua danh hieu sinh vien 5 tot cap truong. ket qua ren luyen danh gia ket qua ren luyen diem ren luyen",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 1,
+        "preserved": 1,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.5,
+        "matched_rank": 2,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
+            "rank": 2,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 97
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 329
+          },
+          {
+            "rank": 4,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 106
+          },
+          {
+            "rank": 5,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
+          },
+          {
+            "rank": 6,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 91
+          },
+          {
+            "rank": 7,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 41
+          },
+          {
+            "rank": 8,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 108
+          },
+          {
+            "rank": 9,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 218
+          },
+          {
+            "rank": 10,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 103
+          },
+          {
+            "rank": 11,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 220
           },
           {
             "rank": 12,
             "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 99
+            "chunk_id": 112
           }
         ]
       },
-      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.",
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)",
       "is_refusal_answer": false,
-      "citations": {
-        "expected": [
-          "Điều 5 Khoản 1"
-        ],
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "exact_match": 0.0
-      },
-      "predicted_citations": [],
+      "citations": null,
+      "predicted_citations": [
+        "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+      ],
       "refusal_expected": false,
       "refusal_correct": null,
       "hallucinated_on_unanswerable": false,
       "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
+        "score": 0.0,
+        "unsupported_claims": [
+          "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này."
+        ],
+        "method": "llm_judge",
         "error": null
       },
-      "number_support": null,
-      "latency_seconds": 13.51,
+      "number_support": 1.0,
+      "latency_seconds": 15.53,
       "error": null
     },
     {
-      "id": "Q11",
-      "category": "phân loại rèn luyện",
-      "raw_query": "Sinh viên bị xếp loại rèn luyện Yếu trong bao nhiêu học kỳ chính liên tiếp thì bị buộc thôi học? Thang điểm và tiêu chuẩn phân loại kết quả rèn luyện của sinh viên theo các mức Xuất sắc, Tốt, Khá được quy định như thế nào?",
-      "normalized_query_expected": "Sinh viên bị xếp loại rèn luyện Yếu trong bao nhiêu học kỳ liên tiếp thì bị buộc thôi học, và thang điểm phân loại rèn luyện quy định thế nào?",
-      "normalized_query_system": "Sinh viên bị xếp loại rèn luyện Yếu trong bao nhiêu học kỳ liên tiếp thì bị buộc thôi học?",
-      "retrieval_query": "sinh vien bi xep loai ren luyen yeu trong bao nhieu hoc ky lien tiep thi bi buoc thoi hoc?",
+      "id": "Q13",
+      "category": "sinh viên 5 tốt",
+      "raw_query": "Tiêu chuẩn 'Học tập tốt' của danh hiệu Sinh viên 5 tốt cấp Trường yêu cầu điểm trung bình bao nhiêu và phải đạt thêm mấy tiêu chí?",
+      "normalized_query_expected": "Tiêu chuẩn Học tập tốt của danh hiệu SV 5 tốt cấp Trường yêu cầu điểm trung bình chung bao nhiêu và đạt thêm bao nhiêu tiêu chí phụ?",
+      "normalized_query_system": "Sinh viên cần đạt điểm trung bình tối thiểu là 8.0 và phải hoàn thành thêm các tiêu chí như: thành tích học tập, năng lực ngoại ngữ, kỹ năng mềm, và khả năng thực hành.",
+      "retrieval_query": "sinh vien can dat diem trung binh toi thieu la 8.0 va phai hoan thanh them cac tieu chi nhu: thanh tich hoc tap, nang luc ngoai ngu, ky nang mem, va kha nang thuc hanh.",
       "normalization_preservation": {
-        "score": null,
-        "total": 0,
+        "score": 0.0,
+        "total": 1,
         "preserved": 0,
+        "lost": [
+          "5"
+        ]
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 330
+          },
+          {
+            "rank": 2,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 329
+          },
+          {
+            "rank": 4,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 328
+          },
+          {
+            "rank": 5,
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 271
+          },
+          {
+            "rank": 6,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 338
+          },
+          {
+            "rank": 7,
+            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 294
+          },
+          {
+            "rank": 8,
+            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 324
+          },
+          {
+            "rank": 9,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
+          },
+          {
+            "rank": 10,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 327
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 41
+          },
+          {
+            "rank": 12,
+            "source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 340
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [
+        "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 0.0,
+        "unsupported_claims": [
+          "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)"
+        ],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 14.85,
+      "error": null
+    },
+    {
+      "id": "Q14",
+      "category": "sinh viên 5 tốt",
+      "raw_query": "Tập thể Sinh viên 5 tốt cấp Trường cần đạt tỷ lệ sinh viên tham gia phong trào và tỷ lệ sinh viên đạt danh hiệu SV 5 tốt là bao nhiêu?",
+      "normalized_query_expected": "Tập thể Sinh viên 5 tốt cấp Trường yêu cầu tỷ lệ SV tham gia phong trào và tỷ lệ SV đạt danh hiệu SV 5 tốt là bao nhiêu?",
+      "normalized_query_system": "Sinh viên cần đạt tỷ lệ sinh viên tham gia phong trào và tỷ lệ sinh viên đạt danh hiệu SV 5 tốt trong tập thể Sinh viên 5 tốt cấp Trường là bao nhiêu?",
+      "retrieval_query": "sinh vien can dat ty le sinh vien tham gia phong trao va ty le sinh vien dat danh hieu sv 5 tot trong tap the sinh vien 5 tot cap truong la bao nhieu?",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 2,
+        "preserved": 2,
         "lost": []
       },
       "retrieval": {
@@ -1236,63 +1647,63 @@
         "retrieved": [
           {
             "rank": 1,
-            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 81
+            "chunk_id": 104
           },
           {
             "rank": 2,
-            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 262
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 96
           },
           {
             "rank": 3,
             "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 91
+            "chunk_id": 103
           },
           {
             "rank": 4,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 255
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 108
           },
           {
             "rank": 5,
             "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 101
+            "chunk_id": 94
           },
           {
             "rank": 6,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 331
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 260
           },
           {
             "rank": 7,
-            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 270
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 116
           },
           {
             "rank": 8,
             "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 118
+            "chunk_id": 99
           },
           {
             "rank": 9,
-            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 67
+            "chunk_id": 110
           },
           {
             "rank": 10,
-            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 61
+            "chunk_id": 95
           },
           {
             "rank": 11,
@@ -1302,387 +1713,40 @@
           },
           {
             "rank": 12,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 260
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 106
           }
         ]
       },
-      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.",
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (Điều 7 — 118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf)",
       "is_refusal_answer": false,
-      "citations": {
-        "expected": [
-          "Điều 14 Khoản 5",
-          "Điều 10 Khoản 2"
+      "citations": null,
+      "predicted_citations": [
+        "dieu 7 — 118_quy che xet chon danh hieu sinh vien 5 tot, tap the sinh vien 5 tot va giai thuong sao thang gieng cap truong giai doan 2026-2028_dadongdau.pdf"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 0.0,
+        "unsupported_claims": [
+          "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này."
         ],
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "exact_match": 0.0
-      },
-      "predicted_citations": [],
-      "refusal_expected": false,
-      "refusal_correct": null,
-      "hallucinated_on_unanswerable": false,
-      "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
-        "error": null
-      },
-      "number_support": null,
-      "latency_seconds": 14.86,
-      "error": null
-    },
-    {
-      "id": "Q12",
-      "category": "nội quy ký túc xá",
-      "raw_query": "Vị trí cổng ra vào Ký túc xá Trường ĐHAG được điều chỉnh cụ thể ra sao theo Thông báo số 16/TB-TDVKTX ngày 16/7/2026?",
-      "normalized_query_expected": "Vị trí cổng ra vào Ký túc xá Trường Đại học An Giang được điều chỉnh như thế nào theo Thông báo số 16?",
-      "normalized_query_system": "Điều chỉnh vị trí cổng ra vào Ký túc xá Trường ĐHAG theo Thông báo số 16/TB-TDVKTX ngày 16/7/2026 có hiệu lực từ ngày nào?",
-      "retrieval_query": "dieu chinh vi tri cong ra vao ky tuc xa truong dhag theo thong bao so 16/tb-tdvktx ngay 16/7/2026 co hieu luc tu ngay nao?",
-      "normalization_preservation": {
-        "score": 1.0,
-        "total": 4,
-        "preserved": 4,
-        "lost": []
-      },
-      "retrieval": {
-        "top_k": 6,
-        "retrieved_k": 12,
-        "hit_at_3": false,
-        "hit_at_5": false,
-        "hit_at_6": true,
-        "hit_at_k": true,
-        "reciprocal_rank": 0.1667,
-        "matched_rank": 6,
-        "retrieved": [
-          {
-            "rank": 1,
-            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 306
-          },
-          {
-            "rank": 2,
-            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 272
-          },
-          {
-            "rank": 3,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 248
-          },
-          {
-            "rank": 4,
-            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 270
-          },
-          {
-            "rank": 5,
-            "source": "888-qd-dhag-2022-08-08.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 159
-          },
-          {
-            "rank": 6,
-            "source": "TB16 THAY DOI CONG RA VAO KTX.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 268
-          },
-          {
-            "rank": 7,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 247
-          },
-          {
-            "rank": 8,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 325
-          },
-          {
-            "rank": 9,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 255
-          },
-          {
-            "rank": 10,
-            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 121
-          },
-          {
-            "rank": 11,
-            "source": "1054-qd-dhag-2020-09-28.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 53
-          },
-          {
-            "rank": 12,
-            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 350
-          }
-        ]
-      },
-      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.",
-      "is_refusal_answer": false,
-      "citations": null,
-      "predicted_citations": [],
-      "refusal_expected": false,
-      "refusal_correct": null,
-      "hallucinated_on_unanswerable": false,
-      "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
-        "error": null
-      },
-      "number_support": null,
-      "latency_seconds": 13.66,
-      "error": null
-    },
-    {
-      "id": "Q13",
-      "category": "hỗ trợ học phí",
-      "raw_query": "Theo Thông báo số 722/TB-ĐHAG ngày 22/05/2026, những đối tượng nào không thuộc diện tham gia khảo sát hỗ trợ học phí và nếu không khảo sát thì bị xử lý ra sao?",
-      "normalized_query_expected": "Đối tượng nào không thuộc diện tham gia khảo sát hỗ trợ học phí theo Thông báo số 722 và chế tài nếu không tham gia khảo sát là gì?",
-      "normalized_query_system": "Đối tượng nào không thuộc diện tham gia khảo sát hỗ trợ học phí và nếu không khảo sát thì bị xử lý theo Thông báo số 722/TB-ĐHAG ngày 22/05/2026?",
-      "retrieval_query": "doi tuong nao khong thuoc dien tham gia khao sat ho tro hoc phi va neu khong khao sat thi bi xu ly theo thong bao so 722/tb-dhag ngay 22/05/2026?",
-      "normalization_preservation": {
-        "score": 1.0,
-        "total": 4,
-        "preserved": 4,
-        "lost": []
-      },
-      "retrieval": {
-        "top_k": 6,
-        "retrieved_k": 12,
-        "hit_at_3": true,
-        "hit_at_5": true,
-        "hit_at_6": true,
-        "hit_at_k": true,
-        "reciprocal_rank": 1.0,
-        "matched_rank": 1,
-        "retrieved": [
-          {
-            "rank": 1,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 325
-          },
-          {
-            "rank": 2,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 324
-          },
-          {
-            "rank": 3,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 323
-          },
-          {
-            "rank": 4,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 322
-          },
-          {
-            "rank": 5,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 253
-          },
-          {
-            "rank": 6,
-            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 266
-          },
-          {
-            "rank": 7,
-            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 306
-          },
-          {
-            "rank": 8,
-            "source": "don-xac-nhan-hoan-canh-kho-khan.docx",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 342
-          },
-          {
-            "rank": 9,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 260
-          },
-          {
-            "rank": 10,
-            "source": "1059-qd-dhag-2020-09-29.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 61
-          },
-          {
-            "rank": 11,
-            "source": "1059-qd-dhag-2020-09-29.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 86
-          },
-          {
-            "rank": 12,
-            "source": "don-gia-han-hoc-phi-3.docx",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 339
-          }
-        ]
-      },
-      "answer": "Đối tượng không thuộc diện tham gia khảo sát hỗ trợ học phí và nếu không khảo sát thì bị xử lý theo Thông báo số 722/TB-ĐHAG ngày 22/05/2026 là:\n\n- Sinh viên có hoàn cảnh khó khăn bị tai nạn hoặc mắc bệnh hiểm nghèo (theo danh mục bệnh hiểm nghèo hiện hành của Bộ Y tế).\n- Sinh viên mồ côi cả cha lẫn mẹ nhưng không thuộc diện hưởng chính sách miễn, giảm học phí theo quy định hiện hành của Nhà nước.\n- Sinh viên có gia đình bị ảnh hưởng nặng nề bởi thiên tai, hỏa hoạn, dịch bệnh (có văn bản xác nhận của chính quyền địa phương).\n- Sinh viên có cha và mẹ mắc bệnh hiểm nghèo; hoặc có cha/mẹ đã mất và người còn lại mắc bệnh hiểm nghèo.\n- Sinh viên thuộc hộ nghèo, hộ cận nghèo theo quy định của Chính phủ năm 2026.",
-      "is_refusal_answer": false,
-      "citations": null,
-      "predicted_citations": [],
-      "refusal_expected": false,
-      "refusal_correct": null,
-      "hallucinated_on_unanswerable": false,
-      "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
+        "method": "llm_judge",
         "error": null
       },
       "number_support": 1.0,
-      "latency_seconds": 15.32,
-      "error": null
-    },
-    {
-      "id": "Q14",
-      "category": "miễn giảm học phí",
-      "raw_query": "Hồ sơ đề nghị miễn giảm học phí đối với đối tượng 'Sinh viên mồ côi cả cha lẫn mẹ, không nơi nương tựa' gồm những giấy tờ gì?",
-      "normalized_query_expected": "Hồ sơ miễn giảm học phí cho sinh viên mồ côi cả cha lẫn mẹ không nơi nương tựa bao gồm những giấy tờ gì?",
-      "normalized_query_system": "Sinh viên cần cung cấp những giấy tờ gì để đề nghị miễn giảm học phí đối với đối tượng 'Sinh viên mồ côi cả cha lẫn mẹ, không nơi nương tựa'?",
-      "retrieval_query": "sinh vien can cung cap nhung giay to gi de de nghi mien giam hoc phi doi voi doi tuong 'sinh vien mo coi ca cha lan me, khong noi nuong tua'?",
-      "normalization_preservation": {
-        "score": null,
-        "total": 0,
-        "preserved": 0,
-        "lost": []
-      },
-      "retrieval": {
-        "top_k": 6,
-        "retrieved_k": 12,
-        "hit_at_3": false,
-        "hit_at_5": false,
-        "hit_at_6": false,
-        "hit_at_k": false,
-        "reciprocal_rank": 0.0,
-        "matched_rank": null,
-        "retrieved": [
-          {
-            "rank": 1,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 323
-          },
-          {
-            "rank": 2,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 324
-          },
-          {
-            "rank": 3,
-            "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 266
-          },
-          {
-            "rank": 4,
-            "source": "don-xac-nhan-hoan-canh-kho-khan.docx",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 340
-          },
-          {
-            "rank": 5,
-            "source": "don-gia-han-hoc-phi-3.docx",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 339
-          },
-          {
-            "rank": 6,
-            "source": "don-xac-nhan-hoan-canh-kho-khan.docx",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 342
-          },
-          {
-            "rank": 7,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 325
-          },
-          {
-            "rank": 8,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 322
-          },
-          {
-            "rank": 9,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 260
-          },
-          {
-            "rank": 10,
-            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 298
-          },
-          {
-            "rank": 11,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 253
-          },
-          {
-            "rank": 12,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 252
-          }
-        ]
-      },
-      "answer": "Sinh viên cần cung cấp các giấy tờ sau để đề nghị miễn giảm học phí đối với đối tượng 'Sinh viên mồ côi cả cha lẫn mẹ, không nơi nương tựa':\n\n1. Văn bản xác nhận từ chính quyền địa phương về việc sinh viên là con mồ côi cả cha lẫn mẹ.\n2. Giấy chứng minh nhân dân hoặc hộ khẩu của sinh viên.\n3. Giấy chứng nhận kết hôn hoặc không kết hôn của sinh viên.\n4. Giấy chứng nhận việc làm của sinh viên nếu có.\n5. Giấy chứng nhận việc học của sinh viên nếu có.\n6. Giấy chứng nhận việc ở của sinh viên nếu có.\n7. Giấy chứng nhận việc làm của sinh viên nếu có.\n8. Giấy chứng nhận việc học của sinh viên nếu có.\n9. Giấy chứng nhận việc ở của sinh viên nếu có.\n10. Giấy chứng nhận việc làm của sinh viên nếu có.\n11. Giấy chứng nhận việc học của sinh viên nếu có.\n12. Giấy chứng nhận việc ở của sinh viên nếu có.\n13. Giấy chứng nhận việc làm của sinh viên nếu có.\n14. Giấy chứng nhận việc học của sinh viên nếu có.\n15. Giấy chứng nhận việc ở của sinh viên nếu có.\n16. Giấy chứng nhận việc làm của sinh viên nếu có.\n17. Giấy chứng nhận việc học của sinh viên nếu có.\n18. Giấy chứng nhận việc ở của sinh viên nếu có.\n19. Giấy chứng nhận việc làm của sinh viên nếu có.\n20. Giấy chứng nhận việc học của sinh viên nếu có.\n21. Giấy chứng nhận việc ở của sinh viên nếu có.\n22. Giấy chứng nhận việc làm của sinh viên nếu có.\n23. Giấy chứng nhận việc học của sinh viên nếu có.\n24. Giấy chứng nhận việc ở của sinh viên nếu có.\n25. Giấy chứng nhận việc làm của sinh viên nếu có.\n26. Giấy chứng nhận việc học của sinh viên nếu có.\n27. Giấy chứng nhận việc ở của sinh viên nếu có.\n28. Giấy chứng nhận việc làm của sinh viên nếu có.\n29. Giấy chứng nhận việc học của sinh viên nếu có.\n30. Giấy chứng nhận việc ở của sinh viên nếu có.\n31. Giấy chứng nhận việc làm của sinh viên nếu có.\n32. Giấy chứng nhận việc học của sinh viên nếu có.\n33. Giấy chứng nhận việc ở của sinh viên nếu có.",
-      "is_refusal_answer": false,
-      "citations": null,
-      "predicted_citations": [],
-      "refusal_expected": false,
-      "refusal_correct": null,
-      "hallucinated_on_unanswerable": false,
-      "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
-        "error": null
-      },
-      "number_support": 0.6061,
-      "latency_seconds": 19.32,
+      "latency_seconds": 15.25,
       "error": null
     },
     {
       "id": "Q15",
-      "category": "khung điểm rèn luyện",
-      "raw_query": "Quy chế đánh giá kết quả rèn luyện của sinh viên Đại học An Giang quy định khung điểm đánh giá tối đa là bao nhiêu và chia thành mấy mức xếp loại?",
-      "normalized_query_expected": "Khung điểm đánh giá kết quả rèn luyện tối đa của sinh viên ĐHAG là bao nhiêu và gồm mấy mức xếp loại?",
-      "normalized_query_system": "Đánh giá kết quả rèn luyện của sinh viên Đại học An Giang quy định khung điểm tối đa là bao nhiêu và chia thành mấy mức xếp loại?",
-      "retrieval_query": "danh gia ket qua ren luyen cua sinh vien dai hoc an giang quy dinh khung diem toi da la bao nhieu va chia thanh may muc xep loai?",
+      "category": "giải thưởng sao tháng giêng",
+      "raw_query": "Đối tượng nào được xét giải thưởng 'Sao Tháng Giêng' cấp Trường và tiêu chuẩn học tập, rèn luyện yêu cầu thế nào?",
+      "normalized_query_expected": "Đối tượng xét giải thưởng Sao Tháng Giêng cấp Trường là ai, yêu cầu điểm học tập và rèn luyện bao nhiêu?",
+      "normalized_query_system": "Sinh viên có điểm học phần theo thang điểm 10 từ 7.0 đến cận 8.0 và từ 8.0 đến cận 9.0 được quy đổi sang thang điểm 4, điểm chữ và xếp loại học lực như thế nào?",
+      "retrieval_query": "sinh vien co diem hoc phan theo thang diem 10 tu 7.0 den can 8.0 va tu 8.0 den can 9.0 duoc quy doi sang thang diem 4, diem chu va xep loai hoc luc nhu the nao? mon hoc hoc phan dieu kien",
       "normalization_preservation": {
         "score": null,
         "total": 0,
@@ -1707,95 +1771,94 @@
           },
           {
             "rank": 2,
-            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 303
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 255
           },
           {
             "rank": 3,
-            "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 294
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 254
           },
           {
             "rank": 4,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 323
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 271
           },
           {
             "rank": 5,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 329
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 253
           },
           {
             "rank": 6,
-            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "source": "KH To chuc HK 261 - 20260612.pdf",
             "tier": "Tầng 2",
-            "chunk_id": 270
+            "chunk_id": 249
           },
           {
             "rank": 7,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
-            "tier": "Tầng 1",
-            "chunk_id": 88
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
           },
           {
             "rank": 8,
-            "source": "KH To chuc HK 261 - 20260612.pdf",
-            "tier": "Tầng 2",
-            "chunk_id": 243
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 332
           },
           {
             "rank": 9,
-            "source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 322
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 258
           },
           {
             "rank": 10,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "source": "1054-qd-dhag-2020-09-28.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 96
+            "chunk_id": 41
           },
           {
             "rank": 11,
-            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
             "tier": "Tầng 1",
-            "chunk_id": 118
+            "chunk_id": 218
           },
           {
             "rank": 12,
-            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
-            "tier": "cac_file_bo_xung_khac",
-            "chunk_id": 328
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 246
           }
         ]
       },
-      "answer": "Đánh giá kết quả rèn luyện của sinh viên Đại học An Giang quy định khung điểm tối đa là 10 và chia thành 4 mức xếp loại.",
+      "answer": "Sinh viên có điểm học phần theo thang điểm 10 từ 7.0 đến cận 8.0 và từ 8.0 đến cận 9.0 được quy đổi sang thang điểm 4, điểm chữ và xếp loại học lực như sau:\n\n- Điểm từ 7.0 đến cận 8.0 quy đổi sang thang điểm 4 là 2,5 (C).\n- Điểm từ 8.0 đến cận 9.0 quy đổi sang thang điểm 4 là 2,0 (C).\n\n- Điểm từ 7.0 đến cận 8.0 được xếp loại là Trung bình khá (B+).\n- Điểm từ 8.0 đến cận 9.0 được xếp loại là Trung bình (B). (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)",
       "is_refusal_answer": false,
-      "citations": {
-        "expected": [
-          "Điều 10"
-        ],
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "exact_match": 0.0
-      },
-      "predicted_citations": [],
+      "citations": null,
+      "predicted_citations": [
+        "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+      ],
       "refusal_expected": false,
       "refusal_correct": null,
       "hallucinated_on_unanswerable": false,
       "faithfulness": {
-        "score": null,
-        "unsupported_claims": [],
-        "method": null,
+        "score": 0.0,
+        "unsupported_claims": [
+          "Sinh viên có điểm học phần theo thang điểm 10 từ 7.0 đến cận 8.0 được quy đổi sang thang điểm 4 là 2,5 (C).",
+          "Sinh viên có điểm học phần theo thang điểm 10 từ 8.0 đến cận 9.0 được quy đổi sang thang điểm 4 là 2,0 (C).",
+          "Điểm từ 7.0 đến cận 8.0 được xếp loại là Trung bình khá (B+).",
+          "Điểm từ 8.0 đến cận 9.0 được xếp loại là Trung bình (B)."
+        ],
+        "method": "llm_judge",
         "error": null
       },
-      "number_support": 1.0,
-      "latency_seconds": 14.55,
+      "number_support": 0.3684,
+      "latency_seconds": 17.68,
       "error": null
     }
   ]

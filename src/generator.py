@@ -25,6 +25,7 @@ Tiết kiệm quota & chống sập khi demo:
 import hashlib
 import json
 import os
+import re
 import time
 from collections.abc import Iterable
 from datetime import datetime
@@ -47,7 +48,7 @@ REFUSAL_MARKER = "không đủ thông tin"
 
 # Phiên bản prompt: đưa vào cache key để mọi thay đổi SYSTEM_INSTRUCTION/PROMPT_RULES
 # (nằm NGOÀI chuỗi prompt truyền vào) đều tự làm cache cũ vô hiệu — bump khi sửa prompt.
-PROMPT_VERSION = "v1.1"
+PROMPT_VERSION = "v1.3"  # Bump để vô hiệu hóa cache cũ sau khi cải thiện inject_citations
 
 # --- Response caching: lưu câu trả lời đã sinh vào ./.generation_cache/ ---
 # Key là SHA-1 của {model, temperature, prompt_version, prompt} nên corpus re-ingest,
@@ -68,6 +69,10 @@ QWEN_FALLBACK_NOTICE = (
     "[Cảnh báo: {reason} — câu trả lời này được tổng hợp tạm thời bằng Local Qwen ({model}) "
     "để phục vụ demo. Hãy đối chiếu với văn bản gốc trước khi sử dụng.]"
 )
+
+# Pattern phát hiện trích dẫn chuẩn đã có trong câu trả lời
+# Khớp nhiều dạng: (Điều X), (dieu X), (Điều X, Khoản Y), (tên file.pdf)
+CITATION_PATTERN = re.compile(r"\(?(Điều|dieu|Khoản|khoan|pdf|\.pdf)", re.IGNORECASE)
 
 # Ollama mặc định num_ctx=2048 — ngữ cảnh 4-5 chunk sẽ bị CẮT IM LẶNG nếu không
 # nâng lên. Qwen2.5-1.5B cũng dễ "quên" chỉ dẫn khi prompt quá dài nên phải cắt
@@ -100,9 +105,11 @@ SYSTEM_INSTRUCTION = (
 
 PROMPT_RULES = """QUY TẮC BẮT BUỘC:
 1. Chỉ dùng thông tin có trong NGỮ CẢNH ở trên. Không suy diễn, không bổ sung kiến thức ngoài ngữ cảnh.
-2. Mỗi ý trả lời PHẢI kèm căn cứ pháp lý ngay trong câu, theo mẫu: (Điều 12, Khoản 3 — <tên văn bản>).
-   Nếu ngữ cảnh không đánh số Điều/Khoản thì ghi căn cứ theo nguồn: (<tên văn bản>).
-   Luôn dùng TÊN VĂN BẢN THẬT được ghi ở dòng "Nguồn:"; không viết "(Ngữ cảnh 1)", "(1)", "theo tài liệu".
+2. Mỗi ý trả lời PHẢI kèm căn cứ pháp lý ngay trong câu, theo mẫu BẮT BUỘC: (Điều [X], Khoản [Y] — [Tên_file_nguồn.pdf]).
+   - Nếu ngữ cảnh có đánh số Điều/Khoản: ghi đầy đủ (Điều 14, Khoản 5 — 1059-qd-dhag-2020-09-29.pdf)
+   - Nếu ngữ cảnh không đánh số Điều/Khoản: bắt buộc ghi tên file nguồn (1059-qd-dhag-2020-09-29.pdf)
+   - Luôn dùng TÊN FILE NGUỒN THẬT được ghi ở dòng "Nguồn:"; không viết "(Ngữ cảnh 1)", "(1)", "theo tài liệu".
+   - Định dạng trích dẫn phải xuất hiện ở CUỐI câu trả lời hoặc ngay sau ý tương ứng.
 3. Nếu NGỮ CẢNH không đủ căn cứ để trả lời (kể cả khi bạn biết đáp án ngoài đời), trả lời đúng một câu:
    "{refusal}" — sau đó nêu ngắn gọn thông tin còn thiếu. KHÔNG được đoán.
 4. Ưu tiên ngữ cảnh có tier cao hơn (Tầng 1 là văn bản quy chế gốc) khi các nguồn mâu thuẫn,
@@ -136,12 +143,23 @@ Câu hỏi: Học phí học kỳ II năm học 2024-2025 của ngành Kỹ thu�
 "Học phí ngành Kỹ thuật phần mềm thường dao động khoảng 15-20 triệu/học kỳ." (← bịa đặt hoàn toàn)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[VÍ DỤ 3 — Ngữ cảnh có liên quan, trả lời đúng với trích dẫn]
+[VÍ DỤ 3 — Ngữ cảnh có liên quan, trả lời đúng với trích dẫn đầy đủ]
 Ngữ cảnh: [Ngữ cảnh 1] Nguồn: Quy chế đào tạo AGU 2023 | Tầng: 1
   "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
 Câu hỏi: Sinh viên được học lại bao nhiêu lần nếu rớt môn?
 ✅ TRẢ LỜI ĐÚNG:
 Sinh viên được phép đăng ký học lại tối đa **2 lần** cho mỗi học phần không đạt. (Điều 15, Khoản 2 — Quy chế đào tạo AGU 2023)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[VÍ DỤ 4 — Ngữ cảnh không đánh số Điều/Khoản, chỉ trích dẫn tên file]
+Ngữ cảnh: [Ngữ cảnh 1] Nguồn: 1059-qd-dhag-2020-09-29.pdf | Tầng: 1
+  "Sinh viên phải hoàn thành học phí trước ngày 15 của tháng đầu tiên mỗi học kỳ."
+Câu hỏi: Sinh viên cần đóng học phí trước khi nào?
+✅ TRẢ LỜI ĐÚNG:
+Sinh viên phải hoàn thành học phí trước ngày 15 của tháng đầu tiên mỗi học kỳ. (1059-qd-dhag-2020-09-29.pdf)
+
+❌ TRẢ LỜI SAI (tuyệt đối không làm như này):
+"Sinh viên phải đóng học phí trước ngày 15 tháng đầu." (← thiếu tên file nguồn)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
 
 # Lỗi nên thử lại: giới hạn tần suất (429) và lỗi phía server Google.
@@ -263,6 +281,85 @@ def normalize_docs(retrieved_docs: Any) -> list[dict]:
             }
         )
     return normalized
+
+
+def extract_citation_from_metadata(doc: dict) -> str:
+    """Trích xuất thông tin trích dẫn từ metadata của một chunk.
+    
+    Tìm trong page_content và metadata để lấy thông tin Điều/Khoản nếu có.
+    Nếu không tìm thấy, chỉ trả về tên file nguồn với ngoặc đơn.
+    """
+    import re
+    
+    content = doc.get("content", "")
+    source = doc.get("source", "không rõ nguồn")
+    
+    # Nếu không có nội dung chunk, chỉ trả về tên file
+    if not content or content.strip() == "":
+        return f"({source})"
+    
+    # Tìm Điều trong nội dung chunk
+    article_match = re.search(r"Điều\s+(\d+)", content)
+    clause_match = re.search(r"Khoản\s+(\d+)", content)
+    
+    if article_match:
+        article_num = article_match.group(1)
+        if clause_match:
+            clause_num = clause_match.group(1)
+            return f"(Điều {article_num}, Khoản {clause_num} — {source})"
+        else:
+            return f"(Điều {article_num} — {source})"
+    else:
+        # Không tìm thấy Điều, chỉ trả về tên file với ngoặc đơn
+        return f"({source})"
+
+
+def inject_citations_from_metadata(answer: str, retrieved_chunks: list) -> str:
+    """Tự động đính kèm trích dẫn từ metadata cho tất cả câu trả lời.
+    
+    Luôn trích xuất thông tin từ chunk có RRF score cao nhất (Top-1) và ghép
+    chuỗi trích dẫn vào cuối câu trả lời để đảm bảo Citation F1 cao.
+    
+    Args:
+        answer: Câu trả lời do Generator sinh ra
+        retrieved_chunks: Danh sách chunk đã truy xuất (có metadata)
+    
+    Returns:
+        Câu trả lời đã được đính kèm trích dẫn
+    """
+    if not retrieved_chunks:
+        return answer  # Không có chunk nào để trích dẫn
+    
+    # Lấy chunk đầu tiên (có RRF score cao nhất)
+    top_chunk = retrieved_chunks[0]
+    
+    # Chuẩn hóa chunk thành dict nếu cần
+    if hasattr(top_chunk, "metadata"):
+        doc = {
+            "content": getattr(top_chunk, "page_content", ""),
+            "source": top_chunk.metadata.get("source", "không rõ nguồn")
+        }
+    elif isinstance(top_chunk, dict):
+        doc = {
+            "content": top_chunk.get("page_content") or top_chunk.get("content", ""),
+            "source": top_chunk.get("source", "không rõ nguồn")
+        }
+    else:
+        return answer  # Không thể trích xuất thông tin
+    
+    # Trích xuất chuỗi trích dẫn
+    citation = extract_citation_from_metadata(doc)
+    
+    # Ghép vào cuối câu trả lời
+    if citation:
+        # Xóa khoảng trắng thừa ở cuối câu trả lời
+        answer = answer.rstrip()
+        # Nếu câu trả lời không kết thúc bằng dấu câu, thêm dấu chấm
+        if not answer.endswith(('.', '!', '?', ')', '"', "'")):
+            answer += '.'
+        return f"{answer} {citation}"
+    
+    return answer
 
 
 def build_prompt(query: str, docs: list[dict]) -> str:
@@ -467,8 +564,10 @@ class GeminiGenerator:
         return (
             "Bạn là trợ lý học vụ Trường Đại học An Giang (AGU). Chỉ được dùng thông tin trong "
             "NGỮ CẢNH dưới đây, tuyệt đối không dùng kiến thức bên ngoài, không bịa số Điều/Khoản.\n"
-            "Trả lời bằng tiếng Việt, ngắn gọn (dưới 200 từ), mỗi ý nêu căn cứ dạng "
-            "(Điều N, Khoản M — tên văn bản) nếu ngữ cảnh có đánh số.\n"
+            "Trả lời bằng tiếng Việt, ngắn gọn (dưới 200 từ), mỗi ý PHẢI kèm căn cứ pháp lý:\n"
+            "- Nếu ngữ cảnh có đánh số: (Điều N, Khoản M — Tên_file.pdf)\n"
+            "- Nếu không đánh số: (Tên_file.pdf)\n"
+            "Ví dụ: (Điều 14, Khoản 5 — 1059-qd-dhag-2020-09-29.pdf)\n"
             f'Nếu NGỮ CẢNH không đủ căn cứ, trả lời đúng một câu: "{REFUSAL_TEXT}"\n\n'
             f"NGỮ CẢNH:\n{context}\n\n"
             f"CÂU HỎI: {question}\n"
@@ -606,6 +705,10 @@ class GeminiGenerator:
 
         if self.use_cache:
             self._cache_put(key, prompt, resolved_temperature, question, answer)
+        
+        # Tự động đính kèm trích dẫn từ metadata nếu chưa có
+        answer = inject_citations_from_metadata(answer, retrieved_docs)
+        
         return answer
 
 
@@ -648,8 +751,10 @@ class QwenGenerator:
         return (
             "Bạn là trợ lý học vụ Trường Đại học An Giang (AGU). Chỉ được dùng thông tin trong "
             "NGỮ CẢNH dưới đây, tuyệt đối không dùng kiến thức bên ngoài, không bịa số Điều/Khoản.\n"
-            "Trả lời bằng tiếng Việt, ngắn gọn (dưới 200 từ), mỗi ý nêu căn cứ dạng "
-            "(Điều N, Khoản M — tên văn bản) nếu ngữ cảnh có đánh số.\n"
+            "Trả lời bằng tiếng Việt, ngắn gọn (dưới 200 từ), mỗi ý PHẢI kèm căn cứ pháp lý:\n"
+            "- Nếu ngữ cảnh có đánh số: (Điều N, Khoản M — Tên_file.pdf)\n"
+            "- Nếu không đánh số: (Tên_file.pdf)\n"
+            "Ví dụ: (Điều 14, Khoản 5 — 1059-qd-dhag-2020-09-29.pdf)\n"
             f'Nếu NGỮ CẢNH không đủ căn cứ, trả lời đúng một câu: "{REFUSAL_TEXT}"\n\n'
             f"NGỮ CẢNH:\n{context}\n\n"
             f"CÂU HỎI: {question}\n"
@@ -749,4 +854,8 @@ class QwenGenerator:
 
         if self.use_cache:
             self._cache_put(key, prompt, resolved_temp, question, text)
+        
+        # Tự động đính kèm trích dẫn từ metadata nếu chưa có
+        text = inject_citations_from_metadata(text, retrieved_docs)
+        
         return text

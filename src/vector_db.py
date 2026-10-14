@@ -2,8 +2,8 @@ import os
 import re
 from typing import Any, Optional
 
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 
@@ -18,8 +18,8 @@ except ImportError:
         from langchain_community.retrievers import EnsembleRetriever
 
 
-DEFAULT_BM25_WEIGHT = 0.4
-DEFAULT_VECTOR_WEIGHT = 0.6
+DEFAULT_BM25_WEIGHT = 0.5
+DEFAULT_VECTOR_WEIGHT = 0.5
 DEFAULT_RRF_C = 60
 
 
@@ -106,8 +106,11 @@ class VectorStoreManager:
             collection_name=collection_name,
         )
 
-    def create_bm25_retriever(self, vector_db: Any, k: int = 6) -> BM25Retriever:
-        """Tạo BM25Retriever từ toàn bộ tài liệu đã lưu trong ChromaDB với dual tokenizer."""
+    def create_bm25_retriever(self, vector_db: Any, k: int = 12) -> BM25Retriever:
+        """Tạo BM25Retriever từ toàn bộ tài liệu đã lưu trong ChromaDB với dual tokenizer.
+        
+        Tham số k mặc định 12 để oversampling: truy xuất nhiều ứng viên hơn để tăng Recall/Hit@K.
+        """
         docs = extract_documents_from_chroma(vector_db)
         if not docs:
             raise ValueError("ChromaDB chưa có tài liệu nào để xây dựng chỉ mục BM25.")
@@ -121,13 +124,14 @@ class VectorStoreManager:
         vector_db: Any,
         weights: Optional[list[float]] = None,
         c: int = DEFAULT_RRF_C,
-        k: int = 6,
+        k: int = 12,
     ) -> EnsembleRetriever:
         """Tạo EnsembleRetriever kết hợp BM25 (từ khóa) và Chroma (ngữ nghĩa) theo RRF.
 
         weights: [bm25_weight, vector_weight]. Mặc định [0.4, 0.6].
         c: hằng số làm mượt xếp hạng Reciprocal Rank Fusion (mặc định 60).
         id_key: 'chunk_id' để so khớp chính xác từng chunk giữa hai bộ truy xuất.
+        k: số ứng viên truy xuất (mặc định 12 cho oversampling, sau đó lọc Top-6).
         """
         bm25_w = float(os.getenv("BM25_WEIGHT", str(DEFAULT_BM25_WEIGHT)))
         vector_w = float(os.getenv("CHROMA_WEIGHT", str(DEFAULT_VECTOR_WEIGHT)))

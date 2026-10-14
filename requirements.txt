@@ -6,6 +6,8 @@ chromadb>=0.5.0
 # LangChain (vector_db.py import trực tiếp)
 langchain-community>=0.4.0
 langchain-core>=1.0.0
+langchain-huggingface>=0.1.0
+langchain-chroma>=0.1.0
 
 # Đọc tài liệu đa định dạng (loader.py)
 pypdf>=4.0.0

@@ -121,9 +121,9 @@ class HybridRAGPipeline:
                 return
 
             bm25 = BM25Retriever.from_documents(docs, preprocess_func=bm25_tokenize)
-            bm25.k = 10
+            bm25.k = 12  # Oversampling: truy xuất 12 ứng viên để tăng Recall/Hit@K
 
-            chroma_ret = self.vector_db.as_retriever(search_kwargs={"k": 10})
+            chroma_ret = self.vector_db.as_retriever(search_kwargs={"k": 12})  # Đồng bộ với BM25
 
             weights = [self.bm25_weight, self.vector_weight]
             self.ensemble_retriever = EnsembleRetriever(
@@ -139,10 +139,16 @@ class HybridRAGPipeline:
             print(f"[HybridSearch] Cảnh báo: không thể khởi tạo BM25 ({exc}) — tự động lùi về Chroma vector search.")
             self.ensemble_retriever = None
 
-    def retrieve(self, query: str, k: int = 6) -> list[Document]:
+    def retrieve(self, query: str, k: int = 6, fallback_query: Optional[str] = None) -> list[Document]:
         """Truy xuất tài liệu: True Hybrid Search (BM25 + Vector RRF) hoặc Vector Search thuần túy.
 
+        Với oversampling, trả về đúng k chunks tốt nhất (Best-First Search / Beam Filter).
         Đảm bảo trả về danh sách Document giữ nguyên vẹn metadata (chunk_id, source, tier).
+        
+        Args:
+            query: Câu hỏi truy xuất chính (thường là normalized_query)
+            k: Số chunk cần trả về
+            fallback_query: Câu hỏi dự phòng (thường là original_user_query) để chạy song song
         """
         k = max(1, int(k))
 
@@ -158,6 +164,35 @@ class HybridRAGPipeline:
                         r.search_kwargs["k"] = k
 
                 docs = self.ensemble_retriever.invoke(query)
+                
+                # Fallback Query: chạy song song với câu hỏi gốc nếu được cung cấp
+                if fallback_query and fallback_query != query:
+                    try:
+                        fallback_docs = self.ensemble_retriever.invoke(fallback_query)
+                        # Gộp và khử trùng lặp theo chunk_id
+                        seen_chunk_ids = set()
+                        merged_docs = []
+                        
+                        # Thêm docs từ query chính
+                        for doc in docs:
+                            chunk_id = doc.metadata.get("chunk_id")
+                            if chunk_id not in seen_chunk_ids:
+                                seen_chunk_ids.add(chunk_id)
+                                merged_docs.append(doc)
+                        
+                        # Thêm docs từ fallback query nếu chưa có
+                        for doc in fallback_docs:
+                            chunk_id = doc.metadata.get("chunk_id")
+                            if chunk_id not in seen_chunk_ids:
+                                seen_chunk_ids.add(chunk_id)
+                                merged_docs.append(doc)
+                        
+                        docs = merged_docs
+                        print(f"[FallbackQuery] Đã gộp {len(docs)} chunk từ 2 query (normalized + original)")
+                    except Exception as exc:
+                        print(f"[FallbackQuery] Lỗi khi chạy fallback query ({exc}), chỉ dùng kết quả chính.")
+                
+                # Lọc lấy Top-k chunks tốt nhất (Best-First Search / Beam Filter)
                 return docs[:k]
             except Exception as exc:
                 print(f"[HybridSearch] Lỗi truy xuất qua EnsembleRetriever ({exc}), lùi về similarity_search.")
@@ -187,6 +222,7 @@ class HybridRAGPipeline:
         top_k = max(1, int(top_k))
 
         # --- Oversampling: lấy nhiều ứng viên hơn, chỉ cho generator top_k đầu ---
+        # Với oversample_factor=2 và top_k=6, retrieve_k=12 để tăng Recall/Hit@K
         retrieve_k = top_k * self.oversample_factor
 
         # Bước 1: Chuẩn hóa câu hỏi bằng Qwen (normalize_user_query)
@@ -204,7 +240,8 @@ class HybridRAGPipeline:
         retrieval_query = fold(expanded_query)
 
         # Truy xuất True Hybrid — truyền câu CÓ DẤU (đã mở rộng từ đồng nghĩa) vào retrieve() để BM25 & ChromaDB khớp tốt nhất.
-        all_docs = self.retrieve(expanded_query, k=retrieve_k)
+        # Đồng thời truyền câu hỏi gốc (raw_query) làm fallback_query để đảm bảo không mất chunk nếu chuẩn hóa làm mất từ khóa.
+        all_docs = self.retrieve(expanded_query, k=retrieve_k, fallback_query=raw_query)
 
         # Generator chỉ nhận top_k đầu — recall window rộng hơn mà context không phình.
         gen_docs = all_docs[:top_k]
