@@ -46,6 +46,7 @@ Cách chạy (từ thư mục gốc dự án):
 import argparse
 import json
 import os
+import itertools
 import re
 import sys
 import time
@@ -110,34 +111,114 @@ Chỉ trả về DUY NHẤT một JSON hợp lệ theo đúng lược đồ dư�
 {{"claims": [{{"text": "<khẳng định thứ nhất>", "supported": true}}, {{"text": "<khẳng định thứ hai>", "supported": false}}]}}"""
 
 
+_ARTICLE_RE = re.compile(
+    r"(?<!\w)(?:dieu|d\.?)\s*(\d+(?:\s*[-–]\s*\d+)?)",
+    re.IGNORECASE,
+)
+
+
 def extract_citations(text: str) -> set[str]:
-    """Rút tập trích dẫn từ văn bản (đã bỏ dấu).
-    
-    Chiến lược đơn giản hóa: chỉ trích xuất tên file từ trích dẫn dạng (Tên_file.pdf)
-    hoặc số quyết định/văn bản. Được cả ngoặc đơn (Tên_file.pdf) và ngoặc kép.
-    """
+    """Rút tập trích dẫn Điều/Khoản từ văn bản (không phân biệt dấu thanh)."""
     folded = fold(text)
-    
+
+    # Chuẩn hóa thứ tự ngược "Khoản X Điều Y" -> "Điều Y Khoản X".
+    folded = re.sub(
+        r"khoan\s+([\d,\s]+?)\s+(dieu|d\.?)\s*(\d+(?:\s*[-–]\s*\d+)?)",
+        lambda m: f"{m.group(2)} {m.group(3)} khoan {m.group(1)}",
+        folded,
+        flags=re.IGNORECASE,
+    )
+
+    matches = list(_ARTICLE_RE.finditer(folded))
     citations: set[str] = set()
-    
-    # Tìm pattern trích dẫn dạng (Tên_file.pdf) với ngoặc đơn hoặc kép
-    file_pattern = re.compile(r"[\'\"\(]([^)\'\"]*\.pdf)[\'\"\)]", re.IGNORECASE)
-    for match in file_pattern.finditer(folded):
-        filename = match.group(1).strip()
-        if filename:
-            citations.add(filename)
-    
-    # Nếu không tìm thấy file, tìm số quyết định (vd: 1504, 1059)
-    if not citations:
-        decision_pattern = re.compile(r"\b(\d{4})\b")
-        for match in decision_pattern.finditer(folded):
-            citations.add(match.group(1))
-    
+
+    for i, match in enumerate(matches):
+        range_str = match.group(1)
+        if re.search(r"[-–]", range_str):
+            parts = re.split(r"[-–]", range_str)
+            try:
+                start, end = int(parts[0].strip()), int(parts[1].strip())
+                articles = list(range(start, end + 1))
+            except ValueError:
+                articles = [int(range_str.strip())]
+        else:
+            articles = [int(range_str.strip())]
+
+        seg_start = match.end()
+        seg_end = matches[i + 1].start() if i + 1 < len(matches) else len(folded)
+        segment = folded[seg_start:seg_end]
+
+        clauses: list[int] = []
+        if re.search(r"khoan", segment, re.IGNORECASE):
+            for km in re.finditer(r"khoan\s*([0-9][0-9,\s]*)", segment, re.IGNORECASE):
+                for num in re.findall(r"\d+", km.group(1)):
+                    clauses.append(int(num))
+            seen: set[int] = set()
+            unique_clauses: list[int] = []
+            for c in clauses:
+                if c not in seen:
+                    seen.add(c)
+                    unique_clauses.append(c)
+            clauses = unique_clauses
+
+        if not clauses:
+            for art in articles:
+                citations.add(f"dieu {art}")
+        else:
+            for art in articles:
+                for cl in clauses:
+                    citations.add(f"dieu {art} khoan {cl}")
+
     return citations
 
 
 def _article_of(citation: str) -> str:
     return citation.split(" khoan ", 1)[0]
+
+
+def _parse_citation_parts(citation: str):
+    folded = fold(citation)
+    m = re.search(r"dieu\s*(\d+)(?:\s*khoan\s*(\d+))?", folded)
+    if not m:
+        return (folded, None)
+    article = m.group(1)
+    clause = m.group(2)
+    return (article, clause)
+
+
+def _citation_pair_weight(a: str, b: str) -> float:
+    art_a, cl_a = _parse_citation_parts(a)
+    art_b, cl_b = _parse_citation_parts(b)
+    if art_a != art_b:
+        return 0.0
+    if cl_a == cl_b:
+        return 1.0
+    if cl_a is None or cl_b is None:
+        return 0.5
+    return 0.0
+
+
+def _citation_true_positives(predicted: set[str], expected: set[str]) -> float:
+    """Tính tổng điểm khớp tối ưu (maximum weight matching) giữa hai tập trích dẫn."""
+    if not predicted or not expected:
+        return 0.0
+    pred_list = list(predicted)
+    exp_list = list(expected)
+
+    # Luôn lặp trên tập nhỏ hơn để giảm tổ hợp.
+    if len(pred_list) > len(exp_list):
+        pred_list, exp_list = exp_list, pred_list
+
+    n = len(pred_list)
+    best = 0.0
+    for combo in itertools.combinations(range(len(exp_list)), n):
+        for perm in itertools.permutations(range(n)):
+            total = 0.0
+            for i in range(n):
+                total += _citation_pair_weight(pred_list[i], exp_list[combo[perm[i]]])
+            if total > best:
+                best = total
+    return best
 
 
 def citation_scores(expected: set[str], predicted: set[str], source_document: str = None) -> dict:
@@ -177,8 +258,7 @@ def citation_scores(expected: set[str], predicted: set[str], source_document: st
         else:
             predicted_normalized.add(item.lower())
     
-    intersection = expected_normalized & predicted_normalized
-    true_positive = len(intersection)
+    true_positive = _citation_true_positives(predicted_normalized, expected_normalized)
     
     precision = true_positive / len(predicted_normalized) if predicted_normalized else 0.0
     recall = true_positive / len(expected_normalized) if expected_normalized else 0.0

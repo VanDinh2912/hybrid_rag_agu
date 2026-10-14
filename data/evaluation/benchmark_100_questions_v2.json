@@ -1,0 +1,1903 @@
+{
+  "version": "2.0",
+  "description": "Bộ 100 câu hỏi benchmark mới: Chuyển đổi từ dữ liệu gốc sang định dạng đầy đủ của dự án với category, tier, normalized_query, expected_citations và supplement_if_wrong.",
+  "questions": [
+    {
+      "id": "Q01",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn học 'Thiết kế và cài đặt mạng' có mã môn học là gì, khối lượng mấy tín chỉ, học kỳ dự kiến và môn học trước là môn nào?",
+      "normalized_query": "Môn 'Thiết kế và cài đặt mạng' có mã MH là gì, khối lượng mấy tín chỉ, học kỳ dự kiến và môn học trước là môn nào?",
+      "expected_answer": "Mã MH là CON915, khối lượng 2 tín chỉ bắt buộc (1 lý thuyết, 1 thực hành/thí nghiệm), dự kiến học ở học kỳ VII và yêu cầu học trước môn số 30 (CON301 - Mạng máy tính).",
+      "expected_citations": [
+        "CON915",
+        "2 tín chỉ",
+        "học kỳ VII",
+        "CON301"
+      ],
+      "ground_truth_answer": "Môn 'Thiết kế và cài đặt mạng' có mã MH là CON915, khối lượng 2 tín chỉ bắt buộc (1 lý thuyết, 1 thực hành/thí nghiệm), dự kiến học ở học kỳ VII và yêu cầu học trước môn số 30 (CON301 - Mạng máy tính).",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 7, Mục 8.III, STT 57",
+      "supplement_if_wrong": "Đáp án đúng: Mã MH là CON915, 2 tín chỉ (1 lý thuyết, 1 thực hành), học kỳ VII, học trước môn CON301 - Mạng máy tính. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 7, Mục 8.III, STT 57)"
+    },
+    {
+      "id": "Q02",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Chuẩn đầu ra ELO 6, ELO 7, ELO 8 và ELO 9 của chương trình đào tạo ngành Công nghệ thông tin quy định như thế nào?",
+      "normalized_query": "Chuẩn đầu ra ELO 6, ELO 7, ELO 8 và ELO 9 của chương trình đào tạo ngành CNTT quy định như thế nào?",
+      "expected_answer": "ELO 6: Phân tích, lập luận, giải quyết vấn đề CNTT. ELO 7: Vận dụng kỹ năng nghiên cứu khoa học. ELO 8: Kỹ năng giao tiếp, thuyết trình, làm việc nhóm. ELO 9: Ngoại ngữ bậc 3/6 (B1).",
+      "expected_citations": [
+        "ELO 6",
+        "ELO 7",
+        "ELO 8",
+        "ELO 9",
+        "Mục 4"
+      ],
+      "ground_truth_answer": "- ELO 6: Phân tích, lập luận, và giải quyết vấn đề liên quan đến lĩnh vực CNTT để quản lý nguồn tài nguyên, các hoạt động của cơ quan hay doanh nghiệp.\n- ELO 7: Vận dụng được kỹ năng nghiên cứu khoa học vào việc tìm tài liệu, tổng hợp, phân tích, đánh giá các công trình khoa học.\n- ELO 8: Vận dụng hiệu quả kỹ năng giao tiếp, thuyết trình và làm việc nhóm.\n- ELO 9: Có kỹ năng ngoại ngữ bậc 3/6 Khung năng lực ngoại ngữ của Việt Nam (B1 theo khung tham chiếu Châu Âu); kỹ năng đọc và hiểu các tài liệu chuyên ngành.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 3, Mục 4 (Chuẩn đầu ra ELO 6 đến ELO 9)",
+      "supplement_if_wrong": "Đáp án đúng: ELO 6: Phân tích, lập luận, giải quyết vấn đề CNTT; ELO 7: Kỹ năng nghiên cứu khoa học; ELO 8: Giao tiếp, thuyết trình, làm việc nhóm; ELO 9: Ngoại ngữ bậc 3/6 (B1). (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 3, Mục 4)"
+    },
+    {
+      "id": "Q03",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Tổng số tín chỉ của toàn chương trình đào tạo ngành CNTT là bao nhiêu và bao gồm bao nhiêu tín chỉ bắt buộc, tự chọn?",
+      "normalized_query": "Tổng số tín chỉ của toàn chương trình đào tạo ngành CNTT là bao nhiêu, bao gồm bao nhiêu tín chỉ bắt buộc và tự chọn?",
+      "expected_answer": "Tổng số tín chỉ: 140 tín chỉ. Bắt buộc: 114 tín chỉ. Tự chọn: 26 tín chỉ.",
+      "expected_citations": [
+        "140 tín chỉ",
+        "114 tín chỉ",
+        "26 tín chỉ",
+        "Mục 8"
+      ],
+      "ground_truth_answer": "Tổng số tín chỉ của toàn chương trình là 140 tín chỉ, trong đó Bắt buộc là 114 tín chỉ và Tự chọn là 26 tín chỉ.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 7, Mục 8 (Dòng tổng kết cuối bảng)",
+      "supplement_if_wrong": "Đáp án đúng: Tổng 140 tín chỉ, trong đó Bắt buộc 114 tín chỉ, Tự chọn 26 tín chỉ. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 7, Mục 8)"
+    },
+    {
+      "id": "Q04",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Khối kiến thức đại cương (Mục I) trong chương trình đào tạo ngành CNTT có bao nhiêu tín chỉ và chiếm tỷ lệ bao nhiêu phần trăm?",
+      "normalized_query": "Khối kiến thức đại cương (Mục I) trong chương trình đào tạo ngành CNTT có bao nhiêu tín chỉ và chiếm tỷ lệ bao nhiêu phần trăm?",
+      "expected_answer": "Khối kiến thức đại cương: 40 tín chỉ (Bắt buộc: 40 TC; Tự chọn: 0 TC), chiếm 28,6% số tín chỉ của chương trình.",
+      "expected_citations": [
+        "40 tín chỉ",
+        "28,6%",
+        "Mục 7",
+        "Mục 8.I"
+      ],
+      "ground_truth_answer": "Khối kiến thức đại cương có 40 tín chỉ (Bắt buộc: 40 TC; Tự chọn: 0 TC), chiếm 28,6% số tín chỉ của chương trình đào tạo.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 4 (Mục 7) & Trang 5 (Mục 8.I)",
+      "supplement_if_wrong": "Đáp án đúng: 40 tín chỉ (Bắt buộc: 40 TC; Tự chọn: 0 TC), chiếm 28,6%. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 4 Mục 7 & Trang 5 Mục 8.I)"
+    },
+    {
+      "id": "Q05",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn 'Giới thiệu ngành – ĐH CNTT' có mã môn học là gì, mấy tín chỉ và học vào học kỳ nào?",
+      "normalized_query": "Môn 'Giới thiệu ngành – ĐH CNTT' có mã môn học là gì, mấy tín chỉ và học vào học kỳ nào?",
+      "expected_answer": "Mã môn học: COS104, khối lượng 1 tín chỉ bắt buộc (1 lý thuyết), học vào học kỳ I.",
+      "expected_citations": [
+        "COS104",
+        "1 tín chỉ",
+        "học kỳ I",
+        "STT 1"
+      ],
+      "ground_truth_answer": "Môn 'Giới thiệu ngành – ĐH CNTT' có mã môn học là COS104, khối lượng 1 tín chỉ bắt buộc (1 lý thuyết), học vào học kỳ I.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.I, STT 1",
+      "supplement_if_wrong": "Đáp án đúng: Mã COS104, 1 tín chỉ (1 lý thuyết), học kỳ I. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.I, STT 1)"
+    },
+    {
+      "id": "Q06",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Để học môn 'Lập trình hướng đối tượng' (COS102), sinh viên bắt buộc phải học trước môn học nào?",
+      "normalized_query": "Để học môn 'Lập trình hướng đối tượng' (COS102), sinh viên bắt buộc phải học trước môn học nào?",
+      "expected_answer": "Bắt buộc phải học trước môn 'Nhập môn lập trình' (mã COS101 - STT 12).",
+      "expected_citations": [
+        "COS102",
+        "COS101",
+        "STT 12",
+        "STT 18"
+      ],
+      "ground_truth_answer": "Sinh viên bắt buộc phải học trước môn 'Nhập môn lập trình' (mã môn học COS101 - STT 12 trong danh mục).",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.I, STT 18",
+      "supplement_if_wrong": "Đáp án đúng: Học trước môn 'Nhập môn lập trình' (COS101 - STT 12). (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.I, STT 18)"
+    },
+    {
+      "id": "Q07",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn học 'Thực tập tốt nghiệp' (CON401) có khối lượng bao nhiêu tín chỉ và sinh viên dự kiến thực hiện vào học kỳ nào?",
+      "normalized_query": "Môn 'Thực tập tốt nghiệp' (CON401) có khối lượng bao nhiêu tín chỉ và dự kiến thực hiện vào học kỳ nào?",
+      "expected_answer": "Khối lượng 5 tín chỉ bắt buộc (thực hành/thực tập), dự kiến thực hiện ở học kỳ VIII.",
+      "expected_citations": [
+        "CON401",
+        "5 tín chỉ",
+        "học kỳ VIII",
+        "STT 62"
+      ],
+      "ground_truth_answer": "Môn 'Thực tập tốt nghiệp' có khối lượng 5 tín chỉ bắt buộc (thực hành/thực tập), dự kiến thực hiện ở học kỳ VIII.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 7, Mục 8.IV, STT 62",
+      "supplement_if_wrong": "Đáp án đúng: 5 tín chỉ (thực hành/thực tập), học kỳ VIII. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 7, Mục 8.IV, STT 62)"
+    },
+    {
+      "id": "Q08",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Sinh viên không làm Khóa luận tốt nghiệp phải chọn các môn học thay thế nào trong khối kiến thức chuyên ngành ở Học kỳ VIII?",
+      "normalized_query": "Sinh viên không làm Khóa luận tốt nghiệp phải chọn các môn học thay thế nào trong khối kiến thức chuyên ngành ở Học kỳ VIII?",
+      "expected_answer": "Chọn 3 trong số 4 môn tự chọn thay thế KLTN: Phát triển ứng dụng Web nâng cao (COS307 - 3 TC), Xử lý ảnh (CON305 - 3 TC), Mạng máy tính nâng cao (CON302 - 3 TC), An toàn và bảo mật hệ thống thông tin (CON307 - 3 TC).",
+      "expected_citations": [
+        "COS307",
+        "CON305",
+        "CON302",
+        "CON307",
+        "3 TC",
+        "STT 63-66"
+      ],
+      "ground_truth_answer": "Sinh viên chọn học 3 trong số 4 môn tự chọn thay thế KLTN gồm: Phát triển ứng dụng Web nâng cao (COS307 - 3 TC), Xử lý ảnh (CON305 - 3 TC), Mạng máy tính nâng cao (CON302 - 3 TC), An toàn và bảo mật hệ thống thông tin (CON307 - 3 TC) để đủ 10 tín chỉ thay thế.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 7, Mục 8.IV, STT 63-66",
+      "supplement_if_wrong": "Đáp án đúng: Chọn 3 trong 4 môn: COS307, CON305, CON302, CON307 (mỗi môn 3 TC). (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 7, Mục 8.IV, STT 63-66)"
+    },
+    {
+      "id": "Q09",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Chuẩn đầu ra ELO 1 và ELO 2 của chương trình đào tạo ngành Công nghệ thông tin quy định về những kiến thức nào?",
+      "normalized_query": "Chuẩn đầu ra ELO 1 và ELO 2 của chương trình đào tạo ngành CNTT quy định về những kiến thức nào?",
+      "expected_answer": "ELO 1: Áp dụng kiến thức khoa học tự nhiên, toán học, xã hội và nhân văn vào ngành CNTT. ELO 2: Vận dụng kiến thức nền tảng và chuyên sâu CNTT để phân tích, thiết kế, cài đặt, vận hành và đánh giá hệ thống.",
+      "expected_citations": [
+        "ELO 1",
+        "ELO 2",
+        "Mục 4"
+      ],
+      "ground_truth_answer": "- ELO 1: Áp dụng được kiến thức khoa học tự nhiên, toán học, xã hội và nhân văn vào ngành Công nghệ thông tin.\n- ELO 2: Vận dụng kiến thức nền tảng và chuyên sâu của ngành CNTT để phân tích, thiết kế, cài đặt, vận hành và đánh giá các hệ thống, giải pháp CNTT.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 2, Mục 4 (Chuẩn đầu ra ELO 1, ELO 2)",
+      "supplement_if_wrong": "Đáp án đúng: ELO 1: Áp dụng kiến thức khoa học, toán học, xã hội, nhân văn vào CNTT; ELO 2: Vận dụng kiến thức CNTT để phân tích, thiết kế, cài đặt, vận hành, đánh giá hệ thống. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 2, Mục 4)"
+    },
+    {
+      "id": "Q10",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn học 'Toán rời rạc' có mã môn học là gì, bao nhiêu tín chỉ và được phân bổ vào học kỳ nào trong tiến trình đào tạo?",
+      "normalized_query": "Môn 'Toán rời rạc' có mã môn học là gì, bao nhiêu tín chỉ và được phân bổ vào học kỳ nào?",
+      "expected_answer": "Mã môn học: MAT106, khối lượng 3 tín chỉ bắt buộc (3 lý thuyết), phân bổ học vào học kỳ II.",
+      "expected_citations": [
+        "MAT106",
+        "3 tín chỉ",
+        "học kỳ II",
+        "STT 4"
+      ],
+      "ground_truth_answer": "Môn 'Toán rời rạc' có mã môn học là MAT106, khối lượng 3 tín chỉ bắt buộc (3 lý thuyết) và được phân bổ học vào học kỳ II.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.I, STT 4",
+      "supplement_if_wrong": "Đáp án đúng: Mã MAT106, 3 tín chỉ (3 lý thuyết), học kỳ II. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.I, STT 4)"
+    },
+    {
+      "id": "Q11",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Khối kiến thức Chuyên ngành (Mục III) có tổng cộng bao nhiêu tín chỉ, trong đó bắt buộc và tự chọn là bao nhiêu?",
+      "normalized_query": "Khối kiến thức Chuyên ngành (Mục III) có tổng cộng bao nhiêu tín chỉ, trong đó bắt buộc và tự chọn là bao nhiêu?",
+      "expected_answer": "Tổng cộng 43 tín chỉ, bao gồm 27 tín chỉ Bắt buộc và 16 tín chỉ Tự chọn.",
+      "expected_citations": [
+        "43 tín chỉ",
+        "27 tín chỉ",
+        "16 tín chỉ",
+        "Mục 7",
+        "Mục 8.III"
+      ],
+      "ground_truth_answer": "Khối kiến thức Chuyên ngành có tổng cộng 43 tín chỉ, bao gồm 27 tín chỉ Bắt buộc và 16 tín chỉ Tự chọn.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 4, Mục 7 & Trang 6, Mục 8.III",
+      "supplement_if_wrong": "Đáp án đúng: Tổng 43 tín chỉ, Bắt buộc 27 tín chỉ, Tự chọn 16 tín chỉ. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 4 Mục 7 & Trang 6 Mục 8.III)"
+    },
+    {
+      "id": "Q12",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Để đăng ký môn 'Đồ án ngành CNTT' (COS308), sinh viên cần đáp ứng điều kiện môn học tiên quyết hoặc học trước nào?",
+      "normalized_query": "Để đăng ký môn 'Đồ án ngành CNTT' (COS308), sinh viên cần đáp ứng điều kiện môn học tiên quyết hoặc học trước nào?",
+      "expected_answer": "Môn học trước là môn 'Phân tích và thiết kế hệ thống thông tin' (mã COS204).",
+      "expected_citations": [
+        "COS308",
+        "COS204",
+        "STT 48"
+      ],
+      "ground_truth_answer": "Môn 'Đồ án ngành CNTT' có môn học trước là môn 'Phân tích và thiết kế hệ thống thông tin' (mã COS204).",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 6, Mục 8.III, STT 48",
+      "supplement_if_wrong": "Đáp án đúng: Học trước môn 'Phân tích và thiết kế hệ thống thông tin' (COS204). (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 6, Mục 8.III, STT 48)"
+    },
+    {
+      "id": "Q13",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Các môn học Giáo dục thể chất có tính tín chỉ tích lũy vào tổng số 140 tín chỉ của toàn khóa học hay không?",
+      "normalized_query": "Các môn Giáo dục thể chất có tính tín chỉ tích lũy vào tổng số 140 tín chỉ của toàn khóa học hay không?",
+      "expected_answer": "Không. Các môn GDTC (4 tín chỉ) là môn học điều kiện, cấp chứng chỉ, không tính điểm vào trung bình chung tích lũy và không tính tích lũy vào 140 tín chỉ toàn khóa.",
+      "expected_citations": [
+        "Giáo dục thể chất",
+        "4 tín chỉ",
+        "không tính tích lũy",
+        "140 tín chỉ"
+      ],
+      "ground_truth_answer": "Các môn Giáo dục thể chất (4 tín chỉ) là môn học điều kiện, cấp chứng chỉ, không tính điểm vào trung bình chung tích lũy và không tính tích lũy vào 140 tín chỉ toàn khóa.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.I, Ghi chú môn GDTC",
+      "supplement_if_wrong": "Đáp án đúng: Không tính tích lũy vào 140 tín chỉ. Môn GDTC (4 tín chỉ) là môn điều kiện, cấp chứng chỉ. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.I, Ghi chú môn GDTC)"
+    },
+    {
+      "id": "Q14",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn học 'Cấu trúc dữ liệu và giải thuật' có mã môn học là gì, bao nhiêu tín chỉ và dự kiến học ở học kỳ mấy?",
+      "normalized_query": "Môn 'Cấu trúc dữ liệu và giải thuật' có mã môn học là gì, bao nhiêu tín chỉ và dự kiến học ở học kỳ mấy?",
+      "expected_answer": "Mã COS201, khối lượng 3 tín chỉ bắt buộc (2 lý thuyết, 1 thực hành), dự kiến học ở học kỳ III.",
+      "expected_citations": [
+        "COS201",
+        "3 tín chỉ",
+        "học kỳ III",
+        "STT 20"
+      ],
+      "ground_truth_answer": "Môn 'Cấu trúc dữ liệu và giải thuật' có mã COS201, khối lượng 3 tín chỉ bắt buộc (2 lý thuyết, 1 thực hành), dự kiến học ở học kỳ III.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.II, STT 20",
+      "supplement_if_wrong": "Đáp án đúng: Mã COS201, 3 tín chỉ (2 lý thuyết, 1 thực hành), học kỳ III. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.II, STT 20)"
+    },
+    {
+      "id": "Q15",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn 'Hệ quản trị cơ sở dữ liệu' (COS205) yêu cầu sinh viên phải hoàn thành môn học trước nào?",
+      "normalized_query": "Môn 'Hệ quản trị cơ sở dữ liệu' (COS205) yêu cầu sinh viên phải hoàn thành môn học trước nào?",
+      "expected_answer": "Yêu cầu môn học trước là môn 'Cơ sở dữ liệu' (mã COS203 - STT 19).",
+      "expected_citations": [
+        "COS205",
+        "COS203",
+        "STT 19",
+        "STT 25"
+      ],
+      "ground_truth_answer": "Môn 'Hệ quản trị cơ sở dữ liệu' yêu cầu môn học trước là môn 'Cơ sở dữ liệu' (mã COS203 - STT 19).",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 6, Mục 8.II, STT 25",
+      "supplement_if_wrong": "Đáp án đúng: Học trước môn 'Cơ sở dữ liệu' (COS203 - STT 19). (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 6, Mục 8.II, STT 25)"
+    },
+    {
+      "id": "Q16",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Khối kiến thức Cơ sở ngành (Mục II) trong chương trình đào tạo gồm bao nhiêu tín chỉ bắt buộc và tự chọn?",
+      "normalized_query": "Khối kiến thức Cơ sở ngành (Mục II) trong chương trình đào tạo gồm bao nhiêu tín chỉ bắt buộc và tự chọn?",
+      "expected_answer": "Khối kiến thức Cơ sở ngành gồm 42 tín chỉ, trong đó Bắt buộc là 32 tín chỉ và Tự chọn là 10 tín chỉ.",
+      "expected_citations": [
+        "42 tín chỉ",
+        "32 tín chỉ",
+        "10 tín chỉ",
+        "Mục 7",
+        "Mục 8.II"
+      ],
+      "ground_truth_answer": "Khối kiến thức Cơ sở ngành gồm 42 tín chỉ, trong đó Bắt buộc là 32 tín chỉ và Tự chọn là 10 tín chỉ.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 4, Mục 7 & Trang 5, Mục 8.II",
+      "supplement_if_wrong": "Đáp án đúng: Tổng 42 tín chỉ, Bắt buộc 32 tín chỉ, Tự chọn 10 tín chỉ. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 4 Mục 7 & Trang 5 Mục 8.II)"
+    },
+    {
+      "id": "Q17",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Chuẩn đầu ra ELO 10 và ELO 11 quy định thái độ và năng lực học tập suốt đời của sinh viên như thế nào?",
+      "normalized_query": "Chuẩn đầu ra ELO 10 và ELO 11 quy định thái độ và năng lực học tập suốt đời của sinh viên như thế nào?",
+      "expected_answer": "ELO 10: Tự định hướng, thích ứng môi trường thay đổi; tự học hỏi, cập nhật kiến thức công nghệ mới. ELO 11: Có đạo đức nghề nghiệp, ý thức chấp hành pháp luật và trách nhiệm xã hội.",
+      "expected_citations": [
+        "ELO 10",
+        "ELO 11",
+        "Mục 4"
+      ],
+      "ground_truth_answer": "- ELO 10: Tự định hướng, thích ứng với môi trường làm việc thay đổi; tự học hỏi, cập nhật kiến thức công nghệ mới.\n- ELO 11: Có đạo đức nghề nghiệp, ý thức chấp hành pháp luật và trách nhiệm xã hội.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 3, Mục 4 (Chuẩn đầu ra ELO 10, ELO 11)",
+      "supplement_if_wrong": "Đáp án đúng: ELO 10: Tự định hướng, thích ứng, tự học hỏi; ELO 11: Đạo đức nghề nghiệp, chấp hành pháp luật, trách nhiệm xã hội. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 3, Mục 4)"
+    },
+    {
+      "id": "Q18",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn 'Hệ điều hành' có mã môn học là gì và có mấy tín chỉ lý thuyết, thực hành?",
+      "normalized_query": "Môn 'Hệ điều hành' có mã môn học là gì và có mấy tín chỉ lý thuyết, thực hành?",
+      "expected_answer": "Mã COS202, khối lượng 3 tín chỉ bắt buộc (2 lý thuyết, 1 thực hành), dự kiến học ở học kỳ III.",
+      "expected_citations": [
+        "COS202",
+        "3 tín chỉ",
+        "2 lý thuyết",
+        "1 thực hành",
+        "học kỳ III",
+        "STT 21"
+      ],
+      "ground_truth_answer": "Môn 'Hệ điều hành' có mã COS202, khối lượng 3 tín chỉ bắt buộc (2 lý thuyết, 1 thực hành), dự kiến học ở học kỳ III.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.II, STT 21",
+      "supplement_if_wrong": "Đáp án đúng: Mã COS202, 3 tín chỉ (2 lý thuyết, 1 thực hành), học kỳ III. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.II, STT 21)"
+    },
+    {
+      "id": "Q19",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn 'Kiến trúc máy tính và Hợp ngữ' (CON201) học ở học kỳ nào và có môn học trước không?",
+      "normalized_query": "Môn 'Kiến trúc máy tính và Hợp ngữ' (CON201) học ở học kỳ nào và có môn học trước không?",
+      "expected_answer": "Học ở học kỳ II, khối lượng 3 tín chỉ và không yêu cầu môn học trước.",
+      "expected_citations": [
+        "CON201",
+        "học kỳ II",
+        "3 tín chỉ",
+        "STT 17"
+      ],
+      "ground_truth_answer": "Môn 'Kiến trúc máy tính và Hợp ngữ' học ở học kỳ II, khối lượng 3 tín chỉ và không yêu cầu môn học trước.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.II, STT 17",
+      "supplement_if_wrong": "Đáp án đúng: Học kỳ II, 3 tín chỉ, không yêu cầu môn học trước. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 5, Mục 8.II, STT 17)"
+    },
+    {
+      "id": "Q20",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Thời gian đào tạo chuẩn theo kế hoạch của chương trình cử nhân Công nghệ thông tin là bao nhiêu năm?",
+      "normalized_query": "Thời gian đào tạo chuẩn theo kế hoạch của chương trình cử nhân Công nghệ thông tin là bao nhiêu năm?",
+      "expected_answer": "Thời gian đào tạo thiết kế chuẩn là 4,0 năm (gồm 8 học kỳ chính).",
+      "expected_citations": [
+        "4,0 năm",
+        "8 học kỳ",
+        "Mục 2"
+      ],
+      "ground_truth_answer": "Thời gian đào tạo thiết kế chuẩn là 4,0 năm (gồm 8 học kỳ chính).",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 1, Mục 2 (Thông tin chung về CTĐT)",
+      "supplement_if_wrong": "Đáp án đúng: 4,0 năm (gồm 8 học kỳ chính). (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 1, Mục 2)"
+    },
+    {
+      "id": "Q21",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn 'Trí tuệ nhân tạo' có mã môn học là gì, mấy tín chỉ và học vào học kỳ mấy?",
+      "normalized_query": "Môn 'Trí tuệ nhân tạo' có mã môn học là gì, mấy tín chỉ và học vào học kỳ mấy?",
+      "expected_answer": "Mã CON303, khối lượng 3 tín chỉ bắt buộc (2 lý thuyết, 1 thực hành), dự kiến học ở học kỳ VI.",
+      "expected_citations": [
+        "CON303",
+        "3 tín chỉ",
+        "học kỳ VI",
+        "STT 42"
+      ],
+      "ground_truth_answer": "Môn 'Trí tuệ nhân tạo' có mã CON303, khối lượng 3 tín chỉ bắt buộc (2 lý thuyết, 1 thực hành), dự kiến học ở học kỳ VI.",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 6, Mục 8.III, STT 42",
+      "supplement_if_wrong": "Đáp án đúng: Mã CON303, 3 tín chỉ (2 lý thuyết, 1 thực hành), học kỳ VI. (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 6, Mục 8.III, STT 42)"
+    },
+    {
+      "id": "Q22",
+      "category": "chương trình đào tạo",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Khung CTĐT CNTT",
+      "raw_query": "Môn 'Lập trình Web' (COS303) yêu cầu môn học trước là môn nào?",
+      "normalized_query": "Môn 'Lập trình Web' (COS303) yêu cầu môn học trước là môn nào?",
+      "expected_answer": "Yêu cầu môn học trước là môn 'Lập trình hướng đối tượng' (mã COS102).",
+      "expected_citations": [
+        "COS303",
+        "COS102",
+        "STT 37"
+      ],
+      "ground_truth_answer": "Môn 'Lập trình Web' yêu cầu môn học trước là môn 'Lập trình hướng đối tượng' (mã COS102).",
+      "ground_truth_citation": "Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 6, Mục 8.III, STT 37",
+      "supplement_if_wrong": "Đáp án đúng: Học trước môn 'Lập trình hướng đối tượng' (COS102). (Nguồn: Bản mô tả CTĐT ngành CNTT (07/2021) – Trang 6, Mục 8.III, STT 37)"
+    },
+    {
+      "id": "Q23",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Tiêu chí xếp loại kết quả rèn luyện học kỳ đối với các mức Xuất sắc, Tốt, Khá, Trung bình, Yếu, Kém được tính theo thang điểm nào?",
+      "normalized_query": "Tiêu chí xếp loại kết quả rèn luyện học kỳ theo thang điểm nào cho các mức Xuất sắc, Tốt, Khá, Trung bình, Yếu, Kém?",
+      "expected_answer": "90-100 điểm: Xuất sắc; 80-dưới 90: Tốt; 65-dưới 80: Khá; 50-dưới 65: Trung bình; 35-dưới 50: Yếu; dưới 35: Kém.",
+      "expected_citations": [
+        "90-100 điểm",
+        "80-90 điểm",
+        "65-80 điểm",
+        "50-65 điểm",
+        "35-50 điểm",
+        "Điều 10"
+      ],
+      "ground_truth_answer": "- Từ 90 đến 100 điểm: Xuất sắc\n- Từ 80 đến dưới 90 điểm: Tốt\n- Từ 65 đến dưới 80 điểm: Khá\n- Từ 50 đến dưới 65 điểm: Trung bình\n- Từ 35 đến dưới 50 điểm: Yếu\n- Dưới 35 điểm: Kém",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 4, Điều 10, Khoản 1",
+      "supplement_if_wrong": "Đáp án đúng: 90-100: Xuất sắc; 80-dưới 90: Tốt; 65-dưới 80: Khá; 50-dưới 65: Trung bình; 35-dưới 50: Yếu; dưới 35: Kém. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 4, Điều 10, Khoản 1)"
+    },
+    {
+      "id": "Q24",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Sinh viên bị xếp loại rèn luyện Yếu, Kém trong 2 học kỳ liên tiếp sẽ bị xử lý như thế nào?",
+      "normalized_query": "Sinh viên bị xếp loại rèn luyện Yếu, Kém trong 2 học kỳ liên tiếp bị xử lý như thế nào?",
+      "expected_answer": "Bị tạm ngừng học ít nhất 1 học kỳ ở học kỳ tiếp theo; nếu bị Yếu, Kém 2 học kỳ liên tiếp lần thứ hai sẽ bị xử lý buộc thôi học.",
+      "expected_citations": [
+        "Yếu, Kém",
+        "2 học kỳ liên tiếp",
+        "tạm ngừng học",
+        "buộc thôi học",
+        "Điều 14"
+      ],
+      "ground_truth_answer": "Sinh viên bị xếp loại rèn luyện Yếu, Kém trong 2 học kỳ chính liên tiếp thì bị tạm ngừng học ít nhất 1 học kỳ ở học kỳ tiếp theo; nếu bị Yếu, Kém 2 học kỳ liên tiếp lần thứ hai sẽ bị xử lý buộc thôi học.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 6, Điều 14, Khoản 3",
+      "supplement_if_wrong": "Đáp án đúng: Tạm ngừng học ít nhất 1 học kỳ; lần thứ hai bị buộc thôi học. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 6, Điều 14, Khoản 3)"
+    },
+    {
+      "id": "Q25",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Khung điểm đánh giá kết quả rèn luyện sinh viên gồm mấy tiêu chí chính và tổng số điểm tối đa là bao nhiêu?",
+      "normalized_query": "Khung điểm đánh giá kết quả rèn luyện sinh viên gồm mấy tiêu chí chính và tổng số điểm tối đa là bao nhiêu?",
+      "expected_answer": "Gồm 5 tiêu chí chính với tổng số điểm tối đa là 100 điểm.",
+      "expected_citations": [
+        "5 tiêu chí",
+        "100 điểm",
+        "Điều 4-9"
+      ],
+      "ground_truth_answer": "Khung đánh giá gồm 5 tiêu chí chính với tổng số điểm tối đa là 100 điểm.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 2, Điều 4 đến Điều 9",
+      "supplement_if_wrong": "Đáp án đúng: 5 tiêu chí chính, tổng điểm tối đa 100 điểm. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 2, Điều 4 đến Điều 9)"
+    },
+    {
+      "id": "Q26",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Tiêu chí 1 về 'Đánh giá về ý thức học tập' có điểm tối đa là bao nhiêu và gồm những nội dung cộng/trừ điểm nào?",
+      "normalized_query": "Tiêu chí 1 về 'Đánh giá về ý thức học tập' có điểm tối đa là bao nhiêu và gồm những nội dung cộng/trừ điểm nào?",
+      "expected_answer": "Điểm tối đa 20 điểm. Gồm đánh giá ý thức tham gia học tập, thái độ trong lớp, chấp hành quy chế thi, tham gia CLB học thuật, NCKH và kết quả học tập trong học kỳ.",
+      "expected_citations": [
+        "20 điểm",
+        "Điều 5"
+      ],
+      "ground_truth_answer": "Điểm tối đa Tiêu chí 1 là 20 điểm. Gồm đánh giá ý thức tham gia học tập, thái độ trong lớp, chấp hành quy chế thi, tham gia câu lạc bộ học thuật, NCKH và kết quả học tập trong học kỳ.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 2, Điều 5",
+      "supplement_if_wrong": "Đáp án đúng: Điểm tối đa 20 điểm; bao gồm ý thức học tập, thái độ lớp, quy chế thi, CLB học thuật, NCKH, kết quả học tập. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 2, Điều 5)"
+    },
+    {
+      "id": "Q27",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Sinh viên đạt kết quả học tập trong học kỳ có điểm trung bình chung học kỳ đạt từ 3.60 đến 4.00 được cộng bao nhiêu điểm rèn luyện?",
+      "normalized_query": "Sinh viên đạt ĐTBCH học kỳ từ 3.60 đến 4.00 được cộng bao nhiêu điểm rèn luyện?",
+      "expected_answer": "Được cộng tối đa 6 điểm rèn luyện vào Tiêu chí 1.",
+      "expected_citations": [
+        "3.60-4.00",
+        "6 điểm",
+        "Điều 5",
+        "Khoản 2a"
+      ],
+      "ground_truth_answer": "Được cộng tối đa 6 điểm rèn luyện vào Tiêu chí 1.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 2, Điều 5, Khoản 2a",
+      "supplement_if_wrong": "Đáp án đúng: Cộng tối đa 6 điểm rèn luyện vào Tiêu chí 1. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 2, Điều 5, Khoản 2a)"
+    },
+    {
+      "id": "Q28",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Tiêu chí 2 về 'Ý thức chấp hành quy chế, quy định trong Nhà trường' có điểm khung tối đa là bao nhiêu?",
+      "normalized_query": "Tiêu chí 2 về 'Ý thức chấp hành quy chế, quy định trong Nhà trường' có điểm khung tối đa là bao nhiêu?",
+      "expected_answer": "Điểm tối đa Tiêu chí 2 là 25 điểm.",
+      "expected_citations": [
+        "25 điểm",
+        "Điều 6"
+      ],
+      "ground_truth_answer": "Điểm tối đa Tiêu chí 2 là 25 điểm.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 3, Điều 6",
+      "supplement_if_wrong": "Đáp án đúng: Điểm tối đa 25 điểm. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 3, Điều 6)"
+    },
+    {
+      "id": "Q29",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Sinh viên vi phạm quy chế thi bị kỷ luật ở hình thức Cảnh cáo thi bị trừ bao nhiêu điểm rèn luyện?",
+      "normalized_query": "Sinh viên vi phạm quy chế thi bị kỷ luật Cảnh cáo thi bị trừ bao nhiêu điểm rèn luyện?",
+      "expected_answer": "Bị trừ 10 điểm rèn luyện trong học kỳ vi phạm.",
+      "expected_citations": [
+        "Cảnh cáo thi",
+        "trừ 10 điểm",
+        "Điều 6",
+        "Khoản 2"
+      ],
+      "ground_truth_answer": "Bị trừ 10 điểm rèn luyện trong học kỳ vi phạm.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 3, Điều 6, Khoản 2",
+      "supplement_if_wrong": "Đáp án đúng: Bị trừ 10 điểm rèn luyện trong học kỳ vi phạm. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 3, Điều 6, Khoản 2)"
+    },
+    {
+      "id": "Q30",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Tiêu chí 3 về 'Ý thức tham gia các hoạt động chính trị, xã hội, văn hóa, văn nghệ, thể thao' có số điểm tối đa là bao nhiêu?",
+      "normalized_query": "Tiêu chí 3 về 'Ý thức tham gia các hoạt động chính trị, xã hội, văn hóa, văn nghệ, thể thao' có số điểm tối đa là bao nhiêu?",
+      "expected_answer": "Điểm tối đa Tiêu chí 3 là 20 điểm.",
+      "expected_citations": [
+        "20 điểm",
+        "Điều 7"
+      ],
+      "ground_truth_answer": "Điểm tối đa Tiêu chí 3 là 20 điểm.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 3, Điều 7",
+      "supplement_if_wrong": "Đáp án đúng: Điểm tối đa 20 điểm. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 3, Điều 7)"
+    },
+    {
+      "id": "Q31",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Tiêu chí 4 về 'Ý thức công dân trong quan hệ cộng đồng' quy định mức điểm tối đa là bao nhiêu?",
+      "normalized_query": "Tiêu chí 4 về 'Ý thức công dân trong quan hệ cộng đồng' quy định mức điểm tối đa là bao nhiêu?",
+      "expected_answer": "Điểm tối đa Tiêu chí 4 là 25 điểm.",
+      "expected_citations": [
+        "25 điểm",
+        "Điều 8"
+      ],
+      "ground_truth_answer": "Điểm tối đa Tiêu chí 4 là 25 điểm.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 4, Điều 8",
+      "supplement_if_wrong": "Đáp án đúng: Điểm tối đa 25 điểm. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 4, Điều 8)"
+    },
+    {
+      "id": "Q32",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Tiêu chí 5 về 'Ý thức và kết quả tham gia công tác cán bộ lớp, đoàn thể' có điểm tối đa là bao nhiêu?",
+      "normalized_query": "Tiêu chí 5 về 'Ý thức và kết quả tham gia công tác cán bộ lớp, đoàn thể' có điểm tối đa là bao nhiêu?",
+      "expected_answer": "Điểm tối đa Tiêu chí 5 là 10 điểm.",
+      "expected_citations": [
+        "10 điểm",
+        "Điều 9"
+      ],
+      "ground_truth_answer": "Điểm tối đa Tiêu chí 5 là 10 điểm.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 4, Điều 9",
+      "supplement_if_wrong": "Đáp án đúng: Điểm tối đa 10 điểm. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 4, Điều 9)"
+    },
+    {
+      "id": "Q33",
+      "category": "đánh giá rèn luyện",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế Đánh giá KQRL",
+      "raw_query": "Kết quả rèn luyện toàn khóa học của sinh viên được xác định dựa trên công thức hoặc quy tắc nào?",
+      "normalized_query": "Kết quả rèn luyện toàn khóa học của sinh viên được xác định dựa trên công thức hoặc quy tắc nào?",
+      "expected_answer": "Điểm rèn luyện toàn khóa = Tổng điểm rèn luyện các học kỳ / Số học kỳ. Xếp loại toàn khóa dựa trên điểm trung bình này.",
+      "expected_citations": [
+        "Tổng điểm rèn luyện các học kỳ",
+        "Số học kỳ",
+        "Điều 12",
+        "Khoản 2"
+      ],
+      "ground_truth_answer": "Điểm rèn luyện toàn khóa = Tổng điểm rèn luyện các học kỳ / Số học kỳ. Xếp loại toàn khóa dựa trên điểm trung bình này.",
+      "ground_truth_citation": "Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 5, Điều 12, Khoản 2",
+      "supplement_if_wrong": "Đáp án đúng: Điểm rèn luyện toàn khóa = Tổng điểm rèn luyện các học kỳ / Số học kỳ. (Nguồn: Quy chế Đánh giá KQRL sinh viên ĐHAG – Trang 5, Điều 12, Khoản 2)"
+    },
+    {
+      "id": "Q34",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Danh hiệu thi đua 'Sinh viên Giỏi' năm học yêu cầu sinh viên đạt điểm trung bình chung học tập và điểm rèn luyện năm học ở mức nào?",
+      "normalized_query": "Danh hiệu 'Sinh viên Giỏi' năm học yêu cầu ĐTBCHĐ và ĐRL năm học ở mức nào?",
+      "expected_answer": "ĐTBCHĐ năm học đạt từ 3.20 đến 3.59 (thang 4) và ĐRL năm học đạt loại Tốt (từ 80 điểm) trở lên.",
+      "expected_citations": [
+        "3.20-3.59",
+        "80 điểm",
+        "Điều 7",
+        "Khoản 1b"
+      ],
+      "ground_truth_answer": "ĐTBCHĐ năm học đạt từ 3.20 đến 3.59 (thang 4) và ĐRL năm học đạt loại Tốt (từ 80 điểm) trở lên.",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 3, Điều 7, Khoản 1b",
+      "supplement_if_wrong": "Đáp án đúng: ĐTBCHĐ 3.20-3.59 (thang 4), ĐRL từ 80 điểm (loại Tốt). (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 3, Điều 7, Khoản 1b)"
+    },
+    {
+      "id": "Q35",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Danh hiệu 'Sinh viên Xuất sắc' năm học đòi hỏi tiêu chuẩn điểm học tập và điểm rèn luyện ra sao?",
+      "normalized_query": "Danh hiệu 'Sinh viên Xuất sắc' năm học đòi hỏi tiêu chuẩn điểm học tập và điểm rèn luyện ra sao?",
+      "expected_answer": "ĐTBCHĐ năm học đạt từ 3.60 đến 4.00 (thang 4) và ĐRL năm học đạt loại Xuất sắc (từ 90 điểm) trở lên.",
+      "expected_citations": [
+        "3.60-4.00",
+        "90 điểm",
+        "Điều 7",
+        "Khoản 1a"
+      ],
+      "ground_truth_answer": "ĐTBCHĐ năm học đạt từ 3.60 đến 4.00 (thang 4) và ĐRL năm học đạt loại Xuất sắc (từ 90 điểm) trở lên.",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 3, Điều 7, Khoản 1a",
+      "supplement_if_wrong": "Đáp án đúng: ĐTBCHĐ 3.60-4.00 (thang 4), ĐRL từ 90 điểm (loại Xuất sắc). (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 3, Điều 7, Khoản 1a)"
+    },
+    {
+      "id": "Q36",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Sinh viên bị kỷ luật từ mức hình thức nào trở lên trong năm học thì không được xét khen thưởng danh hiệu thi đua?",
+      "normalized_query": "Sinh viên bị kỷ luật từ mức hình thức nào trở lên trong năm học thì không được xét khen thưởng danh hiệu thi đua?",
+      "expected_answer": "Sinh viên bị xử lý kỷ luật từ hình thức Khiển trách trở lên trong năm học thì không được xét tặng danh hiệu thi đua.",
+      "expected_citations": [
+        "Khiển trách",
+        "Điều 8",
+        "Khoản 3"
+      ],
+      "ground_truth_answer": "Sinh viên bị xử lý kỷ luật từ hình thức Khiển trách trở lên trong năm học thì không được xét tặng danh hiệu thi đua.",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 4, Điều 8, Khoản 3",
+      "supplement_if_wrong": "Đáp án đúng: Từ hình thức Khiển trách trở lên. (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 4, Điều 8, Khoản 3)"
+    },
+    {
+      "id": "Q37",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Tập thể 'Lớp sinh viên Tiên tiến' cần đáp ứng tiêu chuẩn tỷ lệ sinh viên đạt danh hiệu khá trở lên là bao nhiêu?",
+      "normalized_query": "Tập thể 'Lớp sinh viên Tiên tiến' cần đáp ứng tiêu chuẩn tỷ lệ sinh viên đạt danh hiệu khá trở lên là bao nhiêu?",
+      "expected_answer": "Phải có từ 25% sinh viên trong lớp đạt danh hiệu Sinh viên Khá trở lên và không có sinh viên bị kỷ luật từ Cảnh cáo trở lên.",
+      "expected_citations": [
+        "25%",
+        "Sinh viên Khá",
+        "Cảnh cáo",
+        "Điều 9",
+        "Khoản 2"
+      ],
+      "ground_truth_answer": "Phải có từ 25% sinh viên trong lớp đạt danh hiệu Sinh viên Khá trở lên và không có sinh viên bị kỷ luật từ Cảnh cáo trở lên.",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 4, Điều 9, Khoản 2",
+      "supplement_if_wrong": "Đáp án đúng: Từ 25% sinh viên đạt danh hiệu Khá trở lên, không có sinh viên bị kỷ luật từ Cảnh cáo trở lên. (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 4, Điều 9, Khoản 2)"
+    },
+    {
+      "id": "Q38",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Tập thể 'Lớp sinh viên Xuất sắc' yêu cầu tiêu chuẩn về tỷ lệ sinh viên Giỏi, Xuất sắc là bao nhiêu?",
+      "normalized_query": "Tập thể 'Lớp sinh viên Xuất sắc' yêu cầu tiêu chuẩn về tỷ lệ sinh viên Giỏi, Xuất sắc là bao nhiêu?",
+      "expected_answer": "Phải đạt danh hiệu Lớp Tiên tiến và có từ 10% sinh viên đạt danh hiệu Sinh viên Giỏi hoặc Xuất sắc trở lên.",
+      "expected_citations": [
+        "10%",
+        "Sinh viên Giỏi",
+        "Sinh viên Xuất sắc",
+        "Điều 9",
+        "Khoản 3"
+      ],
+      "ground_truth_answer": "Phải đạt danh hiệu Lớp Tiên tiến và có từ 10% sinh viên đạt danh hiệu Sinh viên Giỏi hoặc Xuất sắc trở lên.",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 4, Điều 9, Khoản 3",
+      "supplement_if_wrong": "Đáp án đúng: Từ 10% sinh viên đạt danh hiệu Giỏi hoặc Xuất sắc trở lên. (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 4, Điều 9, Khoản 3)"
+    },
+    {
+      "id": "Q39",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Mức tiền thưởng kèm theo Giấy khen của Hiệu trưởng cho danh hiệu 'Sinh viên Xuất sắc' năm học là bao nhiêu?",
+      "normalized_query": "Mức tiền thưởng kèm theo Giấy khen Hiệu trưởng cho danh hiệu 'Sinh viên Xuất sắc' năm học là bao nhiêu?",
+      "expected_answer": "Thưởng tiền theo quy định tài chính hiện hành của Trường (mức chi khen thưởng cấp Trường quy định tại Phụ lục chi tiêu nội bộ).",
+      "expected_citations": [
+        "quy định tài chính",
+        "Phụ lục chi tiêu nội bộ",
+        "Điều 14",
+        "Khoản 1"
+      ],
+      "ground_truth_answer": "Thưởng tiền theo quy định tài chính hiện hành của Trường (mức chi khen thưởng cấp Trường quy định tại Phụ lục chi tiêu nội bộ).",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 6, Điều 14, Khoản 1",
+      "supplement_if_wrong": "Đáp án đúng: Theo quy định tài chính hiện hành của Trường (Phụ lục chi tiêu nội bộ). (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 6, Điều 14, Khoản 1)"
+    },
+    {
+      "id": "Q40",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Thẩm quyền quyết định trao tặng danh hiệu thi đua cá nhân và tập thể sinh viên cấp Trường thuộc về ai?",
+      "normalized_query": "Thẩm quyền quyết định trao tặng danh hiệu thi đua cá nhân và tập thể sinh viên cấp Trường thuộc về ai?",
+      "expected_answer": "Hiệu trưởng Trường Đại học An Giang ra quyết định tặng thưởng và trao Giấy khen.",
+      "expected_citations": [
+        "Hiệu trưởng",
+        "Điều 12"
+      ],
+      "ground_truth_answer": "Hiệu trưởng Trường Đại học An Giang ra quyết định tặng thưởng và trao Giấy khen.",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 5, Điều 12",
+      "supplement_if_wrong": "Đáp án đúng: Hiệu trưởng Trường Đại học An Giang. (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 5, Điều 12)"
+    },
+    {
+      "id": "Q41",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Sinh viên đạt giải Nhất cuộc thi Nghiên cứu khoa học sinh viên cấp Trường được khen thưởng ra sao?",
+      "normalized_query": "Sinh viên đạt giải Nhất cuộc thi NCKH sinh viên cấp Trường được khen thưởng ra sao?",
+      "expected_answer": "Được Hiệu trưởng tặng Giấy khen kèm theo mức tiền thưởng quy định cho giải Nhất NCKH cấp Trường.",
+      "expected_citations": [
+        "Giấy khen",
+        "tiền thưởng",
+        "giải Nhất NCKH",
+        "Điều 11",
+        "Khoản 2"
+      ],
+      "ground_truth_answer": "Được Hiệu trưởng tặng Giấy khen kèm theo mức tiền thưởng quy định cho giải Nhất NCKH cấp Trường.",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 5, Điều 11, Khoản 2",
+      "supplement_if_wrong": "Đáp án đúng: Hiệu trưởng tặng Giấy khen kèm tiền thưởng quy định cho giải Nhất NCKH cấp Trường. (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 5, Điều 11, Khoản 2)"
+    },
+    {
+      "id": "Q42",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Điều kiện về điểm học phần khi học lại để cải thiện điểm là sinh viên phải đạt điểm học phần ban đầu ở mức nào?",
+      "normalized_query": "Điều kiện điểm học phần khi học lại cải thiện điểm là sinh viên phải đạt điểm ban đầu ở mức nào?",
+      "expected_answer": "Sinh viên được đăng ký học lại để cải thiện điểm đối với các học phần đạt điểm D, D+, C, C+ (hoặc theo quy chế học chế tín chỉ áp dụng).",
+      "expected_citations": [
+        "D",
+        "D+",
+        "C",
+        "C+",
+        "Điều 15",
+        "Khoản 2"
+      ],
+      "ground_truth_answer": "Sinh viên được đăng ký học lại để cải thiện điểm đối với các học phần đạt điểm D, D+, C, C+ (hoặc theo quy chế học chế tín chỉ áp dụng).",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng / Quy chế Đào tạo – Điều 15, Khoản 2",
+      "supplement_if_wrong": "Đáp án đúng: Học phần đạt điểm D, D+, C, C+ (hoặc theo quy chế đào tạo tín chỉ). (Nguồn: Quy định Thi đua Khen thưởng / Quy chế Đào tạo – Điều 15, Khoản 2)"
+    },
+    {
+      "id": "Q43",
+      "category": "khen thưởng sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định TĐKT Trường ĐHAG",
+      "raw_query": "Quy trình đề nghị khen thưởng năm học đối với sinh viên do đơn vị nào chủ trì tổng hợp?",
+      "normalized_query": "Quy trình đề nghị khen thưởng năm học đối với sinh viên do đơn vị nào chủ trì tổng hợp?",
+      "expected_answer": "Phòng Công tác Sinh viên phối hợp với các Khoa quản lý ngành chủ trì tổng hợp hồ sơ trình Hội đồng Thi đua Khen thưởng Trường.",
+      "expected_citations": [
+        "Phòng Công tác Sinh viên",
+        "Khoa",
+        "Điều 13"
+      ],
+      "ground_truth_answer": "Phòng Công tác Sinh viên phối hợp với các Khoa quản lý ngành chủ trì tổng hợp hồ sơ trình Hội đồng Thi đua Khen thưởng Trường.",
+      "ground_truth_citation": "Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 6, Điều 13",
+      "supplement_if_wrong": "Đáp án đúng: Phòng Công tác Sinh viên phối hợp với các Khoa quản lý ngành. (Nguồn: Quy định Thi đua Khen thưởng Trường ĐHAG – Trang 6, Điều 13)"
+    },
+    {
+      "id": "Q44",
+      "category": "quy chế công tác sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế CTSV ĐHAG",
+      "raw_query": "Sinh viên nghỉ học tạm thời vì lý do cá nhân phải hoàn thành tối thiểu bao nhiêu học kỳ tại Trường?",
+      "normalized_query": "Sinh viên nghỉ học tạm thời vì lý do cá nhân phải hoàn thành tối thiểu bao nhiêu học kỳ tại Trường?",
+      "expected_answer": "Sinh viên phải học tối thiểu 01 học kỳ tại Trường và không thuộc các trường hợp bị xem xét buộc thôi học.",
+      "expected_citations": [
+        "01 học kỳ",
+        "buộc thôi học",
+        "Điều 8",
+        "Khoản 1"
+      ],
+      "ground_truth_answer": "Sinh viên phải học tối thiểu 01 học kỳ tại Trường và không thuộc các trường hợp bị xem xét buộc thôi học.",
+      "ground_truth_citation": "Quy chế CTSV ĐHAG – Trang 5, Điều 8, Khoản 1",
+      "supplement_if_wrong": "Đáp án đúng: Tối thiểu 01 học kỳ tại Trường, không thuộc trường hợp buộc thôi học. (Nguồn: Quy chế CTSV ĐHAG – Trang 5, Điều 8, Khoản 1)"
+    },
+    {
+      "id": "Q45",
+      "category": "quy chế công tác sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế CTSV ĐHAG",
+      "raw_query": "Thời gian nghỉ học tạm thời vì lý do cá nhân được tính vào thời gian tối đa hoàn thành khóa học hay không?",
+      "normalized_query": "Thời gian nghỉ học tạm thời vì lý do cá nhân được tính vào thời gian tối đa hoàn thành khóa học hay không?",
+      "expected_answer": "Thời gian nghỉ học tạm thời vì lý do cá nhân được tính vào tổng thời gian tối đa được phép học tại Trường.",
+      "expected_citations": [
+        "tính vào tổng thời gian",
+        "Điều 8",
+        "Khoản 3"
+      ],
+      "ground_truth_answer": "Thời gian nghỉ học tạm thời vì lý do cá nhân được tính vào tổng thời gian tối đa được phép học tại Trường.",
+      "ground_truth_citation": "Quy chế CTSV ĐHAG – Trang 5, Điều 8, Khoản 3",
+      "supplement_if_wrong": "Đáp án đúng: Có, được tính vào tổng thời gian tối đa được phép học tại Trường. (Nguồn: Quy chế CTSV ĐHAG – Trang 5, Điều 8, Khoản 3)"
+    },
+    {
+      "id": "Q46",
+      "category": "quy chế công tác sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế CTSV ĐHAG",
+      "raw_query": "Sinh viên bị xử lý kỷ luật ở mức buộc thôi học có được xem xét xin nhập học lại hay không?",
+      "normalized_query": "Sinh viên bị xử lý kỷ luật buộc thôi học có được xem xét xin nhập học lại không?",
+      "expected_answer": "Không. Sinh viên đã bị kỷ luật buộc thôi học không được phép xin nhập học lại.",
+      "expected_citations": [
+        "buộc thôi học",
+        "không được phép xin nhập học lại",
+        "Điều 15",
+        "Khoản 4"
+      ],
+      "ground_truth_answer": "Không. Sinh viên đã bị kỷ luật buộc thôi học không được phép xin nhập học lại.",
+      "ground_truth_citation": "Quy chế CTSV ĐHAG – Trang 8, Điều 15, Khoản 4",
+      "supplement_if_wrong": "Đáp án đúng: Không, không được phép xin nhập học lại. (Nguồn: Quy chế CTSV ĐHAG – Trang 8, Điều 15, Khoản 4)"
+    },
+    {
+      "id": "Q47",
+      "category": "quy chế công tác sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế CTSV ĐHAG",
+      "raw_query": "Nhiệm vụ của Cố vấn học tập trong việc hỗ trợ sinh viên đăng ký học tập đầu mỗi học kỳ là gì?",
+      "normalized_query": "Nhiệm vụ của Cố vấn học tập trong việc hỗ trợ sinh viên đăng ký học tập đầu mỗi học kỳ là gì?",
+      "expected_answer": "Cố vấn học tập tư vấn, hướng dẫn sinh viên lựa chọn môn học theo đúng tiến trình CTĐT, duyệt kế hoạch học tập của sinh viên trên hệ thống.",
+      "expected_citations": [
+        "tư vấn",
+        "hướng dẫn",
+        "lựa chọn môn học",
+        "duyệt kế hoạch",
+        "Điều 5",
+        "Khoản 2"
+      ],
+      "ground_truth_answer": "Cố vấn học tập tư vấn, hướng dẫn sinh viên lựa chọn môn học theo đúng tiến trình CTĐT, duyệt kế hoạch học tập của sinh viên trên hệ thống.",
+      "ground_truth_citation": "Quy chế CTSV ĐHAG – Trang 3, Điều 5, Khoản 2",
+      "supplement_if_wrong": "Đáp án đúng: Tư vấn, hướng dẫn lựa chọn môn học theo CTĐT, duyệt kế hoạch học tập trên hệ thống. (Nguồn: Quy chế CTSV ĐHAG – Trang 3, Điều 5, Khoản 2)"
+    },
+    {
+      "id": "Q48",
+      "category": "quy chế công tác sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế CTSV ĐHAG",
+      "raw_query": "Sinh viên có nghĩa vụ gì về việc đeo thẻ sinh viên khi đến Trường học tập và giao dịch?",
+      "normalized_query": "Sinh viên có nghĩa vụ gì về việc đeo thẻ sinh viên khi đến Trường học tập và giao dịch?",
+      "expected_answer": "Sinh viên bắt buộc phải đeo thẻ sinh viên trong suốt thời gian học tập, sinh hoạt và giao dịch hành chính tại Trường.",
+      "expected_citations": [
+        "đeo thẻ sinh viên",
+        "Điều 3",
+        "Khoản 4"
+      ],
+      "ground_truth_answer": "Sinh viên bắt buộc phải đeo thẻ sinh viên trong suốt thời gian học tập, sinh hoạt và giao dịch hành chính tại Trường.",
+      "ground_truth_citation": "Quy chế CTSV ĐHAG – Trang 2, Điều 3, Khoản 4",
+      "supplement_if_wrong": "Đáp án đúng: Bắt buộc đeo thẻ sinh viên trong suốt thời gian học tập, sinh hoạt và giao dịch hành chính tại Trường. (Nguồn: Quy chế CTSV ĐHAG – Trang 2, Điều 3, Khoản 4)"
+    },
+    {
+      "id": "Q49",
+      "category": "quy chế công tác sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy chế CTSV ĐHAG",
+      "raw_query": "Hành vi gian lận trong thi cử, kiểm tra bị xử lý kỷ luật như thế nào ở lần vi phạm thứ nhất?",
+      "normalized_query": "Hành vi gian lận trong thi cử, kiểm tra bị xử lý kỷ luật như thế nào ở lần vi phạm thứ nhất?",
+      "expected_answer": "Tùy mức độ, sinh viên bị trừ điểm, hủy kết quả thi, bị kỷ luật từ Khiển trách đến Cảnh cáo cấp Trường.",
+      "expected_citations": [
+        "trừ điểm",
+        "hủy kết quả thi",
+        "Khiển trách",
+        "Cảnh cáo",
+        "Phụ lục khung kỷ luật"
+      ],
+      "ground_truth_answer": "Tùy mức độ, sinh viên bị trừ điểm, hủy kết quả thi, bị kỷ luật từ Khiển trách đến Cảnh cáo cấp Trường.",
+      "ground_truth_citation": "Quy chế CTSV ĐHAG – Phụ lục khung kỷ luật, STT 3",
+      "supplement_if_wrong": "Đáp án đúng: Bị trừ điểm, hủy kết quả thi, kỷ luật từ Khiển trách đến Cảnh cáo cấp Trường. (Nguồn: Quy chế CTSV ĐHAG – Phụ lục khung kỷ luật, STT 3)"
+    },
+    {
+      "id": "Q50",
+      "category": "sinh viên 5 tốt",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định SV 5 tốt & Sao Tháng Giêng",
+      "raw_query": "Danh hiệu 'Sinh viên 5 tốt' cấp Trường đòi hỏi sinh viên phải hoàn thành mấy tiêu chuẩn cốt lõi?",
+      "normalized_query": "Danh hiệu 'Sinh viên 5 tốt' cấp Trường đòi hỏi sinh viên phải hoàn thành mấy tiêu chuẩn cốt lõi?",
+      "expected_answer": "Phải đạt đủ 5 tiêu chuẩn: Đạo đức tốt, Học tập tốt, Thể lực tốt, Tình nguyện tốt, Hội nhập tốt.",
+      "expected_citations": [
+        "5 tiêu chuẩn",
+        "Đạo đức tốt",
+        "Học tập tốt",
+        "Thể lực tốt",
+        "Tình nguyện tốt",
+        "Hội nhập tốt",
+        "Mục II"
+      ],
+      "ground_truth_answer": "Phải đạt đủ 5 tiêu chuẩn: Đạo đức tốt, Học tập tốt, Thể lực tốt, Tình nguyện tốt, Hội nhập tốt.",
+      "ground_truth_citation": "Quy định Sinh viên 5 tốt ĐHAG – Trang 1, Mục II",
+      "supplement_if_wrong": "Đáp án đúng: 5 tiêu chuẩn: Đạo đức tốt, Học tập tốt, Thể lực tốt, Tình nguyện tốt, Hội nhập tốt. (Nguồn: Quy định Sinh viên 5 tốt ĐHAG – Trang 1, Mục II)"
+    },
+    {
+      "id": "Q51",
+      "category": "sinh viên 5 tốt",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định SV 5 tốt & Sao Tháng Giêng",
+      "raw_query": "Tiêu chuẩn 'Học tập tốt' trong xét chọn 'Sinh viên 5 tốt' cấp Trường yêu cầu ĐTBCHĐ năm học tối thiểu là bao nhiêu?",
+      "normalized_query": "Tiêu chuẩn 'Học tập tốt' trong xét chọn 'Sinh viên 5 tốt' cấp Trường yêu cầu ĐTBCHĐ năm học tối thiểu là bao nhiêu?",
+      "expected_answer": "ĐTBCHĐ năm học phải đạt từ 3.20/4.00 trở lên (đối với đào tạo tín chỉ) và không có môn thi lại.",
+      "expected_citations": [
+        "3.20/4.00",
+        "không có môn thi lại",
+        "Mục II.2"
+      ],
+      "ground_truth_answer": "ĐTBCHĐ năm học phải đạt từ 3.20/4.00 trở lên (đối với đào tạo tín chỉ) và không có môn thi lại.",
+      "ground_truth_citation": "Quy định Sinh viên 5 tốt ĐHAG – Trang 2, Mục II.2",
+      "supplement_if_wrong": "Đáp án đúng: Từ 3.20/4.00 trở lên (đào tạo tín chỉ), không có môn thi lại. (Nguồn: Quy định Sinh viên 5 tốt ĐHAG – Trang 2, Mục II.2)"
+    },
+    {
+      "id": "Q52",
+      "category": "sinh viên 5 tốt",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định SV 5 tốt & Sao Tháng Giêng",
+      "raw_query": "Tiêu chuẩn 'Đạo đức tốt' đối với danh hiệu 'Sinh viên 5 tốt' yêu cầu điểm rèn luyện năm học đạt tối thiểu bao nhiêu?",
+      "normalized_query": "Tiêu chuẩn 'Đạo đức tốt' đối với danh hiệu 'Sinh viên 5 tốt' yêu cầu điểm rèn luyện năm học đạt tối thiểu bao nhiêu?",
+      "expected_answer": "Điểm rèn luyện năm học đạt từ 80 điểm trở lên (loại Tốt trở lên).",
+      "expected_citations": [
+        "80 điểm",
+        "loại Tốt",
+        "Mục II.1"
+      ],
+      "ground_truth_answer": "Điểm rèn luyện năm học đạt từ 80 điểm trở lên (loại Tốt trở lên).",
+      "ground_truth_citation": "Quy định Sinh viên 5 tốt ĐHAG – Trang 1, Mục II.1",
+      "supplement_if_wrong": "Đáp án đúng: Từ 80 điểm trở lên (loại Tốt trở lên). (Nguồn: Quy định Sinh viên 5 tốt ĐHAG – Trang 1, Mục II.1)"
+    },
+    {
+      "id": "Q53",
+      "category": "sinh viên 5 tốt",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định SV 5 tốt & Sao Tháng Giêng",
+      "raw_query": "Giải thưởng 'Sao Tháng Giêng' dành cho đối tượng sinh viên nào trong Nhà trường?",
+      "normalized_query": "Giải thưởng 'Sao Tháng Giêng' dành cho đối tượng sinh viên nào trong Nhà trường?",
+      "expected_answer": "Dành cho sinh viên là Cán bộ Đoàn - Hội (Lớp trưởng, Lớp phó, Bí thư, Phó Bí thư, Ban Chấp hành Đoàn - Hội từ cấp Cán bộ lớp trở lên) có thành tích xuất sắc.",
+      "expected_citations": [
+        "Cán bộ Đoàn - Hội",
+        "Lớp trưởng",
+        "Lớp phó",
+        "Bí thư",
+        "Phó Bí thư",
+        "Điều 2"
+      ],
+      "ground_truth_answer": "Dành cho sinh viên là Cán bộ Đoàn - Hội (Lớp trưởng, Lớp phó, Bí thư, Phó Bí thư, Ban Chấp hành Đoàn - Hội từ cấp Cán bộ lớp trở lên) có thành tích xuất sắc.",
+      "ground_truth_citation": "Quy chế Giải thưởng Sao Tháng Giêng – Trang 1, Điều 2",
+      "supplement_if_wrong": "Đáp án đúng: Cán bộ Đoàn - Hội (Lớp trưởng, Lớp phó, Bí thư, Phó Bí thư, Ban Chấp hành Đoàn - Hội từ cấp Cán bộ lớp trở lên). (Nguồn: Quy chế Giải thưởng Sao Tháng Giêng – Trang 1, Điều 2)"
+    },
+    {
+      "id": "Q54",
+      "category": "sinh viên 5 tốt",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định SV 5 tốt & Sao Tháng Giêng",
+      "raw_query": "Tiêu chuẩn điểm rèn luyện để ứng tuyển Giải thưởng 'Sao Tháng Giêng' quy định tối thiểu là bao nhiêu điểm?",
+      "normalized_query": "Tiêu chuẩn điểm rèn luyện để ứng tuyển Giải thưởng 'Sao Tháng Giêng' quy định tối thiểu là bao nhiêu điểm?",
+      "expected_answer": "Điểm rèn luyện năm học xét tuyển đạt từ 90 điểm trở lên (loại Xuất sắc).",
+      "expected_citations": [
+        "90 điểm",
+        "loại Xuất sắc",
+        "Điều 4",
+        "Khoản 1b"
+      ],
+      "ground_truth_answer": "Điểm rèn luyện năm học xét tuyển đạt từ 90 điểm trở lên (loại Xuất sắc).",
+      "ground_truth_citation": "Quy chế Giải thưởng Sao Tháng Giêng – Trang 2, Điều 4, Khoản 1b",
+      "supplement_if_wrong": "Đáp án đúng: Từ 90 điểm trở lên (loại Xuất sắc). (Nguồn: Quy chế Giải thưởng Sao Tháng Giêng – Trang 2, Điều 4, Khoản 1b)"
+    },
+    {
+      "id": "Q55",
+      "category": "sinh viên 5 tốt",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định SV 5 tốt & Sao Tháng Giêng",
+      "raw_query": "Hồ sơ cá nhân đăng ký danh hiệu 'Sinh viên 5 tốt' bao gồm những tài liệu chứng minh nào?",
+      "normalized_query": "Hồ sơ cá nhân đăng ký danh hiệu 'Sinh viên 5 tốt' bao gồm những tài liệu chứng minh nào?",
+      "expected_answer": "Gồm: Báo cáo thành tích cá nhân (mẫu), Bảng điểm học tập có xác nhận, Phiếu điểm rèn luyện, các minh chứng giấy khen/chứng nhận về thể lực, tình nguyện và ngoại ngữ/hội nhập.",
+      "expected_citations": [
+        "Báo cáo thành tích",
+        "Bảng điểm",
+        "Phiếu điểm rèn luyện",
+        "giấy khen",
+        "chứng nhận",
+        "Mục IV"
+      ],
+      "ground_truth_answer": "Gồm: Báo cáo thành tích cá nhân (mẫu), Bảng điểm học tập có xác nhận, Phiếu điểm rèn luyện, các minh chứng giấy khen/chứng nhận về thể lực, tình nguyện và ngoại ngữ/hội nhập.",
+      "ground_truth_citation": "Quy định Sinh viên 5 tốt ĐHAG – Trang 4, Mục IV",
+      "supplement_if_wrong": "Đáp án đúng: Báo cáo thành tích cá nhân, Bảng điểm, Phiếu điểm rèn luyện, giấy khen/chứng nhận thể lực, tình nguyện, ngoại ngữ/hội nhập. (Nguồn: Quy định Sinh viên 5 tốt ĐHAG – Trang 4, Mục IV)"
+    },
+    {
+      "id": "Q56",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24TH",
+      "raw_query": "Thời gian thực tập thực tế của sinh viên ngành Công nghệ thông tin khóa DH24TH là bao nhiêu tuần?",
+      "normalized_query": "Thời gian thực tập thực tế của sinh viên ngành CNTT khóa DH24TH là bao nhiêu tuần?",
+      "expected_answer": "Thời gian thực tập tại doanh nghiệp/đơn vị là 8 tuần liên tục theo kế hoạch.",
+      "expected_citations": [
+        "8 tuần",
+        "Mục III.1"
+      ],
+      "ground_truth_answer": "Thời gian thực tập tại doanh nghiệp/đơn vị là 8 tuần liên tục theo kế hoạch.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24TH – Trang 2, Mục III.1",
+      "supplement_if_wrong": "Đáp án đúng: 8 tuần liên tục theo kế hoạch. (Nguồn: Kế hoạch TTCK-KLTN DH24TH – Trang 2, Mục III.1)"
+    },
+    {
+      "id": "Q57",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24TH",
+      "raw_query": "Điều kiện để sinh viên ngành CNTT được đăng ký làm Khóa luận tốt nghiệp là gì?",
+      "normalized_query": "Điều kiện để sinh viên ngành CNTT được đăng ký làm Khóa luận tốt nghiệp là gì?",
+      "expected_answer": "Sinh viên tích lũy đủ số tín chỉ quy định, ĐTBCTL đạt từ 2.50 trở lên và không đang trong thời gian bị kỷ luật.",
+      "expected_citations": [
+        "tích lũy đủ tín chỉ",
+        "ĐTBCTL 2.50",
+        "không bị kỷ luật",
+        "Mục II.2"
+      ],
+      "ground_truth_answer": "Sinh viên tích lũy đủ số tín chỉ quy định, ĐTBCTL đạt từ 2.50 trở lên và không đang trong thời gian bị kỷ luật.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24TH – Trang 1, Mục II.2",
+      "supplement_if_wrong": "Đáp án đúng: Tích lũy đủ tín chỉ, ĐTBCTL từ 2.50 trở lên, không đang bị kỷ luật. (Nguồn: Kế hoạch TTCK-KLTN DH24TH – Trang 1, Mục II.2)"
+    },
+    {
+      "id": "Q58",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24TH",
+      "raw_query": "Nộp báo cáo Thực tập tốt nghiệp chậm so với thời hạn quy định bị xử lý như thế nào?",
+      "normalized_query": "Nộp báo cáo Thực tập tốt nghiệp chậm so với thời hạn quy định bị xử lý như thế nào?",
+      "expected_answer": "Sinh viên nộp chậm không có lý do chính đáng bị trừ điểm đánh giá hoặc nhận điểm 0 cho phần báo cáo đúng theo quy định.",
+      "expected_citations": [
+        "trừ điểm",
+        "điểm 0",
+        "Mục V.3"
+      ],
+      "ground_truth_answer": "Sinh viên nộp chậm không có lý do chính đáng bị trừ điểm đánh giá hoặc nhận điểm 0 cho phần báo cáo đúng theo quy định.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24TH – Trang 4, Mục V.3",
+      "supplement_if_wrong": "Đáp án đúng: Bị trừ điểm đánh giá hoặc nhận điểm 0 cho phần báo cáo. (Nguồn: Kế hoạch TTCK-KLTN DH24TH – Trang 4, Mục V.3)"
+    },
+    {
+      "id": "Q59",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24TH",
+      "raw_query": "Điểm đánh giá Thực tập tốt nghiệp gồm những thành phần điểm nào?",
+      "normalized_query": "Điểm đánh giá Thực tập tốt nghiệp gồm những thành phần điểm nào?",
+      "expected_answer": "Gồm điểm đánh giá của Giảng viên hướng dẫn và điểm đánh giá của Cán bộ hướng dẫn tại cơ sở thực tập/doanh nghiệp.",
+      "expected_citations": [
+        "Giảng viên hướng dẫn",
+        "Cán bộ hướng dẫn doanh nghiệp",
+        "Mục IV.2"
+      ],
+      "ground_truth_answer": "Gồm điểm đánh giá của Giảng viên hướng dẫn và điểm đánh giá của Cán bộ hướng dẫn tại cơ sở thực tập/doanh nghiệp.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24TH – Trang 3, Mục IV.2",
+      "supplement_if_wrong": "Đáp án đúng: Điểm GV hướng dẫn và điểm cán bộ hướng dẫn tại cơ sở thực tập/doanh nghiệp. (Nguồn: Kế hoạch TTCK-KLTN DH24TH – Trang 3, Mục IV.2)"
+    },
+    {
+      "id": "Q60",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24TH",
+      "raw_query": "Sinh viên làm Khóa luận tốt nghiệp phải bảo vệ trước Hội đồng chấm gồm bao nhiêu thành viên?",
+      "normalized_query": "Sinh viên làm Khóa luận tốt nghiệp phải bảo vệ trước Hội đồng chấm gồm bao nhiêu thành viên?",
+      "expected_answer": "Hội đồng chấm Khóa luận tốt nghiệp gồm 3 đến 5 thành viên (Chủ tịch, Thư ký, Ủy viên/Phản biện).",
+      "expected_citations": [
+        "3-5 thành viên",
+        "Chủ tịch",
+        "Thư ký",
+        "Ủy viên",
+        "Phản biện",
+        "Mục IV.3"
+      ],
+      "ground_truth_answer": "Hội đồng chấm Khóa luận tốt nghiệp gồm 3 đến 5 thành viên (Chủ tịch, Thư ký, Ủy viên/Phản biện).",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24TH – Trang 3, Mục IV.3",
+      "supplement_if_wrong": "Đáp án đúng: 3 đến 5 thành viên (Chủ tịch, Thư ký, Ủy viên/Phản biện). (Nguồn: Kế hoạch TTCK-KLTN DH24TH – Trang 3, Mục IV.3)"
+    },
+    {
+      "id": "Q61",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24TH",
+      "raw_query": "Hình thức trình bày báo cáo Khóa luận tốt nghiệp tuân thủ theo quy chuẩn định dạng nào?",
+      "normalized_query": "Hình thức trình bày báo cáo Khóa luận tốt nghiệp tuân thủ theo quy chuẩn định dạng nào?",
+      "expected_answer": "Soạn thảo trên khổ giấy A4, font Times New Roman, cỡ chữ 13-14, dãn dòng 1.5, đóng bìa cứng theo mẫu hướng dẫn của Khoa CNTT.",
+      "expected_citations": [
+        "A4",
+        "Times New Roman",
+        "13-14",
+        "dãn dòng 1.5",
+        "bìa cứng",
+        "Phụ lục"
+      ],
+      "ground_truth_answer": "Soạn thảo trên khổ giấy A4, font Times New Roman, cỡ chữ 13-14, dãn dòng 1.5, đóng bìa cứng theo mẫu hướng dẫn của Khoa CNTT.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24TH – Phụ lục hướng dẫn trình bày",
+      "supplement_if_wrong": "Đáp án đúng: Khổ A4, font Times New Roman, cỡ 13-14, dãn dòng 1.5, bìa cứng theo mẫu Khoa CNTT. (Nguồn: Kế hoạch TTCK-KLTN DH24TH – Phụ lục hướng dẫn trình bày)"
+    },
+    {
+      "id": "Q62",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Miễn giảm học phí",
+      "raw_query": "Đối tượng sinh viên thuộc diện hộ nghèo, hộ cận nghèo được miễn giảm bao nhiêu phần trăm học phí?",
+      "normalized_query": "Đối tượng sinh viên hộ nghèo, hộ cận nghèo được miễn giảm bao nhiêu phần trăm học phí?",
+      "expected_answer": "Hộ nghèo: Miễn 100% học phí. Hộ cận nghèo: Giảm 50% học phí (theo chính sách trợ cấp hiện hành).",
+      "expected_citations": [
+        "hộ nghèo",
+        "miễn 100%",
+        "hộ cận nghèo",
+        "giảm 50%",
+        "Mục I.1",
+        "Mục I.2"
+      ],
+      "ground_truth_answer": "- Hộ nghèo: Miễn 100% học phí.\n- Hộ cận nghèo: Giảm 50% học phí (theo chính sách trợ cấp hiện hành).",
+      "ground_truth_citation": "Thông báo Miễn giảm học phí – Trang 1, Mục I.1 & I.2",
+      "supplement_if_wrong": "Đáp án đúng: Hộ nghèo miễn 100%, hộ cận nghèo giảm 50% học phí. (Nguồn: Thông báo Miễn giảm học phí – Trang 1, Mục I.1 & I.2)"
+    },
+    {
+      "id": "Q63",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Miễn giảm học phí",
+      "raw_query": "Hồ sơ đề nghị miễn giảm học phí đối với sinh viên khuyết tật gồm những giấy tờ gì?",
+      "normalized_query": "Hồ sơ đề nghị miễn giảm học phí đối với sinh viên khuyết tật gồm những giấy tờ gì?",
+      "expected_answer": "Gồm: Đơn đề nghị miễn giảm học phí (mẫu), bản sao Giấy xác nhận khuyết tật do UBND cấp xã cấp và Giấy khai sinh.",
+      "expected_citations": [
+        "Đơn đề nghị",
+        "Giấy xác nhận khuyết tật",
+        "UBND cấp xã",
+        "Giấy khai sinh",
+        "Mục II.3"
+      ],
+      "ground_truth_answer": "Gồm: Đơn đề nghị miễn giảm học phí (mẫu), bản sao Giấy xác nhận khuyết tật do UBND cấp xã cấp và Giấy khai sinh.",
+      "ground_truth_citation": "Thông báo Miễn giảm học phí – Trang 2, Mục II.3",
+      "supplement_if_wrong": "Đáp án đúng: Đơn đề nghị, Giấy xác nhận khuyết tật (UBND cấp xã), Giấy khai sinh. (Nguồn: Thông báo Miễn giảm học phí – Trang 2, Mục II.3)"
+    },
+    {
+      "id": "Q64",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Miễn giảm học phí",
+      "raw_query": "Thời hạn nộp hồ sơ miễn giảm học phí đầu mỗi học kỳ quy định đến ngày nào?",
+      "normalized_query": "Thời hạn nộp hồ sơ miễn giảm học phí đầu mỗi học kỳ quy định đến ngày nào?",
+      "expected_answer": "Theo mốc thời gian cụ thể trong thông báo đầu mỗi học kỳ của Phòng Công tác Sinh viên (thông thường trong 4 tuần đầu học kỳ).",
+      "expected_citations": [
+        "4 tuần đầu học kỳ",
+        "Phòng Công tác Sinh viên",
+        "Mục III"
+      ],
+      "ground_truth_answer": "Theo mốc thời gian cụ thể trong thông báo đầu mỗi học kỳ của Phòng Công tác Sinh viên (thông thường trong 4 tuần đầu học kỳ).",
+      "ground_truth_citation": "Thông báo Miễn giảm học phí – Trang 3, Mục III",
+      "supplement_if_wrong": "Đáp án đúng: Thông thường trong 4 tuần đầu học kỳ theo thông báo Phòng Công tác Sinh viên. (Nguồn: Thông báo Miễn giảm học phí – Trang 3, Mục III)"
+    },
+    {
+      "id": "Q65",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Miễn giảm học phí",
+      "raw_query": "Sinh viên thuộc đối tượng mồ côi cả cha lẫn mẹ được hỗ trợ học phí theo văn bản quy định nào?",
+      "normalized_query": "Sinh viên mồ côi cả cha lẫn mẹ được hỗ trợ học phí theo văn bản quy định nào?",
+      "expected_answer": "Theo Nghị định 81/2021/NĐ-CP của Chính phủ và quy định hướng dẫn chi tiết của Trường ĐHAG.",
+      "expected_citations": [
+        "Nghị định 81/2021/NĐ-CP",
+        "Chính phủ",
+        "Trường ĐHAG"
+      ],
+      "ground_truth_answer": "Theo Nghị định 81/2021/NĐ-CP của Chính phủ và quy định hướng dẫn chi tiết của Trường ĐHAG.",
+      "ground_truth_citation": "Thông báo Miễn giảm học phí – Trang 1, Căn cứ pháp lý",
+      "supplement_if_wrong": "Đáp án đúng: Theo Nghị định 81/2021/NĐ-CP của Chính phủ và quy định hướng dẫn chi tiết của Trường ĐHAG. (Nguồn: Thông báo Miễn giảm học phí – Trang 1, Căn cứ pháp lý)"
+    },
+    {
+      "id": "Q66",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Miễn giảm học phí",
+      "raw_query": "Sinh viên bị tạm ngưng học tập có được hưởng chính sách miễn giảm học phí trong thời gian tạm ngưng không?",
+      "normalized_query": "Sinh viên bị tạm ngưng học tập có được hưởng chính sách miễn giảm học phí trong thời gian tạm ngưng không?",
+      "expected_answer": "Không. Trong thời gian tạm ngưng học tập, sinh viên không được hưởng chính sách miễn giảm học phí.",
+      "expected_citations": [
+        "không được hưởng",
+        "tạm ngưng học tập",
+        "Mục IV.2"
+      ],
+      "ground_truth_answer": "Không. Trong thời gian tạm ngưng học tập, sinh viên không được hưởng chính sách miễn giảm học phí.",
+      "ground_truth_citation": "Thông báo Miễn giảm học phí – Trang 3, Mục IV.2",
+      "supplement_if_wrong": "Đáp án đúng: Không, không được hưởng chính sách miễn giảm học phí trong thời gian tạm ngưng. (Nguồn: Thông báo Miễn giảm học phí – Trang 3, Mục IV.2)"
+    },
+    {
+      "id": "Q67",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Miễn giảm học phí",
+      "raw_query": "Trường hợp sinh viên nộp hồ sơ miễn giảm học phí quá thời hạn quy định sẽ được giải quyết như thế nào?",
+      "normalized_query": "Trường hợp sinh viên nộp hồ sơ miễn giảm học phí quá thời hạn quy định sẽ được giải quyết như thế nào?",
+      "expected_answer": "Hồ sơ nộp trễ hạn không được giải quyết cho học kỳ đó mà xem xét cho học kỳ kế tiếp (nếu còn trong thời hạn hiệu lực).",
+      "expected_citations": [
+        "nộp trễ hạn",
+        "không giải quyết",
+        "học kỳ kế tiếp",
+        "Mục III.2"
+      ],
+      "ground_truth_answer": "Hồ sơ nộp trễ hạn không được giải quyết cho học kỳ đó mà xem xét cho học kỳ kế tiếp (nếu còn trong thời hạn hiệu lực).",
+      "ground_truth_citation": "Thông báo Miễn giảm học phí – Trang 3, Mục III.2",
+      "supplement_if_wrong": "Đáp án đúng: Không giải quyết cho học kỳ đó, xem xét cho học kỳ kế tiếp (nếu còn hiệu lực). (Nguồn: Thông báo Miễn giảm học phí – Trang 3, Mục III.2)"
+    },
+    {
+      "id": "Q68",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định Mức thu học phí",
+      "raw_query": "Mức thu học phí đối với nhóm ngành Công nghệ thông tin được tính theo công thức nào?",
+      "normalized_query": "Mức thu học phí đối với nhóm ngành CNTT được tính theo công thức nào?",
+      "expected_answer": "Học phí học kỳ = Tổng số tín chỉ đăng ký x Đơn giá học phí/tín chỉ quy định cho nhóm ngành CNTT.",
+      "expected_citations": [
+        "Tổng số tín chỉ",
+        "Đơn giá học phí/tín chỉ",
+        "Mục I"
+      ],
+      "ground_truth_answer": "Học phí học kỳ = Tổng số tín chỉ đăng ký x Đơn giá học phí/tín chỉ quy định cho nhóm ngành CNTT.",
+      "ground_truth_citation": "Quy định Mức thu học phí – Trang 1, Mục I",
+      "supplement_if_wrong": "Đáp án đúng: Học phí học kỳ = Tổng số tín chỉ đăng ký x Đơn giá học phí/tín chỉ cho nhóm ngành CNTT. (Nguồn: Quy định Mức thu học phí – Trang 1, Mục I)"
+    },
+    {
+      "id": "Q69",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định Mức thu học phí",
+      "raw_query": "Học phí các môn học lại, học cải thiện điểm được tính theo đơn giá nào?",
+      "normalized_query": "Học phí các môn học lại, học cải thiện điểm được tính theo đơn giá nào?",
+      "expected_answer": "Tính theo đơn giá tín chỉ tương ứng của năm học hiện hành triển khai môn học đó.",
+      "expected_citations": [
+        "đơn giá tín chỉ",
+        "năm học hiện hành",
+        "Mục II.1"
+      ],
+      "ground_truth_answer": "Tính theo đơn giá tín chỉ tương ứng của năm học hiện hành triển khai môn học đó.",
+      "ground_truth_citation": "Quy định Mức thu học phí – Trang 2, Mục II.1",
+      "supplement_if_wrong": "Đáp án đúng: Theo đơn giá tín chỉ tương ứng của năm học hiện hành triển khai môn học. (Nguồn: Quy định Mức thu học phí – Trang 2, Mục II.1)"
+    },
+    {
+      "id": "Q70",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định Mức thu học phí",
+      "raw_query": "Sinh viên nộp học phí trễ hạn không có lý do chính đáng sẽ bị xử lý ra sao?",
+      "normalized_query": "Sinh viên nộp học phí trễ hạn không có lý do chính đáng sẽ bị xử lý ra sao?",
+      "expected_answer": "Bị nợ học phí, không có tên trong danh sách thi kết thúc học phần và bị khóa tài khoản đăng ký môn học.",
+      "expected_citations": [
+        "nợ học phí",
+        "không có tên danh sách thi",
+        "khóa tài khoản",
+        "Mục III"
+      ],
+      "ground_truth_answer": "Bị nợ học phí, không có tên trong danh sách thi kết thúc học phần và bị khóa tài khoản đăng ký môn học.",
+      "ground_truth_citation": "Quy định Mức thu học phí – Trang 3, Mục III",
+      "supplement_if_wrong": "Đáp án đúng: Bị nợ học phí, không có tên trong danh sách thi, bị khóa tài khoản đăng ký môn học. (Nguồn: Quy định Mức thu học phí – Trang 3, Mục III)"
+    },
+    {
+      "id": "Q71",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định Mức thu học phí",
+      "raw_query": "Thời gian gia hạn nộp học phí tối đa khi sinh viên có đơn xin gia hạn được phê duyệt là bao lâu?",
+      "normalized_query": "Thời gian gia hạn nộp học phí tối đa khi sinh viên có đơn xin gia hạn được phê duyệt là bao lâu?",
+      "expected_answer": "Thời gian gia hạn tối đa không quá 04 tuần kể từ ngày hết hạn nộp học phí theo thông báo.",
+      "expected_citations": [
+        "04 tuần",
+        "hết hạn nộp học phí",
+        "Mục II.3"
+      ],
+      "ground_truth_answer": "Thời gian gia hạn tối đa không quá 04 tuần kể từ ngày hết hạn nộp học phí theo thông báo.",
+      "ground_truth_citation": "Quy định Mức thu học phí – Trang 2, Mục II.3",
+      "supplement_if_wrong": "Đáp án đúng: Tối đa 04 tuần kể từ ngày hết hạn nộp học phí theo thông báo. (Nguồn: Quy định Mức thu học phí – Trang 2, Mục II.3)"
+    },
+    {
+      "id": "Q72",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định Mức thu học phí",
+      "raw_query": "Đơn giá học phí cho 1 tín chỉ thực hành so với tín chỉ lý thuyết được quy định như thế nào?",
+      "normalized_query": "Đơn giá học phí cho 1 tín chỉ thực hành so với tín chỉ lý thuyết được quy định như thế nào?",
+      "expected_answer": "Mỗi tín chỉ thực hành/thực nghiệm có đơn giá cao hơn hoặc bằng tín chỉ lý thuyết theo hệ số quy đổi tài chính của Trường.",
+      "expected_citations": [
+        "thực hành/thực nghiệm",
+        "cao hơn hoặc bằng",
+        "hệ số quy đổi",
+        "Mục I.2"
+      ],
+      "ground_truth_answer": "Mỗi tín chỉ thực hành/thực nghiệm có đơn giá cao hơn hoặc bằng tín chỉ lý thuyết theo hệ số quy đổi tài chính của Trường.",
+      "ground_truth_citation": "Quy định Mức thu học phí – Trang 1, Mục I.2",
+      "supplement_if_wrong": "Đáp án đúng: Đơn giá cao hơn hoặc bằng tín chỉ lý thuyết theo hệ số quy đổi tài chính của Trường. (Nguồn: Quy định Mức thu học phí – Trang 1, Mục I.2)"
+    },
+    {
+      "id": "Q73",
+      "category": "học phí",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định Mức thu học phí",
+      "raw_query": "Hình thức thanh toán học phí chính thức của Nhà trường qua các kênh giao dịch nào?",
+      "normalized_query": "Hình thức thanh toán học phí chính thức của Nhà trường qua các kênh giao dịch nào?",
+      "expected_answer": "Thanh toán chuyển khoản qua cổng thanh toán trực tuyến của Trường hoặc qua ứng dụng ngân hàng liên kết.",
+      "expected_citations": [
+        "chuyển khoản",
+        "cổng thanh toán trực tuyến",
+        "ứng dụng ngân hàng",
+        "Mục IV"
+      ],
+      "ground_truth_answer": "Thanh toán chuyển khoản qua cổng thanh toán trực tuyến của Trường hoặc qua ứng dụng ngân hàng liên kết.",
+      "ground_truth_citation": "Quy định Mức thu học phí – Trang 3, Mục IV",
+      "supplement_if_wrong": "Đáp án đúng: Chuyển khoản qua cổng thanh toán trực tuyến hoặc ứng dụng ngân hàng liên kết. (Nguồn: Quy định Mức thu học phí – Trang 3, Mục IV)"
+    },
+    {
+      "id": "Q74",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Nội dung Cuộc thi Chính luận bảo vệ nền tảng tư tưởng của Đảng năm 2026 tập trung vào các chủ đề cốt lõi nào?",
+      "normalized_query": "Nội dung Cuộc thi Chính luận bảo vệ nền tảng tư tưởng của Đảng năm 2026 tập trung vào các chủ đề cốt lõi nào?",
+      "expected_answer": "Bảo vệ, vận dụng phát triển chủ nghĩa Mác-Lênin, tư tưởng Hồ Chí Minh; đấu tranh phản bác các quan điểm sai trái, thù địch trên không gian mạng.",
+      "expected_citations": [
+        "chủ nghĩa Mác-Lênin",
+        "tư tưởng Hồ Chí Minh",
+        "đấu tranh phản bác",
+        "Mục II"
+      ],
+      "ground_truth_answer": "Bảo vệ, vận dụng phát triển chủ nghĩa Mác-Lênin, tư tưởng Hồ Chí Minh; đấu tranh phản bác các quan điểm sai trái, thù địch trên không gian mạng.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 2, Mục II",
+      "supplement_if_wrong": "Đáp án đúng: Bảo vệ, vận dụng phát triển chủ nghĩa Mác-Lênin, tư tưởng Hồ Chí Minh; đấu tranh phản bác quan điểm sai trái, thù địch trên không gian mạng. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 2, Mục II)"
+    },
+    {
+      "id": "Q75",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Các thể loại tác phẩm dự thi trong Cuộc thi Chính luận năm 2026 bao gồm những loại hình nào?",
+      "normalized_query": "Các thể loại tác phẩm dự thi trong Cuộc thi Chính luận năm 2026 bao gồm những loại hình nào?",
+      "expected_answer": "Gồm các loại hình: Bài viết Tạp chí (in hoặc điện tử), Bài viết Báo (in hoặc điện tử), Tác phẩm Phát thanh/Truyền hình/Video clip.",
+      "expected_citations": [
+        "Tạp chí",
+        "Báo",
+        "Phát thanh",
+        "Truyền hình",
+        "Video clip",
+        "Mục III.1"
+      ],
+      "ground_truth_answer": "Gồm các loại hình: Bài viết Tạp chí (in hoặc điện tử), Bài viết Báo (in hoặc điện tử), Tác phẩm Phát thanh/Truyền hình/Video clip.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 3, Mục III.1",
+      "supplement_if_wrong": "Đáp án đúng: Tạp chí (in/điện tử), Báo (in/điện tử), Phát thanh, Truyền hình, Video clip. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 3, Mục III.1)"
+    },
+    {
+      "id": "Q76",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Đối tượng tham gia Cuộc thi Chính luận năm 2026 trong Nhà trường bao gồm những ai?",
+      "normalized_query": "Đối tượng tham gia Cuộc thi Chính luận năm 2026 trong Nhà trường bao gồm những ai?",
+      "expected_answer": "Toàn thể cán bộ, giảng viên, viên chức, người lao động và sinh viên, học viên đang theo học tại Trường ĐHAG.",
+      "expected_citations": [
+        "cán bộ",
+        "giảng viên",
+        "viên chức",
+        "người lao động",
+        "sinh viên",
+        "học viên",
+        "Mục I.2"
+      ],
+      "ground_truth_answer": "Toàn thể cán bộ, giảng viên, viên chức, người lao động và sinh viên, học viên đang theo học tại Trường ĐHAG.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 1, Mục I.2",
+      "supplement_if_wrong": "Đáp án đúng: Toàn thể cán bộ, giảng viên, viên chức, người lao động, sinh viên, học viên đang theo học tại Trường ĐHAG. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 1, Mục I.2)"
+    },
+    {
+      "id": "Q77",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Dung lượng quy định đối với tác phẩm dự thi dạng bài viết Báo in/Báo điện tử là bao nhiêu từ?",
+      "normalized_query": "Dung lượng quy định đối với tác phẩm dự thi dạng bài viết Báo in/Báo điện tử là bao nhiêu từ?",
+      "expected_answer": "Độ dài từ 2.000 đến 4.000 từ (không tính tài liệu tham khảo).",
+      "expected_citations": [
+        "2.000-4.000 từ",
+        "không tính tài liệu tham khảo"
+      ],
+      "ground_truth_answer": "Độ dài từ 2.000 đến 4.000 từ (không tính tài liệu tham khảo).",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 4, Thể lệ cuộc thi",
+      "supplement_if_wrong": "Đáp án đúng: Từ 2.000 đến 4.000 từ (không tính tài liệu tham khảo). (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 4, Thể lệ cuộc thi)"
+    },
+    {
+      "id": "Q78",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Thời hạn chót nhận bài dự thi Cuộc thi Chính luận năm 2026 cấp Trường là ngày nào?",
+      "normalized_query": "Thời hạn chót nhận bài dự thi Cuộc thi Chính luận năm 2026 cấp Trường là ngày nào?",
+      "expected_answer": "Theo mốc thời gian ấn định trong Kế hoạch tổ chức cuộc thi cấp Trường (thời hạn cụ thể ghi tại Mục IV).",
+      "expected_citations": [
+        "Mục IV"
+      ],
+      "ground_truth_answer": "Theo mốc thời gian ấn định trong Kế hoạch tổ chức cuộc thi cấp Trường (thời hạn cụ thể ghi tại Mục IV).",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 5, Mục IV",
+      "supplement_if_wrong": "Đáp án đúng: Theo mốc thời gian ấn định trong Kế hoạch tổ chức cuộc thi cấp Trường (Mục IV). (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 5, Mục IV)"
+    },
+    {
+      "id": "Q79",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Cơ cấu giải thưởng Cuộc thi Chính luận cấp Trường gồm những giải thưởng nào?",
+      "normalized_query": "Cơ cấu giải thưởng Cuộc thi Chính luận cấp Trường gồm những giải thưởng nào?",
+      "expected_answer": "Gồm các giải Nhất, Nhì, Ba, Khuyến khích cho từng thể loại bài thi và giải tập thể cho đơn vị có nhiều bài dự thi chất lượng.",
+      "expected_citations": [
+        "Nhất",
+        "Nhì",
+        "Ba",
+        "Khuyến khích",
+        "giải tập thể",
+        "Mục V"
+      ],
+      "ground_truth_answer": "Gồm các giải Nhất, Nhì, Ba, Khuyến khích cho từng thể loại bài thi và giải tập thể cho đơn vị có nhiều bài dự thi chất lượng.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 6, Mục V",
+      "supplement_if_wrong": "Đáp án đúng: Giải Nhất, Nhì, Ba, Khuyến khích cho từng thể loại và giải tập thể cho đơn vị có nhiều bài chất lượng. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 6, Mục V)"
+    },
+    {
+      "id": "Q80",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Tác phẩm dự thi Cuộc thi Chính luận có được trùng lặp với các bài báo đã đăng tải trên các phương tiện truyền thông trước đó không?",
+      "normalized_query": "Tác phẩm dự thi Cuộc thi Chính luận có được trùng lặp với các bài báo đã đăng tải trên phương tiện truyền thông trước đó không?",
+      "expected_answer": "Tác phẩm dự thi phải là tác phẩm mới, chưa được công bố trên các phương tiện thông tin đại chúng hoặc mạng xã hội trước thời điểm phát động.",
+      "expected_citations": [
+        "tác phẩm mới",
+        "chưa công bố",
+        "thời điểm phát động"
+      ],
+      "ground_truth_answer": "Tác phẩm dự thi phải là tác phẩm mới, chưa được công bố trên các phương tiện thông tin đại chúng hoặc mạng xã hội trước thời điểm phát động.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 3, Thể lệ khoản 2",
+      "supplement_if_wrong": "Đáp án đúng: Không, phải là tác phẩm mới, chưa công bố trên phương tiện truyền thông hoặc mạng xã hội trước thời điểm phát động. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 3, Thể lệ khoản 2)"
+    },
+    {
+      "id": "Q81",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Trách nhiệm của Đoàn Thanh niên - Hội Sinh viên Trường trong tổ chức Cuộc thi Chính luận là gì?",
+      "normalized_query": "Trách nhiệm của Đoàn Thanh niên - Hội Sinh viên Trường trong tổ chức Cuộc thi Chính luận là gì?",
+      "expected_answer": "Tuyên truyền, vận động đông đảo đoàn viên, hội viên, sinh viên tích cực hưởng ứng và tham gia gửi bài dự thi.",
+      "expected_citations": [
+        "tuyên truyền",
+        "vận động",
+        "hưởng ứng",
+        "Mục VI.2"
+      ],
+      "ground_truth_answer": "Tuyên truyền, vận động đông đảo đoàn viên, hội viên, sinh viên tích cực hưởng ứng và tham gia gửi bài dự thi.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 7, Mục VI.2",
+      "supplement_if_wrong": "Đáp án đúng: Tuyên truyền, vận động đoàn viên, hội viên, sinh viên hưởng ứng và tham gia gửi bài dự thi. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 7, Mục VI.2)"
+    },
+    {
+      "id": "Q82",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Tiêu chí chấm điểm tác phẩm dự thi Cuộc thi Chính luận đánh giá dựa trên những khía cạnh nào?",
+      "normalized_query": "Tiêu chí chấm điểm tác phẩm dự thi Cuộc thi Chính luận đánh giá dựa trên những khía cạnh nào?",
+      "expected_answer": "Đánh giá tính chủ đề/chính trị, tính khoa học, tính chiến đấu, tính sáng tạo và giá trị thực tiễn tuyên truyền.",
+      "expected_citations": [
+        "tính chủ đề",
+        "tính khoa học",
+        "tính chiến đấu",
+        "tính sáng tạo",
+        "giá trị thực tiễn",
+        "Mục IV.2"
+      ],
+      "ground_truth_answer": "Đánh giá tính chủ đề/chính trị, tính khoa học, tính chiến đấu, tính sáng tạo và giá trị thực tiễn tuyên truyền.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 5, Mục IV.2",
+      "supplement_if_wrong": "Đáp án đúng: Tính chủ đề/chính trị, tính khoa học, tính chiến đấu, tính sáng tạo, giá trị thực tiễn tuyên truyền. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 5, Mục IV.2)"
+    },
+    {
+      "id": "Q83",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Các tác phẩm xuất sắc tại Cuộc thi cấp Trường sẽ được gửi tham dự cuộc thi ở cấp nào tiếp theo?",
+      "normalized_query": "Các tác phẩm xuất sắc tại Cuộc thi cấp Trường sẽ được gửi tham dự cuộc thi ở cấp nào tiếp theo?",
+      "expected_answer": "Được Ban Tổ chức lựa chọn gửi tham dự Cuộc thi Chính luận cấp Đại học Quốc gia TP.HCM và cấp Tỉnh/Trung ương.",
+      "expected_citations": [
+        "Đại học Quốc gia TP.HCM",
+        "cấp Tỉnh",
+        "Trung ương",
+        "Mục V.3"
+      ],
+      "ground_truth_answer": "Được Ban Tổ chức lựa chọn gửi tham dự Cuộc thi Chính luận cấp Đại học Quốc gia TP.HCM và cấp Tỉnh/Trung ương.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 6, Mục V.3",
+      "supplement_if_wrong": "Đáp án đúng: Cấp Đại học Quốc gia TP.HCM và cấp Tỉnh/Trung ương. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 6, Mục V.3)"
+    },
+    {
+      "id": "Q84",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Một tác giả hoặc nhóm tác giả được gửi tối đa bao nhiêu tác phẩm tham dự Cuộc thi Chính luận?",
+      "normalized_query": "Một tác giả hoặc nhóm tác giả được gửi tối đa bao nhiêu tác phẩm tham dự Cuộc thi Chính luận?",
+      "expected_answer": "Mỗi tác giả/nhóm tác giả được gửi tối đa 02 tác phẩm dự thi khác thể loại.",
+      "expected_citations": [
+        "02 tác phẩm",
+        "khác thể loại",
+        "Mục III.3"
+      ],
+      "ground_truth_answer": "Mỗi tác giả/nhóm tác giả được gửi tối đa 02 tác phẩm dự thi khác thể loại.",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 4, Mục III.3",
+      "supplement_if_wrong": "Đáp án đúng: Tối đa 02 tác phẩm dự thi khác thể loại. (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 4, Mục III.3)"
+    },
+    {
+      "id": "Q85",
+      "category": "cuộc thi chính luận",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cuộc thi Chính luận 2026",
+      "raw_query": "Đơn vị nào tại Trường ĐHAG là đầu mối thường trực tiếp nhận bài dự thi Cuộc thi Chính luận?",
+      "normalized_query": "Đơn vị nào tại Trường ĐHAG là đầu mối thường trực tiếp nhận bài dự thi Cuộc thi Chính luận?",
+      "expected_answer": "Phòng Tuyên giáo - Dân vận / Phòng Công tác Sinh viên (hoặc Ban Tuyên giáo Đảng ủy Trường).",
+      "expected_citations": [
+        "Phòng Tuyên giáo - Dân vận",
+        "Phòng Công tác Sinh viên",
+        "Ban Tuyên giáo Đảng ủy",
+        "Mục VI.1"
+      ],
+      "ground_truth_answer": "Phòng Tuyên giáo - Dân vận / Phòng Công tác Sinh viên (hoặc Ban Tuyên giáo Đảng ủy Trường).",
+      "ground_truth_citation": "Kế hoạch Cuộc thi Chính luận 2026 – Trang 7, Mục VI.1",
+      "supplement_if_wrong": "Đáp án đúng: Phòng Tuyên giáo - Dân vận / Phòng Công tác Sinh viên (hoặc Ban Tuyên giáo Đảng ủy Trường). (Nguồn: Kế hoạch Cuộc thi Chính luận 2026 – Trang 7, Mục VI.1)"
+    },
+    {
+      "id": "Q86",
+      "category": "thực tập chuyên đề",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24PM",
+      "raw_query": "Kế hoạch Thực tập chuyên đề đối với sinh viên ngành Ngôn ngữ Phần mềm (DH24PM) có thời gian triển khai vào học kỳ nào?",
+      "normalized_query": "Kế hoạch Thực tập chuyên đề đối với sinh viên ngành Ngôn ngữ Phần mềm (DH24PM) có thời gian triển khai vào học kỳ nào?",
+      "expected_answer": "Triển khai vào học kỳ VII theo kế hoạch năm học của Khoa CNTT.",
+      "expected_citations": [
+        "học kỳ VII",
+        "Khoa CNTT",
+        "Mục I"
+      ],
+      "ground_truth_answer": "Triển khai vào học kỳ VII theo kế hoạch năm học của Khoa CNTT.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24PM – Trang 1, Mục I",
+      "supplement_if_wrong": "Đáp án đúng: Học kỳ VII theo kế hoạch năm học của Khoa CNTT. (Nguồn: Kế hoạch TTCK-KLTN DH24PM – Trang 1, Mục I)"
+    },
+    {
+      "id": "Q87",
+      "category": "thực tập chuyên đề",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24PM",
+      "raw_query": "Sinh viên lớp DH24PM khi thực tập chuyên đề tại doanh nghiệp phải nộp tài liệu nghiệm thu nào cho Giảng viên hướng dẫn?",
+      "normalized_query": "Sinh viên lớp DH24PM khi thực tập chuyên đề tại doanh nghiệp phải nộp tài liệu nghiệm thu nào cho Giảng viên hướng dẫn?",
+      "expected_answer": "Nộp Sổ nhật ký thực tập, Phiếu đánh giá của doanh nghiệp và Báo cáo tổng kết thực tập chuyên đề.",
+      "expected_citations": [
+        "Sổ nhật ký thực tập",
+        "Phiếu đánh giá doanh nghiệp",
+        "Báo cáo tổng kết",
+        "Mục III.2"
+      ],
+      "ground_truth_answer": "Nộp Sổ nhật ký thực tập, Phiếu đánh giá của doanh nghiệp và Báo cáo tổng kết thực tập chuyên đề.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24PM – Trang 3, Mục III.2",
+      "supplement_if_wrong": "Đáp án đúng: Sổ nhật ký thực tập, Phiếu đánh giá của doanh nghiệp, Báo cáo tổng kết thực tập chuyên đề. (Nguồn: Kế hoạch TTCK-KLTN DH24PM – Trang 3, Mục III.2)"
+    },
+    {
+      "id": "Q88",
+      "category": "thực tập chuyên đề",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN DH24PM",
+      "raw_query": "Trường hợp sinh viên tự liên hệ cơ sở thực tập ngoài danh sách liên kết của Trường cần làm thủ tục gì?",
+      "normalized_query": "Trường hợp sinh viên tự liên hệ cơ sở thực tập ngoài danh sách liên kết của Trường cần làm thủ tục gì?",
+      "expected_answer": "Sinh viên phải nộp Đơn xin tự liên hệ thực tập kèm Giấy chấp thuận tiếp nhận của doanh nghiệp cho Khoa phê duyệt.",
+      "expected_citations": [
+        "Đơn xin tự liên hệ",
+        "Giấy chấp thuận tiếp nhận",
+        "Khoa phê duyệt",
+        "Mục II.3"
+      ],
+      "ground_truth_answer": "Sinh viên phải nộp Đơn xin tự liên hệ thực tập kèm Giấy chấp thuận tiếp nhận của doanh nghiệp cho Khoa phê duyệt.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN DH24PM – Trang 2, Mục II.3",
+      "supplement_if_wrong": "Đáp án đúng: Nộp Đơn xin tự liên hệ thực tập kèm Giấy chấp thuận tiếp nhận của doanh nghiệp cho Khoa phê duyệt. (Nguồn: Kế hoạch TTCK-KLTN DH24PM – Trang 2, Mục II.3)"
+    },
+    {
+      "id": "Q89",
+      "category": "khen thưởng cấp ĐHQG",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định Khen thưởng ĐHQG",
+      "raw_query": "Tiêu chuẩn xét chọn danh hiệu 'Sinh viên Xuất sắc' toàn khóa học cấp ĐHQG-HCM bao gồm điều kiện điểm số nào?",
+      "normalized_query": "Tiêu chuẩn xét chọn danh hiệu 'Sinh viên Xuất sắc' toàn khóa học cấp ĐHQG-HCM bao gồm điều kiện điểm số nào?",
+      "expected_answer": "ĐTBCTL toàn khóa đạt từ 3.60/4.00 trở lên và điểm rèn luyện toàn khóa đạt loại Xuất sắc.",
+      "expected_citations": [
+        "ĐTBCTL 3.60/4.00",
+        "điểm rèn luyện Xuất sắc",
+        "Điều 5",
+        "Khoản 1"
+      ],
+      "ground_truth_answer": "ĐTBCTL toàn khóa đạt từ 3.60/4.00 trở lên và điểm rèn luyện toàn khóa đạt loại Xuất sắc.",
+      "ground_truth_citation": "Quy định Khen thưởng ĐHQG – Trang 2, Điều 5, Khoản 1",
+      "supplement_if_wrong": "Đáp án đúng: ĐTBCTL toàn khóa từ 3.60/4.00 trở lên, điểm rèn luyện toàn khóa loại Xuất sắc. (Nguồn: Quy định Khen thưởng ĐHQG – Trang 2, Điều 5, Khoản 1)"
+    },
+    {
+      "id": "Q90",
+      "category": "khen thưởng cấp ĐHQG",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Quy định Khen thưởng ĐHQG",
+      "raw_query": "Mức tiền thưởng cho sinh viên đạt danh hiệu Khen thưởng cấp ĐHQG-HCM do cơ quan nào chi trả?",
+      "normalized_query": "Mức tiền thưởng cho sinh viên đạt danh hiệu Khen thưởng cấp ĐHQG-HCM do cơ quan nào chi trả?",
+      "expected_answer": "Do Đại học Quốc gia TP.HCM cấp và chi trả từ Quỹ khen thưởng ĐHQG-HCM.",
+      "expected_citations": [
+        "Đại học Quốc gia TP.HCM",
+        "Quỹ khen thưởng",
+        "Điều 10"
+      ],
+      "ground_truth_answer": "Do Đại học Quốc gia TP.HCM cấp và chi trả từ Quỹ khen thưởng ĐHQG-HCM.",
+      "ground_truth_citation": "Quy định Khen thưởng ĐHQG – Trang 4, Điều 10",
+      "supplement_if_wrong": "Đáp án đúng: Do Đại học Quốc gia TP.HCM cấp và chi trả từ Quỹ khen thưởng ĐHQG-HCM. (Nguồn: Quy định Khen thưởng ĐHQG – Trang 4, Điều 10)"
+    },
+    {
+      "id": "Q91",
+      "category": "ký túc xá",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Ký túc xá",
+      "raw_query": "Sinh viên nội trú Ký túc xá Trường ĐHAG có trách nhiệm tuân thủ quy định giờ giấc ra vào Ký túc xá như thế nào?",
+      "normalized_query": "Sinh viên nội trú Ký túc xá Trường ĐHAG có trách nhiệm tuân thủ quy định giờ giấc ra vào Ký túc xá như thế nào?",
+      "expected_answer": "Giờ đóng cửa Ký túc xá ban đêm là 22:00. Sinh viên ra/vào sau giờ quy định phải có lý do chính đáng và đăng ký với Bảo vệ.",
+      "expected_citations": [
+        "22:00",
+        "đăng ký với Bảo vệ",
+        "Điều 4"
+      ],
+      "ground_truth_answer": "Giờ đóng cửa Ký túc xá ban đêm là 22:00. Sinh viên ra/vào sau giờ quy định phải có lý do chính đáng và đăng ký với Bảo vệ.",
+      "ground_truth_citation": "Thông báo Ký túc xá – Trang 2, Nội quy KTX Điều 4",
+      "supplement_if_wrong": "Đáp án đúng: Giờ đóng cửa 22:00, ra/vào sau giờ phải có lý do chính đáng và đăng ký với Bảo vệ. (Nguồn: Thông báo Ký túc xá – Trang 2, Nội quy KTX Điều 4)"
+    },
+    {
+      "id": "Q92",
+      "category": "ký túc xá",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Ký túc xá",
+      "raw_query": "Hành vi sử dụng các thiết bị điện đun nấu trong phòng ở Ký túc xá bị xử lý kỷ luật như thế nào?",
+      "normalized_query": "Hành vi sử dụng thiết bị điện đun nấu trong phòng ở Ký túc xá bị xử lý kỷ luật như thế nào?",
+      "expected_answer": "Bị tịch thu thiết bị, xử lý vi phạm nội quy KTX và trừ điểm rèn luyện trong học kỳ.",
+      "expected_citations": [
+        "tịch thu thiết bị",
+        "trừ điểm rèn luyện",
+        "Điều 8"
+      ],
+      "ground_truth_answer": "Bị tịch thu thiết bị, xử lý vi phạm nội quy KTX và trừ điểm rèn luyện trong học kỳ.",
+      "ground_truth_citation": "Thông báo Ký túc xá – Trang 3, Điều 8 Phạt vi phạm",
+      "supplement_if_wrong": "Đáp án đúng: Bị tịch thu thiết bị, xử lý vi phạm nội quy KTX và trừ điểm rèn luyện trong học kỳ. (Nguồn: Thông báo Ký túc xá – Trang 3, Điều 8 Phạt vi phạm)"
+    },
+    {
+      "id": "Q93",
+      "category": "tài chính sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cam kết Vay vốn ACB",
+      "raw_query": "Chương trình tín dụng ưu đãi vay vốn học tập ACB yêu cầu sinh viên cung cấp các tài liệu xác thực nào?",
+      "normalized_query": "Chương trình tín dụng ưu đãi vay vốn học tập ACB yêu cầu sinh viên cung cấp các tài liệu xác thực nào?",
+      "expected_answer": "Gồm: Giấy xác nhận sinh viên của Trường, CCCD, Giấy đề nghị vay vốn và minh chứng thu nhập người bảo lãnh.",
+      "expected_citations": [
+        "Giấy xác nhận sinh viên",
+        "CCCD",
+        "Giấy đề nghị vay vốn",
+        "minh chứng thu nhập"
+      ],
+      "ground_truth_answer": "Gồm: Giấy xác nhận sinh viên của Trường, CCCD, Giấy đề nghị vay vốn và minh chứng thu nhập người bảo lãnh.",
+      "ground_truth_citation": "Cam kết Vay vốn ACB – Trang 1, Hồ sơ đăng ký",
+      "supplement_if_wrong": "Đáp án đúng: Giấy xác nhận sinh viên của Trường, CCCD, Giấy đề nghị vay vốn, minh chứng thu nhập người bảo lãnh. (Nguồn: Cam kết Vay vốn ACB – Trang 1, Hồ sơ đăng ký)"
+    },
+    {
+      "id": "Q94",
+      "category": "tài chính sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Cam kết Vay vốn ACB",
+      "raw_query": "Lãi suất ưu đãi và thời gian bắt đầu trả nợ gốc chương trình vay vốn học tập ACB được quy định ra sao?",
+      "normalized_query": "Lãi suất ưu đãi và thời gian bắt đầu trả nợ gốc chương trình vay vốn học tập ACB được quy định ra sao?",
+      "expected_answer": "Lãi suất áp dụng theo thỏa thuận ưu đãi dành cho sinh viên; nợ gốc bắt đầu trả sau khi sinh viên tốt nghiệp ra trường.",
+      "expected_citations": [
+        "lãi suất ưu đãi",
+        "trả nợ gốc",
+        "sau khi tốt nghiệp",
+        "Điều khoản tài chính"
+      ],
+      "ground_truth_answer": "Lãi suất áp dụng theo thỏa thuận ưu đãi dành cho sinh viên; nợ gốc bắt đầu trả sau khi sinh viên tốt nghiệp ra trường.",
+      "ground_truth_citation": "Cam kết Vay vốn ACB – Trang 2, Điều khoản tài chính",
+      "supplement_if_wrong": "Đáp án đúng: Lãi suất theo thỏa thuận ưu đãi sinh viên; nợ gốc trả sau khi tốt nghiệp. (Nguồn: Cam kết Vay vốn ACB – Trang 2, Điều khoản tài chính)"
+    },
+    {
+      "id": "Q95",
+      "category": "hành chính sinh viên",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Mẫu đơn xác nhận gia đình",
+      "raw_query": "Mẫu đơn xác nhận hoàn cảnh gia đình sinh viên khó khăn cần có xác nhận của cơ quan thẩm quyền nào?",
+      "normalized_query": "Mẫu đơn xác nhận hoàn cảnh gia đình sinh viên khó khăn cần có xác nhận của cơ quan thẩm quyền nào?",
+      "expected_answer": "Cần có xác nhận và đóng dấu đỏ của Ủy ban nhân dân xã/phường/thị trấn nơi sinh viên đăng ký thường trú.",
+      "expected_citations": [
+        "UBND xã/phường/thị trấn",
+        "đóng dấu đỏ",
+        "thường trú"
+      ],
+      "ground_truth_answer": "Cần có xác nhận và đóng dấu đỏ của Ủy ban nhân dân xã/phường/thị trấn nơi sinh viên đăng ký thường trú.",
+      "ground_truth_citation": "Mẫu đơn xác nhận gia đình – Mục Xác nhận của địa phương",
+      "supplement_if_wrong": "Đáp án đúng: Xác nhận và đóng dấu đỏ của UBND xã/phường/thị trấn nơi sinh viên đăng ký thường trú. (Nguồn: Mẫu đơn xác nhận gia đình – Mục Xác nhận của địa phương)"
+    },
+    {
+      "id": "Q96",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN",
+      "raw_query": "Kế hoạch tổ chức đánh giá Thực tập chuyên đề cấp Khoa do đơn vị nào phê duyệt ban hành?",
+      "normalized_query": "Kế hoạch tổ chức đánh giá Thực tập chuyên đề cấp Khoa do đơn vị nào phê duyệt ban hành?",
+      "expected_answer": "Do Trưởng Khoa Công nghệ thông tin ký duyệt ban hành dựa trên kế hoạch chung của Trường.",
+      "expected_citations": [
+        "Trưởng Khoa CNTT",
+        "ký duyệt",
+        "Mục I"
+      ],
+      "ground_truth_answer": "Do Trưởng Khoa Công nghệ thông tin ký duyệt ban hành dựa trên kế hoạch chung của Trường.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN – Trang 1, Mục I Ban hành",
+      "supplement_if_wrong": "Đáp án đúng: Do Trưởng Khoa Công nghệ thông tin ký duyệt ban hành dựa trên kế hoạch chung của Trường. (Nguồn: Kế hoạch TTCK-KLTN – Trang 1, Mục I Ban hành)"
+    },
+    {
+      "id": "Q97",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN",
+      "raw_query": "Sinh viên không hoàn thành đủ số giờ thực tập tại doanh nghiệp có được xem xét gia hạn không?",
+      "normalized_query": "Sinh viên không hoàn thành đủ số giờ thực tập tại doanh nghiệp có được xem xét gia hạn không?",
+      "expected_answer": "Nếu có lý do bất khả kháng (ốm đau, thiên tai) có xác nhận, Khoa sẽ xem xét cho phép bổ sung giờ thực tập.",
+      "expected_citations": [
+        "bất khả kháng",
+        "ốm đau",
+        "thiên tai",
+        "bổ sung giờ thực tập",
+        "Mục III.4"
+      ],
+      "ground_truth_answer": "Nếu có lý do bất khả kháng (ốm đau, thiên tai) có xác nhận, Khoa sẽ xem xét cho phép bổ sung giờ thực tập.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN – Trang 3, Mục III.4",
+      "supplement_if_wrong": "Đáp án đúng: Có, nếu có lý do bất khả kháng (ốm đau, thiên tai) có xác nhận, Khoa xem xét cho phép bổ sung giờ thực tập. (Nguồn: Kế hoạch TTCK-KLTN – Trang 3, Mục III.4)"
+    },
+    {
+      "id": "Q98",
+      "category": "thực tập tốt nghiệp",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Kế hoạch TTCK-KLTN",
+      "raw_query": "Hình thức kỷ luật đối với sinh viên bị phát hiện đạo văn trong báo cáo Khóa luận tốt nghiệp là gì?",
+      "normalized_query": "Hình thức kỷ luật đối với sinh viên bị phát hiện đạo văn trong báo cáo Khóa luận tốt nghiệp là gì?",
+      "expected_answer": "Hủy kết quả Khóa luận tốt nghiệp, nhận điểm 0 và bị xử lý kỷ luật theo quy định của Trường.",
+      "expected_citations": [
+        "hủy kết quả",
+        "điểm 0",
+        "xử lý kỷ luật",
+        "Mục V"
+      ],
+      "ground_truth_answer": "Hủy kết quả Khóa luận tốt nghiệp, nhận điểm 0 và bị xử lý kỷ luật theo quy định của Trường.",
+      "ground_truth_citation": "Kế hoạch TTCK-KLTN – Trang 4, Mục V Quy định xử lý",
+      "supplement_if_wrong": "Đáp án đúng: Hủy kết quả KLTN, nhận điểm 0 và bị xử lý kỷ luật theo quy định của Trường. (Nguồn: Kế hoạch TTCK-KLTN – Trang 4, Mục V Quy định xử lý)"
+    },
+    {
+      "id": "Q99",
+      "category": "bảo hiểm y tế",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Bảo hiểm y tế",
+      "raw_query": "Theo thông báo về Bảo hiểm y tế (BHYT) do Phó Hiệu trưởng Nguyễn Hữu Trí ký, Cố vấn học tập và lớp trưởng các lớp khóa mới (DH27) cần thực hiện công việc gì?",
+      "normalized_query": "Theo thông báo BHYT do Phó Hiệu trưởng Nguyễn Hữu Trí ký, Cố vấn học tập và lớp trưởng các lớp khóa mới (DH27) cần thực hiện công việc gì?",
+      "expected_answer": "Cố vấn học tập đôn đốc lớp trưởng nhanh chóng lập danh sách sinh viên đã đóng tiền BHYT khi nhập học, danh sách sinh viên đã có thẻ thuộc đối tượng khác nộp về Tổ Y tế để hướng dẫn hoàn tất dữ liệu cá nhân và gia hạn lại thẻ BHYT.",
+      "expected_citations": [
+        "Cố vấn học tập",
+        "lớp trưởng",
+        "lập danh sách",
+        "Tổ Y tế",
+        "Mục II"
+      ],
+      "ground_truth_answer": "Tại Mục II (Đối với sinh viên khóa mới DH27), đề nghị Cố vấn học tập đôn đốc lớp trưởng các lớp nhanh chóng lập danh sách sinh viên đã đóng tiền BHYT khi nhập học, danh sách sinh viên đã có thẻ thuộc đối tượng khác nộp về Tổ Y tế để được hướng dẫn hoàn tất dữ liệu cá nhân và gia hạn lại thẻ BHYT.",
+      "ground_truth_citation": "Thông báo về việc tham gia Bảo hiểm y tế sinh viên (khóa DH27) – Trang 1, Mục II",
+      "supplement_if_wrong": "Đáp án đúng: CVHT đôn đốc lớp trưởng lập danh sách sinh viên đã đóng tiền BHYT, danh sách SV đã có thẻ nộp về Tổ Y tế để hướng dẫn hoàn tất dữ liệu và gia hạn thẻ. (Nguồn: Thông báo BHYT sinh viên khóa DH27 – Trang 1, Mục II)"
+    },
+    {
+      "id": "Q100",
+      "category": "bảo hiểm y tế",
+      "tier": "Tầng 1",
+      "in_corpus": true,
+      "source_document": "Thông báo Bảo hiểm y tế",
+      "raw_query": "Tại sao sinh viên tham gia BHYT bắt buộc phải cài đặt ứng dụng VssID-BHXH số và tích hợp thẻ BHYT, Sổ sức khỏe điện tử trên ứng dụng VNeID?",
+      "normalized_query": "Tại sao sinh viên tham gia BHYT bắt buộc phải cài đặt ứng dụng VssID-BHXH số và tích hợp thẻ BHYT, Sổ sức khỏe điện tử trên VNeID?",
+      "expected_answer": "Sinh viên phải cài đặt VssID-BHXH số và tích hợp thẻ BHYT, Sổ sức khỏe điện tử trên VNeID để sử dụng khi đi khám bệnh vì Cơ quan BHXH không cấp thẻ BHYT giấy. Nếu không tích hợp, sinh viên có thể gặp khó khăn trong việc cung cấp thông tin, xác thực quyền lợi BHYT khi đi khám chữa bệnh.",
+      "expected_citations": [
+        "VssID-BHXH số",
+        "VNeID",
+        "không cấp thẻ giấy",
+        "xác thực quyền lợi",
+        "Mục III"
+      ],
+      "ground_truth_answer": "Theo Mục III, sinh viên phải cài đặt ứng dụng VssID-BHXH số và tích hợp thẻ BHYT, Sổ sức khỏe điện tử trên ứng dụng VNeID để sử dụng khi đi khám bệnh, chữa bệnh vì Cơ quan BHXH không cấp thẻ BHYT giấy. Nếu không tích hợp, sinh viên có thể gặp khó khăn trong việc cung cấp thông tin, xác thực quyền lợi BHYT khi đi khám chữa bệnh và phải thực hiện các thủ tục bổ sung theo yêu cầu của cơ sở khám chữa bệnh.",
+      "ground_truth_citation": "Thông báo về việc tham gia Bảo hiểm y tế sinh viên (khóa DH27) – Trang 1, Mục III",
+      "supplement_if_wrong": "Đáp án đúng: Để sử dụng khi đi khám bệnh vì BHXH không cấp thẻ giấy; nếu không tích hợp sẽ khó khăn trong việc xác thực quyền lợi BHYT. (Nguồn: Thông báo BHYT sinh viên khóa DH27 – Trang 1, Mục III)"
+    }
+  ]
+}
