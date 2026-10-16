@@ -21,7 +21,7 @@
 ## Vùng cấm
 
 - `data/corpus/`, `chroma_db/`, `data/evaluation/` (chỉ ĐỌC/kết nối)
-- `outputs/**`
+- `outputs/**`, `logs/**`
 - `src/loader.py`, `src/chunking.py`, `src/vector_db.py` (Group 01);
   `src/evaluation.py`, `tests/` (Group 04); `ui/` (Group 03)
 - CẤM sửa test cho pass — test fail là phát hiện bug, báo lại Group sở hữu module đó

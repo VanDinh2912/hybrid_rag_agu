@@ -7,6 +7,9 @@ Mọi agent, bất kể group nào, bắt buộc tuân thủ toàn bộ quy tắ
 - Mọi file trung gian (bản nháp, script phụ, dump text, slice, file trích xuất thử)
   chỉ được nằm trong `tmp/`. TUYỆT ĐỐI không tạo file ở thư mục gốc repo,
   không trộn file trung gian vào `outputs/`.
+- Mọi log/file tự sinh khi CHẠY nằm trong `logs/` đúng ý nghĩa quy định ở
+  `logs/README.md` (`benchmark/`, `export/`, `learning/`, `feedback/`) —
+  CẤM ghi log lẻ tẻ ra thư mục gốc hay chỗ khác.
 - Ghi file luôn bằng Python: `open(path, 'w', encoding='utf-8')`.
   CẤM dùng chuyển hướng `>` của PowerShell hay `Out-File` — chúng ghi UTF-16
   (BOM FF FE) làm hỏng JSON khi đọc bằng utf-8.
@@ -21,9 +24,10 @@ Mọi agent, bất kể group nào, bắt buộc tuân thủ toàn bộ quy tắ
 - Mọi file đã được git track nằm ngoài phạm vi là CẤM sửa/xóa.
 - Quyền ghi đặc biệt — ghi đúng theo bảng, group khác chỉ ĐỌC:
   - Group 01: ghi được `data/corpus/**` (toàn bộ) và `chroma_db/` (duy nhất qua
-    quy trình ingest/rebuild); sở hữu `outputs/learning_log.csv`.
-  - Group 04: ghi được `data/evaluation/**`; sở hữu `outputs/evaluation_results.json`
-    và `outputs/evaluation_summary.md`.
+    quy trình ingest/rebuild); sở hữu `logs/learning/learning_log.csv`.
+  - Group 03: sở hữu `logs/feedback/user_feedback.json` và `logs/export/export_report.txt`.
+  - Group 04: ghi được `data/evaluation/**` và `logs/benchmark/`; sở hữu
+    `outputs/evaluation_results.json` và `outputs/evaluation_summary.md`.
   - Group 02 và 03: chỉ ĐỌC `data/corpus/`, `chroma_db/`, `data/evaluation/`.
 - Không sửa/xóa output trung gian hay sản phẩm của group khác.
 

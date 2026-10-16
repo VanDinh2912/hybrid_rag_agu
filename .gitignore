@@ -32,6 +32,15 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
+# ===== Thư mục logs/ — nơi duy nhất chứa log tự sinh khi chạy =====
+# benchmark/ và export/ là log xóa được (chạy lại là có) → ignore.
+# learning/ và feedback/ là dữ liệu lịch sử (log học, phản hồi người dùng)
+# → được track git, KHÔNG xóa. Xem logs/README.md.
+logs/*
+!logs/README.md
+!logs/learning/
+!logs/feedback/
+
 # ===== Cache tạm do công cụ Python/VS Code tự sinh =====
 Python/_cache/
 

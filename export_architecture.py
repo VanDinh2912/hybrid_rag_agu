@@ -86,8 +86,9 @@ while i < len(lines):
 docx_path = Path("SYSTEM_ARCHITECTURE.docx")
 doc.save(docx_path)
 
-# Tạo file báo cáo
-report_path = Path("export_report.txt")
+# Tạo file báo cáo (nơi duy nhất được phép ghi log: logs/export/)
+report_path = Path("logs", "export", "export_report.txt")
+report_path.parent.mkdir(parents=True, exist_ok=True)
 report = f"""Export Report
 ==============
 

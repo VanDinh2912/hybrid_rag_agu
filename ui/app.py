@@ -46,7 +46,7 @@ from ingest import run_ingestion
 from learn import append_note, log_learning
 
 # Đường dẫn lưu trữ
-FEEDBACK_PATH = ROOT_DIR / "outputs" / "user_feedback.json"
+FEEDBACK_PATH = ROOT_DIR / "logs" / "feedback" / "user_feedback.json"
 NOTES_PATH = ROOT_DIR / "data" / "corpus" / "ghi_chu_hoc_them.txt"
 BENCHMARK_PATH = ROOT_DIR / "data" / "evaluation" / "benchmark_questions.json"
 CORPUS_DIR = ROOT_DIR / "data" / "corpus"
@@ -703,7 +703,7 @@ class RAGApplication(tk.Tk):
 
         self._save_feedback_record(feedback_type="correct", correct_answer=None)
         self.wrong_frame.pack_forget()
-        messagebox.showinfo("Đã ghi nhận", "Cảm ơn bạn! Đã ghi nhận câu trả lời ĐÚNG vào outputs/user_feedback.json.")
+        messagebox.showinfo("Đã ghi nhận", "Cảm ơn bạn! Đã ghi nhận câu trả lời ĐÚNG vào logs/feedback/user_feedback.json.")
 
     def on_feedback_wrong(self):
         if not self.current_test_data:
@@ -788,7 +788,7 @@ class RAGApplication(tk.Tk):
                 print(f"[Learn Error] Không thể tự động rebuild: {e}")
 
         self.wrong_frame.pack_forget()
-        msg = "Đã lưu phản hồi vào outputs/user_feedback.json!"
+        msg = "Đã lưu phản hồi vào logs/feedback/user_feedback.json!"
         if normalized_truth:
             msg += "\nĐã lưu cặp chuẩn hóa cho Qwen học!"
         if citation and source_doc:
@@ -873,7 +873,7 @@ class RAGApplication(tk.Tk):
             print(f"[Normalization Error] Không thể lưu cặp chuẩn hóa: {e}")
 
     def _save_feedback_record(self, feedback_type: str, correct_answer: str | None):
-        """Ghi nhận log đánh giá của người dùng vào outputs/user_feedback.json."""
+        """Ghi nhận log đánh giá của người dùng vào logs/feedback/user_feedback.json."""
         FEEDBACK_PATH.parent.mkdir(parents=True, exist_ok=True)
 
         record = {

@@ -75,14 +75,15 @@ hybrid_rag_agu/
 │
 ├── tests/                   # 58 unit test (chunking, pipeline, local_slm, evaluation)
 ├── notebooks/               # Các file Jupyter Notebook chạy thử nghiệm (nếu có)
-├── outputs/                 # evaluation_results.json, evaluation_summary.md, learning_log.csv, user_feedback.json
+├── logs/                    # Mọi log tự sinh khi chạy (xem logs/README.md): benchmark/, export/, learning/, feedback/
+├── outputs/                 # Kết quả chốt cho báo cáo: evaluation_results.json, evaluation_summary.md
 ├── chroma_db/               # ChromaDB đã persist (ingest.py tự sinh)
 ├── .ocr_cache/              # Cache kết quả OCR (tự sinh, xóa được — lần nạp sau sẽ OCR lại)
 ├── .generation_cache/       # Cache câu trả lời Gemini (tự sinh, xóa được — lượt sau sẽ gọi API lại)
 ├── .env.example             # File mẫu khai báo biến môi trường (API Key)
 ├── requirements.txt         # Danh sách các thư viện Python cần thiết
 ├── ingest.py                # Script nạp corpus vào ChromaDB (chạy trước main.py)
-├── learn.py                 # Chế độ test & học qua CLI: sai thì dạy lại, ghi log outputs/
+├── learn.py                 # Chế độ test & học qua CLI: sai thì dạy lại, ghi log logs/learning/
 ├── main.py                  # Chế độ chạy thực: CLI tương tác, hỏi liên tục
 ├── SYSTEM_ARCHITECTURE.md   # Đặc tả kiến trúc True Hybrid Search
 ├── NORMALIZATION_ACTIVE_LEARNING.md  # Cơ chế học chuẩn hóa từ phản hồi người dùng
@@ -288,10 +289,10 @@ App Tkinter 3 tab, backend khởi tạo ở luồng nền ngay khi mở (nên v�
 
 Luồng lưu khi bấm "Sai" ở Tab 3:
 
-1. Ghi phản hồi vào `outputs/user_feedback.json` (cả hai nhãn đúng/sai đều được ghi).
+1. Ghi phản hồi vào `logs/feedback/user_feedback.json` (cả hai nhãn đúng/sai đều được ghi).
 2. Nếu điền đủ căn cứ + nguồn: bổ sung câu hỏi vào `data/evaluation/benchmark_questions.json` — lượt đánh giá sau dùng luôn.
 3. Nếu có câu chuẩn hóa (auto-fill từ kết quả, sửa được trước khi lưu): thêm cặp (câu gốc → câu chuẩn hóa) vào `data/normalization_pairs.json` — Qwen tự học ở các lượt sau (active learning).
-4. Nếu tick "học ngay": ghi bài học vào `data/corpus/ghi_chu_hoc_them.txt`, rebuild ChromaDB tại chỗ và ghi log vào `outputs/learning_log.csv`.
+4. Nếu tick "học ngay": ghi bài học vào `data/corpus/ghi_chu_hoc_them.txt`, rebuild ChromaDB tại chỗ và ghi log vào `logs/learning/learning_log.csv`.
 
 Chi tiết cơ chế học chuẩn hóa: `NORMALIZATION_ACTIVE_LEARNING.md`; sự cố thường gặp của GUI: `TROUBLESHOOTING_GUI.md`; ghi chú tối ưu layout Tab 3: `LAYOUT_OPTIMIZATION.md`.
 
@@ -307,7 +308,7 @@ Luồng hoạt động: nhập câu hỏi → hệ thống trả lời → bạn
 
 1. Ghi bài học vào `data/corpus/ghi_chu_hoc_them.txt` dưới dạng mục `Điều 1001., 1002., ...` tự sinh, nhờ đó mỗi bài học thành một chunk độc lập và trích dẫn được theo số Điều.
 2. Rebuild collection ChromaDB ngay tại chỗ (tái dùng bge-m3 đã nạp, không reset thư mục).
-3. Ghi 1 dòng log vào `outputs/learning_log.csv`: thời gian, câu hỏi, đáp án sai, thông tin đã học, số chunks trước/sau.
+3. Ghi 1 dòng log vào `logs/learning/learning_log.csv`: thời gian, câu hỏi, đáp án sai, thông tin đã học, số chunks trước/sau.
 
 Cả `ingest.py` và learn mode đều xóa collection cũ trước khi index, nên chạy lại nhiều lần không bao giờ nhân đôi chunks. Muốn dọn các mục đã học, sửa tay `ghi_chu_hoc_them.txt` rồi chạy lại `python ingest.py`.
 

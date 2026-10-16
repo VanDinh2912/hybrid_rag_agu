@@ -7,7 +7,8 @@
 
 - `data/evaluation/**` (`benchmark_*.json`, `benchmark_*.md`, `reference/`,
   `manual_test_checklist.md`)
-- `src/evaluation.py`, `outputs/evaluation_results.json`, `outputs/evaluation_summary.md`
+- `src/evaluation.py`, `benchmark_chunking.py`, `logs/benchmark/`,
+  `outputs/evaluation_results.json`, `outputs/evaluation_summary.md`
 - `tests/**` (kể cả `conftest.py`), `.pytest_cache/`
 - `.env`, `.env.example`, `requirements.txt`, `requirements-lock.txt`, `venv/`
 - `tmp/` cho bản nháp theo batch, slice khi merge, script sinh câu hỏi
@@ -34,7 +35,8 @@
 ## Vùng cấm
 
 - `data/corpus/`, `chroma_db/` (chỉ đọc), `src/**` trừ `src/evaluation.py`, `ui/`
-- `outputs/learning_log.csv` (Group 01), `README.md`/`SYSTEM_ARCHITECTURE*` (Group 03)
+- `logs/learning/learning_log.csv` (Group 01), `logs/feedback/user_feedback.json`
+  (Group 03), `README.md`/`SYSTEM_ARCHITECTURE*` (Group 03)
 - Hạ tiêu chí verify để cho qua; commit `.env` hay file chứa key thật
 
 ## Verify

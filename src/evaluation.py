@@ -75,7 +75,7 @@ from src.pipeline import HybridRAGPipeline
 from src.text_utils import fold
 from src.vector_db import VectorStoreManager
 
-BENCHMARK_PATH = Path("data/evaluation/benchmark_50_questions.json")
+BENCHMARK_PATH = Path("data/evaluation/benchmark_100_questions_v2.json")
 RESULTS_PATH = Path("outputs/evaluation_results.json")
 SUMMARY_PATH = Path("outputs/evaluation_summary.md")
 DEFAULT_TOP_K = 6

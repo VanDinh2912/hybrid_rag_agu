@@ -163,12 +163,17 @@ class HybridRAGPipeline:
                     elif hasattr(r, "search_kwargs") and isinstance(r.search_kwargs, dict):
                         r.search_kwargs["k"] = k
 
-                docs = self.ensemble_retriever.invoke(query)
-                
+                # Tài liệu Tầng 1 mất dấu thanh vì OCR nên vector bge-m3 của chunk không còn dấu:
+                # query PHẢI được fold trước khi nhúng cho Chroma leg (BM25 không bị ảnh hưởng
+                # vì bm25_tokenize đã nhân đôi cả hai dạng token khi dựng chỉ mục).
+                # Thực nghiệm 15-10: cùng index, query có dấu → 6 chunk sai nguồn;
+                # query đã fold → chunk đúng lên hạng 1.
+                docs = self.ensemble_retriever.invoke(fold(query))
+
                 # Fallback Query: chạy song song với câu hỏi gốc nếu được cung cấp
                 if fallback_query and fallback_query != query:
                     try:
-                        fallback_docs = self.ensemble_retriever.invoke(fallback_query)
+                        fallback_docs = self.ensemble_retriever.invoke(fold(fallback_query))
                         # Gộp và khử trùng lặp theo chunk_id
                         seen_chunk_ids = set()
                         merged_docs = []
@@ -235,12 +240,13 @@ class HybridRAGPipeline:
             else normalized_query
         )
 
-        # BM25 hoạt động tốt nhất với câu GỐC CÓ DẤU (bm25_tokenize tự xử lý fold nội bộ).
-        # Chỉ fold cho ChromaDB vector search (retrieval_query dùng để log/debug).
+        # retrieval_query (dạng đã fold) chỉ dùng để log/debug: bản thân retrieve() tự fold
+        # trước khi gọi EnsembleRetriever cho khớp tài liệu OCR mất dấu.
         retrieval_query = fold(expanded_query)
 
-        # Truy xuất True Hybrid — truyền câu CÓ DẤU (đã mở rộng từ đồng nghĩa) vào retrieve() để BM25 & ChromaDB khớp tốt nhất.
-        # Đồng thời truyền câu hỏi gốc (raw_query) làm fallback_query để đảm bảo không mất chunk nếu chuẩn hóa làm mất từ khóa.
+        # Truy xuất True Hybrid — query CÓ DẤU (đã mở rộng từ đồng nghĩa); retrieve() sẽ fold
+        # nội bộ cho Chroma leg. Đồng thời truyền câu hỏi gốc (raw_query) làm fallback_query
+        # để đảm bảo không mất chunk nếu chuẩn hóa làm mất từ khóa.
         all_docs = self.retrieve(expanded_query, k=retrieve_k, fallback_query=raw_query)
 
         # Generator chỉ nhận top_k đầu — recall window rộng hơn mà context không phình.

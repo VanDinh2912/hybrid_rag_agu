@@ -4,7 +4,7 @@ Vòng lặp: nhập câu hỏi → hệ thống trả lời → người đánh 
 Nếu trả lời sai: dán thông tin đúng → bài học được ghi vào
 data/corpus/ghi_chu_hoc_them.txt (tự đóng gói theo cấu trúc 'Điều N.' để bộ
 chunk nhận được), rebuild ChromaDB (không reset thư mục, tái dùng bge-m3
-đã nạp) và ghi 1 dòng log vào outputs/learning_log.csv.
+đã nạp) và ghi 1 dòng log vào logs/learning/learning_log.csv.
 """
 
 import csv
@@ -23,7 +23,7 @@ from src.pipeline import HybridRAGPipeline
 from src.vector_db import VectorStoreManager
 
 NOTES_PATH = os.path.join("data", "corpus", "ghi_chu_hoc_them.txt")
-LOG_PATH = os.path.join("outputs", "learning_log.csv")
+LOG_PATH = os.path.join("logs", "learning", "learning_log.csv")
 
 
 def read_correction() -> str:

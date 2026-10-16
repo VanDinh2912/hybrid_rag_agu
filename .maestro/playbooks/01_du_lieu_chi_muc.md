@@ -8,7 +8,7 @@
 - `data/corpus/**` (các tầng `Tầng 1`, `Tầng 2`, `cac_file_bo_xung_khac`)
 - `ingest.py`, `src/loader.py`, `src/chunking.py`, `src/vector_db.py`
 - `chroma_db/` (ghi DUY NHẤT qua quy trình ingest/rebuild), `.ocr_cache/`
-- `learn.py`, `data/corpus/ghi_chu_hoc_them.txt`, `outputs/learning_log.csv`
+- `learn.py`, `data/corpus/ghi_chu_hoc_them.txt`, `logs/learning/learning_log.csv`
 - `tmp/` cho mọi script trung gian (chuyển đổi .doc, extract thử, dry-run)
 
 ## Sản phẩm cuối
@@ -21,7 +21,7 @@
   từ ingest và báo cáo rõ.
 - Bài học từ `learn.py` ghi vào `ghi_chu_hoc_them.txt` đúng cấu trúc `Điều N.`,
   không phá bài học cũ; rebuild tái dùng bge-m3 đã nạp, KHÔNG reset thư mục index;
-  `outputs/learning_log.csv` chỉ append, không ghi đè.
+  `logs/learning/learning_log.csv` chỉ append, không ghi đè.
 
 ## Vùng cấm
 

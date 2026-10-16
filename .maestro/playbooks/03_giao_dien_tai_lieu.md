@@ -7,7 +7,8 @@
 
 - `ui/app.py`, `TROUBLESHOOTING_GUI.md`, `LAYOUT_OPTIMIZATION.md`
 - `README.md`, `SYSTEM_ARCHITECTURE.md`, `SYSTEM_ARCHITECTURE.docx`,
-  `SYSTEM_ARCHITECTURE.txt`, `export_architecture.py`, `export_report.txt`
+  `SYSTEM_ARCHITECTURE.txt`, `export_architecture.py`, `logs/export/export_report.txt`,
+  `logs/feedback/user_feedback.json`
 - `tmp/` cho build trung gian (ví dụ render docx)
 
 ## Sản phẩm cuối

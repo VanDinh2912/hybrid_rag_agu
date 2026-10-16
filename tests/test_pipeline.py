@@ -87,6 +87,43 @@ class TestRunFoldsQueryBeforeRetrieval:
         assert generator.received_query == NORMALIZED
 
 
+class FakeEnsembleRetriever:
+    """Giả lập EnsembleRetriever — chỉ cần có .invoke để pipeline nhận là retriever hybrid."""
+
+    def __init__(self):
+        self.received = []
+
+    def invoke(self, query):
+        self.received.append(query)
+        return [FakeDoc("noi dung chunk mau", {"source": "1054.pdf", "tier": 1, "chunk_id": 0})]
+
+
+class TestHybridRetrieverReceivesFoldedQuery:
+    def test_ensemble_invoke_gets_folded_query(self):
+        # Tài liệu Tầng 1 mất dấu thanh vì OCR: Chroma leg cần query đã fold, nếu không
+        # truy xuất semantic trượt hẳn sang file khác (bài học thực nghiệm 15-10).
+        pipeline, _, _ = make_pipeline()
+        retriever = FakeEnsembleRetriever()
+        pipeline.ensemble_retriever = retriever
+
+        docs = pipeline.retrieve(NORMALIZED, k=4)
+
+        assert retriever.received == [fold(NORMALIZED)]
+        assert docs[0].page_content == "noi dung chunk mau"
+
+    def test_fallback_query_also_folded(self):
+        pipeline, _, _ = make_pipeline()
+        retriever = FakeEnsembleRetriever()
+        pipeline.ensemble_retriever = retriever
+
+        pipeline.retrieve(NORMALIZED, k=4, fallback_query="Cố vấn học tập họp mấy lần?")
+
+        assert retriever.received == [
+            fold(NORMALIZED),
+            fold("Cố vấn học tập họp mấy lần?"),
+        ]
+
+
 class TestRunGuards:
     def test_blank_question_raises(self):
         pipeline, _, _ = make_pipeline()
