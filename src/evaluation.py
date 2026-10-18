@@ -515,7 +515,11 @@ def aggregate(entries: list[dict], top_k: int) -> dict:
         "hit_at_3": _mean([e["retrieval"]["hit_at_3"] for e in scored]),
         "hit_at_5": _mean([e["retrieval"]["hit_at_5"] for e in scored]),
         "hit_at_6": _mean([e["retrieval"].get("hit_at_6") for e in scored]),
-        "mrr": _mean([e["retrieval"]["reciprocal_rank"] for e in scored]),
+        # MRR chỉ tính trên các câu CÓ tiêu chí truy xuất (source_document khác rỗng):
+        # câu test từ chối (in_corpus=false) có reciprocal_rank=0.0 mặc định, đưa vào
+        # trung bình sẽ kéo MRR xuống oan dù hệ thống không hề truy xuất sai.
+        "mrr": _mean([e["retrieval"]["reciprocal_rank"] for e in scored
+                      if e["retrieval"]["hit_at_k"] is not None]),
         "n_retrieval_scored": sum(1 for e in scored if e["retrieval"]["hit_at_k"] is not None),
         "citation_precision": _mean([e["citations"]["precision"] for e in citation_entries]),
         "citation_recall": _mean([e["citations"]["recall"] for e in citation_entries]),

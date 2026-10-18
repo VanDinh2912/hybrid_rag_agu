@@ -4,7 +4,7 @@ Bao gồm 3 tab chức năng:
 1. Tab 1: Tra cứu (Search) - Giao diện tra cứu câu hỏi sinh viên với Qwen, ChromaDB và Gemini.
 2. Tab 2: Nạp dữ liệu (Ingest & Learn) - Rebuild & nạp lại corpus đa luồng với log hiển thị trực tiếp.
 3. Tab 3: Vừa test vừa học (Interactive Testing & Feedback) - Kiểm tra câu hỏi, gắn nhãn Đúng/Sai,
-   nhập đáp án đúng thực tế và lưu vào outputs/user_feedback.json.
+   nhập đáp án đúng thực tế và lưu vào logs/feedback/user_feedback.json.
 
 Cách chạy:
     python ui/app.py
@@ -746,7 +746,7 @@ class RAGApplication(tk.Tk):
         if normalized_truth:
             feedback_detail += f"Chuẩn hóa: {normalized_truth}\n"
 
-        # 1. Lưu vào outputs/user_feedback.json
+        # 1. Lưu vào logs/feedback/user_feedback.json
         self._save_feedback_record(feedback_type="wrong", correct_answer=feedback_detail)
 
         # 2. Lưu vào benchmark_questions.json nếu đầy đủ thông tin
