@@ -982,7 +982,7 @@ def main() -> None:
             results[strategy] = payload
             if payload["aggregate"].get("aborted_by_quota"):
                 logger.info("[Benchmark] Dừng các chiến lược còn lại vì hết quota Gemini. "
-                            "Chạy lại với --generator qwen hoặc chờ quota reset (~07:00 giờ VN).")
+                            "Chạy lại với --generator qwen hoặc chờ quota reset (~14:00 giờ VN = 07:00 UTC).")
                 break
     except KeyboardInterrupt:
         logger.info("")

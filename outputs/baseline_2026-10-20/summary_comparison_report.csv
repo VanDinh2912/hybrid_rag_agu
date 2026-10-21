@@ -1,0 +1,4 @@
+﻿Chiến lược,Mean Hit@3,Mean Hit@5,Mean MRR,Citation Precision,Citation Recall,Citation F1,Avg Latency (ms)
+fixed,0.8800,0.9000,0.6983,0.0000,0.0000,0.0000,13010.3
+recursive,0.7400,0.8800,0.6687,0.0050,0.0100,0.0067,13121.0
+structure,0.7600,0.8800,0.7160,0.0990,0.0800,0.0767,13252.5

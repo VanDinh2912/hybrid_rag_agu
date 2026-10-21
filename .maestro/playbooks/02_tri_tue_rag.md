@@ -8,6 +8,7 @@
 - `src/retrieval.py`, `src/query_normalizer.py`, `src/text_utils.py`
 - `src/generator.py`, `src/local_slm.py`, `.generation_cache/`
 - `src/pipeline.py`, `main.py`
+- `src/classifier.py`, `src/router.py` (tầng phân loại câu hỏi 2 nhãn + router truy xuất — P3.2)
 - `tmp/` cho script smoke test trung gian
 
 ## Sản phẩm cuối

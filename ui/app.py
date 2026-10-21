@@ -40,7 +40,7 @@ load_dotenv(ROOT_DIR / ".env")
 
 from src.vector_db import VectorStoreManager
 from src.local_slm import LocalSLM
-from src.generator import GeminiGenerator, is_fallback_answer, GeneratorError
+from src.generator import GeminiGenerator, QwenGenerator, _env_flag, is_fallback_answer, GeneratorError
 from src.pipeline import HybridRAGPipeline
 from ingest import run_ingestion
 from learn import append_note, log_learning
@@ -60,6 +60,47 @@ FONT_SUBTITLE = (DEFAULT_FONT_FAMILY, 9, "italic")
 FONT_BOLD = (DEFAULT_FONT_FAMILY, 10, "bold")
 FONT_NORMAL = (DEFAULT_FONT_FAMILY, 10)
 FONT_CODE = ("Consolas" if sys.platform == "win32" else "Courier", 9)
+
+
+def format_labels_display(labels, retrieval_config) -> str:
+    """Dòng nhãn hiển thị ở Tab 1 (P3.5) — THUẦN HIỂN THỊ, không đụng logic hỏi đáp.
+
+    - labels None/rỗng (ENABLE_CLASSIFIER=0 hoặc suy giảm mềm) → "—".
+    - Có nhãn → gộp 1 dòng: chủ đề · loại câu hỏi · top_k · trọng số · lọc nguồn.
+    """
+    if not labels:
+        return "—"
+    cfg = retrieval_config or {}
+    parts = [
+        f"chủ đề: {labels.get('topic', '—')}",
+        f"loại: {labels.get('question_type', '—')}",
+        f"top_k={cfg.get('top_k', '—')}",
+        f"bm25={cfg.get('bm25_weight', '—')}/chroma={cfg.get('chroma_weight', '—')}",
+    ]
+    src_filter = cfg.get("source_filter") or []
+    if src_filter:
+        parts.append("lọc nguồn: " + ", ".join(src_filter))
+    return " | ".join(parts)
+
+
+def use_qwen_generator() -> bool:
+    """Cờ chế độ offline (Bước 0 của P5.1): USE_QWEN_GENERATOR=1 → Local Qwen làm generator.
+
+    Trước đó app hardcode GeminiGenerator ở _init_backend_task — mọi smoke GUI
+    đều tiêu quota Gemini thật dù .env đã đặt cờ offline.
+    """
+    return _env_flag("USE_QWEN_GENERATOR", False)
+
+
+def build_generator(use_qwen: bool):
+    """Dựng generator theo cờ (pattern main.py P3.3 Bước 0): Qwen local hoặc Gemini API.
+
+    Hàm module-level thuần để unit test mock được nhánh chọn class mà không
+    phải khởi tạo cửa sổ Tkinter.
+    """
+    if use_qwen:
+        return QwenGenerator()
+    return GeminiGenerator()
 
 
 class StdoutRedirector:
@@ -86,7 +127,7 @@ class RAGApplication(tk.Tk):
         # Trạng thái backend
         self.db_manager: VectorStoreManager | None = None
         self.local_slm: LocalSLM | None = None
-        self.generator: GeminiGenerator | None = None
+        self.generator: GeminiGenerator | QwenGenerator | None = None
         self.pipeline: HybridRAGPipeline | None = None
 
         self.is_searching = False
@@ -229,6 +270,14 @@ class RAGApplication(tk.Tk):
         output_group = ttk.LabelFrame(parent, text=" Kết quả từ hệ thống RAG ", padding="10")
         output_group.pack(fill=tk.BOTH, expand=True)
 
+        # Dòng nhãn phân loại (P3.5) — ngay trên khối kết quả, thuần hiển thị.
+        labels_row = ttk.Frame(output_group)
+        labels_row.pack(fill=tk.X, pady=(0, 6))
+        ttk.Label(labels_row, text="Nhãn phân loại:", style="Bold.TLabel").pack(side=tk.LEFT)
+        self.labels_var = tk.StringVar(value="—")
+        self.lbl_labels = ttk.Label(labels_row, textvariable=self.labels_var, foreground="#047857")
+        self.lbl_labels.pack(side=tk.LEFT, padx=(6, 0), fill=tk.X, expand=True)
+
         norm_row = ttk.Frame(output_group)
         norm_row.pack(fill=tk.X, pady=(0, 6))
 
@@ -303,6 +352,8 @@ class RAGApplication(tk.Tk):
 
     def _render_search_result(self, result: dict, elapsed: float):
         self.norm_query_var.set(result.get("normalized_query", "—"))
+        # P3.5: dòng nhãn phân loại ngay trên khối kết quả.
+        self.labels_var.set(format_labels_display(result.get("labels"), result.get("retrieval_config")))
 
         answer = result.get("answer", "")
         self.txt_answer.delete("1.0", tk.END)
@@ -340,6 +391,7 @@ class RAGApplication(tk.Tk):
     def clear_search_results(self):
         self.query_entry.delete(0, tk.END)
         self.norm_query_var.set("—")
+        self.labels_var.set("—")
         self.txt_answer.delete("1.0", tk.END)
         self.txt_sources.delete("1.0", tk.END)
         self.search_footer_var.set("Sẵn sàng")
@@ -672,6 +724,17 @@ class RAGApplication(tk.Tk):
         try:
             print(f"[Test Thread] Bắt đầu xử lý câu hỏi: {query[:50]}...")
             result = self.pipeline.run(query, top_k=6)
+            # P3.5: log thêm nhãn phân loại để người dùng đối chiếu khi gán nhãn thủ công.
+            labels = result.get("labels")
+            if labels:
+                cfg = result.get("retrieval_config") or {}
+                src_filter = ", ".join(cfg.get("source_filter") or []) or "không"
+                print(
+                    "[Test Thread] Nhãn phân loại: "
+                    f"topic={labels.get('topic')} | question_type={labels.get('question_type')} | "
+                    f"top_k={cfg.get('top_k')} | bm25={cfg.get('bm25_weight')} chroma={cfg.get('chroma_weight')} | "
+                    f"lọc nguồn: {src_filter}"
+                )
             print(f"[Test Thread] Hoàn tất processing question")
             self.after(0, self._render_test_result, result)
         except Exception as exc:
@@ -917,8 +980,18 @@ class RAGApplication(tk.Tk):
             self.local_slm = LocalSLM()
             slm_ok, _msg = self.local_slm.check_connection()
 
-            self.status_var.set("Kết nối Gemini API...")
-            self.generator = GeminiGenerator()
+            # Bước 0 P5.1: đọc USE_QWEN_GENERATOR thay vì hardcode Gemini —
+            # smoke GUI chạy offline 100% khi cờ bật (không tốn quota Gemini).
+            use_qwen = use_qwen_generator()
+            self.status_var.set(
+                "Kết nối Local Qwen (chế độ OFFLINE)..." if use_qwen else "Kết nối Gemini API..."
+            )
+            self.generator = build_generator(use_qwen)
+            if use_qwen:
+                print(
+                    f"      CẢNH BÁO: USE_QWEN_GENERATOR=1 — app đang chạy OFFLINE với generator "
+                    f"'{self.generator.model_name}' (không tốn quota Gemini, chất lượng thấp hơn bình thường)."
+                )
 
             self.pipeline = HybridRAGPipeline(
                 vector_db=vector_db, local_slm=self.local_slm, generator=self.generator

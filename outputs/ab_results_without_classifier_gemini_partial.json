@@ -1,0 +1,2688 @@
+{
+  "meta": {
+    "timestamp": "2026-10-21T14:17:53",
+    "benchmark": "data\\evaluation\\benchmark_100_questions_v3.json",
+    "n_questions": 100,
+    "top_k": 6,
+    "retrieve_k": 6,
+    "judge_enabled": true,
+    "judge_model": "gemini-3.5-flash-lite",
+    "generator_model": "gemini-3.8-flash",
+    "local_slm_model": "qwen2.5:1.5b-instruct",
+    "ollama_available": true,
+    "interrupted": false,
+    "with_classifier": false,
+    "resumed": 8,
+    "partial": false
+  },
+  "aggregates": {
+    "n_total": 23,
+    "n_ok": 22,
+    "hit_at_6": 0.5,
+    "hit_at_3": 0.4091,
+    "hit_at_5": 0.4545,
+    "mrr": 0.2218,
+    "n_retrieval_scored": 22,
+    "citation_precision": null,
+    "citation_recall": null,
+    "citation_f1": null,
+    "citation_exact_match": null,
+    "n_citation_scored": 0,
+    "faithfulness_llm": 0.9848,
+    "n_faithfulness_scored": 22,
+    "number_support": 0.9849,
+    "normalization_preservation": 0.9,
+    "normalization_full_preservation": 0.9,
+    "n_normalization_checked": 10,
+    "refusal_correct_rate": null,
+    "n_refusal_cases": 0,
+    "hallucination_on_unanswerable": 0,
+    "avg_latency_seconds": 103.4768,
+    "errors": [
+      "Q23: GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\nPlease retry in 23h19m27.800813997s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 83967\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu."
+    ]
+  },
+  "per_question": [
+    {
+      "id": "Q01",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn học 'Thiết kế và cài đặt mạng' có mã môn học là gì, khối lượng mấy tín chỉ, học kỳ dự kiến và môn học trước là môn nào?",
+      "normalized_query_expected": "Môn 'Thiết kế và cài đặt mạng' có mã MH là gì, khối lượng mấy tín chỉ, học kỳ dự kiến và môn học trước là môn nào?",
+      "normalized_query_system": "Môn học 'Thiết kế và cài đặt mạng' có mã môn học là gì, khối lượng bao nhiêu tín chỉ, học kỳ dự kiến và môn học trước là môn nào?",
+      "retrieval_query": "mon hoc 'thiet ke va cai dat mang' co ma mon hoc la gi, khoi luong bao nhieu tin chi, hoc ky du kien va mon hoc truoc la mon nao? hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.1111,
+        "matched_rank": 9,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 2,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 170
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 5,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 29
+          },
+          {
+            "rank": 6,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 55
+          },
+          {
+            "rank": 7,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 8,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 122
+          },
+          {
+            "rank": 9,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 337
+          },
+          {
+            "rank": 10,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 166
+          },
+          {
+            "rank": 11,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 25
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin về mã môn học, số tín chỉ, học kỳ dự kiến và môn học trước của môn \"Thiết kế và cài đặt mạng\". (ke-hoach-ttck-kltn-dh24th-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 3.19,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q02",
+      "category": "chương trình đào tạo",
+      "raw_query": "Chuẩn đầu ra ELO 6, ELO 7, ELO 8 và ELO 9 của chương trình đào tạo ngành Công nghệ thông tin quy định như thế nào?",
+      "normalized_query_expected": "Chuẩn đầu ra ELO 6, ELO 7, ELO 8 và ELO 9 của chương trình đào tạo ngành CNTT quy định như thế nào?",
+      "normalized_query_system": "Chuẩn đầu ra ELO 6, ELO 7, ELO 8 và ELO 9 của chương trình đào tạo ngành Công nghệ thông tin quy định như thế nào?",
+      "retrieval_query": "chuan dau ra elo 6, elo 7, elo 8 va elo 9 cua chuong trinh dao tao nganh cong nghe thong tin quy dinh nhu the nao? chuan ngoai ngu chuan tin hoc",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 4,
+        "preserved": 4,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.3333,
+        "matched_rank": 3,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 106
+          },
+          {
+            "rank": 2,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 22
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 330
+          },
+          {
+            "rank": 4,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 122
+          },
+          {
+            "rank": 5,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 329
+          },
+          {
+            "rank": 6,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 153
+          },
+          {
+            "rank": 7,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
+            "rank": 8,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 142
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 13
+          },
+          {
+            "rank": 10,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 20
+          },
+          {
+            "rank": 11,
+            "source": "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 300
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 14
+          }
+        ]
+      },
+      "answer": "Theo chuẩn đầu ra của chương trình đào tạo cử nhân ngành Công nghệ thông tin, các chuẩn đầu ra ELO 6, ELO 7, ELO 8 và ELO 9 được quy định như sau:\n\n- **ELO 6:** Phân tích, lập luận, và giải quyết vấn đề liên quan đến lĩnh vực Công nghệ thông tin để quản lý nguồn tài nguyên, các hoạt động của cơ quan hay doanh nghiệp. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)\n- **ELO 7:** Vận dụng được kỹ năng nghiên cứu khoa học vào việc tìm tài liệu, tổng hợp, phân tích, đánh giá các công trình khoa học. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)\n- **ELO 8:** Vận dụng hiệu quả kỹ năng giao tiếp, thuyết trình và làm việc nhóm. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)\n- **ELO 9:** Có kỹ năng ngoại ngữ bậc 3/6 Khung năng lực ngoại ngữ của Việt Nam (B1 theo khung tham chiếu Châu Âu); kỹ năng đọc và hiểu các tài liệu chuyên ngành bằng tiếng Anh. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf) (Điều 9 — 118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [
+        "dieu 9"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 0.72,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "SO_SANH",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q03",
+      "category": "chương trình đào tạo",
+      "raw_query": "Tổng số tín chỉ của toàn chương trình đào tạo ngành CNTT là bao nhiêu và bao gồm bao nhiêu tín chỉ bắt buộc, tự chọn?",
+      "normalized_query_expected": "Tổng số tín chỉ của toàn chương trình đào tạo ngành CNTT là bao nhiêu, bao gồm bao nhiêu tín chỉ bắt buộc và tự chọn?",
+      "normalized_query_system": "Tổng số tín chỉ của toàn chương trình đào tạo ngành Công nghệ thông tin là bao nhiêu và bao gồm bao nhiêu tín chỉ bắt buộc và tự chọn?",
+      "retrieval_query": "tong so tin chi cua toan chuong trinh dao tao nganh cong nghe thong tin la bao nhieu va bao gom bao nhieu tin chi bat buoc va tu chon?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.5,
+        "matched_rank": 2,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 2,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 332
+          },
+          {
+            "rank": 3,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 153
+          },
+          {
+            "rank": 4,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 30
+          },
+          {
+            "rank": 5,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 126
+          },
+          {
+            "rank": 6,
+            "source": "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 300
+          },
+          {
+            "rank": 7,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 167
+          },
+          {
+            "rank": 8,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 347
+          },
+          {
+            "rank": 9,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 122
+          },
+          {
+            "rank": 10,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 338
+          },
+          {
+            "rank": 11,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 154
+          },
+          {
+            "rank": 12,
+            "source": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 241
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" \n\nTài liệu hiện tại chỉ cung cấp thông tin tổng khối lượng kiến thức toàn khoá của ngành Công nghệ thông tin là **140 tín chỉ** (không bao gồm giáo dục thể chất, giáo dục quốc phòng và tin học) (ban-mo-ta-ctdt-nganh-cntt-2021.pdf), nhưng chưa có thông tin đầy đủ về tổng số tín chỉ bắt buộc và tự chọn của toàn bộ chương trình đào tạo. (ke-hoach-ttck-kltn-dh24th-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 98.93,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q04",
+      "category": "chương trình đào tạo",
+      "raw_query": "Khối kiến thức đại cương (Mục I) trong chương trình đào tạo ngành CNTT có bao nhiêu tín chỉ và chiếm tỷ lệ bao nhiêu phần trăm?",
+      "normalized_query_expected": "Khối kiến thức đại cương (Mục I) trong chương trình đào tạo ngành CNTT có bao nhiêu tín chỉ và chiếm tỷ lệ bao nhiêu phần trăm?",
+      "normalized_query_system": "Khối kiến thức đại cương (Mục I) trong chương trình đào tạo ngành Công nghệ thông tin có bao nhiêu tín chỉ và chiếm tỷ lệ bao nhiêu phần trăm?",
+      "retrieval_query": "khoi kien thuc dai cuong (muc i) trong chuong trinh dao tao nganh cong nghe thong tin co bao nhieu tin chi va chiem ty le bao nhieu phan tram?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.3333,
+        "matched_rank": 3,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 188
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 332
+          },
+          {
+            "rank": 4,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 153
+          },
+          {
+            "rank": 5,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 6,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 126
+          },
+          {
+            "rank": 7,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 185
+          },
+          {
+            "rank": 8,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 154
+          },
+          {
+            "rank": 9,
+            "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 311
+          },
+          {
+            "rank": 10,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 129
+          },
+          {
+            "rank": 11,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 327
+          },
+          {
+            "rank": 12,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 132
+          }
+        ]
+      },
+      "answer": "Theo chương trình đào tạo ngành Công nghệ thông tin, Khối kiến thức giáo dục đại cương (Mục I) có:\n- **Số tín chỉ:** 40 tín chỉ (ban-mo-ta-ctdt-nganh-cntt-2021.pdf).\n- **Tỷ lệ:** chiếm 28,6% tổng khối lượng kiến thức toàn khoá (ban-mo-ta-ctdt-nganh-cntt-2021.pdf). (Điều 23 — 888-qd-dhag-2022-08-08.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [
+        "dieu 23"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 0.6667,
+        "unsupported_claims": [
+          "Thông tin về khối kiến thức giáo dục đại cương liên quan đến Điều 23 của văn bản 888-qd-dhag-2022-08-08.pdf."
+        ],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 139.11,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q05",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn 'Giới thiệu ngành – ĐH CNTT' có mã môn học là gì, mấy tín chỉ và học vào học kỳ nào?",
+      "normalized_query_expected": "Môn 'Giới thiệu ngành – ĐH CNTT' có mã môn học là gì, mấy tín chỉ và học vào học kỳ nào?",
+      "normalized_query_system": "Môn 'Giới thiệu ngành – ĐH CNTT' có mã môn học là gì, bao nhiêu tín chỉ và học vào học kỳ nào?",
+      "retrieval_query": "mon 'gioi thieu nganh – dh cntt' co ma mon hoc la gi, bao nhieu tin chi va hoc vao hoc ky nao? hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0833,
+        "matched_rank": 12,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 5,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 6,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 55
+          },
+          {
+            "rank": 7,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 218
+          },
+          {
+            "rank": 8,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 17
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 18
+          },
+          {
+            "rank": 10,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 276
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 16
+          },
+          {
+            "rank": 12,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 327
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin về mã môn học, số tín chỉ và học kỳ giảng dạy của môn 'Giới thiệu ngành – ĐH CNTT'. (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 248.57,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q06",
+      "category": "chương trình đào tạo",
+      "raw_query": "Để học môn 'Lập trình hướng đối tượng' (COS102), sinh viên bắt buộc phải học trước môn học nào?",
+      "normalized_query_expected": "Để học môn 'Lập trình hướng đối tượng' (COS102), sinh viên bắt buộc phải học trước môn học nào?",
+      "normalized_query_system": "Môn học trước cho môn 'Lập trình hướng đối tượng' (COS102) là môn học nào?",
+      "retrieval_query": "mon hoc truoc cho mon 'lap trinh huong doi tuong' (cos102) la mon hoc nao? hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 1,
+        "preserved": 1,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 2,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 16
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 4,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 347
+          },
+          {
+            "rank": 5,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 6,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 7,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 273
+          },
+          {
+            "rank": 8,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 9,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 85
+          },
+          {
+            "rank": 10,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 277
+          },
+          {
+            "rank": 11,
+            "source": "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 301
+          },
+          {
+            "rank": 12,
+            "source": "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 358
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin về môn học trước của học phần \"Lập trình hướng đối tượng\" (COS102). (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 96.73,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q07",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn học 'Thực tập tốt nghiệp' (CON401) có khối lượng bao nhiêu tín chỉ và sinh viên dự kiến thực hiện vào học kỳ nào?",
+      "normalized_query_expected": "Môn 'Thực tập tốt nghiệp' (CON401) có khối lượng bao nhiêu tín chỉ và dự kiến thực hiện vào học kỳ nào?",
+      "normalized_query_system": "Môn học 'Thực tập tốt nghiệp' (CON401) có khối lượng bao nhiêu tín chỉ và sinh viên dự kiến thực hiện vào học kỳ nào?",
+      "retrieval_query": "mon hoc 'thuc tap tot nghiep' (con401) co khoi luong bao nhieu tin chi va sinh vien du kien thuc hien vao hoc ky nao? hoc phan ma hoc phan xet tot nghiep chuan dau ra dieu kien cong nhan tot nghiep",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 1,
+        "preserved": 1,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 276
+          },
+          {
+            "rank": 4,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 166
+          },
+          {
+            "rank": 5,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 218
+          },
+          {
+            "rank": 6,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 17
+          },
+          {
+            "rank": 7,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 188
+          },
+          {
+            "rank": 8,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 32
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 37
+          },
+          {
+            "rank": 10,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 122
+          },
+          {
+            "rank": 11,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 12,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 351
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin về số tín chỉ cũng như học kỳ dự kiến thực hiện của môn học \"Thực tập tốt nghiệp\" (CON401). (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 239.23,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q08",
+      "category": "chương trình đào tạo",
+      "raw_query": "Sinh viên không làm Khóa luận tốt nghiệp phải chọn các môn học thay thế nào trong khối kiến thức chuyên ngành ở Học kỳ VIII?",
+      "normalized_query_expected": "Sinh viên không làm Khóa luận tốt nghiệp phải chọn các môn học thay thế nào trong khối kiến thức chuyên ngành ở Học kỳ VIII?",
+      "normalized_query_system": "Sinh viên không hoàn thành khóa luận tốt nghiệp cần chọn các môn học thay thế trong khối kiến thức chuyên ngành ở Học kỳ VIII?",
+      "retrieval_query": "sinh vien khong hoan thanh khoa luan tot nghiep can chon cac mon hoc thay the trong khoi kien thuc chuyen nganh o hoc ky viii? hoc phan ma hoc phan xet tot nghiep chuan dau ra dieu kien cong nhan tot nghiep",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.1429,
+        "matched_rank": 7,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 275
+          },
+          {
+            "rank": 4,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 17
+          },
+          {
+            "rank": 5,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 6,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 276
+          },
+          {
+            "rank": 7,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 337
+          },
+          {
+            "rank": 8,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 16
+          },
+          {
+            "rank": 9,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 218
+          },
+          {
+            "rank": 10,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 338
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 54
+          },
+          {
+            "rank": 12,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 329
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. Ngữ cảnh được cung cấp không có quy định về việc sinh viên không hoàn thành khóa luận tốt nghiệp phải chọn các môn học thay thế trong khối kiến thức chuyên ngành ở Học kỳ VIII. (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 103.76,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q09",
+      "category": "chương trình đào tạo",
+      "raw_query": "Chuẩn đầu ra ELO 1 và ELO 2 của chương trình đào tạo ngành Công nghệ thông tin quy định về những kiến thức nào?",
+      "normalized_query_expected": "Chuẩn đầu ra ELO 1 và ELO 2 của chương trình đào tạo ngành CNTT quy định về những kiến thức nào?",
+      "normalized_query_system": "Chuẩn đầu ra ELO 1 và ELO 2 của chương trình đào tạo ngành Công nghệ thông tin quy định về những kiến thức nào?",
+      "retrieval_query": "chuan dau ra elo 1 va elo 2 cua chuong trinh dao tao nganh cong nghe thong tin quy dinh ve nhung kien thuc nao? chuan ngoai ngu chuan tin hoc",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 2,
+        "preserved": 2,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.3333,
+        "matched_rank": 3,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 161
+          },
+          {
+            "rank": 2,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 97
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 330
+          },
+          {
+            "rank": 4,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 122
+          },
+          {
+            "rank": 5,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 329
+          },
+          {
+            "rank": 6,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 126
+          },
+          {
+            "rank": 7,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
+            "rank": 8,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 203
+          },
+          {
+            "rank": 9,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 174
+          },
+          {
+            "rank": 10,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 193
+          },
+          {
+            "rank": 11,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 101
+          },
+          {
+            "rank": 12,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 218
+          }
+        ]
+      },
+      "answer": "Theo chuẩn đầu ra của chương trình đào tạo ngành Công nghệ thông tin, ELO 1 và ELO 2 quy định như sau:\n\n- **ELO 1**: Áp dụng kiến thức nền tảng về khoa học tự nhiên và khoa học xã hội vào lĩnh vực CNTT (ban-mo-ta-ctdt-nganh-cntt-2021.pdf).\n- **ELO 2**: Hiểu biết và vận dụng kiến thức cơ sở ngành vào chuyên ngành CNTT (ban-mo-ta-ctdt-nganh-cntt-2021.pdf). (Điều 1 — 888-qd-dhag-2022-08-08.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [
+        "dieu 1"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 70.03,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "SO_SANH",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q10",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn học 'Toán rời rạc' có mã môn học là gì, bao nhiêu tín chỉ và được phân bổ vào học kỳ nào trong tiến trình đào tạo?",
+      "normalized_query_expected": "Môn 'Toán rời rạc' có mã môn học là gì, bao nhiêu tín chỉ và được phân bổ vào học kỳ nào?",
+      "normalized_query_system": "Môn học 'Toán rời rạc' có mã môn học là gì, bao nhiêu tín chỉ và được phân bổ vào học kỳ nào trong tiến trình đào tạo?",
+      "retrieval_query": "mon hoc 'toan roi rac' co ma mon hoc la gi, bao nhieu tin chi va duoc phan bo vao hoc ky nao trong tien trinh dao tao? hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 16
+          },
+          {
+            "rank": 4,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 19
+          },
+          {
+            "rank": 5,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 6,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 7,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 55
+          },
+          {
+            "rank": 8,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 18
+          },
+          {
+            "rank": 9,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 85
+          },
+          {
+            "rank": 10,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 24
+          },
+          {
+            "rank": 11,
+            "source": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 238
+          },
+          {
+            "rank": 12,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 188
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin về mã môn học, số tín chỉ cũng như tiến trình đào tạo của môn học \"Toán rời rạc\". (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 128.29,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q11",
+      "category": "chương trình đào tạo",
+      "raw_query": "Khối kiến thức Chuyên ngành (Mục III) có tổng cộng bao nhiêu tín chỉ, trong đó bắt buộc và tự chọn là bao nhiêu?",
+      "normalized_query_expected": "Khối kiến thức Chuyên ngành (Mục III) có tổng cộng bao nhiêu tín chỉ, trong đó bắt buộc và tự chọn là bao nhiêu?",
+      "normalized_query_system": "Khối kiến thức Chuyên ngành (Mục III) có tổng cộng bao nhiêu tín chỉ, trong đó bắt buộc và tự chọn là bao nhiêu?",
+      "retrieval_query": "khoi kien thuc chuyen nganh (muc iii) co tong cong bao nhieu tin chi, trong do bat buoc va tu chon la bao nhieu?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.3333,
+        "matched_rank": 3,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 189
+          },
+          {
+            "rank": 2,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 188
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 332
+          },
+          {
+            "rank": 4,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 335
+          },
+          {
+            "rank": 5,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 163
+          },
+          {
+            "rank": 6,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 185
+          },
+          {
+            "rank": 7,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 55
+          },
+          {
+            "rank": 8,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 139
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 30
+          },
+          {
+            "rank": 10,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 126
+          },
+          {
+            "rank": 11,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 333
+          },
+          {
+            "rank": 12,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 166
+          }
+        ]
+      },
+      "answer": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. \n\nNgữ cảnh được cung cấp chỉ xác định Khối kiến thức chuyên ngành có tổng cộng **43 tín chỉ**, trong đó phần bắt buộc là **31 tín chỉ**, nhưng bị khuyết/thiếu thông tin số tín chỉ của phần tự chọn do văn bản bị ngắt dở ở đoạn *\"Tự chọn:\"* (ban-mo-ta-ctdt-nganh-cntt-2021.pdf). (Điều 23 — 888-qd-dhag-2022-08-08.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [
+        "dieu 23"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 125.54,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q12",
+      "category": "chương trình đào tạo",
+      "raw_query": "Để đăng ký môn 'Đồ án ngành CNTT' (COS308), sinh viên cần đáp ứng điều kiện môn học tiên quyết hoặc học trước nào?",
+      "normalized_query_expected": "Để đăng ký môn 'Đồ án ngành CNTT' (COS308), sinh viên cần đáp ứng điều kiện môn học tiên quyết hoặc học trước nào?",
+      "normalized_query_system": "Sinh viên cần đáp ứng điều kiện môn học tiên quyết hoặc học trước môn nào để đăng ký môn 'Đồ án ngành CNTT' (COS308)?",
+      "retrieval_query": "sinh vien can dap ung dieu kien mon hoc tien quyet hoac hoc truoc mon nao de dang ky mon 'do an nganh cntt' (cos308)? hoc phan ma hoc phan hoc phan tien quyet hoc phan hoc truoc",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 1,
+        "preserved": 1,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.125,
+        "matched_rank": 8,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 4,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 150
+          },
+          {
+            "rank": 5,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 55
+          },
+          {
+            "rank": 6,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 7,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 17
+          },
+          {
+            "rank": 8,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 329
+          },
+          {
+            "rank": 9,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 212
+          },
+          {
+            "rank": 10,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 16
+          },
+          {
+            "rank": 11,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 276
+          },
+          {
+            "rank": 12,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 347
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin quy định về học phần tiên quyết hoặc học trước đối với môn \"Đồ án ngành CNTT\" (COS308). (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 26.8,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q13",
+      "category": "chương trình đào tạo",
+      "raw_query": "Các môn học Giáo dục thể chất có tính tín chỉ tích lũy vào tổng số 140 tín chỉ của toàn khóa học hay không?",
+      "normalized_query_expected": "Các môn Giáo dục thể chất có tính tín chỉ tích lũy vào tổng số 140 tín chỉ của toàn khóa học hay không?",
+      "normalized_query_system": "Sinh viên: Các môn học Giáo dục thể chất có mã môn học là gì, bao nhiêu tín chỉ và có môn học trước là môn nào?",
+      "retrieval_query": "sinh vien: cac mon hoc giao duc the chat co ma mon hoc la gi, bao nhieu tin chi va co mon hoc truoc la mon nao? hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": 0.0,
+        "total": 1,
+        "preserved": 0,
+        "lost": [
+          "140"
+        ]
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 4,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 16
+          },
+          {
+            "rank": 5,
+            "source": "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 301
+          },
+          {
+            "rank": 6,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 7,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 351
+          },
+          {
+            "rank": 8,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 9,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 275
+          },
+          {
+            "rank": 10,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 100
+          },
+          {
+            "rank": 11,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 85
+          },
+          {
+            "rank": 12,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 277
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin về danh mục mã môn học, số tín chỉ cũng như môn học trước của các môn học Giáo dục thể chất. (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 75.92,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q14",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn học 'Cấu trúc dữ liệu và giải thuật' có mã môn học là gì, bao nhiêu tín chỉ và dự kiến học ở học kỳ mấy?",
+      "normalized_query_expected": "Môn 'Cấu trúc dữ liệu và giải thuật' có mã môn học là gì, bao nhiêu tín chỉ và dự kiến học ở học kỳ mấy?",
+      "normalized_query_system": "Môn học 'Cấu trúc dữ liệu và giải thuật' có mã môn học là gì, bao nhiêu tín chỉ và dự kiến học ở học kỳ mấy?",
+      "retrieval_query": "mon hoc 'cau truc du lieu va giai thuat' co ma mon hoc la gi, bao nhieu tin chi va du kien hoc o hoc ky may? hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.1667,
+        "matched_rank": 6,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 5,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 55
+          },
+          {
+            "rank": 6,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 335
+          },
+          {
+            "rank": 7,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 17
+          },
+          {
+            "rank": 8,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 250
+          },
+          {
+            "rank": 9,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 166
+          },
+          {
+            "rank": 10,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 100
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 29
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" \n\nNgữ cảnh được cung cấp chỉ liệt kê môn \"Cấu trúc dữ liệu\" (mã COS304) và \"Phân tích và thiết kế giải thuật\" (mã COS309), không có thông tin về môn học nào có tên chính xác là \"Cấu trúc dữ liệu và giải thuật\". (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 247.73,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q15",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn 'Hệ quản trị cơ sở dữ liệu' (COS205) yêu cầu sinh viên phải hoàn thành môn học trước nào?",
+      "normalized_query_expected": "Môn 'Hệ quản trị cơ sở dữ liệu' (COS205) yêu cầu sinh viên phải hoàn thành môn học trước nào?",
+      "normalized_query_system": "Môn 'Hệ quản trị cơ sở dữ liệu' (COS205) yêu cầu sinh viên phải hoàn thành môn học trước là 'Cơ sở dữ liệu và hệ thống thông tin' (COS101).",
+      "retrieval_query": "mon 'he quan tri co so du lieu' (cos205) yeu cau sinh vien phai hoan thanh mon hoc truoc la 'co so du lieu va he thong thong tin' (cos101). xep loai ren luyen yeu ket qua ren luyen hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 1,
+        "preserved": 1,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 30
+          },
+          {
+            "rank": 2,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 122
+          },
+          {
+            "rank": 3,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 75
+          },
+          {
+            "rank": 4,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 74
+          },
+          {
+            "rank": 5,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 65
+          },
+          {
+            "rank": 6,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 126
+          },
+          {
+            "rank": 7,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 16
+          },
+          {
+            "rank": 8,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 10
+          },
+          {
+            "rank": 10,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 153
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 18
+          },
+          {
+            "rank": 12,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 150
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp chỉ bao gồm các quy định về công tác quản lý sinh viên, đánh giá kết quả rèn luyện và cuộc thi chính luận, không chứa thông tin về điều kiện học phần tiên quyết hay môn học trước của môn 'Hệ quản trị cơ sở dữ liệu' (COS205). (Điều 12 — 1054-qd-dhag-2020-09-28.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [
+        "dieu 12"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 37.92,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q16",
+      "category": "chương trình đào tạo",
+      "raw_query": "Khối kiến thức Cơ sở ngành (Mục II) trong chương trình đào tạo gồm bao nhiêu tín chỉ bắt buộc và tự chọn?",
+      "normalized_query_expected": "Khối kiến thức Cơ sở ngành (Mục II) trong chương trình đào tạo gồm bao nhiêu tín chỉ bắt buộc và tự chọn?",
+      "normalized_query_system": "Khối kiến thức Cơ sở ngành (Mục II) trong chương trình đào tạo gồm bao nhiêu tín chỉ bắt buộc và tự chọn?",
+      "retrieval_query": "khoi kien thuc co so nganh (muc ii) trong chuong trinh dao tao gom bao nhieu tin chi bat buoc va tu chon?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 1.0,
+        "matched_rank": 1,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 332
+          },
+          {
+            "rank": 2,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 126
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 335
+          },
+          {
+            "rank": 4,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 188
+          },
+          {
+            "rank": 5,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 333
+          },
+          {
+            "rank": 6,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 168
+          },
+          {
+            "rank": 7,
+            "source": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 240
+          },
+          {
+            "rank": 8,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 193
+          },
+          {
+            "rank": 9,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 327
+          },
+          {
+            "rank": 10,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 154
+          },
+          {
+            "rank": 11,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 334
+          },
+          {
+            "rank": 12,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 153
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" \n\nHiện tại, ngữ cảnh trích dẫn chỉ ghi nhận Khối kiến thức cơ sở ngành có tổng cộng 42 tín chỉ, trong đó số tín chỉ bắt buộc là 38 tín chỉ (ban-mo-ta-ctdt-nganh-cntt-2021.pdf). Tuy nhiên, thông tin về số tín chỉ tự chọn bị cắt dở (dừng lại ở cụm *\"Tự chọn:\"*) và không có con số cụ thể trong văn bản để có thể khẳng định đầy đủ. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 188.16,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q17",
+      "category": "chương trình đào tạo",
+      "raw_query": "Chuẩn đầu ra ELO 10 và ELO 11 quy định thái độ và năng lực học tập suốt đời của sinh viên như thế nào?",
+      "normalized_query_expected": "Chuẩn đầu ra ELO 10 và ELO 11 quy định thái độ và năng lực học tập suốt đời của sinh viên như thế nào?",
+      "normalized_query_system": "Chuẩn đầu ra ELO 10 và ELO 11 về thái độ và năng lực học tập suốt đời của sinh viên ngành Công nghệ thông tin Trường Đại học An Giang như thế nào?",
+      "retrieval_query": "chuan dau ra elo 10 va elo 11 ve thai do va nang luc hoc tap suot doi cua sinh vien nganh cong nghe thong tin truong dai hoc an giang nhu the nao? chuan ngoai ngu chuan tin hoc",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 2,
+        "preserved": 2,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.5,
+        "matched_rank": 2,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 2,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 330
+          },
+          {
+            "rank": 3,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 153
+          },
+          {
+            "rank": 4,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 329
+          },
+          {
+            "rank": 5,
+            "source": "1059-qd-dhag-2020-09-29.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 85
+          },
+          {
+            "rank": 6,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 331
+          },
+          {
+            "rank": 7,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 150
+          },
+          {
+            "rank": 8,
+            "source": "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 359
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 32
+          },
+          {
+            "rank": 10,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 347
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 5
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 27
+          }
+        ]
+      },
+      "answer": "Theo chuẩn đầu ra chương trình đào tạo ngành Công nghệ thông tin, nội dung ELO 10 và ELO 11 được quy định cụ thể như sau:\n\n- **ELO 10**: Hình thành phong cách làm việc chuyên nghiệp, hiểu biết về các giá trị đạo đức, trách nhiệm nghề nghiệp và xã hội; Hình thành tính sáng tạo, tự chủ và thói quen học tập suốt đời (ban-mo-ta-ctdt-nganh-cntt-2021.pdf).\n- **ELO 11**: Nhận biết bối cảnh và nhu cầu xã hội, hình thành ý tưởng, thiết kế, xây dựng, triển khai và vận hành các hệ thống CNTT đáp ứng nhu cầu xã hội (ban-mo-ta-ctdt-nganh-cntt-2021.pdf). (ke-hoach-ttck-kltn-dh24th-2026.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 27.7,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "SO_SANH",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q18",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn 'Hệ điều hành' có mã môn học là gì và có mấy tín chỉ lý thuyết, thực hành?",
+      "normalized_query_expected": "Môn 'Hệ điều hành' có mã môn học là gì và có mấy tín chỉ lý thuyết, thực hành?",
+      "normalized_query_system": "Môn 'Hệ điều hành' có mã môn học là gì và có mấy tín chỉ lý thuyết và thực hành?",
+      "retrieval_query": "mon 'he dieu hanh' co ma mon hoc la gi va co may tin chi ly thuyet va thuc hanh? hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.3333,
+        "matched_rank": 3,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 335
+          },
+          {
+            "rank": 4,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 55
+          },
+          {
+            "rank": 5,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 6,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 208
+          },
+          {
+            "rank": 7,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 8,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 250
+          },
+          {
+            "rank": 9,
+            "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 117
+          },
+          {
+            "rank": 10,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 17
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 10
+          }
+        ]
+      },
+      "answer": "Theo chương trình đào tạo, môn học có tên chính thức là **\"Nguyên lý hệ điều hành\"** với các thông tin chi tiết như sau:\n\n* **Mã môn học:** COS310 (ban-mo-ta-ctdt-nganh-cntt-2021.pdf).\n* **Số tín chỉ lý thuyết:** 2 tín chỉ (ban-mo-ta-ctdt-nganh-cntt-2021.pdf).\n* **Số tín chỉ thực hành (TH/TN):** 1 tín chỉ (ban-mo-ta-ctdt-nganh-cntt-2021.pdf).\n\n*(Môn học có tổng cộng 3 tín chỉ và là môn học bắt buộc dự kiến học vào Học kỳ IV — ban-mo-ta-ctdt-nganh-cntt-2021.pdf).*. (ke-hoach-ttck-kltn-dh24th-2026.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 1.0,
+      "latency_seconds": 64.4,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q19",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn 'Kiến trúc máy tính và Hợp ngữ' (CON201) học ở học kỳ nào và có môn học trước không?",
+      "normalized_query_expected": "Môn 'Kiến trúc máy tính và Hợp ngữ' (CON201) học ở học kỳ nào và có môn học trước không?",
+      "normalized_query_system": "Môn 'Kiến trúc máy tính và Hợp ngữ' (CON201) thuộc học kỳ 1 và có môn học trước là 'Công nghệ thông tin' (K21).",
+      "retrieval_query": "mon 'kien truc may tinh va hop ngu' (con201) thuoc hoc ky 1 va co mon hoc truoc la 'cong nghe thong tin' (k21). hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 1,
+        "preserved": 1,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.25,
+        "matched_rank": 4,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 4,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 335
+          },
+          {
+            "rank": 5,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 277
+          },
+          {
+            "rank": 6,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 7,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 273
+          },
+          {
+            "rank": 8,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 140
+          },
+          {
+            "rank": 9,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 351
+          },
+          {
+            "rank": 10,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 259
+          },
+          {
+            "rank": 11,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 12,
+            "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 226
+          }
+        ]
+      },
+      "answer": "Thông tin trong câu hỏi của bạn là không chính xác. Căn cứ theo chương trình đào tạo ngành Công nghệ thông tin:\n\n* Môn \"Kiến trúc máy tính và Hợp ngữ\" có mã môn học là **COS330** (không phải CON201) (ban-mo-ta-ctdt-nganh-cntt-2021.pdf).\n* Môn học này có khối lượng 3 tín chỉ (2 lý thuyết, 1 thực hành/thí nghiệm) và dự kiến được tổ chức vào **Học kỳ III** (không phải học kỳ 1) (ban-mo-ta-ctdt-nganh-cntt-2021.pdf).\n* Trong bảng danh mục môn học, môn này không quy định môn học tiên quyết hay môn học trước (ban-mo-ta-ctdt-nganh-cntt-2021.pdf). (ke-hoach-ttck-kltn-dh24th-2026.pdf)",
+      "is_refusal_answer": false,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": null
+      },
+      "number_support": 0.9091,
+      "latency_seconds": 114.23,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q20",
+      "category": "chương trình đào tạo",
+      "raw_query": "Thời gian đào tạo chuẩn theo kế hoạch của chương trình cử nhân Công nghệ thông tin là bao nhiêu năm?",
+      "normalized_query_expected": "Thời gian đào tạo chuẩn theo kế hoạch của chương trình cử nhân Công nghệ thông tin là bao nhiêu năm?",
+      "normalized_query_system": "Thời gian đào tạo chuẩn theo kế hoạch của chương trình cử nhân Công nghệ thông tin là bao nhiêu năm?",
+      "retrieval_query": "thoi gian dao tao chuan theo ke hoach cua chuong trinh cu nhan cong nghe thong tin la bao nhieu nam?",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 347
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 273
+          },
+          {
+            "rank": 3,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 4,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 153
+          },
+          {
+            "rank": 5,
+            "source": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 236
+          },
+          {
+            "rank": 6,
+            "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 272
+          },
+          {
+            "rank": 7,
+            "source": "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 300
+          },
+          {
+            "rank": 8,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 121
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 22
+          },
+          {
+            "rank": 10,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 356
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 1
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 30
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin quy định về thời gian đào tạo chuẩn theo kế hoạch của chương trình cử nhân Công nghệ thông tin. (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 110.51,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q21",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn 'Trí tuệ nhân tạo' có mã môn học là gì, mấy tín chỉ và học vào học kỳ mấy?",
+      "normalized_query_expected": "Môn 'Trí tuệ nhân tạo' có mã môn học là gì, mấy tín chỉ và học vào học kỳ mấy?",
+      "normalized_query_system": "Môn 'Trí tuệ nhân tạo' có mã môn học là 'CON101', bao nhiêu tín chỉ là 4 và học vào học kỳ 2.",
+      "retrieval_query": "mon 'tri tue nhan tao' co ma mon hoc la 'con101', bao nhieu tin chi la 4 va hoc vao hoc ky 2. hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": null,
+        "total": 0,
+        "preserved": 0,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": false,
+        "hit_at_5": false,
+        "hit_at_6": false,
+        "hit_at_k": false,
+        "reciprocal_rank": 0.0,
+        "matched_rank": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 165
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 3,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 166
+          },
+          {
+            "rank": 4,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          },
+          {
+            "rank": 5,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 29
+          },
+          {
+            "rank": 6,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 7,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 203
+          },
+          {
+            "rank": 8,
+            "source": "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 360
+          },
+          {
+            "rank": 9,
+            "source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 134
+          },
+          {
+            "rank": 10,
+            "source": "888-qd-dhag-2022-08-08.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 170
+          },
+          {
+            "rank": 11,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 10
+          },
+          {
+            "rank": 12,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 37
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không chứa thông tin về môn học \"Trí tuệ nhân tạo\" (mã môn học, số tín chỉ và học kỳ giảng dạy). (Điều 4 — 888-qd-dhag-2022-08-08.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [
+        "dieu 4"
+      ],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 47.3,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q22",
+      "category": "chương trình đào tạo",
+      "raw_query": "Môn 'Lập trình Web' (COS303) yêu cầu môn học trước là môn nào?",
+      "normalized_query_expected": "Môn 'Lập trình Web' (COS303) yêu cầu môn học trước là môn nào?",
+      "normalized_query_system": "Môn 'Lập trình Web' (COS303) có môn học trước là môn nào?",
+      "retrieval_query": "mon 'lap trinh web' (cos303) co mon hoc truoc la mon nao? hoc phan ma hoc phan",
+      "normalization_preservation": {
+        "score": 1.0,
+        "total": 1,
+        "preserved": 1,
+        "lost": []
+      },
+      "retrieval": {
+        "top_k": 6,
+        "retrieved_k": 12,
+        "hit_at_3": true,
+        "hit_at_5": true,
+        "hit_at_6": true,
+        "hit_at_k": true,
+        "reciprocal_rank": 0.3333,
+        "matched_rank": 3,
+        "retrieved": [
+          {
+            "rank": 1,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 348
+          },
+          {
+            "rank": 2,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 274
+          },
+          {
+            "rank": 3,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 337
+          },
+          {
+            "rank": 4,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 347
+          },
+          {
+            "rank": 5,
+            "source": "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 358
+          },
+          {
+            "rank": 6,
+            "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 335
+          },
+          {
+            "rank": 7,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 55
+          },
+          {
+            "rank": 8,
+            "source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "tier": "cac_file_bo_xung_khac",
+            "chunk_id": 349
+          },
+          {
+            "rank": 9,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 25
+          },
+          {
+            "rank": 10,
+            "source": "1054-qd-dhag-2020-09-28.pdf",
+            "tier": "Tầng 1",
+            "chunk_id": 40
+          },
+          {
+            "rank": 11,
+            "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 273
+          },
+          {
+            "rank": 12,
+            "source": "KH To chuc HK 261 - 20260612.pdf",
+            "tier": "Tầng 2",
+            "chunk_id": 256
+          }
+        ]
+      },
+      "answer": "\"Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này.\" Ngữ cảnh được cung cấp không có thông tin về môn học \"Lập trình Web\" cũng như điều kiện môn học trước của môn này (mã học phần COS303 trong tài liệu được ghi là môn \"Phương pháp tính – TH\" và không có thông tin về môn học trước) (ban-mo-ta-ctdt-nganh-cntt-2021.pdf). (ke-hoach-ttck-kltn-dh24pm-2026.pdf)",
+      "is_refusal_answer": true,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": 1.0,
+        "unsupported_claims": [],
+        "method": "llm_judge",
+        "error": "refusal"
+      },
+      "number_support": null,
+      "latency_seconds": 81.72,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "TRA_CUU",
+      "generation_scoring": "scored",
+      "error": null
+    },
+    {
+      "id": "Q23",
+      "category": "đánh giá rèn luyện",
+      "raw_query": "Tiêu chí xếp loại kết quả rèn luyện học kỳ đối với các mức Xuất sắc, Tốt, Khá, Trung bình, Yếu, Kém được tính theo thang điểm nào?",
+      "normalized_query_expected": "Tiêu chí xếp loại kết quả rèn luyện học kỳ theo thang điểm nào cho các mức Xuất sắc, Tốt, Khá, Trung bình, Yếu, Kém?",
+      "normalized_query_system": null,
+      "normalization_preservation": null,
+      "retrieval": {},
+      "answer": null,
+      "is_refusal_answer": null,
+      "citations": null,
+      "predicted_citations": [],
+      "refusal_expected": false,
+      "refusal_correct": null,
+      "hallucinated_on_unanswerable": false,
+      "faithfulness": {
+        "score": null,
+        "unsupported_claims": [],
+        "method": null,
+        "error": null
+      },
+      "number_support": null,
+      "latency_seconds": null,
+      "predicted_labels": null,
+      "retrieval_config": null,
+      "expected_question_type": "SO_SANH",
+      "generation_scoring": "scored",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\nPlease retry in 23h19m27.800813997s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 83967\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu."
+    }
+  ]
+}

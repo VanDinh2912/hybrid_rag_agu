@@ -1,7 +1,7 @@
 # Checklist kiểm tra tay — Hybrid RAG tra cứu quy chế AGU
 
 - **File này để làm gì**: bạn tự chạy từng câu hỏi trên ứng dụng rồi đối chiếu câu trả lời với đáp án kỳ vọng. Đáp án kỳ vọng được rút trực tiếp từ tài liệu gốc trong `data/corpus/` — bạn có thể mở file gốc để đối chiếu lại nếu nghi ngờ.
-- **Số câu**: 34, chia 7 nhóm. Nên chạy hết trong **một phiên tương tác** để chỉ tốn ~40 giây khởi động một lần.
+- **Số câu**: 34 + 3 câu kiểm tra nhãn phân loại (Nhóm 8, thêm từ P3.5), chia 8 nhóm. Nên chạy hết trong **một phiên tương tác** để chỉ tốn ~40 giây khởi động một lần.
 - Nhóm 1 là các câu **hồi quy** (đã từng trả lời đúng, cần giữ đúng sau khi sửa truy xuất). Nhóm 7 là các câu **phải từ chối** (ngoài phạm vi corpus).
 
 ## Cách chạy
@@ -325,6 +325,35 @@ Kỳ vọng chung cho cả 3 câu: hệ thống trả lời đúng câu từ ch�
 
 ---
 
+## Nhóm 8 — Kiểm tra nhãn phân loại (thêm từ P3.5)
+
+> Mục đích: kiểm tra khối `[2b] PHÂN LOẠI & CẤU HÌNH` (CLI) và dòng `Nhãn phân loại:` (GUI Tab 1)
+> hiển thị đúng nhãn tầng classifier. Yêu cầu bật cờ: `ENABLE_CLASSIFIER=1` trước khi chạy
+> (PowerShell: `$env:ENABLE_CLASSIFIER="1"`). Câu lấy từ benchmark v3 (`benchmark_100_questions_v3.json`).
+
+### N8.1 — Tra cứu thường (Q01, TRA_CUU)
+
+- **Hỏi:** `Môn học 'Thiết kế và cài đặt mạng' có mã môn học là gì, khối lượng mấy tín chỉ, học kỳ dự kiến và môn học trước là môn nào?`
+- **Nhãn kỳ vọng:** `question_type=TRA_CUU` | `Chủ đề` thuộc nhóm "chương trình đào tạo" | `Tách truy vấn con: KHÔNG`
+- **Nguồn kỳ vọng:** `ban-mo-ta-ctdt-nganh-cntt-2021.pdf`
+- **Kết quả nhãn:** ☐ Đạt ☐ Không đạt — Ghi chú: ........................................
+
+### N8.2 — So sánh nhiều vế (Q02, SO_SANH)
+
+- **Hỏi:** `Chuẩn đầu ra ELO 6, ELO 7, ELO 8 và ELO 9 của chương trình đào tạo ngành Công nghệ thông tin quy định như thế nào?`
+- **Nhãn kỳ vọng:** `question_type=SO_SANH` | `Chủ đề` thuộc nhóm "chương trình đào tạo" | `Tách truy vấn con: CÓ (2–3 nhánh)` — nếu hiện `KHÔNG` là guardrail suy giảm mềm, ghi chú lại (không tính lỗi nhãn)
+- **Nguồn kỳ vọng:** `ban-mo-ta-ctdt-nganh-cntt-2021.pdf`
+- **Kết quả nhãn:** ☐ Đạt ☐ Không đạt — Ghi chú: ........................................
+
+### N8.3 — Ngoài phạm vi (Q97, NGOAI_PHAM_VI)
+
+- **Hỏi:** `Sinh viên không hoàn thành đủ số giờ thực tập tại doanh nghiệp có được xem xét gia hạn không?`
+- **Nhãn kỳ vọng:** `question_type=NGOAI_PHAM_VI` | câu trả lời là **từ chối chuẩn** ("Xin lỗi, tài liệu hiện có không đủ thông tin…"), KHÔNG bịa quy định gia hạn giờ thực tập — lưu ý `Chủ đề` có thể ra "thực tập tốt nghiệp" (chủ đề gần nghĩa) nhưng loại câu phải đúng NGOAI_PHAM_VI
+- **Nguồn kỳ vọng:** (không có — câu ngoài corpus)
+- **Kết quả nhãn:** ☐ Đạt ☐ Không đạt — Ghi chú: ........................................
+
+---
+
 ## Bảng tổng hợp kết quả
 
 | Nhóm | Số câu | Đạt | Không đạt | Lỗi đáng chú ý |
@@ -336,4 +365,5 @@ Kỳ vọng chung cho cả 3 câu: hệ thống trả lời đúng câu từ ch�
 | 5. Cuộc thi chính luận (367) | 3 | | | |
 | 6. Thông báo CTSV (03/TB + 17/TB) | 6 | | | |
 | 7. Câu phải từ chối | 3 | | | |
-| **Tổng** | **34** | | | |
+| 8. Nhãn phân loại (P3.5) | 3 | | | |
+| **Tổng** | **37** | | | |

@@ -14,8 +14,9 @@ Ba chiến lược so sánh (đúng hiện trạng repo):
 Cài đặt thêm (chưa có trong ./venv):
     pip install streamlit pandas
 
-Chạy (từ thư mục gốc repo):
-    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m streamlit run demo_streamlit.py
+Chạy (từ thư mục gốc repo — bắt buộc kèm flag watcher để app không chết im khi
+file watcher của Streamlit quét thư viện lớn):
+    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m streamlit run demo_streamlit.py --server.fileWatcherType none
 
 Nguồn dữ liệu index (theo thứ tự ưu tiên cho từng chiến lược):
     1. logs/benchmark/chroma_<strategy>/     — sản phẩm của benchmark_chunking.py (vị trí mới)
@@ -377,6 +378,24 @@ def pick_winner(results: dict[str, dict[str, Any]], free_mode: bool) -> str | No
 # --------------------------------------------------------------------------- chạy MỘT chiến lược (live, có cache)
 
 
+def build_demo_pipeline(use_classifier: bool, **pipeline_kwargs: Any) -> HybridRAGPipeline:
+    """Dựng pipeline demo với ENABLE_CLASSIFIER đặt đúng giá trị sidebar (P5.1).
+
+    HybridRAGPipeline đọc env NGAY LÚC __init__ nên chỉ cần đặt xung quanh lệnh
+    dựng rồi khôi phục giá trị cũ — app không cài lại logic phân loại, chỉ chuyển
+    lựa chọn sidebar sang cơ chế ENABLE_CLASSIFIER có sẵn của backend.
+    """
+    previous = os.environ.get("ENABLE_CLASSIFIER")
+    os.environ["ENABLE_CLASSIFIER"] = "1" if use_classifier else "0"
+    try:
+        return HybridRAGPipeline(**pipeline_kwargs)
+    finally:
+        if previous is None:
+            os.environ.pop("ENABLE_CLASSIFIER", None)
+        else:
+            os.environ["ENABLE_CLASSIFIER"] = previous
+
+
 @st.cache_data(show_spinner=False)
 def evaluate_strategy_live(
     strategy: str,
@@ -385,12 +404,14 @@ def evaluate_strategy_live(
     generator_label: str,
     use_judge: bool,
     question: dict[str, Any] | None,
+    use_classifier: bool = False,
 ) -> dict[str, Any]:
     """Chạy sống động MỘT chiến lược cho MỘT câu hỏi: index → pipeline → chấm điểm.
 
-    Cache key = (strategy, query, top_k, generator_label, use_judge, question):
-    đổi trọng số composite KHÔNG làm mất cache vì composite được tính ở lớp ngoài.
-    Lỗi (Ollama chết, hết quota Gemini, thiếu index) được ném ra để caller bắt.
+    Cache key = (strategy, query, top_k, generator_label, use_judge, question,
+    use_classifier): đổi trọng số composite KHÔNG làm mất cache vì composite được
+    tính ở lớp ngoài. Lỗi (Ollama chết, hết quota Gemini, thiếu index) được ném
+    ra để caller bắt.
     """
     registry = get_index_registry()
     vector_db, n_chunks, index_origin = registry.get_store(strategy)
@@ -399,7 +420,8 @@ def evaluate_strategy_live(
     if generator is None:
         raise RuntimeError(f"Không khởi tạo được generator: {generator_error}")
 
-    pipeline = HybridRAGPipeline(
+    pipeline = build_demo_pipeline(
+        use_classifier,
         vector_db=vector_db,
         local_slm=get_local_slm(),
         generator=generator,
@@ -468,6 +490,9 @@ def evaluate_strategy_live(
         "predicted_citations": sorted(predicted),
         "metrics": metrics,
         "normalized_query": run.get("normalized_query"),
+        "labels": run.get("labels"),
+        "retrieval_config": run.get("retrieval_config"),
+        "sub_queries": run.get("sub_queries"),
         "error": None,
         "mode": "live",
         "replay_ts": None,
@@ -522,6 +547,9 @@ def replay_entry_to_result(
         "predicted_citations": list(entry.get("predicted_citations") or []),
         "metrics": metrics,
         "normalized_query": None,
+        "labels": entry.get("labels"),
+        "retrieval_config": entry.get("retrieval_config"),
+        "sub_queries": entry.get("sub_queries"),
         "error": entry.get("error"),
         "mode": "replay",
         "replay_ts": timestamp,
@@ -571,6 +599,10 @@ def error_result(strategy: str, exc: Exception) -> dict[str, Any]:
         "predicted_citations": [],
         "metrics": {},
         "normalized_query": None,
+        "labels": None,
+        "retrieval_config": None,
+        "sub_queries": None,
+        "composite_score": None,
         "error": f"{type(exc).__name__}: {exc}",
         "mode": "live",
         "replay_ts": None,
@@ -587,6 +619,7 @@ def evaluate_rag_strategies(
     *,
     generator_label: str = GENERATOR_QWEN,
     use_judge: bool = False,
+    use_classifier: bool = False,
     allow_replay: bool = True,
     weights: tuple[float, float, float] = DEFAULT_WEIGHTS,
     on_strategy_start: Callable[[int, str], Any] | None = None,
@@ -595,7 +628,8 @@ def evaluate_rag_strategies(
     """Hàm backend trung tâm của app: chạy TUẦN TỰ 3 chiến lược cho một câu hỏi.
 
     Trả về {strategy_key: {"answer", "sources", "contexts", "predicted_citations",
-    "metrics": {...}, "composite_score": float | None, "error": str | None, ...}}.
+    "metrics": {...}, "labels": {...}|None, "retrieval_config": {...}|None,
+    "composite_score": float | None, "error": str | None, ...}}.
     Mỗi chiến lược độc lập: một chiến lược lỗi không ảnh hưởng 2 chiến lược còn lại.
     Callback on_strategy_start/on_strategy_done để UI render st.status + st.progress
     theo từng chiến lược mà vẫn giữ hàm này làm điểm vào duy nhất.
@@ -623,11 +657,13 @@ def evaluate_rag_strategies(
                     )
                 else:
                     results[strategy] = evaluate_strategy_live(
-                        strategy, query, top_k, generator_label, use_judge, benchmark_question
+                        strategy, query, top_k, generator_label, use_judge,
+                        benchmark_question, use_classifier,
                     )
             else:
                 results[strategy] = evaluate_strategy_live(
-                    strategy, query, top_k, generator_label, use_judge, benchmark_question
+                    strategy, query, top_k, generator_label, use_judge,
+                    benchmark_question, use_classifier,
                 )
         except Exception as exc:  # một chiến lược chết không được làm app chết
             results[strategy] = error_result(strategy, exc)
@@ -665,6 +701,55 @@ def fmt_latency(value: float | None) -> str:
     return "—" if value is None else f"{value:,.0f}"
 
 
+def format_classification_lines(
+    labels: dict[str, Any] | None,
+    retrieval_config: dict[str, Any] | None,
+    sub_queries: list[str] | None,
+    mode: str,
+) -> list[str]:
+    """Các dòng khối '🏷️ Phân loại câu hỏi' (P5.1) — THUẦN HIỂN THỊ, không gọi backend.
+
+    - labels None (tầng phân loại Tắt / suy giảm mềm / entry replay cũ không có
+      nhãn) → dòng '—'; entry replay cũ kèm ghi chú chạy lại benchmark với
+      `--with-classifier` để có dữ liệu replay mới.
+    - Có nhãn → dòng nhãn (chủ đề · loại) + dòng cấu hình router đã chọn
+      (top_k · trọng số BM25/Chroma · lọc nguồn) + dòng tách truy vấn con
+      (CÓ n nhánh theo result.sub_queries / KHÔNG).
+    """
+    if not labels:
+        lines = ["Nhãn phân loại: —"]
+        if mode == "replay":
+            lines.append(
+                "(Entry replay cũ chưa có nhãn — chạy lại benchmark với `--with-classifier` "
+                "để có dữ liệu replay mới.)"
+            )
+        return lines
+
+    cfg = retrieval_config or {}
+    lines: list[str] = []
+    # `or '—'`: classifier trả None cho cả key (vd câu ngoài corpus → chủ đề
+    # None) — .get(key, '—') chỉ fallback khi THIẾU key, không bắt giá trị None.
+    topic = labels.get("topic") or "—"
+    question_type = labels.get("question_type") or "—"
+    lines.append(f"Nhãn: chủ đề **{topic}** · loại câu hỏi **{question_type}**")
+    config_parts = [
+        f"top_k={cfg.get('top_k', '—')}",
+        f"bm25={cfg.get('bm25_weight', '—')}/chroma={cfg.get('chroma_weight', '—')}",
+    ]
+    src_filter = cfg.get("source_filter") or []
+    if src_filter:
+        config_parts.append("lọc nguồn: " + ", ".join(src_filter))
+    lines.append("Cấu hình đã chọn: " + " · ".join(config_parts))
+
+    if sub_queries:
+        lines.append(f"Tách truy vấn con: CÓ ({len(sub_queries)} nhánh)")
+    elif cfg.get("enable_subquery"):
+        lines.append("Tách truy vấn con: CÓ (guardrail lùi về đường đơn)")
+    else:
+        lines.append("Tách truy vấn con: KHÔNG")
+    return lines
+
+
 # --------------------------------------------------------------------------- UI: sidebar & input
 
 
@@ -688,6 +773,14 @@ def render_sidebar() -> dict[str, Any]:
             max_value=5,
             value=3,
             help="Generator nhận top_k chunk; hệ truy xuất lấy top_k×2 (oversampling) để đo Hit@K.",
+        )
+        use_classifier = st.selectbox(
+            "Tầng phân loại câu hỏi",
+            ("Tắt", "Bật"),
+            index=1,
+            help="Bật: LocalSLM gán nhãn chủ đề/loại câu hỏi và router điều chỉnh cấu hình "
+                 "truy xuất theo lớp (top_k, trọng số, lọc nguồn, tách truy vấn con — P3.2). "
+                 "Tắt: truy xuất giữ nguyên cấu hình nền, không gọi classifier.",
         )
 
         st.divider()
@@ -723,6 +816,7 @@ def render_sidebar() -> dict[str, Any]:
         return {
             "generator_label": generator_label,
             "top_k": top_k,
+            "use_classifier": use_classifier == "Bật",
             "use_judge": use_judge,
             "allow_replay": allow_replay,
             "weights": (float(w_hit), float(w_faith), float(w_cit)),
@@ -835,6 +929,7 @@ def run_evaluation(sidebar: dict[str, Any], query: str, question: dict[str, Any]
         benchmark_question=question,
         generator_label=sidebar["generator_label"],
         use_judge=sidebar["use_judge"],
+        use_classifier=sidebar["use_classifier"],
         allow_replay=sidebar["allow_replay"],
         weights=sidebar["weights"],
         on_strategy_start=on_strategy_start,
@@ -850,6 +945,7 @@ def run_evaluation(sidebar: dict[str, Any], query: str, question: dict[str, Any]
         "top_k": sidebar["top_k"],
         "weights": sidebar["weights"],
         "use_judge": sidebar["use_judge"],
+        "use_classifier": sidebar["use_classifier"],
     }
 
 
@@ -903,6 +999,13 @@ def render_tab_winner(run: dict[str, Any], winner: str | None) -> None:
         st.error(f"Chiến lược thắng bị lỗi: {best['error']}")
         return
 
+    # P5.1: khối "🏷️ Phân loại câu hỏi" — nhãn + cấu hình router của chiến lược thắng.
+    st.markdown("##### 🏷️ Phân loại câu hỏi")
+    for line in format_classification_lines(
+        best.get("labels"), best.get("retrieval_config"), best.get("sub_queries"), best["mode"]
+    ):
+        st.markdown(line)
+
     answer = str(best.get("answer") or "")
     if is_refusal_answer(answer):
         st.warning(
@@ -942,7 +1045,7 @@ def render_tab_comparison(run: dict[str, Any], winner: str | None) -> None:
         rows.append(
             {
                 "Chiến lược": meta["short"],
-                "Composite": fmt_score(result["composite_score"]),
+                "Composite": fmt_score(result.get("composite_score")),
                 "Hit@K": fmt_percent(metrics.get("hit_at_k")),
                 "MRR": fmt_score(metrics.get("mrr")),
                 "Faithfulness": fmt_score(faith_value) + method_suffix,

@@ -9,6 +9,9 @@
   `manual_test_checklist.md`)
 - `src/evaluation.py`, `benchmark_chunking.py`, `logs/benchmark/`,
   `outputs/evaluation_results.json`, `outputs/evaluation_summary.md`
+- `src/evaluate_classifier.py`, `src/analyze_ab.py`, `logs/classifier/` (P2.3/P4.3:
+  đo accuracy phân loại + phân tích A/B), `outputs/ab_results_*.json`,
+  `outputs/ab_comparison.md`, `outputs/figures/`
 - `tests/**` (kể cả `conftest.py`), `.pytest_cache/`
 - `.env`, `.env.example`, `requirements.txt`, `requirements-lock.txt`, `venv/`
 - `tmp/` cho bản nháp theo batch, slice khi merge, script sinh câu hỏi

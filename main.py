@@ -19,7 +19,13 @@ from dotenv import load_dotenv
 
 load_dotenv()  # Nạp .env (GEMINI_API_KEY, OLLAMA_HOST, CHROMA_PERSIST_DIR...)
 
-from src.generator import GeminiGenerator, GeneratorError, is_fallback_answer
+from src.generator import (
+    GeminiGenerator,
+    GeneratorError,
+    QwenGenerator,
+    _env_flag,
+    is_fallback_answer,
+)
 from src.local_slm import LocalSLM, LocalSLMError
 from src.pipeline import HybridRAGPipeline
 from src.vector_db import VectorStoreManager
@@ -66,8 +72,30 @@ def print_help() -> None:
     )
 
 
+def use_qwen_generator() -> bool:
+    """Cờ chế độ offline: USE_QWEN_GENERATOR=1 → Local Qwen làm generator thay Gemini."""
+    return _env_flag("USE_QWEN_GENERATOR", False)
+
+
+def build_generator(use_qwen: bool):
+    """Dựng generator theo cờ: Qwen local (offline, không tốn quota) hoặc Gemini API.
+
+    Cờ USE_QWEN_GENERATOR=1 (Bước 0 của P3.3 — trước đó main.py bỏ qua cờ này nên
+    mọi smoke đều tiêu quota Gemini thật). Cảnh báo in rõ ràng để người dùng
+    biết đang chạy chế độ offline với chất lượng thấp hơn bình thường.
+    """
+    if use_qwen:
+        generator = QwenGenerator()
+        print(
+            f"      CẢNH BÁO: USE_QWEN_GENERATOR=1 — chế độ OFFLINE, dùng '{generator.model_name}' "
+            "làm generator (không tốn quota Gemini, chất lượng câu trả lời thấp hơn bình thường)."
+        )
+        return generator
+    return GeminiGenerator()
+
+
 def build_pipeline(top_k: int) -> tuple[HybridRAGPipeline, int]:
-    """Khởi tạo VectorDB + LocalSLM + Gemini; trả về (pipeline, số chunk đã index)."""
+    """Khởi tạo VectorDB + LocalSLM + Generator; trả về (pipeline, số chunk đã index)."""
     print(LINE)
     print("KHỞI TẠO HỆ THỐNG HYBRID RAG (CHẾ ĐỘ SERVE)")
     print(LINE)
@@ -100,19 +128,22 @@ def build_pipeline(top_k: int) -> tuple[HybridRAGPipeline, int]:
     if not ok:
         print("      → Vẫn tiếp tục: mọi câu hỏi sẽ được dùng nguyên văn để truy xuất.")
 
-    # Bước 3: Gemini API — thiếu key hoặc sai model thì không thể chạy, phải dừng.
-    print("[3/3] Kết nối Gemini API...")
+    # Bước 3: Generator. Mặc định Gemini API; USE_QWEN_GENERATOR=1 → Qwen local (offline,
+    # không tốn quota — dùng cho smoke test thử nghiệm).
+    use_qwen = use_qwen_generator()
+    print(f"[3/3] Kết nối generator ({'Local Qwen — OFFLINE' if use_qwen else 'Gemini API'})...")
     try:
-        generator = GeminiGenerator()
+        generator = build_generator(use_qwen)
     except GeneratorError as exc:
-        raise SystemExit(f"Lỗi cấu hình Gemini: {exc}")
-    print(f"      OK: model '{generator.model_name}', temperature={generator.temperature}.")
+        engine = "Qwen local" if use_qwen else "Gemini"
+        raise SystemExit(f"Lỗi cấu hình generator ({engine}): {exc}")
+    print(f"      OK: model '{generator.model_name}', temperature={getattr(generator, 'temperature', '—')}.")
     print(LINE)
 
     return HybridRAGPipeline(local_slm=local_slm, vector_db=vector_db, generator=generator), indexed
 
 
-def print_result(result: dict, elapsed: float) -> None:
+def print_result(result: dict, elapsed: float, offline: bool = False) -> None:
     """In kết quả một lượt hỏi: câu gốc → câu chuẩn hóa → nguồn trích dẫn → trả lời."""
     sources = result.get("sources", [])
 
@@ -120,6 +151,24 @@ def print_result(result: dict, elapsed: float) -> None:
     print(f"[1] CÂU HỎI GỐC          : {result['raw_query']}")
     print(f"[2] CÂU HỎI CHUẨN HÓA    : {result['normalized_query']}")
     print(f"    (Local Qwen viết lại để tăng độ tương đồng vector khi truy xuất)")
+
+    labels = result.get("labels")
+    if labels:
+        # P3.5: mục "Phân loại & Cấu hình" — người dùng nhìn thấy tầng phân loại
+        # đang làm gì: nhãn được gán + cấu hình truy xuất + có tách truy vấn con.
+        cfg = result.get("retrieval_config") or {}
+        filter_txt = ",".join(cfg.get("source_filter") or []) or "không"
+        sub_queries = result.get("sub_queries") or []
+        sub_txt = f"CÓ ({len(sub_queries)} nhánh)" if sub_queries else "KHÔNG"
+        print("[2b] PHÂN LOẠI & CẤU HÌNH :")
+        print(f"     Chủ đề               : {labels.get('topic')}")
+        print(f"     Loại câu hỏi         : {labels.get('question_type')}")
+        print(f"     Cấu hình truy xuất   : top_k={cfg.get('top_k')} | bm25={cfg.get('bm25_weight')} "
+              f"chroma={cfg.get('chroma_weight')} | lọc nguồn: {filter_txt}")
+        print(f"     Tách truy vấn con    : {sub_txt}")
+        if sub_queries:
+            joined = " | ".join(f"({i}) {q}" for i, q in enumerate(sub_queries, start=1))
+            print(f"     Danh sách            : {joined}")
 
     print(f"[3] NGUỒN TRÍCH DẪN      : {len(sources)} chunk từ ChromaDB")
     if not sources:
@@ -129,7 +178,10 @@ def print_result(result: dict, elapsed: float) -> None:
               f"(chunk_id={src['chunk_id']}, {src['chars']:,} ký tự)")
         print(f"         \"{src['preview']}\"")
 
-    engine_label = "Local Qwen — FALLBACK" if is_fallback_answer(result["answer"]) else "Gemini"
+    if offline:
+        engine_label = "Local Qwen — OFFLINE"
+    else:
+        engine_label = "Local Qwen — FALLBACK" if is_fallback_answer(result["answer"]) else "Gemini"
     print(f"[4] CÂU TRẢ LỜI ({engine_label}) :")
     print(THIN)
     print(result["answer"])
@@ -141,7 +193,8 @@ def print_result(result: dict, elapsed: float) -> None:
 def ask_once(pipeline: HybridRAGPipeline, question: str, top_k: int) -> bool:
     """Chạy một câu hỏi; trả về False nếu người dùng bấm Ctrl+C giữa chừng."""
     started = time.perf_counter()
-    print(f"\nĐang xử lý: chuẩn hóa (Qwen) → truy xuất Top-{top_k} (bge-m3) → sinh câu trả lời (Gemini)...")
+    engine = getattr(pipeline.generator, "model_name", "Gemini")
+    print(f"\nĐang xử lý: chuẩn hóa (Qwen) → truy xuất Top-{top_k} (bge-m3) → sinh câu trả lời ({engine})...")
     try:
         result = pipeline.run(question, top_k=top_k)
     except KeyboardInterrupt:
@@ -160,7 +213,7 @@ def ask_once(pipeline: HybridRAGPipeline, question: str, top_k: int) -> bool:
         print(f"\n[LỖI KHÔNG MONG ĐỢI] {type(exc).__name__}: {exc}")
         return True
 
-    print_result(result, time.perf_counter() - started)
+    print_result(result, time.perf_counter() - started, offline=use_qwen_generator())
     return True
 
 

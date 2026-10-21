@@ -31,7 +31,7 @@ Hệ thống Hybrid RAG (Retrieval-Augmented Generation) được thiết kế �
 - **Expansion**: Từ điển đồng nghĩa pháp lý mở rộng từ khóa để tăng Recall
 
 ### 1.4 Đánh giá định lượng (Benchmark)
-- **Dataset**: 15 câu hỏi benchmark trong `data/evaluation/benchmark_questions.json`
+- **Dataset**: 100 câu hỏi benchmark v3 trong `data/evaluation/benchmark_100_questions_v3.json` (kèm nhãn chủ đề + question_type chuẩn — ground truth của tầng phân loại)
 - **Metrics**: Hit@K, MRR, Citation Precision/Recall/F1, Faithfulness
 
 ### 1.5 Bộ đệm (Response Cache) & Chuyển đổi dự phòng (Auto-Fallback)
@@ -340,12 +340,27 @@ END IF
 
 ---
 
-## 5. Luồng dữ liệu end-to-end
+## 5. Luồng dữ liệu end-to-end (6 tầng)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                     CÂU HỎI SINH VIÊN                         │
 │          "Bị điểm yếu có bị đuổi học không ad?"                 │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│      LAYER 0: PHÂN LOẠI CÂU HỎI + ROUTER (Qwen local)          │
+│  - src/classifier.py: gán 2 nhãn cho câu hỏi THÔ:              │
+│      topic = "đánh giá rèn luyện" (1/14 chủ đề)                │
+│      question_type = "TRA_CUU" (1/4 loại)                      │
+│  - src/router.py: nhãn → cấu hình truy xuất theo lớp           │
+│      TRA_CUU giữ base; SO_SANH top_k+2 + tách truy vấn con;    │
+│      THU_TUC BM25 0.6/Chroma 0.4; topic → lọc nguồn (nếu đủ    │
+│      bằng chứng: "đánh giá rèn luyện" → 1059-qd-dhag-…pdf)     │
+│  - Guardrail 3 lớp, suy giảm mềm: mọi lỗi → cấu hình gốc       │
+│  - TẮT bằng ENABLE_CLASSIFIER=0 → pipeline chạy y hệt 5 tầng   │
+│    còn lại (hành vi cũ giữ nguyên từng bước)                    │
 └────────────────────────┬────────────────────────────────────────┘
                          │
                          ▼
@@ -368,19 +383,39 @@ END IF
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│         LAYER 3: TRUE HYBRID SEARCH (BM25 + ChromaDB)          │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  BM25 Retriever:  Tìm kiếm từ khóa chính xác           │   │
-│  │  ChromaDB Retriever: Tìm kiếm ngữ nghĩa (BGE-M3)       │   │
-│  │  EnsembleRetriever: RRF dung hợp thứ hạng              │   │
-│  └─────────────────────────────────────────────────────────┘   │
+│   LAYER 3: TÁCH TRUY VẤN CON (chỉ câu SO_SANH — P3.3)          │
+│  - src/retrieval.py: split_comparison_query() tách câu so       │
+│    sánh thành 2–3 mệnh đề con độc lập (Qwen local)              │
+│  - Guardrail chống tách dở: số dòng ngoài 2–3, truy vấn con     │
+│    >200 ký tự, cặp trùng >80% token → lùi về đường đơn          │
+│  - Câu TRA_CUU/THU_TUC/NGOAI_PHAM_VI đi thẳng qua tầng này      │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│   LAYER 4: TRUE HYBRID SEARCH (tham số THEO ROUTER)            │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │  BM25 Retriever:  Tìm kiếm từ khóa chính xác           │   │
+│   │  ChromaDB Retriever: Tìm kiếm ngữ nghĩa (BGE-M3)       │   │
+│   │  EnsembleRetriever: RRF dung hợp thứ hạng              │   │
+│   └─────────────────────────────────────────────────────────┘   │
+│  - Tham số từng lượt hỏi do LAYER 0 quyết định: top_k           │
+│    (SO_SANH +2), trọng số BM25/Chroma (THU_TUC 0.6/0.4),        │
+│    lọc nguồn theo chủ đề (src/router.py)                        │
+│  - Đường đa nhánh: truy xuất TỪNG truy vấn con rồi gộp          │
+│    (dedup theo chunk_id, giữ rank tốt nhất)                     │
 │  - Output: Top-K chunks với metadata (source, tier, chunk_id) │
 └────────────────────────┬────────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│          LAYER 4: GENERATOR (Gemini API)                        │
+│   LAYER 5: GENERATOR (prompt THEO LOẠI CÂU HỎI)                 │
 │  - Build prompt: Ngữ cảnh + Câu hỏi + Quy tắc trích dẫn      │
+│  - Biến thể định dạng theo question_type (P3.4):                │
+│      SO_SANH → bảng so sánh theo tiêu chí, mỗi ô có trích dẫn   │
+│      THU_TUC → các bước đánh số, mỗi bước kèm căn cứ            │
+│      NGOAI_PHAM_VI → thêm dòng từ chối chuẩn (KHÔNG skip        │
+│        truy xuất — tránh từ chối oan khi nhãn sai)              │
 │  - System Instruction: Chống ảo giác, bắt buộc trích dẫn      │
 │  - Soft Refusal: Từ chối nếu không đủ căn cứ                 │
 │  - Output: Câu trả lời với trích dẫn (Điều X, Khoản Y)       │
@@ -398,9 +433,128 @@ END IF
 
 ---
 
-## 6. Response Caching
+## 6. Phân loại câu hỏi & Truy xuất theo lớp (P3.1–P3.4)
 
-### 6.1 Cache Key Design
+### 6.1 Classifier hai nhãn — `src/classifier.py`
+
+**Vai trò**: gán cho câu hỏi THÔ hai nhãn trước khi hệ thống chạm vào bất kỳ tầng
+truy xuất nào — `topic` (1 trong 14 chủ đề của TAXONOMY.md, hoặc `null` nếu
+không thuộc nhóm nào) và `question_type` (1 trong 4 nhãn `TRA_CUU` / `SO_SANH`
+/ `THU_TUC` / `NGOAI_PHAM_VI`).
+
+**Mô hình & prompt**:
+- Qwen2.5-1.5B-Instruct qua Ollama — không dùng Gemini, **không tốn quota**;
+  `temperature=0.0`, tối đa 160 token output, timeout `CLASSIFIER_TIMEOUT`
+  (mặc định 20 giây).
+- Prompt few-shot **cố định 16 ví dụ** chọn trước từ benchmark v3 (đủ 14 chủ
+  đề; mỗi loại hiếm SO_SANH / THU_TUC / NGOAI_PHAM_VI có 3 ví dụ) — mỗi ví dụ
+  kèm dòng "Dấu hiệu" để model bám quy tắc thay vì nhại đáp án; khối quy tắc
+  được nhắc lại NGAY TRƯỚC câu hỏi (tránh Qwen nhỏ trôi về nhãn TRA_CUU).
+- few-shot đóng băng làm v1 — không tinh chỉnh thêm trên chính bộ 100 câu đo
+  (tránh overfit).
+
+**Guardrail 3 lớp (suy giảm mềm — pipeline không bao giờ chết vì classifier)**:
+
+```
+Lớp 1: Qwen trả JSON hợp lệ + nhãn chuẩn → dùng luôn
+       (topic chuẩn hóa không dấu qua fold(), chịu khác biệt dấu/hoa-thường)
+Lớp 2: JSON lỗi hoặc nhãn lạ → bổ sung phần nhãn hỏng bằng bảng từ khóa
+       (dấu hiệu theo TAXONOMY.md; từ khóa neo đặc thù xét TRƯỚC từ khóa chung)
+Lớp 3: từ khóa cũng không khớp → topic=None, question_type="TRA_CUU"
+       (router hiểu topic=None là không lọc, dùng cấu hình chung)
+```
+
+Ollama chết / timeout → trả thẳng kết quả lớp 3 kèm log cảnh báo, **không ném
+ngoại lệ** ra pipeline.
+
+**Độ chính xác đo được (benchmark 100 câu v3, P2.3 — GATE đạt)**: topic ~85%,
+question_type ~81%, recall lớp hiếm 100%; điểm yếu đã biết: over-predict lớp
+hiếm, biên mơ giữa TTTN-vs-CTĐT và SV Giỏi-vs-SV5T.
+
+---
+
+### 6.2 Router truy xuất theo lớp — `src/router.py`
+
+**Nguyên tắc thiết kế**: *mặc định = cấu hình hiện tại của hệ thống* (top_k từ
+`RAG_TOP_K`, BM25 0.5 / Chroma 0.5, không lọc nguồn). Nhãn chỉ **điều chỉnh**,
+không đổi bản chất pipeline:
+- Không có nhãn (classifier tắt / lỗi / câu tự do) → trả nguyên cấu hình nền.
+- Không bao giờ giảm top_k dưới giá trị gốc; không bao giờ trả trọng số tổng ≤ 0.
+- `get_retrieval_config(labels, base)` là hàm thuần (không I/O, không gọi model).
+
+**Bảng điều chỉnh theo `question_type`** (dataclass `RetrievalConfig`: top_k,
+bm25_weight, chroma_weight, source_filter, enable_subquery):
+
+| Loại | Điều chỉnh | Lý do |
+|------|-----------|-------|
+| `TRA_CUU` | giữ nguyên base | câu tra cứu đơn — cấu hình chung đã tối |
+| `SO_SANH` | top_k + 2, bật `enable_subquery` | cần cửa sổ rộng để đối chiếu nhiều phía |
+| `THU_TUC` | BM25 0.6 / Chroma 0.4 | thủ tục hay dùng từ khóa hành chính (giả thuyết, hiệu chỉnh theo A/B) |
+| `NGOAI_PHAM_VI` | giữ nguyên base — **KHÔNG skip truy xuất** | precision nhãn này chỉ ~25%: skip truy xuất = từ chối oan câu đúng; nhắc từ chối nằm ở tầng generator |
+
+**Bảng `TOPIC_SOURCE_FILTER`** (chủ đề → file nguồn được lọc qua metadata
+`source` của ChromaDB): chỉ chủ đề có **≥ 5 câu** trong benchmark v3 VÀ
+**≥ 80%** số câu in-corpus nằm gọn trong **≤ 2 nguồn** mới được lọc (thiết kế
+phòng thủ — lọc hẹp làm rơi căn cứ nằm ở văn bản phụ). Đủ ngưỡng: 8 chủ đề;
+6 chủ đề còn lại (n = 1–3 câu) cố ý KHÔNG có filter, suy giảm về cấu hình chung.
+
+---
+
+### 6.3 Tách truy vấn con cho SO_SANH — `split_comparison_query()` trong `src/retrieval.py`
+
+**Điều kiện kích hoạt** (pipeline P3.3): router bật `enable_subquery` VÀ nhãn
+`question_type = SO_SANH`. Tách thực hiện trên câu **đã chuẩn hóa nhưng chưa
+mở rộng từ đồng nghĩa** — cụm đồng nghĩa ghép ở cuối chuỗi làm Qwen 1.5B nhại
+lại (parrot/echo) thay vì tách.
+
+**Cách tách**: Qwen local tách câu so sánh / tổng hợp thành **2–3 mệnh đề con
+độc lập** (mỗi mệnh đề hỏi đúng một vế; giữ nguyên thực thể số, mã, tên văn
+bản; few-shot 2 ví dụ cố định). Mỗi truy vấn con được mở rộng từ đồng nghĩa
+riêng rồi truy xuất độc lập (cùng retrieve_k như đường đơn), sau đó gộp bằng
+dedup theo chunk_id + giữ rank tốt nhất.
+
+**Guardrail chống tách dở — mọi vi phạm đều lùi về `[query]` (đường đơn)**:
+
+```
+(1) số dòng ngoài khoảng 2–3                          → không tách
+(2) truy vấn con dài > 200 ký tự (nghi model trả lời   → không tách
+    thay vì tách)
+(3) cặp truy vấn con trùng nhau quá 80% token          → không tách
+    (Jaccard token phi-số; cặp chỉ KHÁC THỰC THỂ SỐ
+    như "ELO 6 / ELO 7 / ELO 8" được GIỮ — đúng mục
+    tiêu mở độ phủ của dạng SO_SANH)
+```
+
+Tách dở lỡ lọt vẫn an toàn: tầng gộp đảm bảo ngữ cảnh không tệ hơn đường đơn —
+câu TRA_CUU bị gán nhầm SO_SANH vì thế luôn chạy đúng như cũ.
+
+---
+
+### 6.4 Sinh trả lời theo loại câu hỏi — `src/generator.py`
+
+`select_prompt_rules(question_type)` chọn biến thể khối quy tắc — **thiết kế
+cache-an toàn**: biến thể chỉ NỐI THÊM vào đuôi `PROMPT_RULES` gốc, đường
+`None`/`TRA_CUU` dùng nguyên văn gốc nên prompt xuất ra giống hệt từng ký tự
+hành vi cũ (cache cũ vẫn trúng, không cần bump `PROMPT_VERSION`):
+
+| question_type | Biến thể prompt |
+|---------------|-----------------|
+| `SO_SANH` | bảng so sánh theo tiêu chí; mỗi ô có trích dẫn riêng; không trộn số liệu giữa các vế; thiếu căn cứ một vế → nêu rõ, không bịa |
+| `THU_TUC` | các bước đánh số theo thứ tự; mỗi bước kèm căn cứ (Điều/Khoản — file); hồ sơ kèm theo liệt kê từng dòng |
+| `NGOAI_PHAM_VI` | thêm 1 dòng: ngữ cảnh không chứa thông tin liên quan → trả lời đúng một câu từ chối chuẩn |
+| `None` / `TRA_CUU` / nhãn lạ | `PROMPT_RULES` gốc |
+
+**`NGOAI_PHAM_VI` không skip truy xuất**: skip-early chỉ là thí nghiệm tùy chọn
+(chỉ cân nhắc khi nhãn đủ tin cậy). Hiện trạng: vẫn truy xuất đầy đủ; tầng
+generator chèn nhắc từ chối chuẩn, và `canonicalize_refusal()` chuẩn hóa câu
+tự từ chối về ĐÚNG chuỗi `REFUSAL_TEXT` (câu trả lời có căn cứ giữ nguyên từng
+ký tự — nhãn sai thì câu trả lời đúng không bị mất). Áp cho cả Gemini lẫn Qwen.
+
+---
+
+## 7. Response Caching
+
+### 7.1 Cache Key Design
 
 ```
 cache_key = SHA-1({
@@ -416,7 +570,7 @@ cache_key = SHA-1({
 - PROMPT_VERSION được bump khi sửa SYSTEM_INSTRUCTION hoặc PROMPT_RULES
 - Đảm bảo cache cũ không chứa câu trả lời từ prompt cũ
 
-### 6.2 Cache Storage
+### 7.2 Cache Storage
 
 - **Đường dẫn**: `./.generation_cache/{cache_key}.json`
 - **Format JSON**:
@@ -431,7 +585,7 @@ cache_key = SHA-1({
 }
 ```
 
-### 6.3 Cache Behavior
+### 7.3 Cache Behavior
 
 - **Chỉ cache câu trả lời từ Gemini** (không cache câu fallback Qwen)
 - **Trúng cache**: Không gọi API, trả lời ngay → tiết kiệm quota
@@ -441,7 +595,7 @@ cache_key = SHA-1({
 
 ---
 
-## 7. Cấu trúc thư mục dự án
+## 8. Cấu trúc thư mục dự án
 
 ```
 hybrid_rag_agu/
@@ -451,10 +605,12 @@ hybrid_rag_agu/
 │   │   ├── Tầng 2/          # Thông báo, kế hoạch
 │   │   └── cac_file_bo_xung_khac/
 │   └── evaluation/
-│       └── benchmark_questions.json  # 15 câu benchmark
+│       └── benchmark_100_questions_v3.json  # 100 câu benchmark v3 (có nhãn question_type)
 ├── src/
 │   ├── query_normalizer.py  # Chuẩn hóa câu hỏi (Qwen)
-│   ├── retrieval.py         # Query expansion, từ điển đồng nghĩa
+│   ├── classifier.py        # Phân loại câu hỏi 2 nhãn (chủ đề + loại, Qwen local)
+│   ├── router.py            # Nhãn phân loại → cấu hình truy xuất theo lớp
+│   ├── retrieval.py         # Query expansion, từ điển đồng nghĩa, tách truy vấn con
 │   ├── generator.py         # Generator (Gemini) + Fallback (Qwen)
 │   ├── pipeline.py          # Điều phối luồng Hybrid RAG
 │   ├── evaluation.py        # Đánh giá định lượng
@@ -481,7 +637,7 @@ hybrid_rag_agu/
 
 ---
 
-## 8. Cấu hình môi trường
+## 9. Cấu hình môi trường
 
 ### Biến môi trường quan trọng
 
@@ -499,10 +655,13 @@ hybrid_rag_agu/
 | `GENERATION_CACHE` | `1` | Bật/tắt Response Cache |
 | `QWEN_FALLBACK` | `1` | Bật/tắt Fallback sang Qwen khi Gemini lỗi |
 | `USE_QWEN_GENERATOR` | `0` | Dùng Qwen làm generator chính (offline) |
+| `ENABLE_CLASSIFIER` | `0` | Bật/tắt tầng phân loại câu hỏi + router truy xuất theo lớp (mục 6) |
+| `CLASSIFIER_MODEL` | (OLLAMA_MODEL) | Model Qwen riêng cho classifier (để trống dùng chung OLLAMA_MODEL) |
+| `CLASSIFIER_TIMEOUT` | `20` | Thời gian chờ tối đa mỗi lần gọi classifier (giây) — quá hạn suy giảm mềm về lớp 3 |
 
 ---
 
-## 9. Tham khảo
+## 10. Tham khảo
 
 ### Papers & Algorithms
 - **BM25**: Robertson, S., & Zaragoza, H. (2009). The Probabilistic Relevance Framework: BM25 and Beyond.
@@ -519,8 +678,9 @@ hybrid_rag_agu/
 
 ---
 
-## 10. Phiên bản & Lịch sử
+## 11. Phiên bản & Lịch sử
 
 | Phiên bản | Ngày | Thay đổi chính |
 |----------|------|---------------|
 | 1.0 | 2026-10-12 | Bản kiến trúc đầu tiên - Hybrid RAG với BM25 + BGE-M3 + RRF |
+| 2.0 | 2026-10-21 | Luồng 4 tầng → 6 tầng: thêm tầng phân loại câu hỏi + router truy xuất theo lớp, tách truy vấn con cho SO_SANH, prompt biến thể theo loại câu hỏi |

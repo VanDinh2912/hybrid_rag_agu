@@ -2,9 +2,12 @@
 
 Trách nhiệm:
 - Khởi tạo Google Generative AI client từ API key trong biến môi trường.
-- `generate_answer(query, retrieved_docs)`: nhận câu hỏi đã chuẩn hóa cùng danh
-  sách chunk truy xuất được từ ChromaDB (nội dung + tên văn bản + tier), dựng
-  prompt nghiêm ngặt và trả về câu trả lời có trích dẫn Điều/Khoản.
+- `generate_answer(query, retrieved_docs, question_type=None)`: nhận câu hỏi đã
+  chuẩn hóa cùng danh sách chunk truy xuất được từ ChromaDB (nội dung + tên văn
+  bản + tier), dựng prompt nghiêm ngặt và trả về câu trả lời có trích dẫn
+  Điều/Khoản. `question_type` (P3.4) chọn biến thể định dạng: SO_SANH → bảng so
+  sánh, THU_TUC → bước đánh số, NGOAI_PHAM_VI → thêm dòng từ chối chuẩn; None →
+  prompt gốc không đổi một ký tự (cache cũ vẫn trúng).
 
 Chống ảo giác (anti-hallucination): prompt cấm dùng kiến thức ngoài ngữ cảnh,
 bắt buộc nêu căn cứ pháp lý cho từng ý, và khi không đủ căn cứ thì phải từ chối
@@ -35,6 +38,8 @@ from typing import Any, Optional
 import google.generativeai as genai
 import ollama
 
+from src.text_utils import fold
+
 DEFAULT_MODEL = "gemini-2.5-flash"
 DEFAULT_TEMPERATURE = 0.0
 # gemini-2.5-flash là model "thinking": số token suy luận nội bộ bị trừ VÀO CÙNG
@@ -48,7 +53,7 @@ REFUSAL_MARKER = "không đủ thông tin"
 
 # Phiên bản prompt: đưa vào cache key để mọi thay đổi SYSTEM_INSTRUCTION/PROMPT_RULES
 # (nằm NGOÀI chuỗi prompt truyền vào) đều tự làm cache cũ vô hiệu — bump khi sửa prompt.
-PROMPT_VERSION = "v1.3"  # Bump để vô hiệu hóa cache cũ sau khi cải thiện inject_citations
+PROMPT_VERSION = "v1.3"  # P3.4b: cache vẫn lưu text CHƯA inject; inject thành hậu xử lý dùng chung HIT/MISS — entry cũ vẫn hợp lệ, KHÔNG bump.
 
 # --- Response caching: lưu câu trả lời đã sinh vào ./.generation_cache/ ---
 # Key là SHA-1 của {model, temperature, prompt_version, prompt} nên corpus re-ingest,
@@ -63,6 +68,26 @@ DEFAULT_OLLAMA_TIMEOUT = 90.0
 
 # Dấu hiệu lỗi hết quota (429 / ResourceExhausted) — dùng để chọn nhãn cảnh báo.
 QUOTA_MARKERS = ("429", "resource_exhausted", "resource exhausted", "too many requests", "quota")
+
+# Bước 0 P4.2 (mục 1): 429 theo PHÚT là lỗi tạm thời — chờ 60s rồi thử lại ĐÚNG câu đó,
+# tối đa 3 lần, KHÔNG đánh dấu câu là error (đánh mất câu khỏi A/B). Riêng 429 PerDay
+# (hết quota ngày) thì không chờ — tầng evaluation nhận marker để dừng cả lượt, giữ phần đã chạy.
+MINUTE_429_WAIT_SECONDS = 60
+MINUTE_429_MAX_RETRIES = 3
+
+
+def quota_error_kind(message: str) -> Optional[str]:
+    """Phân loại lỗi quota từ thông báo API: 'perday' | 'minute' | None.
+
+    Ưu tiên nhận diện PerDay TRƯỚC (thông điệp Gemini chứa 'PerDay'/'per day' trong
+    chi tiết vi hạn mức), còn lại mọi 429/quota/perminute coi như giới hạn theo phút.
+    """
+    m = str(message).lower()
+    if "perday" in m or "per day" in m:
+        return "perday"
+    if "perminute" in m or "per minute" in m or any(marker in m for marker in QUOTA_MARKERS):
+        return "minute"
+    return None
 
 FALLBACK_NOTICE_PREFIX = "[Cảnh báo:"
 QWEN_FALLBACK_NOTICE = (
@@ -161,6 +186,94 @@ Sinh viên phải hoàn thành học phí trước ngày 15 của tháng đầu 
 ❌ TRẢ LỜI SAI (tuyệt đối không làm như này):
 "Sinh viên phải đóng học phí trước ngày 15 tháng đầu." (← thiếu tên file nguồn)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+
+# --- Biến thể prompt theo question_type (P3.4) --------------------------------
+# Thiết kế cache-an toàn: biến thể chỉ NỐI THÊM vào đuôi PROMPT_RULES gốc, còn
+# đường question_type=None dùng nguyên PROMPT_RULES → prompt xuất ra GIỐNG HỆT
+# TỪNG KÝ TỰ hành vi cũ, nên key cache cũ vẫn hợp lệ (không cần bump PROMPT_VERSION
+# và không cần xóa .generation_cache/). Biến thể đổi NỘI DUNG prompt → SHA-1 tự
+# khác → cache tự tách nhánh cho từng loại câu.
+#
+# NGOAI_PHAM_VI — KHÔNG skip truy xuất (skip-early là thí nghiệm tùy chọn ở P4,
+# chỉ cân nhắc bật khi nhãn đủ tin cậy): nhãn sai mà skip là từ chối oan câu
+# đúng. Ở đây chỉ chèn thêm 1 dòng nhắc từ chối chuẩn; Soft Refusal hiện có
+# (từ chối khi ngữ cảnh rỗng/không liên quan) lo phần còn lại.
+
+_SO_SANH_APPENDIX = """ĐỊNH DẠNG RIÊNG CHO CÂU SO SÁNH — câu hỏi này yêu cầu so sánh/tổng hợp nhiều điểm:
+• Trình bày kết quả dưới dạng BẢNG so sánh: mỗi hàng là một TIÊU CHÍ, các cột là các vế cần so sánh.
+• Mỗi Ô của bảng PHẢI có trích dẫn riêng theo mẫu (Điều [X], Khoản [Y] — [Tên_file_nguồn.pdf]),
+  hoặc (Tên_file_nguồn.pdf) nếu ngữ cảnh không đánh số Điều/Khoản.
+• Ghi rõ NGUỒN của từng vế: nếu các vế đến từ hai văn bản khác nhau thì phải nêu tên file của
+  từng vế, tuyệt đối không trộn lẫn số liệu giữa các vế.
+• Nếu ngữ cảnh chỉ đủ căn cứ cho một vế: trả lời vế đó và nêu rõ vế còn lại không có căn cứ,
+  KHÔNG bịa thay."""
+
+_THU_TUC_APPENDIX = """ĐỊNH DẠNG RIÊNG CHO CÂU THỦ TỤC — câu hỏi này yêu cầu quy trình/hồ sơ:
+• Trình bày các BƯỚC ĐÁNH SỐ theo thứ tự thời gian (Bước 1, Bước 2, ...).
+• Mỗi bước PHẢI kèm căn cứ ngay trong bước theo mẫu (Điều [X], Khoản [Y] — [Tên_file_nguồn.pdf]),
+  hoặc (Tên_file_nguồn.pdf) nếu ngữ cảnh không đánh số Điều/Khoản.
+• Nếu thủ tục có hồ sơ/giấy tờ kèm theo, liệt kê ngay sau các bước, mỗi loại một dòng có căn cứ.
+• Bước nào ngữ cảnh không đủ căn cứ thì KHÔNG bịa — nêu rõ thiếu căn cứ cho bước đó."""
+
+NGOAI_PHAM_VI_EXTRA_LINE = (
+    "Nếu ngữ cảnh không chứa thông tin liên quan đến câu hỏi, trả lời đúng một câu từ chối chuẩn."
+)
+
+PROMPT_RULES_SO_SANH = PROMPT_RULES + "\n\n" + _SO_SANH_APPENDIX
+PROMPT_RULES_THU_TUC = PROMPT_RULES + "\n\n" + _THU_TUC_APPENDIX
+PROMPT_RULES_NGOAI_PHAM_VI = PROMPT_RULES + "\n\n" + NGOAI_PHAM_VI_EXTRA_LINE
+
+
+def canonicalize_refusal(answer: str, question_type: Optional[str]) -> str:
+    """P3.4 — câu NGOAI_PHAM_VI có cơ chế từ chối "chắc hơn" nhưng KHÔNG từ chối oan.
+
+    Nếu model TỰ chọn từ chối (câu trả lời chứa dấu hiệu REFUSAL_MARKER, ví dụ
+    kèm rác phía sau hay thêm câu giải thích) thì chuẩn hóa về ĐÚNG chuỗi
+    REFUSAL_TEXT để tầng evaluation đối sánh chắc chắn theo hằng số. Model trả
+    lời có căn cứ (không chứa marker) → giữ nguyên từng ký tự — nhãn sai thì
+    câu trả lời đúng vẫn không bị mất. Áp cho cả Gemini lẫn Qwen; cache lưu
+    dạng đã chuẩn hóa nên lượt sau trả lại đúng chuỗi.
+    """
+    if answer and question_type and fold(str(question_type)).strip().lower() == "ngoai_pham_vi":
+        if REFUSAL_MARKER in answer:
+            return REFUSAL_TEXT
+    return answer
+
+
+def is_canonical_refusal_answer(text: str, question_type: Optional[str]) -> bool:
+    """P3.4b — text có phải câu từ chối chuẩn của NGOAI_PHAM_VI hay không.
+
+    Dùng chung cho nhánh MISS (sau canonicalize_refusal) và nhánh HIT (text đọc
+    từ cache) để quyết định có inject trích dẫn hay không: câu từ chối chuẩn
+    giữ nguyên vẹn, không bị gắn trích dẫn vào cuối.
+    """
+    return (
+        text == REFUSAL_TEXT
+        and bool(question_type)
+        and fold(str(question_type)).strip().lower() == "ngoai_pham_vi"
+    )
+
+
+def select_prompt_rules(question_type: Optional[str]) -> str:
+    """Chọn khối quy tắc prompt theo question_type (P3.4).
+
+    - None / TRA_CUU / nhãn lạ → PROMPT_RULES gốc (giữ nguyên hành vi cũ, cache cũ
+      vẫn trúng vì prompt không đổi một ký tự).
+    - SO_SANH → PROMPT_RULES_SO_SANH (bảng so sánh theo tiêu chí, mỗi ô có trích dẫn).
+    - THU_TUC → PROMPT_RULES_THU_TUC (các bước đánh số, mỗi bước kèm căn cứ).
+    - NGOAI_PHAM_VI → PROMPT_RULES + 1 dòng từ chối chuẩn (KHÔNG skip truy xuất —
+      xem ghi chú thiết kế ở khối comment phía trên).
+    So khớp nhãn sau khi fold (bỏ dấu) nên "so_sanh"/"SO_SANH"/"So_Sanh" như nhau.
+    """
+    if question_type:
+        key = fold(str(question_type)).strip().lower()
+        if key == "so_sanh":
+            return PROMPT_RULES_SO_SANH
+        if key == "thu_tuc":
+            return PROMPT_RULES_THU_TUC
+        if key == "ngoai_pham_vi":
+            return PROMPT_RULES_NGOAI_PHAM_VI
+    return PROMPT_RULES
 
 # Lỗi nên thử lại: giới hạn tần suất (429) và lỗi phía server Google.
 RETRYABLE_MARKERS = (
@@ -362,8 +475,13 @@ def inject_citations_from_metadata(answer: str, retrieved_chunks: list) -> str:
     return answer
 
 
-def build_prompt(query: str, docs: list[dict]) -> str:
-    """Dựng prompt grounded: mỗi chunk kèm số thứ tự, tên văn bản và tier."""
+def build_prompt(query: str, docs: list[dict], question_type: Optional[str] = None) -> str:
+    """Dựng prompt grounded: mỗi chunk kèm số thứ tự, tên văn bản và tier.
+
+    question_type (P3.4): None → khối quy tắc PROMPT_RULES gốc, prompt GIỐNG HỆT
+    từng ký tự hành vi cũ (cache cũ còn dùng được); SO_SANH/THU_TUC/NGOAI_PHAM_VI
+    → biến thể tương ứng (nội dung khác → cache tự tách key).
+    """
     blocks = []
     for i, doc in enumerate(docs, start=1):
         blocks.append(
@@ -371,10 +489,11 @@ def build_prompt(query: str, docs: list[dict]) -> str:
             f"{doc['content']}"
         )
     context_block = "\n\n".join(blocks)
+    rules = select_prompt_rules(question_type)
     return (
         f"NGỮ CẢNH TRUY XUẤT TỪ VECTOR DB ({len(docs)} đoạn):\n{context_block}\n\n"
         f"CÂU HỎI CỦA SINH VIÊN: {query}\n\n"
-        f"{PROMPT_RULES.format(refusal=REFUSAL_TEXT)}\n\n"
+        f"{rules.format(refusal=REFUSAL_TEXT)}\n\n"
         "TRẢ LỜI:"
     )
 
@@ -447,27 +566,42 @@ class GeminiGenerator:
             )
 
     def _call_api(self, prompt: str, temperature: float) -> str:
-        """Gọi Gemini kèm retry cho lỗi 429/5xx; ném GeneratorError khi thất bại hẳn."""
+        """Gọi Gemini kèm retry: lỗi tạm thời 2s/4s, 429 THEO PHÚT chờ 60s (tối đa 3 lần,
+        không tính vào hạn retry thường vì là lỗi tạm thời riêng), 429 PerDay dừng ngay."""
         generation_config = {
             "temperature": temperature,
             "max_output_tokens": self.max_output_tokens,
         }
         last_error: Optional[Exception] = None
-        for attempt in range(self.max_retries + 1):
+        attempt = 0        # đếm retry lỗi tạm thời thường (5xx, timeout...)
+        minute_retries = 0  # đếm retry riêng cho 429 theo phút (Bước 0 P4.2)
+        while attempt <= self.max_retries:
             try:
                 response = self.model.generate_content(prompt, generation_config=generation_config)
             except Exception as exc:
                 last_error = exc
-                message = str(exc).lower()
-                # Hết quota NGÀY ("PerDay") thì retry sau 2s/4s vô ích — break ngay,
-                # tầng đánh giá sẽ nhận diện "perday" để dừng sớm cả lượt chạy.
-                if "perday" in message:
+                kind = quota_error_kind(str(exc))
+                # Hết quota NGÀY thì chờ 60s hay 2s/4s đều vô ích — break ngay,
+                # tầng đánh giá nhận marker "PerDay" để dừng sớm cả lượt, giữ phần đã chạy.
+                if kind == "perday":
                     break
+                if kind == "minute":
+                    # Bước 0 P4.2: lỗi PHÚT là tạm thời — chờ 60s rồi thử lại ĐÚNG câu này,
+                    # tối đa 3 lần, không đốt hạn retry thường và không đánh mất câu.
+                    if minute_retries < MINUTE_429_MAX_RETRIES:
+                        minute_retries += 1
+                        print(f"[Gemini] 429 theo phút — chờ {MINUTE_429_WAIT_SECONDS}s rồi thử lại đúng câu này "
+                              f"(lần {minute_retries}/{MINUTE_429_MAX_RETRIES}).")
+                        time.sleep(MINUTE_429_WAIT_SECONDS)
+                        continue
+                    break
+                message = str(exc).lower()
                 retryable = any(marker in message for marker in RETRYABLE_MARKERS)
                 if not retryable or attempt == self.max_retries:
                     break
-                wait = 2 ** (attempt + 1)
-                print(f"[Gemini] Lỗi tạm thời ({type(exc).__name__}), thử lại sau {wait}s — lần {attempt + 1}/{self.max_retries}.")
+                attempt += 1
+                wait = 2 ** attempt
+                print(f"[Gemini] Lỗi tạm thời ({type(exc).__name__}), thử lại sau {wait}s — lần {attempt}/{self.max_retries}.")
                 time.sleep(wait)
                 continue
 
@@ -496,6 +630,13 @@ class GeminiGenerator:
             hint = f" Model '{self.model_name}' có thể đã bị khai tử — đổi GEMINI_MODEL trong .env."
         elif any(marker in reason.lower() for marker in ("429", "resource_exhausted", "quota")):
             hint = " Đã hết quota Gemini — chờ reset hoặc dùng key khác."
+        # Bước 0 P4.2: marker "PerDay" tường minh để tầng evaluation dừng cả lượt
+        # (vẫn giữ chuỗi "perday" thường để kiểm tra cũ "perday in message" hoạt động).
+        if quota_error_kind(reason) == "perday":
+            raise GeneratorError(
+                f"429 PerDay — hết quota NGÀY của Gemini: {reason}. Chờ reset (~14:00 VN = 07:00 UTC, "
+                "midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu."
+            )
         raise GeneratorError(f"Gọi Gemini API thất bại: {reason}.{hint}")
 
     # ------------------------------------------------- Response caching (Giải pháp 2) ---
@@ -617,14 +758,23 @@ class GeminiGenerator:
         notice = QWEN_FALLBACK_NOTICE.format(reason=reason, model=self.ollama_model)
         return f"{notice}\n\n{text}"
 
-    def generate_answer(self, query: str, retrieved_docs: list, temperature: Optional[float] = None) -> str:
+    def generate_answer(
+        self,
+        query: str,
+        retrieved_docs: list,
+        temperature: Optional[float] = None,
+        question_type: Optional[str] = None,
+    ) -> str:
         """Sinh câu trả lời: cache → Gemini → (hết quota/sự cố) fallback Local Qwen.
+
+        question_type (P3.4): nhãn loại câu hỏi từ tầng classifier; None → prompt
+        gốc giống hệt từng ký tự (đường ENABLE_CLASSIFIER=0, cache cũ còn trúng).
 
         Hàm này là giao diện chính của Layer Generator trong kiến trúc Hybrid RAG.
         Nó thực hiện quy trình sau:
         1. Normalize retrieved_docs → format chuẩn cho prompt
         2. Soft Refusal: Nếu không có ngữ cảnh → trả về REFUSAL_TEXT ngay
-        3. Check cache: Nếu trúng cache → trả lời ngay (tiết kiệm quota)
+        3. Check cache: Nếu trúng cache → hậu xử lý inject dùng chung (P3.4b) rồi trả lời ngay (tiết kiệm quota)
         4. Gọi Gemini API với System Instruction chống ảo giác
         5. Fallback: Nếu Gemini lỗi → chuyển sang Local Qwen với nhãn cảnh báo
         6. Save cache: Ghi câu trả lời Gemini (không cache câu fallback)
@@ -684,14 +834,18 @@ class GeminiGenerator:
             return REFUSAL_TEXT
 
         resolved_temperature = self.temperature if temperature is None else temperature
-        prompt = build_prompt(question, docs)
+        prompt = build_prompt(question, docs, question_type=question_type)
 
         if self.use_cache:
             key = self._cache_key(prompt, resolved_temperature)
             cached = self._cache_get(key)
             if cached is not None:
                 print(f"[Cache] Trúng ./.generation_cache/{key[:12]}... — không gọi API, tiết kiệm quota.")
-                return cached
+                # P3.4b: inject là hậu xử lý dùng chung HIT/MISS — cùng câu hỏi
+                # trả cùng chuỗi bất kể lượt gọi có trúng cache hay không.
+                if is_canonical_refusal_answer(cached, question_type):
+                    return cached
+                return inject_citations_from_metadata(cached, retrieved_docs)
 
         try:
             answer = self._call_api(prompt, resolved_temperature)
@@ -703,12 +857,21 @@ class GeminiGenerator:
             print("[Qwen-Fallback] Câu trả lời fallback KHÔNG lưu cache — lượt sau sẽ thử lại Gemini.")
             return answer
 
+        # P3.4: chuẩn hóa từ chối cho NGOAI_PHAM_VI TRƯỚC khi lưu cache để
+        # lượt sau (trúng cache) cũng trả đúng chuỗi chuẩn.
+        answer = canonicalize_refusal(answer, question_type)
+
         if self.use_cache:
             self._cache_put(key, prompt, resolved_temperature, question, answer)
-        
-        # Tự động đính kèm trích dẫn từ metadata nếu chưa có
+
+        # P3.4: NGOAI_PHAM_VI mà model tự từ chối → trả ĐÚNG chuỗi REFUSAL_TEXT,
+        # không đính kèm trích dẫn (giữ nguyên vẹn chuỗi chuẩn cho evaluation).
+        if is_canonical_refusal_answer(answer, question_type):
+            return answer
+        # P3.4b: tự động đính kèm trích dẫn từ metadata nếu chưa có — bước hậu
+        # xử lý dùng chung cả nhánh HIT lẫn MISS.
         answer = inject_citations_from_metadata(answer, retrieved_docs)
-        
+
         return answer
 
 
@@ -735,7 +898,16 @@ class QwenGenerator:
         self.use_cache = _env_flag("GENERATION_CACHE", True) if use_cache is None else use_cache
         self.cache_dir = Path(os.getenv("GENERATION_CACHE_DIR") or GENERATION_CACHE_DIR)
 
-    def _build_prompt(self, question: str, docs: list[dict]) -> str:
+    # Chỉ dẫn định dạng ngắn theo question_type (P3.4) — Qwen 1.5B cửa sổ nhỏ nên
+    # chỉ nhét MỘT dòng thay vì toàn bộ appendix của Gemini. None → không thêm gì,
+    # prompt giữ nguyên từng ký tự (cache Qwen cũ vẫn trúng).
+    QWEN_FORMAT_LINES = {
+        "so_sanh": "Câu hỏi so sánh: trả lời dạng bảng (mỗi hàng một tiêu chí), mỗi ô kèm trích dẫn nguồn riêng.",
+        "thu_tuc": "Câu hỏi thủ tục: trả lời các bước đánh số (Bước 1, Bước 2, ...), mỗi bước kèm căn cứ.",
+        "ngoai_pham_vi": NGOAI_PHAM_VI_EXTRA_LINE,
+    }
+
+    def _build_prompt(self, question: str, docs: list[dict], question_type: Optional[str] = None) -> str:
         parts: list[str] = []
         total = 0
         for i, doc in enumerate(docs, start=1):
@@ -748,18 +920,22 @@ class QwenGenerator:
             parts.append(block)
             total += len(block)
         context = "\n\n".join(parts)
-        return (
+        format_line = ""
+        if question_type:
+            key = fold(str(question_type)).strip().lower()
+            format_line = self.QWEN_FORMAT_LINES.get(key, "")
+        head = (
             "Bạn là trợ lý học vụ Trường Đại học An Giang (AGU). Chỉ được dùng thông tin trong "
             "NGỮ CẢNH dưới đây, tuyệt đối không dùng kiến thức bên ngoài, không bịa số Điều/Khoản.\n"
             "Trả lời bằng tiếng Việt, ngắn gọn (dưới 200 từ), mỗi ý PHẢI kèm căn cứ pháp lý:\n"
             "- Nếu ngữ cảnh có đánh số: (Điều N, Khoản M — Tên_file.pdf)\n"
             "- Nếu không đánh số: (Tên_file.pdf)\n"
             "Ví dụ: (Điều 14, Khoản 5 — 1059-qd-dhag-2020-09-29.pdf)\n"
-            f'Nếu NGỮ CẢNH không đủ căn cứ, trả lời đúng một câu: "{REFUSAL_TEXT}"\n\n'
-            f"NGỮ CẢNH:\n{context}\n\n"
-            f"CÂU HỎI: {question}\n"
-            "TRẢ LỜI:"
+            f'Nếu NGỮ CẢNH không đủ căn cứ, trả lời đúng một câu: "{REFUSAL_TEXT}"\n'
         )
+        if format_line:
+            head += f"{format_line}\n"
+        return f"{head}\nNGỮ CẢNH:\n{context}\n\nCÂU HỎI: {question}\nTRẢ LỜI:"
 
     def _cache_key(self, prompt: str, temperature: float) -> str:
         payload = json.dumps(
@@ -803,8 +979,18 @@ class QwenGenerator:
         except OSError as exc:
             print(f"[Cache] Cảnh báo: không ghi được cache ({exc}).")
 
-    def generate_answer(self, query: str, retrieved_docs: list, temperature: Optional[float] = None) -> str:
-        """Sinh câu trả lời trực tiếp qua Ollama Qwen."""
+    def generate_answer(
+        self,
+        query: str,
+        retrieved_docs: list,
+        temperature: Optional[float] = None,
+        question_type: Optional[str] = None,
+    ) -> str:
+        """Sinh câu trả lời trực tiếp qua Ollama Qwen.
+
+        question_type (P3.4): None → prompt giữ nguyên từng ký tự; nhãn SO_SANH/
+        THU_TUC/NGOAI_PHAM_VI → chèn 1 dòng định dạng ngắn (cache tự tách key).
+        """
         if not isinstance(query, str):
             raise TypeError(f"query phải là str, nhận được {type(query).__name__}.")
         question = query.strip()
@@ -821,14 +1007,18 @@ class QwenGenerator:
             return REFUSAL_TEXT
 
         resolved_temp = self.temperature if temperature is None else temperature
-        prompt = self._build_prompt(question, docs)
+        prompt = self._build_prompt(question, docs, question_type=question_type)
 
         if self.use_cache:
             key = self._cache_key(prompt, resolved_temp)
             cached = self._cache_get(key)
             if cached is not None:
                 print(f"[Cache] Trúng cache Qwen ./.generation_cache/{key[:12]}...")
-                return cached
+                # P3.4b: inject là hậu xử lý dùng chung HIT/MISS — cùng câu hỏi
+                # trả cùng chuỗi bất kể lượt gọi có trúng cache hay không.
+                if is_canonical_refusal_answer(cached, question_type):
+                    return cached
+                return inject_citations_from_metadata(cached, retrieved_docs)
 
         try:
             client = ollama.Client(host=self.ollama_host, timeout=self.timeout)
@@ -852,10 +1042,19 @@ class QwenGenerator:
         if not text:
             raise GeneratorError(f"Local Qwen trả về nội dung rỗng cho câu hỏi: {question}")
 
+        # P3.4: chuẩn hóa từ chối cho NGOAI_PHAM_VI TRƯỚC khi lưu cache để
+        # lượt sau (trúng cache) cũng trả đúng chuỗi chuẩn.
+        text = canonicalize_refusal(text, question_type)
+
         if self.use_cache:
             self._cache_put(key, prompt, resolved_temp, question, text)
-        
-        # Tự động đính kèm trích dẫn từ metadata nếu chưa có
+
+        # P3.4: NGOAI_PHAM_VI mà model tự từ chối → trả ĐÚNG chuỗi REFUSAL_TEXT,
+        # không đính kèm trích dẫn (giữ nguyên vẹn chuỗi chuẩn cho evaluation).
+        if is_canonical_refusal_answer(text, question_type):
+            return text
+        # P3.4b: tự động đính kèm trích dẫn từ metadata nếu chưa có — bước hậu
+        # xử lý dùng chung cả nhánh HIT lẫn MISS.
         text = inject_citations_from_metadata(text, retrieved_docs)
-        
+
         return text

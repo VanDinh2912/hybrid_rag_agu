@@ -38,9 +38,13 @@ class FakeLocalSLM:
 class FakeGenerator:
     def __init__(self):
         self.received_query = None
+        self.received_docs = None
+        self.received_question_type = None
 
-    def generate_answer(self, query, retrieved_docs):
+    def generate_answer(self, query, retrieved_docs, question_type=None):
         self.received_query = query
+        self.received_docs = retrieved_docs
+        self.received_question_type = question_type
         return "answer-mau"
 
 
@@ -85,6 +89,205 @@ class TestRunFoldsQueryBeforeRetrieval:
         pipeline, _, generator = make_pipeline()
         pipeline.run("diem ren luyen 62 thi sao?")
         assert generator.received_query == NORMALIZED
+
+
+# --- P3.2: tầng phân loại + router qua ENABLE_CLASSIFIER ---------------------
+
+FAKE_LABELS = {"topic": None, "question_type": "TRA_CUU", "raw_response": "raw-mau"}
+
+
+def install_classifier(monkeypatch, labels=None, exc=None):
+    """Gắn fake classify_query vào src.pipeline; trả về list ghi nhận các lần gọi."""
+    calls = []
+
+    def fake_classify(query):
+        calls.append(query)
+        if exc is not None:
+            raise exc
+        return labels if labels is not None else dict(FAKE_LABELS)
+
+    monkeypatch.setattr("src.pipeline.classify_query", fake_classify)
+    return calls
+
+
+class TestClassifierFlagDisabled:
+    def test_flag_off_classifier_not_called(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "0")
+        calls = install_classifier(monkeypatch)
+        pipeline, vector_db, _ = make_pipeline()
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+
+        assert calls == []  # KHÔNG được gọi classifier
+        assert result["labels"] is None
+        assert result["retrieval_config"] is None
+        # Đường cũ nguyên vẹn: retrieve_k = top_k(4) × oversample(2) = 8.
+        _, k = vector_db.received[0]
+        assert k == 8
+
+    def test_flag_defaults_to_off(self, monkeypatch):
+        monkeypatch.delenv("ENABLE_CLASSIFIER", raising=False)
+        calls = install_classifier(monkeypatch)
+        pipeline, _, _ = make_pipeline()
+        pipeline.run("diem ren luyen 62 thi sao?")
+        assert calls == []
+
+    def test_result_has_new_fields_even_when_off(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "0")
+        install_classifier(monkeypatch)
+        pipeline, _, _ = make_pipeline()
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+        # 2 trường mới luôn tồn tại (không phá cấu trúc cũ) nhưng = None.
+        assert "labels" in result and "retrieval_config" in result
+        assert result["labels"] is None
+        assert result["retrieval_config"] is None
+
+
+class TestClassifierFlagEnabled:
+    def test_labels_and_config_exposed_in_result(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        calls = install_classifier(monkeypatch)
+        pipeline, _, _ = make_pipeline()
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+
+        assert calls == ["diem ren luyen 62 thi sao?"]  # classifier nhận câu THÔ
+        assert result["labels"] == FAKE_LABELS
+        cfg = result["retrieval_config"]
+        assert cfg is not None
+        assert cfg["top_k"] == 4  # TRA_CUU giữ nguyên base (top_k param mặc định)
+        assert cfg["bm25_weight"] == 0.5
+        assert cfg["chroma_weight"] == 0.5
+        assert cfg["source_filter"] is None
+        assert cfg["enable_subquery"] is False
+
+    def test_so_sanh_config_applied_to_oversampling(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        labels = {"topic": None, "question_type": "SO_SANH", "raw_response": ""}
+        install_classifier(monkeypatch, labels=labels)
+        pipeline, vector_db, _ = make_pipeline()
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+
+        # SO_SANH: top_k 4 + 2 = 6 → retrieve_k = 12, bật subquery.
+        assert result["retrieval_config"]["top_k"] == 6
+        assert result["retrieval_config"]["enable_subquery"] is True
+        _, k = vector_db.received[0]
+        assert k == 12
+
+    def test_filtered_topic_and_thu_tuc_config(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        labels = {"topic": "học phí", "question_type": "THU_TUC", "raw_response": ""}
+        install_classifier(monkeypatch, labels=labels)
+        pipeline, vector_db, _ = make_pipeline()
+        result = pipeline.run("mien giam hoc phi can giay to gi?")
+
+        cfg = result["retrieval_config"]
+        assert cfg["bm25_weight"] == 0.6  # THU_TUC nghiêng về BM25
+        assert cfg["chroma_weight"] == 0.4
+        assert cfg["source_filter"] is not None
+        assert len(cfg["source_filter"]) == 2  # học phí có 2 nguồn
+        # THU_TUC không đổi top_k → retrieve_k vẫn 8.
+        _, k = vector_db.received[0]
+        assert k == 8
+
+    def test_classifier_exception_falls_back(self, monkeypatch, capsys):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        install_classifier(monkeypatch, exc=RuntimeError("qwen chet"))
+        pipeline, vector_db, generator = make_pipeline()
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+
+        # Lượt hỏi không chết: câu trả lời vẫn có, cấu hình lùi về gốc.
+        assert result["answer"] == "answer-mau"
+        assert result["labels"] is None
+        assert result["retrieval_config"] is None
+        _, k = vector_db.received[0]
+        assert k == 8  # retrieve_k theo top_k gốc 4 × 2
+        assert "[Classifier] Cảnh báo" in capsys.readouterr().out
+
+
+class FakeChromaSubRetriever:
+    """Giả lập sub-retriever Chroma có search_kwargs (để kiểm filter được gán)."""
+
+    def __init__(self):
+        self.search_kwargs = {"k": 12}
+
+
+class FakeEnsemble:
+    """Giả lập EnsembleRetriever: trả về docs cố định, có weights/retrievers."""
+
+    def __init__(self, docs):
+        self.retrievers = [FakeChromaSubRetriever()]
+        self.weights = [0.5, 0.5]
+        self._docs = docs
+        self.queries = []
+
+    def invoke(self, query):
+        self.queries.append(query)
+        return list(self._docs)
+
+
+def make_pipeline_with_ensemble(monkeypatch, docs):
+    """Pipeline dùng FakeEnsemble thay vì similarity_search để test nhánh hybrid."""
+    monkeypatch.delenv("BM25_WEIGHT", raising=False)
+    monkeypatch.delenv("CHROMA_WEIGHT", raising=False)
+    monkeypatch.delenv("RAG_TOP_K", raising=False)
+    vector_db = FakeVectorDB()
+    generator = FakeGenerator()
+    ensemble = FakeEnsemble(docs)
+    pipeline = HybridRAGPipeline(
+        vector_db=vector_db,
+        local_slm=FakeLocalSLM(NORMALIZED),
+        generator=generator,
+        retriever=ensemble,
+    )
+    return pipeline, ensemble
+
+
+class TestEnsemblePlumbingWithClassifier:
+    DOCS = [
+        FakeDoc("chunk s1", {"source": "1059-qd-dhag-2020-09-29.pdf", "chunk_id": 1}),
+        FakeDoc("chunk s2", {"source": "888-qd-dhag-2022-08-08.pdf", "chunk_id": 2}),
+        FakeDoc("chunk khac", {"source": "other.pdf", "chunk_id": 3}),
+    ]
+
+    def test_source_filter_post_filters_docs(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        labels = {"topic": "đánh giá rèn luyện", "question_type": "TRA_CUU", "raw_response": ""}
+        install_classifier(monkeypatch, labels=labels)
+        pipeline, ensemble = make_pipeline_with_ensemble(monkeypatch, self.DOCS)
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+
+        # Chỉ giữ chunk thuộc nguồn được lọc; chunk "khac" bị loại hậu kiểm.
+        sources = result["sources"]
+        assert len(sources) == 1
+        assert sources[0]["source"] == "1059-qd-dhag-2020-09-29.pdf"
+
+    def test_chroma_sub_retriever_gets_filter_kwarg(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        labels = {"topic": "đánh giá rèn luyện", "question_type": "TRA_CUU", "raw_response": ""}
+        install_classifier(monkeypatch, labels=labels)
+        pipeline, ensemble = make_pipeline_with_ensemble(monkeypatch, self.DOCS)
+        pipeline.run("diem ren luyen 62 thi sao?")
+        assert ensemble.retrievers[0].search_kwargs.get("filter") == {
+            "source": {"$in": ["1059-qd-dhag-2020-09-29.pdf"]}
+        }
+
+    def test_thu_tuc_weights_applied_per_query(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        labels = {"topic": None, "question_type": "THU_TUC", "raw_response": ""}
+        install_classifier(monkeypatch, labels=labels)
+        pipeline, ensemble = make_pipeline_with_ensemble(monkeypatch, self.DOCS)
+        pipeline.run("mien giam hoc phi can giay to gi?")
+        assert ensemble.weights == [0.6, 0.4]
+
+    def test_flag_off_restores_init_weights_and_no_filter(self, monkeypatch):
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "0")
+        install_classifier(monkeypatch)
+        pipeline, ensemble = make_pipeline_with_ensemble(monkeypatch, self.DOCS)
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+
+        # Đường cũ: trọng số khởi tạo nguyên vẹn, không filter, không lọc docs.
+        assert ensemble.weights == [0.5, 0.5]
+        assert "filter" not in ensemble.retrievers[0].search_kwargs
+        assert len(result["sources"]) == len(self.DOCS)
 
 
 class FakeEnsembleRetriever:
