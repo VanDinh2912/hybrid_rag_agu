@@ -1,0 +1,169 @@
+{
+  "note": "old=.ocr_cache(rapidocr) new=.ocr_cache_vie(EasyOCR vi). vocab_ratio là PROXY (token fold khớp từ vựng phần corpus sạch), không phải từ điển chuẩn.",
+  "ocr_total": {
+    "old_words": 43327,
+    "old_marked": 1420,
+    "old_ratio": 0.032774020818427306,
+    "new_words": 42188,
+    "new_marked": 34705,
+    "new_ratio": 0.8226272873802977
+  },
+  "per_file": [
+    {
+      "stem": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki",
+      "old_words": 1158,
+      "old_ratio": 0.04835924006908463,
+      "new_words": 1206,
+      "new_ratio": 0.8275290215588723,
+      "new_vocab_ratio": 0.8134328358208955,
+      "new_vocab_hits": 981,
+      "old_article_marks": 0,
+      "new_article_marks": 0,
+      "has_new": true
+    },
+    {
+      "stem": "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-c",
+      "old_words": 473,
+      "old_ratio": 0.05496828752642706,
+      "new_words": 473,
+      "new_ratio": 0.8414376321353065,
+      "new_vocab_ratio": 0.904862579281184,
+      "new_vocab_hits": 428,
+      "old_article_marks": 0,
+      "new_article_marks": 0,
+      "has_new": true
+    },
+    {
+      "stem": "1054-qd-dhag-2020-09-28",
+      "old_words": 9818,
+      "old_ratio": 0.014870645752699124,
+      "new_words": 9980,
+      "new_ratio": 0.8271543086172345,
+      "new_vocab_ratio": 0.8807615230460922,
+      "new_vocab_hits": 8790,
+      "old_article_marks": 27,
+      "new_article_marks": 28,
+      "has_new": true
+    },
+    {
+      "stem": "1059-qd-dhag-2020-09-29",
+      "old_words": 3949,
+      "old_ratio": 0.020511521904279566,
+      "new_words": 4033,
+      "new_ratio": 0.8361021572030747,
+      "new_vocab_ratio": 0.8700719067691545,
+      "new_vocab_hits": 3509,
+      "old_article_marks": 21,
+      "new_article_marks": 21,
+      "has_new": true
+    },
+    {
+      "stem": "118_QUY_CHẾ_XÉT_CHỌN_DANH_HIỆU_SINH_VIÊN_5_TỐT_TẬP_THỂ_SINH",
+      "old_words": 4399,
+      "old_ratio": 0.0554671516253694,
+      "new_words": 4558,
+      "new_ratio": 0.7825800789820097,
+      "new_vocab_ratio": 0.8576129881526986,
+      "new_vocab_hits": 3909,
+      "old_article_marks": 16,
+      "new_article_marks": 23,
+      "has_new": true
+    },
+    {
+      "stem": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang",
+      "old_words": 1850,
+      "old_ratio": 0.04756756756756757,
+      "new_words": 1869,
+      "new_ratio": 0.8073836276083467,
+      "new_vocab_ratio": 0.9010165864098448,
+      "new_vocab_hits": 1684,
+      "old_article_marks": 0,
+      "new_article_marks": 0,
+      "has_new": true
+    },
+    {
+      "stem": "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sin",
+      "old_words": 604,
+      "old_ratio": 0.054635761589403975,
+      "new_words": 605,
+      "new_ratio": 0.824793388429752,
+      "new_vocab_ratio": 0.9289256198347108,
+      "new_vocab_hits": 562,
+      "old_article_marks": 1,
+      "new_article_marks": 1,
+      "has_new": true
+    },
+    {
+      "stem": "367-QĐ-ĐU_ngay_08-4-2026",
+      "old_words": 6205,
+      "old_ratio": 0.059790491539081385,
+      "new_words": 6441,
+      "new_ratio": 0.8523521192361434,
+      "new_vocab_ratio": 0.8383791336748952,
+      "new_vocab_hits": 5400,
+      "old_article_marks": 3,
+      "new_article_marks": 10,
+      "has_new": true
+    },
+    {
+      "stem": "888-qd-dhag-2022-08-08",
+      "old_words": 7082,
+      "old_ratio": 0.02668737644733126,
+      "new_words": 7267,
+      "new_ratio": 0.8487684051190313,
+      "new_vocab_ratio": 0.8709233521398101,
+      "new_vocab_hits": 6329,
+      "old_article_marks": 44,
+      "new_article_marks": 43,
+      "has_new": true
+    },
+    {
+      "stem": "QD1133_22815_VNU_ban_hanh_Quy_dinh_khen_thuong_HSSV_-1",
+      "old_words": 3781,
+      "old_ratio": 0.01639777836551177,
+      "new_words": 3869,
+      "new_ratio": 0.8436288446627035,
+      "new_vocab_ratio": 0.8655983458257948,
+      "new_vocab_hits": 3349,
+      "old_article_marks": 27,
+      "new_article_marks": 27,
+      "has_new": true
+    },
+    {
+      "stem": "ke-hoach-ttck-kltn-dh24pm-2026",
+      "old_words": 1710,
+      "old_ratio": 0.03216374269005848,
+      "new_words": 560,
+      "new_ratio": 0.6017857142857143,
+      "new_vocab_ratio": 0.6232142857142857,
+      "new_vocab_hits": 349,
+      "old_article_marks": 0,
+      "new_article_marks": 0,
+      "has_new": true
+    },
+    {
+      "stem": "ke-hoach-ttck-kltn-dh24th-2026",
+      "old_words": 1607,
+      "old_ratio": 0.038581207218419414,
+      "new_words": 572,
+      "new_ratio": 0.6031468531468531,
+      "new_vocab_ratio": 0.6363636363636364,
+      "new_vocab_hits": 364,
+      "old_article_marks": 0,
+      "new_article_marks": 0,
+      "has_new": true
+    },
+    {
+      "stem": "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26",
+      "old_words": 691,
+      "old_ratio": 0.010130246020260492,
+      "new_words": 755,
+      "new_ratio": 0.6662251655629139,
+      "new_vocab_ratio": 0.7536423841059603,
+      "new_vocab_hits": 569,
+      "old_article_marks": 0,
+      "new_article_marks": 0,
+      "has_new": true
+    }
+  ]
+}

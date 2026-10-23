@@ -37,3 +37,22 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
 - Cần người dùng: dán đặc tả T3/T5 (và TT0–TT3 là gì) để phiên sau làm.
 - Việc đã làm thay thế trong khung giờ đó: dựng công cụ T2 Bước 3 (`quality_check_vie.py`) và
   kiểm thử đường code — nằm trong phạm vi T2 đã đặc tả rõ.
+
+## PA-6 — T2: giữ `easyocr` làm dependency hay chỉ dùng chẩn đoán một lần
+- Bối cảnh: để OCR lại 13 PDF scan bằng tiếng Việt, em đã `pip install easyocr torchvision
+  scikit-image` vào `venv` (không sửa `requirements.txt`). Không có gì trong pipeline sản xuất
+  import easyocr — nó chỉ được `tools/diag/reocr_vie.py` nạp khi chạy tay.
+- Đề xuất A (an toàn): giữ nguyên `requirements.txt`, coi easyocr là công cụ chẩn đoán; cache
+  `.ocr_cache_vie/` đã sinh nên không cần cài lại nếu chỉ nạp index.
+- Đề xuất B: thêm `easyocr` (+ torch/torchvision) vào requirements nếu muốn tái OCR trên máy khác.
+- Chưa làm: chưa đổi requirements, chưa commit lockfile. Hoàn tác: `pip uninstall easyocr
+  torchvision scikit-image` trong `venv` (không ảnh hưởng `chroma_db/`, `.ocr_cache/`).
+
+## PA-7 — T2: có loại 2 tệp `ke-hoach-ttck-kltn-dh24pm/th-2026.pdf` khỏi corpus không?
+- Bối cảnh: đây là 2 tệp chủ yếu BẢNG BIỂU; EasyOCR trả 0,602–0,603 nhưng số từ giảm mạnh
+  (1710 → 560 và 1607 → 572) và 20 đoạn đối chiếu mắt thường cho thấy phần lớn là ký tự rác.
+  Chúng chiếm 7 của 337 chunk ≥50% dấu trong `chroma_db_vie/`.
+- Đề xuất: hoặc (1) giữ như hiện tại (index mới đã có chúng), hoặc (2) đưa sang thư mục
+  `data/corpus/_khong_index/` và rebuild `chroma_db_vie/`, hoặc (3) số hóa bảng bằng tay
+  (đường T6, tốn công).
+- Chưa làm: KHÔNG xóa/di chuyển file corpus nào (xóa = việc cần duyệt). Hoàn tác: không có thay đổi.
