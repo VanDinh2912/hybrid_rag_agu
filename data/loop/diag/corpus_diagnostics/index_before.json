@@ -1,0 +1,13 @@
+{
+  "db": "chroma_db",
+  "collection": "agu_regulations",
+  "chunks": 361,
+  "chunks_empty": 0,
+  "word_diacritic": 0.1913,
+  "marked": 12096,
+  "words": 63223,
+  "chunks_lt5pct": 167,
+  "chunks_ge50pct": 79,
+  "chunk_ratio_median": 0.0545,
+  "chunk_ratio_p10": 0.0144
+}

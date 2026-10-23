@@ -6,7 +6,11 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
 
 ## XONG
 - T0: r5b đóng, noise_floor.json + ROADMAP P5.15 + docs/reports/T0.md.
-- T1: (a) oracle + (c) window xong; (b) n=6/30 bị chặn PerDay → T1.md cập nhật, KHÔNG chốt bảng quyết định.
+- T1: (a) oracle + (c) window xong; (b) **7/30 id hợp lệ** (58 dòng: 49 error PerDay + 9 dòng hợp
+  lệ nhưng trùng 2 id) → T1.md cập nhật theo phép đếm gộp-theo-id, KHÔNG chốt bảng quyết định.
+- Công cụ đo lại: `tools/diag/recount_dedup.py` (gộp dòng trùng id; tự kiểm = tái tạo chính xác
+  summary của (a)/(c)) và `tools/diag/measure_index.py` (đo từ có dấu trên chunk đã lưu, dùng cho
+  cặp `index_before.json`/`index_after.json`).
 - T2 Bước 1: tools/diag/corpus_diacritics.py + per_file.json (corpus 0,178; text 0,786 / OCR 0,033).
 - T2 khả thi: easyocr_trial.json (0,73–0,83), cài easyocr+torchvision (venv), pytest vẫn 563 xanh.
 - T2 Bước 2: tools/diag/reocr_vie.py → 123 trang EasyOCR `vi` vào `.ocr_cache_vie/` (1913 s,
@@ -14,8 +18,9 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
 - T2 Bước 3: tools/diag/quality_check_vie.py → quality_vie.json (OCR 0,033 → 0,823 trên 42.188 từ;
   11/13 tệp ≥0,78; vocab proxy 0,81–0,93) + manual_20_segments.txt (seed 20261024).
 - T2 Bước 4: build index MỚI `chroma_db_vie/` = 342/342 chunk (T1 228 / T2 43 / bổ sung 71);
-  đo trực tiếp trên index: từ có dấu 0,178 → **0,803** (49.119/61.179), chunk <5% dấu 171 → 2,
-  chunk ≥50% dấu 78 → 337 (`data/loop/diag/corpus_diagnostics/index_after.json`).
+  đo hai index bằng CÙNG script `tools/diag/measure_index.py`: từ có dấu **0,1913 → 0,8029**,
+  chunk <5% dấu **167 → 2**, chunk ≥50% dấu **79 → 337**
+  (`index_before.json` + `index_after.json`; toàn tệp trước = 0,178 theo `per_file.json`).
   `chroma_db/` + `.ocr_cache/` + pipeline sản xuất KHÔNG đổi. Báo cáo docs/reports/T2.md.
 - pytest sau tất cả: **563 passed** (0 code sản xuất bị sửa trong T2).
 

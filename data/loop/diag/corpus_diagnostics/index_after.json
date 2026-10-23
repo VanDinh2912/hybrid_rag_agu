@@ -1,8 +1,13 @@
 {
+  "db": "chroma_db_vie",
+  "collection": "agu_regulations",
   "chunks": 342,
-  "word_diacritic": 0.8028735350365321,
+  "chunks_empty": 0,
+  "word_diacritic": 0.8029,
   "marked": 49119,
   "words": 61179,
   "chunks_lt5pct": 2,
-  "chunks_ge50pct": 337
+  "chunks_ge50pct": 337,
+  "chunk_ratio_median": 0.815,
+  "chunk_ratio_p10": 0.6919
 }

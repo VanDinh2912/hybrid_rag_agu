@@ -1,0 +1,161 @@
+{
+  "config": "b_gemini_top6",
+  "referee": "9f1179ccab74",
+  "env": {
+    "ENABLE_ANSWER_GUARD": "1",
+    "ANSWER_GUARD_MIN_SCORE": null,
+    "ANSWER_GUARD_MAX_UNSUPPORTED": null,
+    "ENABLE_ANSWER_RESCUE": null,
+    "RESCUE_MIN_SCORE": null,
+    "QWEN_FALLBACK": null,
+    "GEMINI_MODEL": "gemini-3.8-flash",
+    "USE_QWEN_GENERATOR": null
+  },
+  "counting_rule": "giữ dòng hợp lệ ĐẦU TIÊN mỗi id (gộp dòng trùng id do tiến trình chồng nhau)",
+  "n_rows_in_file": 58,
+  "n_valid_rows_in_file": 9,
+  "n_items_deduped": 7,
+  "collapsed_duplicate_ids": [
+    "O10235702435549",
+    "T24199159682252"
+  ],
+  "n_error_rows": 49,
+  "overall": {
+    "n": 7,
+    "n_answered": 6,
+    "refusal_rate": 0.1429,
+    "pass_correct": 5,
+    "pass_correct_rate": 0.7143,
+    "pass_any_rate": 0.7143,
+    "fabrication_rate_on_answered": 0.1667,
+    "fabricated_items": 1,
+    "hallucinated_on_unanswerable": 0,
+    "overrefusal": 1,
+    "verdict_counts": {
+      "FAIL_FABRICATED": 1,
+      "PASS_CORRECT": 5,
+      "FAIL_OVERREFUSAL": 1
+    },
+    "median_latency": 201.49
+  },
+  "overall_answerable80": {
+    "n": 7,
+    "n_answered": 6,
+    "refusal_rate": 0.1429,
+    "pass_correct": 5,
+    "pass_correct_rate": 0.7143,
+    "pass_any_rate": 0.7143,
+    "fabrication_rate_on_answered": 0.1667,
+    "fabricated_items": 1,
+    "hallucinated_on_unanswerable": 0,
+    "overrefusal": 1,
+    "verdict_counts": {
+      "FAIL_FABRICATED": 1,
+      "PASS_CORRECT": 5,
+      "FAIL_OVERREFUSAL": 1
+    },
+    "median_latency": 201.49
+  },
+  "by_family": {
+    "CLOZE": {
+      "n": 1,
+      "n_answered": 1,
+      "refusal_rate": 0.0,
+      "pass_correct": 0,
+      "pass_correct_rate": 0.0,
+      "pass_any_rate": 0.0,
+      "fabrication_rate_on_answered": 1.0,
+      "fabricated_items": 1,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 0,
+      "verdict_counts": {
+        "FAIL_FABRICATED": 1
+      },
+      "median_latency": 292.34
+    },
+    "CLOZE_OCR": {
+      "n": 3,
+      "n_answered": 3,
+      "refusal_rate": 0.0,
+      "pass_correct": 3,
+      "pass_correct_rate": 1.0,
+      "pass_any_rate": 1.0,
+      "fabrication_rate_on_answered": 0.0,
+      "fabricated_items": 0,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 0,
+      "verdict_counts": {
+        "PASS_CORRECT": 3
+      },
+      "median_latency": 201.49
+    },
+    "EXACT": {
+      "n": 1,
+      "n_answered": 0,
+      "refusal_rate": 1.0,
+      "pass_correct": 0,
+      "pass_correct_rate": 0.0,
+      "pass_any_rate": 0.0,
+      "fabrication_rate_on_answered": null,
+      "fabricated_items": 0,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 1,
+      "verdict_counts": {
+        "FAIL_OVERREFUSAL": 1
+      },
+      "median_latency": 388.63
+    },
+    "REVERSE_LEGAL": {
+      "n": 1,
+      "n_answered": 1,
+      "refusal_rate": 0.0,
+      "pass_correct": 1,
+      "pass_correct_rate": 1.0,
+      "pass_any_rate": 1.0,
+      "fabrication_rate_on_answered": 0.0,
+      "fabricated_items": 0,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 0,
+      "verdict_counts": {
+        "PASS_CORRECT": 1
+      },
+      "median_latency": 178.87
+    },
+    "YESNO_FACT": {
+      "n": 1,
+      "n_answered": 1,
+      "refusal_rate": 0.0,
+      "pass_correct": 1,
+      "pass_correct_rate": 1.0,
+      "pass_any_rate": 1.0,
+      "fabrication_rate_on_answered": 0.0,
+      "fabricated_items": 0,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 0,
+      "verdict_counts": {
+        "PASS_CORRECT": 1
+      },
+      "median_latency": 198.55
+    }
+  },
+  "ci95_answerable": {
+    "pass_correct": {
+      "ci95": [
+        0.4286,
+        1.0
+      ]
+    },
+    "refusal_rate": {
+      "ci95": [
+        0.0,
+        0.4286
+      ]
+    },
+    "fabrication_rate_on_answered": {
+      "ci95": [
+        0.0,
+        0.5
+      ]
+    }
+  }
+}
