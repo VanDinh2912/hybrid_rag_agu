@@ -23,9 +23,11 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
   (`index_before.json` + `index_after.json`; toàn tệp trước = 0,178 theo `per_file.json`).
   `chroma_db/` + `.ocr_cache/` + pipeline sản xuất KHÔNG đổi. Báo cáo docs/reports/T2.md.
 - pytest sau tất cả: **563 passed** (0 code sản xuất bị sửa trong T2).
+- docs/MORNING_REPORT.md (báo cáo sáng: xong / bị chặn / cần duyệt / số liệu + nguồn / quyết định tự trị).
 
 ## ĐANG LÀM
-- Kết phiên: docs/MORNING_REPORT.md. T3/T5/TT0–TT3 **bị chặn — thiếu đặc tả** (PA-5).
+- Không còn việc tự trị. **PHIÊN ĐÃ DỪNG** tại cổng duyệt; tổng kết ở `docs/MORNING_REPORT.md`
+  và 8 đề xuất chờ duyệt ở `docs/PENDING_APPROVAL.md` (PA-1..PA-8).
 
 ## VIỆC KẾ TIẾP (theo thứ tự đề bài)
 1. ~~T2 Bước 3~~ ~~T2 Bước 4~~ — xong, xem mục XONG.
@@ -38,6 +40,10 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
 - OCR lại (resume, không ghi đè cache gốc): `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/reocr_vie.py --dpi 200`
 - Đo trước/sau: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/quality_check_vie.py`
 - Build index mới (KHÔNG kích hoạt): `PYTHONIOENCODING=utf-8 CHROMA_PERSIST_DIR=./chroma_db_vie OCR_CACHE_DIR=./.ocr_cache_vie ./venv/Scripts/python.exe ingest.py`
+- Đếm lại một cấu hình ablation theo id (gộp dòng trùng, không gọi model):
+  `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/recount_dedup.py --config b_gemini_top6 [--compare-with-summary]`
+- Đo từ có dấu trên một ChromaDB index (chỉ đọc):
+  `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/measure_index.py --db ./chroma_db_vie --out data/loop/diag/corpus_diagnostics/index_after.json`
 - Resume T1 (b) (khi quota reset ~14:00 VN): `PYTHONIOENCODING=utf-8 ENABLE_ANSWER_GUARD=1 ./venv/Scripts/python.exe tools/diag/ablation_generation.py --config b_gemini_top6 --ids-file data/loop/diag/b_gemini_top6/sample_ids.json --limit 30`
 - Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng 563 xanh)
 

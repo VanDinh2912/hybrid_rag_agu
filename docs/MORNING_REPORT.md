@@ -77,6 +77,7 @@ cùng 100 item r5, chấm bằng trọng tài hiện tại `9f1179ccab74`:
 | PA-5 | Đặc tả T3/T5/TT0–TT3 | CẦN ANH/CHỊ CUNG CẤP |
 | PA-6 | Giữ `easyocr`+`torchvision`+`scikit-image` làm dependency chính thức hay chỉ công cụ chẩn đoán (requirements chưa đổi) | KHÔNG |
 | PA-7 | Loại/giữ 2 tệp `ke-hoach` khỏi corpus | KHÔNG |
+| PA-8 | **`data/loop/rounds/` (46 MB, r0–r7), `tools/loop/` (verify/gate/run_round), `src/answer_guard.py`, `tests/test_loop_*.py`, `data/loop/testset_v1.jsonl` đều UNTRACKED** — bằng chứng + trọng tài chưa có trong git. Đề xuất một commit "freeze" | KHÔNG (không commit hộ công việc dở của phiên khác) |
 
 ## 4. SỐ LIỆU CHÍNH + NGUỒN FILE (mọi số đều đọc lại được từ đĩa)
 
@@ -115,6 +116,10 @@ cùng 100 item r5, chấm bằng trọng tài hiện tại `9f1179ccab74`:
 
 ## 6. Trạng thái repo & lệnh sáng mai
 
+- Chi nhánh: `auto/overnight`, 4 commit so với `main` (`65eb70a`, `d51d1db`, `b773446`, `467ee5f`)
+  + commit tài liệu PA-8. **Lưu ý khi checkout sạch**: `tools/loop/`, `src/answer_guard.py`,
+  `data/loop/rounds/` chưa từng được commit (PA-8) ⇒ code trên nhánh phụ thuộc chúng; muốn chạy
+  từ HEAD sạch thì phải làm commit freeze trước.
 - Đọc `docs/STATE.md` (việc xong / đang làm / việc kế tiếp / lệnh tái lập).
 - Thử index mới mà không đụng sản xuất:
   `PYTHONIOENCODING=utf-8 CHROMA_PERSIST_DIR=./chroma_db_vie OCR_CACHE_DIR=./.ocr_cache_vie ./venv/Scripts/python.exe main.py`
