@@ -117,3 +117,70 @@ nó đã có + các trường mới (median/p10), đã đối chiếu trước k
 Ghi chú bổ sung: có xóa 1 tệp scratch do chính em tạo vài phút trước
 (`tmp/index_after_check.json`, bản sao để đối chiếu) — không phải dữ liệu, không có giá trị bằng
 chứng; mọi tệp khác trong `tmp/` vẫn còn nguyên và nằm trong danh sách "dọn chờ duyệt".
+
+---
+
+## 05:2x–06:1x — Phiên T3 (decoupled refusal + evidence selection): quy tắc tự trị mới
+
+**Chỉ thị mới của người dùng (ghi nguyên văn để đời sau đối chiếu):** từ 24-10, CẤM dùng công
+cụ hỏi người dùng trong toàn bộ phiên (người dùng ngủ). Gặp ngã rẽ: áp BẢNG MẶC ĐỊNH; nếu
+không có trong bảng thì chọn phương án được đánh dấu *Recommended* miễn không vi phạm bất
+biến, ngược lại chọn phương án bảo thủ nhất; ghi quyết định ở đây rồi làm tiếp.
+
+Bảng mặc định đã nhận (áp dụng cho mọi bước còn lại của phiên):
+tên round = số lớn nhất đang có + 1 (r8, r9), không tái dùng/không xóa round cũ; sửa trọng
+tài/`gate.py`/`text_utils.py` ⇒ KHÔNG sửa, ghi diff vào `docs/PENDING_APPROVAL.md` rồi làm
+việc khác; Gemini tối đa 14 lượt/ngày, n=30 theo đăng ký, hết quota thì bỏ; OCR chỉ nhận tệp
+đạt cổng tự động; thư mục đã tồn tại ⇒ dùng tên mới; test đỏ ⇒ hoàn tác thay đổi của nhiệm vụ
+đó và chuyển sang nhiệm vụ độc lập; không xóa file, chỉ liệt kê; không chắc thiết kế ⇒ chọn
+phương án đổi ít code nhất, cờ env mặc định TẮT.
+
+## 05:2x — Đổi tên round T3: r6/r7 → r8/r9 (theo bảng mặc định)
+
+Bối cảnh: đặc tả T3 ban đầu ghi "r6 (chỉ decoupled), r7 (decoupled + evidence selection)"
+nhưng r6/r7 đã ĐÓNG (lever guard chuẩn hóa và bonus 12) và `run_round.py` NỐI vào
+`data/loop/rounds/<round>/full.jsonl` — tái dùng tên sẽ trộn lẫn số liệu cũ và mới trong
+cùng một file.
+
+**Quyết định: r8 = decoupled refusal, r9 = decoupled + evidence selection**, đã sửa mọi chỗ
+ghi r6/r7 trong `data/loop/README.md` (mục T3) và đăng ký lệnh gate tương ứng (r8 vs r5,
+r9 vs r8, kèm r9 vs r5 để đọc tổng biến). Không sửa lại round đã đóng.
+
+## 05:4x — Ba ngã rẽ "không sở thích" → chọn Recommended
+
+1. **Index nào cho r8/r9?** Người dùng trả lời "không có sở thích". Recommended = giữ
+   `chroma_db/` đang được mọi round r0–r7 dùng (kích hoạt `chroma_db_vie` là PA-1, chưa
+   duyệt). **Quyết định: chạy r8/r9 trên `chroma_db/` cũ**; corpus có dấu là biến số thứ hai,
+   không được trộn vào round đang đo đòn bẩy sinh.
+2. **"Thực thể vàng" hiểu thế nào cho luật 2 và xếp hạng bằng chứng?** `required_entities`/
+   `primary_entity` của testset được sinh từ ĐÁP ÁN ⇒ dùng ở runtime là rò đáp án (bất biến #6).
+   **Quyết định: chỉ dùng thực thể phía CÂU HỎI** (`extract_entities(normalized_query)`) + tên
+   nguồn router gọi; đã ghi thành quy tắc chống rò trong README.
+3. **Reranker cho đòn bẩy 3?** `bge-reranker-base` chưa có trong cache HF (chỉ bge-m3 và
+   Qwen2.5-0.5B). **Quyết định: giữ `EVIDENCE_RERANKER` mặc định theo đăng ký, nhưng probe
+   trước bằng `HF_HUB_OFFLINE=1` để KHÔNG tải ngầm hàng GB giữa round; nếu không tải được thì
+   lùi về bi-encoder bge-m3 (dùng lại hàm nhúng của pipeline, không nhân đôi RAM trên máy 4GB)
+   và manifest phải ghi `evidence_reranker.kind` thực tế** — đúng điều README đã đăng ký.
+
+## 06:0x — Ngã rẽ thiết kế: cửa sổ nào cho luật 1–3 khi r9 bật thêm chọn câu?
+
+Lựa chọn: (A) luật 1–3 đo trên cửa sổ đã cắt câu → r9 vừa đổi đầu vào model vừa đổi luôn
+phán quyết từ chối, thành HAI biến; (B) luật 1–3 đo trên chunk gốc, chọn câu chạy SAU phán
+quyết và TRƯỚC khi sinh → r8 và r9 chỉ khác nhau đúng "model được đọc gì".
+
+**Quyết định: (B)** (ít code hơn và giữ được nghĩa so sánh của hai round); đã ghi thành đoạn
+"Thứ tự trong luồng (chốt trước khi chạy)" trong `data/loop/README.md` mục T3.
+
+## 06:0x — Ngã rẽ: `extract_entities` trên câu hỏi rỗng làm đòn bẩy 3 vĩnh viễn câm
+
+Đo nhanh: với câu hỏi "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+`query_entities()` trả `[]` và `refusal_policy.content_tokens()` chỉ còn MỘT token ('phan')
+⇒ luật "chọn câu chứa thực thể" không bao giờ khớp, `select_evidence` luôn đi nhánh "giữ
+nguyên window" = lever không tồn tại.
+
+Lựa chọn: (A) nới luật bằng cách đọc `required_entities` của testset → LOẠI (rò đáp án);
+(B) thêm bậc "câu chia sẻ ≥ `EV_MIN_KEYWORD_HITS` (2) TỪ KHÓA phía câu hỏi" với danh sách hư
+từ riêng của module, đăng ký env + ghi lý do vào README TRƯỚC khi chạy round nào, và giữ nguyên
+toàn bộ ngưỡng từ chối đã duyệt.
+
+**Quyết định: (B).** Ngưỡng `DEC_*` của năm luật từ chối KHÔNG đổi một chữ.
