@@ -1,0 +1,21 @@
+{
+  "config": "b_gemini_top6",
+  "base_round": "r5",
+  "referee": "9f1179ccab74",
+  "env": {
+    "ENABLE_ANSWER_GUARD": "1",
+    "ANSWER_GUARD_MIN_SCORE": null,
+    "ANSWER_GUARD_MAX_UNSUPPORTED": null,
+    "ENABLE_ANSWER_RESCUE": null,
+    "RESCUE_MIN_SCORE": null,
+    "QWEN_FALLBACK": null,
+    "GEMINI_MODEL": "gemini-3.8-flash",
+    "USE_QWEN_GENERATOR": null
+  },
+  "n_base_items": 30,
+  "n_skipped": 0,
+  "skipped_items": [],
+  "ids_file": "data\\loop\\diag\\b_gemini_top6\\sample_ids.json",
+  "question_and_labels_source": "normalized_query + labels.question_type của r5 (đã lưu)",
+  "rescue_note": "ENABLE_ANSWER_RESCUE để TẮT (lever đã bác ở r5b; r5 chạy BẬT, chênh ≤1 câu cứu)"
+}

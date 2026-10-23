@@ -1,0 +1,241 @@
+{
+  "config": "b_gemini_top6",
+  "referee": "9f1179ccab74",
+  "env": {
+    "ENABLE_ANSWER_GUARD": "1",
+    "ANSWER_GUARD_MIN_SCORE": null,
+    "ANSWER_GUARD_MAX_UNSUPPORTED": null,
+    "ENABLE_ANSWER_RESCUE": null,
+    "RESCUE_MIN_SCORE": null,
+    "QWEN_FALLBACK": null,
+    "GEMINI_MODEL": "gemini-3.8-flash",
+    "USE_QWEN_GENERATOR": null
+  },
+  "n_rows": 7,
+  "n_errors": 26,
+  "errors": [
+    {
+      "id": "V53554715153706",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m22.012675686s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49462\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.27
+    },
+    {
+      "id": "Y1133031866122",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m12.929738518s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49452\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.33
+    },
+    {
+      "id": "C127986564498750",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m12.626283357s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49452\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.29
+    },
+    {
+      "id": "O101995178075997",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m12.318725473s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49452\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.31
+    },
+    {
+      "id": "O102464711059095",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m12.011076014s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49452\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.3
+    },
+    {
+      "id": "N121989377006900",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m11.698741627s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49451\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.31
+    },
+    {
+      "id": "C130083932506629",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m11.425667365s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49451\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.27
+    },
+    {
+      "id": "C140231016537484",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m11.115813137s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49451\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.31
+    },
+    {
+      "id": "O10364377056039",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m10.811189823s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49450\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.31
+    },
+    {
+      "id": "O103189525480643",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m10.519939112s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49450\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.29
+    },
+    {
+      "id": "Y276949344929833",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m10.221116365s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49450\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.3
+    },
+    {
+      "id": "C159725752125707",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m9.919384213s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49449\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.3
+    },
+    {
+      "id": "O105878724802157",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m9.615894984s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49449\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.31
+    },
+    {
+      "id": "O110351889344961",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m9.332464251s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49449\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.28
+    },
+    {
+      "id": "S128111294790282",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m9.037368651s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49449\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.29
+    },
+    {
+      "id": "C162319281103737",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m8.740560341s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49448\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.3
+    },
+    {
+      "id": "C145524027648409",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m8.446677797s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49448\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.3
+    },
+    {
+      "id": "O112922606788277",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m8.141619315s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49448\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.3
+    },
+    {
+      "id": "Y47079626627164",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m7.838857849s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49447\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.3
+    },
+    {
+      "id": "Y231035235702969",
+      "error": "GeneratorError: 429 PerDay — hết quota NGÀY của Gemini: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash, description: Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\nPlease retry in 13h44m7.532777449s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  description: \"Generate content requests per day limit exceeded on Free Tier. See https://ai.google.dev/gemini-api/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-3.8-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 49447\n}\n]. Chờ reset (~14:00 VN = 07:00 UTC, midnight Pacific) rồi chạy lại ĐÚNG lệnh cũ; cache giữ phần đã trả lời, resume chỉ chạy câu thiếu.",
+      "latency_seconds": 0.31
+    }
+  ],
+  "n_skipped_no_gold": 0,
+  "overall": {
+    "n": 7,
+    "n_answered": 5,
+    "refusal_rate": 0.2857,
+    "pass_correct": 4,
+    "pass_correct_rate": 0.5714,
+    "pass_any_rate": 0.5714,
+    "fabrication_rate_on_answered": 0.2,
+    "fabricated_items": 1,
+    "hallucinated_on_unanswerable": 0,
+    "overrefusal": 2,
+    "verdict_counts": {
+      "FAIL_FABRICATED": 1,
+      "PASS_CORRECT": 4,
+      "FAIL_OVERREFUSAL": 2
+    },
+    "median_latency": 278.1
+  },
+  "overall_answerable80": {
+    "n": 7,
+    "n_answered": 5,
+    "refusal_rate": 0.2857,
+    "pass_correct": 4,
+    "pass_correct_rate": 0.5714,
+    "pass_any_rate": 0.5714,
+    "fabrication_rate_on_answered": 0.2,
+    "fabricated_items": 1,
+    "hallucinated_on_unanswerable": 0,
+    "overrefusal": 2,
+    "verdict_counts": {
+      "FAIL_FABRICATED": 1,
+      "PASS_CORRECT": 4,
+      "FAIL_OVERREFUSAL": 2
+    },
+    "median_latency": 278.1
+  },
+  "by_family": {
+    "CLOZE": {
+      "n": 1,
+      "n_answered": 1,
+      "refusal_rate": 0.0,
+      "pass_correct": 0,
+      "pass_correct_rate": 0.0,
+      "pass_any_rate": 0.0,
+      "fabrication_rate_on_answered": 1.0,
+      "fabricated_items": 1,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 0,
+      "verdict_counts": {
+        "FAIL_FABRICATED": 1
+      },
+      "median_latency": 292.34
+    },
+    "CLOZE_OCR": {
+      "n": 3,
+      "n_answered": 3,
+      "refusal_rate": 0.0,
+      "pass_correct": 3,
+      "pass_correct_rate": 1.0,
+      "pass_any_rate": 1.0,
+      "fabrication_rate_on_answered": 0.0,
+      "fabricated_items": 0,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 0,
+      "verdict_counts": {
+        "PASS_CORRECT": 3
+      },
+      "median_latency": 278.1
+    },
+    "EXACT": {
+      "n": 2,
+      "n_answered": 0,
+      "refusal_rate": 1.0,
+      "pass_correct": 0,
+      "pass_correct_rate": 0.0,
+      "pass_any_rate": 0.0,
+      "fabrication_rate_on_answered": null,
+      "fabricated_items": 0,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 2,
+      "verdict_counts": {
+        "FAIL_OVERREFUSAL": 2
+      },
+      "median_latency": 388.63
+    },
+    "REVERSE_LEGAL": {
+      "n": 1,
+      "n_answered": 1,
+      "refusal_rate": 0.0,
+      "pass_correct": 1,
+      "pass_correct_rate": 1.0,
+      "pass_any_rate": 1.0,
+      "fabrication_rate_on_answered": 0.0,
+      "fabricated_items": 0,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 0,
+      "verdict_counts": {
+        "PASS_CORRECT": 1
+      },
+      "median_latency": 178.87
+    }
+  },
+  "ci95_answerable": {
+    "pass_correct": {
+      "ci95": [
+        0.1429,
+        0.8571
+      ]
+    },
+    "refusal_rate": {
+      "ci95": [
+        0.0,
+        0.5714
+      ]
+    },
+    "fabrication_rate_on_answered": {
+      "ci95": [
+        0.0,
+        0.6
+      ]
+    }
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "config": "c_gold_window_qwen",
+  "base_round": "r5",
+  "referee": "9f1179ccab74",
+  "env": {
+    "ENABLE_ANSWER_GUARD": "1",
+    "ANSWER_GUARD_MIN_SCORE": null,
+    "ANSWER_GUARD_MAX_UNSUPPORTED": null,
+    "ENABLE_ANSWER_RESCUE": null,
+    "RESCUE_MIN_SCORE": null,
+    "QWEN_FALLBACK": null,
+    "GEMINI_MODEL": null,
+    "USE_QWEN_GENERATOR": null
+  },
+  "n_base_items": 100,
+  "n_skipped": 20,
+  "skipped_items": [
+    {
+      "id": "HQ01",
+      "family": "HUMAN",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "M142438753261798",
+      "family": "REFUSE_MISSING_DOC",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "R165719960918606",
+      "family": "REFUSE_OOD",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "HQ02",
+      "family": "HUMAN",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "M153742466270767",
+      "family": "REFUSE_MISSING_DOC",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "R184746228824203",
+      "family": "REFUSE_OOD",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "HQ03",
+      "family": "HUMAN",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "M208944617251005",
+      "family": "REFUSE_MISSING_DOC",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "R224075874292646",
+      "family": "REFUSE_OOD",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "HQ04",
+      "family": "HUMAN",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "M234529971158912",
+      "family": "REFUSE_MISSING_DOC",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "R248745011260307",
+      "family": "REFUSE_OOD",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "HQ05",
+      "family": "HUMAN",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "M28020617412449",
+      "family": "REFUSE_MISSING_DOC",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "R254376862841044",
+      "family": "REFUSE_OOD",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "HQ06",
+      "family": "HUMAN",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "M41101106085990",
+      "family": "REFUSE_MISSING_DOC",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "R46113069284544",
+      "family": "REFUSE_OOD",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "HQ07",
+      "family": "HUMAN",
+      "reason": "no_gold_chunk"
+    },
+    {
+      "id": "R68503960632110",
+      "family": "REFUSE_OOD",
+      "reason": "no_gold_chunk"
+    }
+  ],
+  "question_and_labels_source": "normalized_query + labels.question_type của r5 (đã lưu)",
+  "rescue_note": "ENABLE_ANSWER_RESCUE để TẮT (lever đã bác ở r5b; r5 chạy BẬT, chênh ≤1 câu cứu)"
+}

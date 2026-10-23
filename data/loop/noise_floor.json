@@ -1,0 +1,284 @@
+{
+  "task": "T0 — noise floor pha sinh (hai lượt cùng cấu hình)",
+  "generated_from": {
+    "baseline_verdicts": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\rounds\\r5\\verdicts_full.jsonl",
+    "candidate_verdicts": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\rounds\\r5b\\verdicts_full.jsonl",
+    "rescue_tally": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\rounds\\r5b\\rescue_tally.txt"
+  },
+  "rounds": {
+    "baseline": "r5",
+    "candidate": "r5b",
+    "same_code": true,
+    "referee": {
+      "baseline": "9f1179ccab74",
+      "candidate": "9f1179ccab74"
+    },
+    "settings_identical_except": {
+      "generation_cache_dir": {
+        "baseline": "tmp/loop_gen_cache_r5",
+        "candidate": "tmp/loop_gen_cache_r5b"
+      }
+    },
+    "n_common_items": 100,
+    "candidate_full_jsonl_lines": 100
+  },
+  "rescue_count_from_r5b_log": {
+    "lines_answer_rescue_total": 60,
+    "attempts_model_still_refused": 59,
+    "rescued_and_accepted": 1,
+    "eligible_refusals_measured": 64,
+    "source": "data/loop/rounds/r5b/rescue_tally.txt (đếm từ stdout gốc)"
+  },
+  "headline": {
+    "PASS_CORRECT_rate": {
+      "baseline_count": 14,
+      "candidate_count": 14,
+      "baseline_denominator": 100,
+      "candidate_denominator": 100,
+      "baseline_rate": 0.14,
+      "candidate_rate": 0.14,
+      "diff_candidate_minus_baseline": 0.0,
+      "mcnemar_exact": {
+        "n_discordant": 2,
+        "b": 1,
+        "c": 1,
+        "p_two_sided": 1.0
+      },
+      "paired_bootstrap_diff": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.0004,
+        "ci95_percentile": [
+          -0.03,
+          0.03
+        ]
+      },
+      "baseline_rate_ci95": {
+        "ci95": [
+          0.07,
+          0.21
+        ]
+      },
+      "candidate_rate_ci95": {
+        "ci95": [
+          0.08,
+          0.21
+        ]
+      }
+    },
+    "refusal_rate": {
+      "baseline_count": 69,
+      "candidate_count": 66,
+      "baseline_denominator": 100,
+      "candidate_denominator": 100,
+      "baseline_rate": 0.69,
+      "candidate_rate": 0.66,
+      "diff_candidate_minus_baseline": -0.03,
+      "mcnemar_exact": {
+        "n_discordant": 5,
+        "b": 1,
+        "c": 4,
+        "p_two_sided": 0.375
+      },
+      "paired_bootstrap_diff": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.0296,
+        "ci95_percentile": [
+          -0.07,
+          0.01
+        ]
+      },
+      "baseline_rate_ci95": {
+        "ci95": [
+          0.6,
+          0.78
+        ]
+      },
+      "candidate_rate_ci95": {
+        "ci95": [
+          0.57,
+          0.75
+        ]
+      }
+    },
+    "fabrication_rate_on_answered": {
+      "baseline_count": 1,
+      "candidate_count": 1,
+      "baseline_denominator": 31,
+      "candidate_denominator": 34,
+      "baseline_rate": 0.0323,
+      "candidate_rate": 0.0294,
+      "diff_candidate_minus_baseline": -0.0028,
+      "mcnemar_exact": {
+        "n_discordant": 0,
+        "b": 0,
+        "c": 0,
+        "p_two_sided": 1.0
+      },
+      "paired_bootstrap_diff": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.0028,
+        "ci95_percentile": [
+          -0.0144,
+          0.0009
+        ]
+      },
+      "baseline_rate_ci95": {
+        "ci95": [
+          0.0,
+          0.1111
+        ]
+      },
+      "candidate_rate_ci95": {
+        "ci95": [
+          0.0,
+          0.1
+        ]
+      }
+    }
+  },
+  "verdict_flips": {
+    "n_flipped": 5,
+    "flip_rate": 0.05,
+    "transition_matrix_baseline_rows__candidate_columns": {
+      "FAIL_OVERREFUSAL": {
+        "FAIL_OVERREFUSAL": 33,
+        "FAIL_INCOMPLETE": 1,
+        "FAIL_RETRIEVAL": 2,
+        "PASS_CORRECT": 1
+      },
+      "PASS_CORRECT": {
+        "PASS_CORRECT": 13,
+        "FAIL_OVERREFUSAL": 1
+      },
+      "FAIL_INCOMPLETE": {
+        "FAIL_INCOMPLETE": 9
+      },
+      "FAIL_RETRIEVAL": {
+        "FAIL_RETRIEVAL": 20
+      },
+      "PASS_REFUSAL": {
+        "PASS_REFUSAL": 17
+      },
+      "FAIL_HALLUCINATED_ON_UNANSWERABLE": {
+        "FAIL_HALLUCINATED_ON_UNANSWERABLE": 2
+      },
+      "FAIL_FABRICATED": {
+        "FAIL_FABRICATED": 1
+      }
+    },
+    "by_family": {
+      "CLOZE": {
+        "n_common": 14,
+        "n_flipped": 1,
+        "flip_rate": 0.0714
+      },
+      "CLOZE_OCR": {
+        "n_common": 14,
+        "n_flipped": 0,
+        "flip_rate": 0.0
+      },
+      "EXACT": {
+        "n_common": 8,
+        "n_flipped": 1,
+        "flip_rate": 0.125
+      },
+      "HUMAN": {
+        "n_common": 7,
+        "n_flipped": 2,
+        "flip_rate": 0.2857
+      },
+      "NUMERIC": {
+        "n_common": 10,
+        "n_flipped": 0,
+        "flip_rate": 0.0
+      },
+      "REFUSE_MISSING_DOC": {
+        "n_common": 6,
+        "n_flipped": 0,
+        "flip_rate": 0.0
+      },
+      "REFUSE_OOD": {
+        "n_common": 7,
+        "n_flipped": 0,
+        "flip_rate": 0.0
+      },
+      "REVERSE_LEGAL": {
+        "n_common": 1,
+        "n_flipped": 0,
+        "flip_rate": 0.0
+      },
+      "SOURCE_LOOKUP": {
+        "n_common": 13,
+        "n_flipped": 1,
+        "flip_rate": 0.0769
+      },
+      "TRAP": {
+        "n_common": 5,
+        "n_flipped": 0,
+        "flip_rate": 0.0
+      },
+      "TRAP_OCR": {
+        "n_common": 3,
+        "n_flipped": 0,
+        "flip_rate": 0.0
+      },
+      "YESNO_FACT": {
+        "n_common": 12,
+        "n_flipped": 0,
+        "flip_rate": 0.0
+      }
+    },
+    "items": [
+      {
+        "id": "C159725752125707",
+        "family": "CLOZE",
+        "split": "test",
+        "baseline_verdict": "FAIL_OVERREFUSAL",
+        "candidate_verdict": "FAIL_INCOMPLETE"
+      },
+      {
+        "id": "HQ02",
+        "family": "HUMAN",
+        "split": "test",
+        "baseline_verdict": "FAIL_OVERREFUSAL",
+        "candidate_verdict": "FAIL_RETRIEVAL"
+      },
+      {
+        "id": "HQ03",
+        "family": "HUMAN",
+        "split": "test",
+        "baseline_verdict": "FAIL_OVERREFUSAL",
+        "candidate_verdict": "FAIL_RETRIEVAL"
+      },
+      {
+        "id": "S193409910201077",
+        "family": "SOURCE_LOOKUP",
+        "split": "test",
+        "baseline_verdict": "FAIL_OVERREFUSAL",
+        "candidate_verdict": "PASS_CORRECT"
+      },
+      {
+        "id": "T111158251954171",
+        "family": "EXACT",
+        "split": "trainpool",
+        "baseline_verdict": "PASS_CORRECT",
+        "candidate_verdict": "FAIL_OVERREFUSAL"
+      }
+    ]
+  },
+  "bootstrap": {
+    "reps": 10000,
+    "seed": 20261023,
+    "method": "paired item-resample, percentile CI"
+  },
+  "how_to_read": "Bốn chỉ số quyết định (PASS_CORRECT/PASS_REFUSAL/HALLUCINATED/FABRICATED) và CI của T0 xác định trần nhiễu; mọi chênh lệch giữa hai round pha sinh nằm trọn trong CI95 của hiệu ứng ghép cặp phải coi là nhiễu cho tới khi có chứng cứ khác."
+}

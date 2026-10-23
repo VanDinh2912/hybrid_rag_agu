@@ -1,0 +1,42 @@
+{
+  "engine": "easyocr 1.7.2 lang=vi gpu=False dpi=200",
+  "note": "trial vài trang; số hiệu 1504/QD-DHAG khớp ảnh gốc (tên file 1054 là gõ sai, đã đối chiếu mắt thường)",
+  "pages": [
+    {
+      "file": "1054-qd-dhag-2020-09-28.pdf",
+      "page_index": 1,
+      "seconds": 25.5,
+      "word_diacritic_ratio": 0.825,
+      "marked": 312,
+      "words": 378,
+      "head": "ĐẠI HỌC QUỐC GIA TP. HCM\nCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\nTRƯỜNG ĐẠI HỌC AN GIANG\nĐộc lập\ndo\nHạnh phúc\nQUY CHẾ\ntác sinh viên Trường Đại học An Giang\n(Kèm theo"
+    },
+    {
+      "file": "1054-qd-dhag-2020-09-28.pdf",
+      "page_index": 2,
+      "seconds": 24.3,
+      "word_diacritic_ratio": 0.821,
+      "marked": 362,
+      "words": 441,
+      "head": "2\nChương II\nHỆ THỐNG TỖ CHỨC VÀ QUẢN LÝ CÔNG TÁC SINH VIÊN\nĐiều 4. Hệ thống tổ chức,\nlý\ntác sinh viên\nHệ\ntổ chức,\nlý CTSV của nhà trường bao gồm: Hiệu trưởng (h"
+    },
+    {
+      "file": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+      "page_index": 1,
+      "seconds": 21.9,
+      "word_diacritic_ratio": 0.803,
+      "marked": 265,
+      "words": 330,
+      "head": "ĐẠI HỌC QUỐC GIA\nCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\nTHÀNH PHỐ HỎ CHÍ MINH\nĐộc lập\ndo\nHạnh phúc\nQUY ĐỊNH\ntác khen\nthưởng học sinh, sinh viên\ntại Đại học\nQuốc gia"
+    },
+    {
+      "file": "888-qd-dhag-2022-08-08.pdf",
+      "page_index": 1,
+      "seconds": 16.7,
+      "word_diacritic_ratio": 0.726,
+      "marked": 69,
+      "words": 95,
+      "head": "Điều 2. Quyết định này có hiệu lực kể từ ngày ký và\nthế Quyết định số\n626/Q4-ĐHAG ngày 15/5/2019 của Trường Đại học An\nban hành Quy chế về\ntác thi đua; khen thư"
+    }
+  ]
+}

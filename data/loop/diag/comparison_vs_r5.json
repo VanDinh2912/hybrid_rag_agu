@@ -1,0 +1,98 @@
+{
+  "a_oracle_qwen": {
+    "pass_correct": {
+      "r5": 0.175,
+      "cfg": 0.0875,
+      "paired_bootstrap_diff_cfg_minus_r5": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.0877,
+        "ci95_percentile": [
+          -0.175,
+          0.0
+        ]
+      }
+    },
+    "refusal_rate": {
+      "r5": 0.675,
+      "cfg": 0.8625,
+      "paired_bootstrap_diff_cfg_minus_r5": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": 0.1876,
+        "ci95_percentile": [
+          0.0875,
+          0.3
+        ]
+      }
+    },
+    "fabrication_rate_on_answered": {
+      "r5": 0.0385,
+      "cfg": 0.0,
+      "paired_bootstrap_diff_cfg_minus_r5": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.0386,
+        "ci95_percentile": [
+          -0.1304,
+          0.0
+        ]
+      }
+    },
+    "n_common": 80
+  },
+  "c_gold_window_qwen": {
+    "pass_correct": {
+      "r5": 0.175,
+      "cfg": 0.025,
+      "paired_bootstrap_diff_cfg_minus_r5": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.1504,
+        "ci95_percentile": [
+          -0.2375,
+          -0.0625
+        ]
+      }
+    },
+    "refusal_rate": {
+      "r5": 0.675,
+      "cfg": 0.95,
+      "paired_bootstrap_diff_cfg_minus_r5": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": 0.2752,
+        "ci95_percentile": [
+          0.175,
+          0.375
+        ]
+      }
+    },
+    "fabrication_rate_on_answered": {
+      "r5": 0.0385,
+      "cfg": 0.0,
+      "paired_bootstrap_diff_cfg_minus_r5": {
+        "reps_requested": 10000,
+        "reps_valid": 9828,
+        "reps_skipped_zero_denominator": 172,
+        "seed": 20261023,
+        "mean_diff": -0.0385,
+        "ci95_percentile": [
+          -0.1304,
+          0.0
+        ]
+      }
+    },
+    "n_common": 80
+  }
+}
