@@ -208,3 +208,8 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tmp/mutation_check_t5.py`
 - **KẾ TIẾP (đúng thứ tự đêm):** chạy test tương ứng TT0–TT3 (T0/T1/T2/T3) → viết
   `docs/MORNING_REPORT.md` → dừng. Không chạy round, không dùng Gemini.
+- **TT0–TT3 chạy cuối phiên:** `tests/test_noise_floor.py` (21) + `tests/test_ablation_generation.py`
+  (24) + `tests/test_corpus_rebuild.py` (78) + `tests/test_t3_guardrails.py` (75) =
+  **198 passed** trong 10,28 s (`tmp/pytest_tt0_tt3_final.txt`).
+- **`docs/MORNING_REPORT.md` đã cập nhật** mục "PHIÊN TIẾP 24-10" ở đầu (bản ghi đêm đầu giữ
+  nguyên phía dưới). **PHIÊN DỪNG** tại đây theo thứ tự đêm: không chạy round, không gọi Gemini.

@@ -1,5 +1,68 @@
 # BÁO CÁO SÁNG (MORNING_REPORT) — phiên tự trị qua đêm 23-10 → 24-10
 
+Chi nhánh: `auto/overnight`, hiện **16 commit** so với `main` (`29f37dc`); HEAD `85d40a0`.
+`main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
+**"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
+(đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
+`pytest tests -q` mới nhất: **957 passed** (`tmp/pytest_t5_final.txt`, 26,84 s).
+
+## PHIÊN TIẾP 24-10 (T3 → T7 + kiểm thử T0–T5) — cập nhật cuối phiên
+
+### A. Đã xong (số liệu + nguồn)
+
+| Việc | Kết quả | Nguồn |
+|---|---|---|
+| T3 r8 (`ENABLE_DECOUPLED_REFUSAL`), r9 (+`ENABLE_EVIDENCE_SELECTION`) | **Cả hai KHÔNG ĐẠT.** PASS_CORRECT 14→19→19; refusal 0,69→0,28→0,57; PASS_REFUSAL 17→2→14; HALLUCINATED 2→12→3; p95 19,08→19,93→33,27 s. Giữ hai cờ **TẮT** | `data/loop/rounds/r8/`, `r9/`, `docs/reports/T3.md` |
+| T4 r10 (qwen2.5:3b Q4, 100% GPU) | PASS_CORRECT 14→**16**, McNemar **p=0,804**, CI delta **[−0,06;+0,10]** chứa 0; refusal 0,69→0,75; p95 +83% ⇒ **giữ 1,5B**, không mở Qwen3-4B | `data/loop/rounds/r10/`, `docs/reports/T4.md` |
+| T4(b) Gemini `b_gemini_top6` | **12/30 id hợp lệ** (PerDay chặn) ⇒ **cấm** kết luận "năng lực model là nút thắt" | `data/loop/diag/b_gemini_top6/`, `docs/reports/T4.md` |
+| T5 bonus 3 vs 12 (ghép cặp 811 item) | delta **−0,0257**, CI [−0,04;−0,0129], **p=0,00028**, 21 mất/3 được; **21/21** chunk vàng rơi hạng 7–12; EXACT/TRAP bất biến ⇒ con số bonus không phải nút thắt | `data/loop/diag/bonus_paired_r1_r2.json` |
+| T5a reranker | `ENABLE_RERANKER` mặc định TẮT, model `BAAI/bge-reranker-v2-m3` (cache 2,2 GB), móc **sau** bonus lọc mềm; 46 test riêng của T5a. **r11 retrieval-only 811 item đã có** | `src/reranker.py`, `tests/test_reranker_flag.py`, `data/loop/rounds/r11/` |
+| **T5-test (phiên này)** | **68 test** (26 hợp đồng reranker + 42 contextual header) xanh; mutation **10/10 bắt được, 10/10 hoàn nguyên byte-identical**; golden 30 item T3 khớp từng khoá; toàn repo **957 passed** | `tests/test_t5_*.py`, `tmp/mutation_check_t5.log`, `docs/reports/test_T5.md` |
+| T5b contextual header (module) | `src/contextual_header.py`, cờ `ENABLE_CONTEXTUAL_HEADER` mặc định **TẮT**, **chưa nối `ingest.py`, chưa build index**; header thật trên index: 232/361 và 227/342 chunk có Điều, Chương chỉ 9/361 và 18/342. Digest hai index không đổi | `src/contextual_header.py`, `tests/test_t5_contextual_header.py` |
+| T6 khung kiểm chứng trước hội đồng | PA-13 đề xuất cổng refusal tương đối (8 test, **gate.py không đổi**); 60 mẫu phân tầng chờ nhãn tay (`n_filled=0`); khung câu hỏi thật (**0 câu**); bootstrap CI vào mục 5.1; tổng điểm đính chính **7,4 → 7,2** | `docs/reports/T6.md`, `docs/PENDING_APPROVAL.md` PA-13 |
+| Kiểm thử T0–T3 + chạy TT0–TT3 | 21 test T0 + 24 test T1 + 78 test T2 + 75 test T3; **TT0–TT3: 198 passed** | `tmp/pytest_tt0_tt3_final.txt`, `docs/reports/test_T{0,1,2,3}.md` |
+
+Không dùng thêm lượt Gemini nào trong phiên tiếp này (**0 lượt**); không chạy round mới
+(r11 đã chạy trước đó, r12 chưa chạy); không build/kích hoạt index; không sửa trọng tài/gate.
+
+### B. Bị chặn / chưa nghiệm thu
+
+1. **T5 chưa nghiệm thu đầy đủ theo câu chữ đề bài:** (i) mục 5 đòi "lùi RRF + cảnh báo" nhưng
+   thiết kế đã đăng ký **cấm lùi thầm** ⇒ test ghim hành vi ném lỗi, ghi rõ khác biệt (PA-18);
+   (ii) **chưa chạy lại gold@6 cấu hình TẮT trên 811 item** để so round đã đóng; (iii) **r12
+   (reranker) chưa chạy** — chưa có `data/loop/rounds/r12/`.
+2. **T5b chưa có index thật:** chờ PA-1 (corpus) + PA-16/PA-18 (wire + guard); mới có unit test
+   và digest chứng minh index cũ không bị ghi.
+3. **T1(b)/T4(b) dừng ở 12/30 id** vì PerDay Google; chỉ được nói "chưa đủ n", không kết luận.
+4. **T2 mục 9 ĐỎ** (48,81% neo nguyên văn gãy > ngưỡng 2%); re-anchor 292 id ở PA-17, chưa làm.
+5. **T6b/T6c chưa có dữ liệu người:** 60 phiếu `n_filled=0`; benchmark câu thật 0 câu.
+6. **PA-8 vẫn treo:** `tools/loop/`, `data/loop/rounds/`, `src/answer_guard.py`, testset chưa
+   tracked; không commit hộ file `src/` dirty của phiên khác.
+
+### C. Việc cần duyệt
+
+Xem đầy đủ trong [`docs/PENDING_APPROVAL.md`](PENDING_APPROVAL.md). Mới trong phiên này:
+**PA-18** (T5: cờ fallback reranker tuỳ chọn; header có/không vào ngữ cảnh generator; wire
+contextual header vào `ingest.py` + build index thư mục mới). Các mục cũ còn treo: PA-1
+(kích hoạt `chroma_db_vie`), PA-3 (sửa cổng #23), PA-8 (commit freeze), PA-9/PA-10 (tầng sinh),
+PA-11/PA-12 (SFT 4-bit/định dạng), PA-13 (cổng refusal tương đối), PA-14/PA-15 (Gemini/dead
+code T3), PA-16 (`ingest.py` guard), PA-17 (re-anchor testset).
+
+### D. Quyết định tự trị đáng xem lại (chi tiết `docs/AUTONOMY_LOG.md`)
+
+1. **Không tự thêm fallback reranker** dù đề bài mục 5 yêu cầu: giữ thiết kế đăng ký trước
+   (ném lỗi tường minh) và ghim bằng test; đề xuất cờ TẮT ở PA-18. Nếu anh/chị muốn hành vi
+   theo câu chữ đề bài, bật cờ này khi được duyệt.
+2. **Không build index T5b** dù module đã xong: corpus chưa chốt (PA-1) và chưa duyệt wire
+   (PA-16/PA-18); chỉ kiểm bằng index nhỏ trong `tmp_path` + digest hai index thật.
+3. **Dùng lại golden T3** cho mục 1 thay vì tạo golden mới: golden được chụp từ `git archive
+   HEAD f492f05`, đúng trạng thái "trước khi nối T5", tránh golden tự sinh vòng tròn.
+4. **Mutation trên file dirty của phiên khác** (`src/pipeline.py`, `src/reranker.py`): bắt buộc
+   backup byte + kiểm SHA-256 sau khôi phục; cả 10/10 lần trùng, không commit các file đó.
+5. **Không gọi Gemini** trong phiên tiếp; mọi việc cần model thật đều ghi "chưa kiểm chứng".
+
+## BẢN GHI ĐÊM ĐẦU (23-10 → 24-10; các số dưới đây giữ nguyên lịch sử)
+
 Chi nhánh: `auto/overnight` (4 commit: `65eb70a`, `d51d1db`, `b773446` + commit kết phiên).
 `main` không đổi. **Không có code sản xuất nào bị sửa** — `chroma_db/`, `.ocr_cache/`,
 `data/loop/rounds/`, `src/` sản xuất và các file REFEREE_FILES nguyên trạng.
