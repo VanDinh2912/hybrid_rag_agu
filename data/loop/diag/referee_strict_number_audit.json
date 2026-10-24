@@ -1,0 +1,163 @@
+{
+  "note": "CHỈ ĐỌC — không phải trọng tài chính thức, không dùng thay số round. Strict chỉ áp cho required_entities là số 1-2 chữ số.",
+  "referee_fingerprint": "9f1179ccab74",
+  "generated_at": "2026-10-24T23:09:07+07:00",
+  "strict_rule": "(?<![\\w])<số>(?![\\w])",
+  "rounds": [
+    {
+      "round": "r5",
+      "n_rows": 100,
+      "n_answered": 100,
+      "n_covers_now": 28,
+      "n_flips": 6,
+      "n_flips_of_pass_correct": 1,
+      "flips": [
+        {
+          "id": "T111158251954171",
+          "family": "EXACT",
+          "verdict": "PASS_CORRECT",
+          "required_entities": [
+            "2"
+          ],
+          "gold_sentence": "₊ Sau thời gian ĐKHP và điều chỉnh bằng hình thức trực tuyến, SV được phép \nđiều chỉnh kết quả ĐKHP (đăng ký bổ sung, đăng ký sang nhóm khác, rút h ọc phần đã \n2",
+          "answer_preview": "Bằng hình thức trực tuyến hiện hành. (Điều 15 — 118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf)"
+        },
+        {
+          "id": "T136033890847523",
+          "family": "EXACT",
+          "verdict": "FAIL_RETRIEVAL",
+          "required_entities": [
+            "02",
+            "10",
+            "2",
+            "3"
+          ],
+          "gold_sentence": "ăm học SV, Khoa/Bộ môn, CVHT \n10 Khoa/Bộ môn xử lý phiếu rút học phần, tổng hợp và gửi dữ liệu về PĐT Trong 02 tuần đầu của học kỳ Khoa/Bộ môn, PĐT \n3\n\n2.",
+          "answer_preview": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (KH To chuc HK 261 - 20260612.pdf)"
+        },
+        {
+          "id": "T224347701010571",
+          "family": "EXACT",
+          "verdict": "FAIL_RETRIEVAL",
+          "required_entities": [
+            "2"
+          ],
+          "gold_sentence": "gian ĐKHP và điều chỉnh bằng hình thức trực tuyến, SV được phép \nđiều chỉnh kết quả ĐKHP (đăng ký bổ sung, đăng ký sang nhóm khác, rút h ọc phần đã \n2\n\nđăng ký) bằng phiếu;",
+          "answer_preview": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (Điều 8 — 1054-qd-dhag-2020-09-28.pdf)"
+        },
+        {
+          "id": "C162319281103737",
+          "family": "CLOZE",
+          "verdict": "FAIL_OVERREFUSAL",
+          "required_entities": [
+            "20"
+          ],
+          "gold_sentence": "An Giang, ngày tháng năm 20…\n CỐ VẤN HỌC TẬP SINH VIÊN\n\nTRƯỞNG KHOA\n\nGhi chú:",
+          "answer_preview": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (Điều 24 — 1054-qd-dhag-2020-09-28.pdf)"
+        },
+        {
+          "id": "C145524027648409",
+          "family": "CLOZE",
+          "verdict": "FAIL_OVERREFUSAL",
+          "required_entities": [
+            "1"
+          ],
+          "gold_sentence": "CĐR Nội dung \nELO 1 Áp dụng kiến thức nền tảng về khoa học tự nhiên và khoa học xã hội vào lĩnh vực CNTT.",
+          "answer_preview": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (ban-mo-ta-ctdt-nganh-cntt-2021.pdf)"
+        },
+        {
+          "id": "C151482102557130",
+          "family": "CLOZE",
+          "verdict": "FAIL_OVERREFUSAL",
+          "required_entities": [
+            "24"
+          ],
+          "gold_sentence": "Đợt Thời gian Lớp tham gia Số lượng (dự kiến) \n1 24/8 – 20/9/2026 DH25BT, DH25TT, 147 \n2 28/9 – 25/10/2026 DH25KT1, DH25KT2, DH25PN 153 \n3 26/10 – 22/11/2026 DH25AT, DH25CS, DH25TP, DH25TS, \nDH26TR \n155 \nTổng 455 \nCác lớp còn lại khóa DH25 ",
+          "answer_preview": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (ke-hoach-ttck-kltn-dh24pm-2026.pdf)"
+        }
+      ]
+    },
+    {
+      "round": "r8",
+      "n_rows": 100,
+      "n_answered": 100,
+      "n_covers_now": 34,
+      "n_flips": 1,
+      "n_flips_of_pass_correct": 0,
+      "flips": [
+        {
+          "id": "T224347701010571",
+          "family": "EXACT",
+          "verdict": "FAIL_RETRIEVAL",
+          "required_entities": [
+            "2"
+          ],
+          "gold_sentence": "gian ĐKHP và điều chỉnh bằng hình thức trực tuyến, SV được phép \nđiều chỉnh kết quả ĐKHP (đăng ký bổ sung, đăng ký sang nhóm khác, rút h ọc phần đã \n2\n\nđăng ký) bằng phiếu;",
+          "answer_preview": "Sinh viên: Bằng hình thức trực tuyến được quy định là 50% học phí.\n\nCăn cứ pháp lý: [1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf]. (Điều 8 — 1054-qd-dhag-2020-09-28.pdf)"
+        }
+      ]
+    },
+    {
+      "round": "r9",
+      "n_rows": 100,
+      "n_answered": 100,
+      "n_covers_now": 25,
+      "n_flips": 0,
+      "n_flips_of_pass_correct": 0,
+      "flips": []
+    },
+    {
+      "round": "r10",
+      "n_rows": 100,
+      "n_answered": 100,
+      "n_covers_now": 32,
+      "n_flips": 4,
+      "n_flips_of_pass_correct": 2,
+      "flips": [
+        {
+          "id": "T111158251954171",
+          "family": "EXACT",
+          "verdict": "PASS_CORRECT",
+          "required_entities": [
+            "2"
+          ],
+          "gold_sentence": "₊ Sau thời gian ĐKHP và điều chỉnh bằng hình thức trực tuyến, SV được phép \nđiều chỉnh kết quả ĐKHP (đăng ký bổ sung, đăng ký sang nhóm khác, rút h ọc phần đã \n2",
+          "answer_preview": "Bằng hình thức trực tuyến hiện hành là hình thức đăng ký học phần thông qua website ĐKHP trực tuyến của Trường Đại học An Giang tại địa chỉ: https://regis.agu.edu.vn. (Điều 15 — 118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH V"
+        },
+        {
+          "id": "T136033890847523",
+          "family": "EXACT",
+          "verdict": "FAIL_RETRIEVAL",
+          "required_entities": [
+            "02",
+            "10",
+            "2",
+            "3"
+          ],
+          "gold_sentence": "ăm học SV, Khoa/Bộ môn, CVHT \n10 Khoa/Bộ môn xử lý phiếu rút học phần, tổng hợp và gửi dữ liệu về PĐT Trong 02 tuần đầu của học kỳ Khoa/Bộ môn, PĐT \n3\n\n2.",
+          "answer_preview": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (KH To chuc HK 261 - 20260612.pdf)"
+        },
+        {
+          "id": "T224347701010571",
+          "family": "EXACT",
+          "verdict": "FAIL_RETRIEVAL",
+          "required_entities": [
+            "2"
+          ],
+          "gold_sentence": "gian ĐKHP và điều chỉnh bằng hình thức trực tuyến, SV được phép \nđiều chỉnh kết quả ĐKHP (đăng ký bổ sung, đăng ký sang nhóm khác, rút h ọc phần đã \n2\n\nđăng ký) bằng phiếu;",
+          "answer_preview": "Xin lỗi, tài liệu hiện có không đủ thông tin để trả lời câu hỏi này. (Điều 8 — 1054-qd-dhag-2020-09-28.pdf)"
+        },
+        {
+          "id": "C162319281103737",
+          "family": "CLOZE",
+          "verdict": "PASS_CORRECT",
+          "required_entities": [
+            "20"
+          ],
+          "gold_sentence": "An Giang, ngày tháng năm 20…\n CỐ VẤN HỌC TẬP SINH VIÊN\n\nTRƯỞNG KHOA\n\nGhi chú:",
+          "answer_preview": "An Giang, ngày 01 tháng 01 năm 2026, Cố vấn học tập sinh viên trưởng khoa ghi chú: \n\nSinh viên có thể đề xuất điều chỉnh quy định chính sách cho một số quy định cũ để phù hợp với tình hình thực tế. Điều này được quy định tại Điều 24 của Quy"
+        }
+      ]
+    }
+  ]
+}

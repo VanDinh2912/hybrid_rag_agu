@@ -492,6 +492,22 @@ nằm trong "B1"/"2021". Nếu chỉ gỡ cờ proper của PA-2 mà không sử
 **Ước lượng tác động (chỉ đọc, chưa đổi gì):** áp bản strict lên 4 round đã đóng —
 r5 **1/14** PASS_CORRECT bị hạ, r10 **2/16** bị hạ, r8/r9 **0**; các ca bị hạ đều là số ngắn
 khớp trong chuỗi khác (ví dụ `required=['2']` khớp "2026-2028"; `['20']` khớp "2026").
-Ba ca này **chưa chấm tay** nên chưa được coi là "PASS oan" chắc chắn; nếu duyệt, phải chấm tay
-và công bố lại bảng r5/r8/r9/r10 (r5 là baseline của T3/T4). Vì có thể đổi kết luận các round cũ,
-đây là lý do chính để **không tự sửa**.
+Ba ca này **đã chấm tay ở mục dưới**: không phải cả 3 là "PASS oan", nên **không áp strict một
+mình**; nếu duyệt, phải sửa metadata trước và công bố lại bảng r5/r8/r9/r10 (r5 là baseline
+của T3/T4). Vì có thể đổi kết luận các round cũ, đây là lý do chính để **không tự sửa**.
+
+**Chấm tay 3 dòng PASS bị strict hạ (24-10 23:20) — KHÔNG phải cả 3 là "PASS oan":**
+| round | id | required | đọc tay | kết luận |
+|---|---|---|---|---|
+| r5, r10 | T111158251954171 | `['2']` | gold_sentence kết thúc bằng số trang "2"; câu trả lời không có số 2 độc lập | strict hạ PASS→INCOMPLETE, nhưng **metadata vàng kém** (số trang), không phải câu trả lời sai chắc chắn |
+| r5 | C162319281103737 | `['20']` | verdict là FAIL_OVERREFUSAL (câu trả lời từ chối) | coverage đổi nhưng **verdict không đổi** — không có tác động |
+| r10 | C162319281103737 | `['20']` | gold_sentence là mẫu "ngày tháng năm 20…"; model điền "2026" | strict hạ PASS→INCOMPLETE, nhưng **"2026" có thể là điền hợp lệ cho mẫu "20…"** — chưa đủ căn cứ nói PASS oan |
+
+⇒ **Không nên áp diff strict một mình.** Gốc rễ là `required_entities` ngắn/kém (số trang lẫn
+vào gold; "20" là tiền tố năm). Hướng an toàn hơn:
+1. Làm sạch metadata: bỏ required_entities là số trang/rác; đổi `['1']` thành `['ELO 1']`,
+   `['20']` thành giá trị đầy đủ nếu mẫu yêu cầu; **cần duyệt vì đổi testset**.
+2. Nếu vẫn muốn sửa `verify.py`, phải kèm test đúng 4 ca: C1455 (phải FAIL), T1111 (không được
+   coi là PASS nếu gold chỉ là số trang), C1623-r10 (phải xử lý mẫu "20…" đúng), và ELO 10/2024.
+3. Audit tái lập: `tools/diag/referee_strict_number_audit.py` → `data/loop/diag/referee_strict_number_audit.json`
+   (chỉ đọc; 5 test trong `tests/test_referee_strict_number_audit.py`).

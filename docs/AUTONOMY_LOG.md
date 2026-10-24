@@ -577,6 +577,11 @@ hoặc chờ đủ 30 id. Không có việc nào cần model/round mới. **Ch�
 5. **Không suy rộng từ 20/25**: con số 80% là của 25 id tiền tố, không phải ước lượng cho 30 id
    hay cho toàn bộ 811 item; 5 id còn lại vẫn phải chạy đúng danh sách đã đăng ký.
 6. **Không xóa/không dọn** file tạm, cache, round; không commit `src/` dirty của phiên khác.
+7. **Dựng audit tái lập cho PA-20** (`tools/diag/referee_strict_number_audit.py` + 5 test) thay vì
+   chỉ để số trong tài liệu. Khi audit cho thấy strict hạ 1 PASS r5 + 2 PASS r10, **chấm tay 3
+   dòng** trước khi kết luận: không phải cả 3 là PASS oan (1 số trang lẫn gold, 1 refusal không
+   đổi verdict, 1 mẫu "20…" có thể điền hợp lệ) ⇒ **không áp strict một mình**; ghi rõ phải sửa
+   metadata `required_entities` trước. Đây là ví dụ "đo xong mới thấy dụng cụ đo chưa đủ".
 
 **Hoàn tác:** chỉ sửa 4 tài liệu (`T1.md`, `PENDING_APPROVAL.md`, `STATE.md`, `AUTONOMY_LOG.md`)
 + `MORNING_REPORT.md`; không có thay đổi code/dữ liệu, nên `git revert <commit>` là đủ.

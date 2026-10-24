@@ -45,9 +45,13 @@ Không gọi Gemini, không chạy round, không sửa code; chỉ đọc dữ l
 - **PA-2 cập nhật**: đã đủ bằng chứng (3/25 dương giả proper-noun, vượt ngưỡng ≥2/30) + diff
   stopword cho `answer_guard.py`; **chưa áp dụng** vì đổi chữ ký trọng tài.
 - **PA-20 mới**: `_answer_covers_gold` cho required_entities số ngắn khớp oan ("1" trong
-  "B1"/"2021"); diff strict đề xuất; ước lượng chỉ đọc: r5 **1/14** PASS và r10 **2/16** PASS bị
-  hạ nếu áp dụng, r8/r9 0 ⇒ phải chấm lại r5 (baseline T3/T4) nên **không tự sửa**.
-- `pytest tests -q`: **957 passed** (25,22 s). Việc kế tiếp vẫn là 5 id T1(b) ở cửa sổ ~14:30
+  "B1"/"2021"); diff strict đề xuất; audit tái lập
+  `tools/diag/referee_strict_number_audit.py` + 5 test. Ước lượng chỉ đọc: r5 **1/14** PASS và
+  r10 **2/16** PASS bị hạ nếu áp dụng, r8/r9 0; **chấm tay 3 dòng đó cho thấy không phải cả 3 là
+  PASS oan** (1 do số trang lẫn vào gold, 1 là refusal không đổi verdict, 1 là mẫu "20…" có thể
+  điền hợp lệ) ⇒ **không áp strict một mình**, phải sửa metadata trước và chấm lại r5 (baseline
+  T3/T4). Vì vậy **không tự sửa**.
+- `pytest tests -q`: **962 passed** (23,59 s). Việc kế tiếp vẫn là 5 id T1(b) ở cửa sổ ~14:30
   25-10; T5a chờ PA-19.
 
 ## PHIÊN TIẾP 24-10 (T3 → T7 + kiểm thử T0–T5) — cập nhật cuối phiên

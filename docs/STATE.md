@@ -260,4 +260,9 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   r8/r9 0; **chưa sửa** vì đổi chữ ký trọng tài + phải chấm lại r5 (baseline T3/T4).
 - **Không dùng Gemini** (PerDay còn chặn tới ~14:30 25-10); không chạy round; không build index;
   không xóa file. 5 id T1(b) còn lại giữ nguyên lệnh resume trong mục trên.
-- `pytest tests -q`: **957 passed** (chạy lại sau thay đổi tài liệu, 25,22 s).
+- **Audit tái lập PA-20 (mới, chỉ đọc):** `tools/diag/referee_strict_number_audit.py` →
+  `data/loop/diag/referee_strict_number_audit.json`; 5 test trong
+  `tests/test_referee_strict_number_audit.py`. Chấm tay 3 dòng PASS bị strict hạ: không phải cả
+  3 là PASS oan (1 số trang lẫn gold, 1 refusal không đổi verdict, 1 mẫu "20…" điền hợp lệ) ⇒
+  **không áp strict một mình**, phải sửa metadata required_entities trước.
+- `pytest tests -q`: **962 passed** (957 cũ + 5 test audit; 23,59 s).
