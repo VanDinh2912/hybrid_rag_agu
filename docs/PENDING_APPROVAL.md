@@ -243,3 +243,41 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
 - Việc cần duyệt: (1) chốt delta mặc định 0,05; (2) cho phép áp diff vào `gate.py`; (3) xác nhận
   việc đổi tên rule (nếu muốn giữ tên cũ `refusal_rate_bounded` thì báo trước để không tách nhánh
   báo cáo).
+
+
+## PA-14 — T3: đường Gemini KHÔNG có nhánh `ENABLE_DECOUPLED_REFUSAL` (lever im lặng không chạy)
+
+- Bối cảnh (đo 24-10, `docs/reports/test_T3.md` mục 4.1): `GeminiGenerator.build_prompt`
+  (`src/generator.py:597`) không đọc cờ T3; prompt vẫn chứa chuỗi canonical và lời mời từ chối.
+  `GeminiGenerator._cache_key` (`src/generator.py:765`) dùng `PROMPT_VERSION` **tĩnh**, trong khi
+  QwenGenerator (`src/generator.py:1176`) dùng `effective_prompt_version()`. Test đặc tả hiện
+  trạng: `tests/test_t3_guardrails.py::TestPromptHasNoRefusalAffordance::test_DUONG_GEMINI_hien_trang_khong_co_nhanh_T3_dac_ta_hien_trang`.
+  Vòng lặp P5 chạy Qwen nên r8/r9 KHÔNG bị ảnh hưởng; rủi ro là người dùng chuyển sang Gemini
+  tưởng T3 đang bật.
+- Hai lựa chọn (chờ duyệt, chưa làm):
+  (a) Nối T3 vào Gemini: `build_prompt` dùng `EXTRACT_ONLY_HEAD` khi cờ bật; `_cache_key` dùng
+      `effective_prompt_version()`. Kèm test cặp off/on y như Qwen + golden prompt Gemini OFF.
+  (b) Không nối; ghi rõ trong `data/loop/README.md` + README rằng T3 chỉ áp cho đường Qwen.
+- Đề xuất bảo thủ: (b) — không đổi hành vi đường Gemini khi chưa có phép đo nào trên đường đó.
+- Rủi ro nếu chọn (a): prompt Gemini đổi ⇒ cache Gemini cũ vô hiệu; cần đo lại refusal trên
+  đường Gemini trước khi tuyên bố lever có tác dụng.
+- Hoàn tác: không có thay đổi nào đang áp dụng (chỉ test đặc tả).
+
+
+## PA-15 — T3: `DEC_MAX_UNSUPPORTED = 1` là dead code; trần hiệu dụng thực tế = 0
+
+- Bối cảnh (đo 24-10): `Report.fabricated` (`src/answer_guard.py:156-157`) trả
+  `bool(self.unsupported)`; luật 4 của `refusal_policy` dựa trên `fabricated`, nên **một** thực
+  thể chưa căn cứ đã bị chặn. Đặt `DEC_MAX_UNSUPPORTED=9` vẫn chặn (test
+  `test_max_unsupported_hien_trang_bi_luat_fabricated_che_khu_dac_ta_hien_trang`). Nghĩa là con
+  số 1 đã đăng ký trong `data/loop/README.md` không bao giờ được dùng — hành vi đang **nghiêm
+  hơn** văn bản đăng ký.
+- Hai lựa chọn (chờ duyệt):
+  (a) Sửa luật 4 dùng đúng trần: `n_unsupported > th["max_unsupported"]` thay vì `fabricated`
+      (chạm `src/refusal_policy.py`; ngưỡng đã công bố ⇒ phải đo lại r8/r9 nếu muốn so sánh);
+  (b) Giữ hành vi, **đăng ký lại** trần hiệu dụng = 0 trong README (không đổi code, chỉ sửa tài
+      liệu + báo cáo cũ đã công bố con số 1).
+- Đề xuất bảo thủ: (b) — không đổi hành vi phòng thủ đang chạy; chỉ sửa tài liệu cho khớp số đo.
+- Rủi ro nếu chọn (a): nới guard (1 thực thể bịa lọt) — ngược mục tiêu chống bịa; chỉ nên làm nếu
+  có phép đo cho thấy guard đang chặn oan câu trả lời đúng.
+- Hoàn tác: không có thay đổi nào đang áp dụng (chỉ test đặc tả hiện trạng).

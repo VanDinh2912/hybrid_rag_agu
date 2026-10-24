@@ -135,11 +135,35 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Đo từ có dấu trên một ChromaDB index (chỉ đọc):
   `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/measure_index.py --db ./chroma_db_vie --out data/loop/diag/corpus_diagnostics/index_after.json`
 - Resume T1 (b) (khi quota reset ~14:00 VN): `PYTHONIOENCODING=utf-8 ENABLE_ANSWER_GUARD=1 ./venv/Scripts/python.exe tools/diag/ablation_generation.py --config b_gemini_top6 --ids-file data/loop/diag/b_gemini_top6/sample_ids.json --limit 30`
-- Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng **691** xanh — sau T6;
-  677 sau T4/T5a, 610 trước T4). **Phải chạy bằng `venv` của app**, không dùng python hệ
-  thống (thiếu `streamlit`/`pypdfium2` → 3 file UI lỗi collection dù code không sai).
+- Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng **854** xanh
+  — sau kiểm thử T2/T3 ngày 24-10 15:49; 691 sau T6, 677 sau T4/T5a, 610 trước T4). **Phải chạy
+  bằng `venv` của app**, không dùng python hệ thống (thiếu `streamlit`/`pypdfium2` → 3 file UI
+  lỗi collection dù code không sai).
 
 ## GHI NHỚ BẢO THỦ
 - Không sửa gate.py / verify.py / src/text_utils.py / answer_guard (đổi chữ ký trọng tài) → chỉ đề xuất + diff ở PENDING_APPROVAL.
 - Không ghi đè chroma_db/ hay rounds đã đóng; index mới chỉ ở chroma_db_vie/.
 - Không chạy lại/chấm lại round. Không force-push/reset --hard.
+
+## XONG (bổ sung 24-10 15:49 — KIỂM THỬ T2/T3)
+
+- **T3-test XONG.** `tests/test_t3_guardrails.py` **75 test** (A–D của đề bài), xanh; golden cờ TẮT
+  `tests/golden/t3_off_30items_head_f492f05.json` (sha file `e59b9ebb…`, sha `core` `344d55cd…`,
+  chụp từ `git archive HEAD` = `f492f05` — tại đó pipeline chưa có T3) khớp **từng item/từng khoá**
+  với cây hiện tại; mutation check `tmp/mutation_check_t3.py` **7/7 bắt được, 7/7 hoàn nguyên
+  byte-identical**. Báo cáo `docs/reports/test_T3.md`; đề xuất mới **PA-14** (Gemini không có nhánh
+  T3) + **PA-15** (`DEC_MAX_UNSUPPORTED` dead code) trong `docs/PENDING_APPROVAL.md`.
+- **T2-test:** `tests/test_corpus_rebuild.py` **43 test** xanh (ca 1–6); `tools/diag/check_corpus.py`
+  đã chạy trên dữ liệu thật → `data/loop/diag/corpus_check/corpus_check.json` +
+  `manual_20_segments_new_index.txt` (13:34). **Ca 9 ĐỎ** (48,81% neo nguyên văn gãy; 292 item
+  thoái do rebuild; chỉ 14 = 1,76% mất gold thật) và **ca 10 sai tiền đề** (chữ ký trọng tài KHÔNG
+  đổi: `9f1179ccab74`; chữ ký DỮ LIỆU index đổi `8031beea81da → 6aa8c0fd9162`).
+- **CÒN LẠI của T2-test:** khối in `[7c]` (ký tự ngoài bảng Việt) trong `check_corpus.py::main()`,
+  unit test cho `char_is_supported`/`foreign_glyph_report`, mutation check T2, và
+  `docs/reports/test_T2.md`.
+- **KẾ TIẾP (theo thứ tự đêm):** hoàn tất T2-test còn lại → kiểm thử T5 (reranker, mọi cờ TẮT,
+  chưa chạy round) → chạy test TT0–TT3 → dừng.
+- Lệnh tái lập nhanh:
+  `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/test_t3_guardrails.py -q`
+  · `venv/Scripts/python.exe tmp/mutation_check_t3.py`
+  · `PYTHONIOENCODING=utf-8 python -c "from tools.loop.verify import referee_fingerprint as f; print(f())"`

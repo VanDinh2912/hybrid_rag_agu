@@ -1,0 +1,1975 @@
+{
+  "core": [
+    {
+      "answer": "Trả lời cố định 0: theo Điều 1, Khoản 1 thì giới hạn là 1 lần.",
+      "contexts": [
+        "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách.",
+        "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần? đăng ký học lại học cải thiện môn học học phần điều kiện",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 0,
+            "source": "qw-golden-0-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+        },
+        {
+          "metadata": {
+            "chunk_id": 1,
+            "source": "qw-golden-0-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+        }
+      ],
+      "gen_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "id": "g00",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "question": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "qwen_cache_key": "bb7caf05fb86f79c5e3d11c9674a9e0f8cc95371",
+      "qwen_prompt_sha1": "748cb920f6f220325d2165e6fff3e485385aafdd",
+      "raw_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "retrieval_config": null,
+      "retrieval_query": "sinh vien hoc lai toi da bao nhieu lan moi hoc phan? dang ky hoc lai hoc cai thien mon hoc hoc phan dieu kien",
+      "sources": [
+        {
+          "chars": 250,
+          "chunk_id": 0,
+          "preview": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt tr…",
+          "rank": 1,
+          "source": "qw-golden-0-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 251,
+          "chunk_id": 1,
+          "preview": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ t…",
+          "rank": 2,
+          "source": "qw-golden-0-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 1: theo Điều 2, Khoản 2 thì giới hạn là 2 lần.",
+      "contexts": [
+        "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên.",
+        "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào? hỗ trợ học phí miễn giảm học phí chế độ chính sách học phí",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 1000,
+            "source": "qw-golden-1-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+        },
+        {
+          "metadata": {
+            "chunk_id": 1001,
+            "source": "qw-golden-1-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+        }
+      ],
+      "gen_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "id": "g01",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "question": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "qwen_cache_key": "a877c6d5e4fbba9ea488bdb1ec2bf9a0c6f1278e",
+      "qwen_prompt_sha1": "258269034d9b62c49bd1b9ef3c9583331e285437",
+      "raw_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "retrieval_config": null,
+      "retrieval_query": "hoc phi hoc ky chinh quy la bao nhieu va nop truoc ngay nao? ho tro hoc phi mien giam hoc phi che do chinh sach hoc phi",
+      "sources": [
+        {
+          "chars": 280,
+          "chunk_id": 1000,
+          "preview": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nộ…",
+          "rank": 1,
+          "source": "qw-golden-1-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 274,
+          "chunk_id": 1001,
+          "preview": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu t…",
+          "rank": 2,
+          "source": "qw-golden-1-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 2: theo Điều 3, Khoản 3 thì giới hạn là 3 lần.",
+      "contexts": [
+        "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút.",
+        "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm? hỗ trợ học phí miễn giảm học phí chế độ chính sách học phí",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 2000,
+            "source": "qw-golden-2-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+        },
+        {
+          "metadata": {
+            "chunk_id": 2001,
+            "source": "qw-golden-2-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+        }
+      ],
+      "gen_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "id": "g02",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "question": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "qwen_cache_key": "d581f7e404eae8f1c6689ac64a15caa3a24f210a",
+      "qwen_prompt_sha1": "9fa4a32663da2060e4e97be757087fa44f72bf00",
+      "raw_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "retrieval_config": null,
+      "retrieval_query": "ti le mien hoc phi cho dien chinh sach la bao nhieu phan tram? ho tro hoc phi mien giam hoc phi che do chinh sach hoc phi",
+      "sources": [
+        {
+          "chars": 274,
+          "chunk_id": 2000,
+          "preview": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơ…",
+          "rank": 1,
+          "source": "qw-golden-2-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 239,
+          "chunk_id": 2001,
+          "preview": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày.…",
+          "rank": 2,
+          "source": "qw-golden-2-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 3: theo Điều 4, Khoản 1 thì giới hạn là 4 lần.",
+      "contexts": [
+        "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần.",
+        "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu? chuẩn đầu ra điều kiện công nhận tốt nghiệp",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 3000,
+            "source": "qw-golden-3-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+        },
+        {
+          "metadata": {
+            "chunk_id": 3001,
+            "source": "qw-golden-3-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+        }
+      ],
+      "gen_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "id": "g03",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "question": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "qwen_cache_key": "798c1b327e57c2a95c7852aee59d6837742426fa",
+      "qwen_prompt_sha1": "d498f0c3c1388fa493398e451aef77b8858709e2",
+      "raw_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "retrieval_config": null,
+      "retrieval_query": "diem trung binh tich luy de xet tot nghiep la bao nhieu? chuan dau ra dieu kien cong nhan tot nghiep",
+      "sources": [
+        {
+          "chars": 248,
+          "chunk_id": 3000,
+          "preview": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ…",
+          "rank": 1,
+          "source": "qw-golden-3-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 250,
+          "chunk_id": 3001,
+          "preview": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để đượ…",
+          "rank": 2,
+          "source": "qw-golden-3-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 4: theo Điều 5, Khoản 2 thì giới hạn là 5 lần.",
+      "contexts": [
+        "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017.",
+        "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 4000,
+            "source": "qw-golden-4-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+        },
+        {
+          "metadata": {
+            "chunk_id": 4001,
+            "source": "qw-golden-4-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+        }
+      ],
+      "gen_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "id": "g04",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "question": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "qwen_cache_key": "c176bd76dba2dc0bd08e3faa917802c66e953057",
+      "qwen_prompt_sha1": "4d702bc78538368951ddab4ba33940dde849562c",
+      "raw_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "retrieval_config": null,
+      "retrieval_query": "thu vien mo cua den may gio vao thu bay?",
+      "sources": [
+        {
+          "chars": 262,
+          "chunk_id": 4000,
+          "preview": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong…",
+          "rank": 1,
+          "source": "qw-golden-4-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 261,
+          "chunk_id": 4001,
+          "preview": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thu…",
+          "rank": 2,
+          "source": "qw-golden-4-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 0: theo Điều 6, Khoản 3 thì giới hạn là 6 lần.",
+      "contexts": [
+        "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp.",
+        "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 5000,
+            "source": "qw-golden-5-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+        },
+        {
+          "metadata": {
+            "chunk_id": 5001,
+            "source": "qw-golden-5-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+        }
+      ],
+      "gen_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "id": "g05",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "question": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "qwen_cache_key": "4ccc56b2fc783786229fd37fc7bd6431cee00650",
+      "qwen_prompt_sha1": "a7a21739682867d1218afba5ea99714fed686b00",
+      "raw_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "retrieval_config": null,
+      "retrieval_query": "sinh vien duoc chuyen nganh may lan va sau bao nhieu hoc ky?",
+      "sources": [
+        {
+          "chars": 256,
+          "chunk_id": 5000,
+          "preview": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để…",
+          "rank": 1,
+          "source": "qw-golden-5-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 274,
+          "chunk_id": 5001,
+          "preview": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại bi…",
+          "rank": 2,
+          "source": "qw-golden-5-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 1: theo Điều 7, Khoản 1 thì giới hạn là 7 lần.",
+      "contexts": [
+        "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt.",
+        "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 6000,
+            "source": "qw-golden-6-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+        },
+        {
+          "metadata": {
+            "chunk_id": 6001,
+            "source": "qw-golden-6-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+        }
+      ],
+      "gen_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "id": "g06",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "question": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "qwen_cache_key": "68aa95606a3cc3b36c7707ee558f4bd49d361e41",
+      "qwen_prompt_sha1": "454c23b67c0bfbe7d8d862eb66e21f4515acfb5a",
+      "raw_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "retrieval_config": null,
+      "retrieval_query": "mot tin chi ly thuyet tuong duong bao nhieu tiet?",
+      "sources": [
+        {
+          "chars": 262,
+          "chunk_id": 6000,
+          "preview": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thu…",
+          "rank": 1,
+          "source": "qw-golden-6-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 249,
+          "chunk_id": 6001,
+          "preview": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt tro…",
+          "rank": 2,
+          "source": "qw-golden-6-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 2: theo Điều 8, Khoản 2 thì giới hạn là 1 lần.",
+      "contexts": [
+        "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm.",
+        "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu? học bổng khuyến khích học tập khen thưởng",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 7000,
+            "source": "qw-golden-0-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+        },
+        {
+          "metadata": {
+            "chunk_id": 7001,
+            "source": "qw-golden-0-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+        }
+      ],
+      "gen_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "id": "g07",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "question": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "qwen_cache_key": "29a3f7f2645139646e63707a1ec98e83f837704e",
+      "qwen_prompt_sha1": "167fe3760b031826a4df2a5291179e29e44f5821",
+      "raw_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "retrieval_config": null,
+      "retrieval_query": "muc hoc bong khuyen khich loai gioi moi thang la bao nhieu? hoc bong khuyen khich hoc tap khen thuong",
+      "sources": [
+        {
+          "chars": 248,
+          "chunk_id": 7000,
+          "preview": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ đi…",
+          "rank": 1,
+          "source": "qw-golden-0-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 282,
+          "chunk_id": 7001,
+          "preview": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số n…",
+          "rank": 2,
+          "source": "qw-golden-0-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 3: theo Điều 9, Khoản 3 thì giới hạn là 2 lần.",
+      "contexts": [
+        "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách.",
+        "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 8000,
+            "source": "qw-golden-1-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+        },
+        {
+          "metadata": {
+            "chunk_id": 8001,
+            "source": "qw-golden-1-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+        }
+      ],
+      "gen_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "id": "g08",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "question": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "qwen_cache_key": "aef46f21eef6cb2293c32585bb78db838628447d",
+      "qwen_prompt_sha1": "8cb9a2fb5878880ab3138960c95d70a81240fd79",
+      "raw_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "retrieval_config": null,
+      "retrieval_query": "thoi gian in giao trinh a4 mat bao nhieu ngay?",
+      "sources": [
+        {
+          "chars": 250,
+          "chunk_id": 8000,
+          "preview": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt tr…",
+          "rank": 1,
+          "source": "qw-golden-1-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 251,
+          "chunk_id": 8001,
+          "preview": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ t…",
+          "rank": 2,
+          "source": "qw-golden-1-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 4: theo Điều 1, Khoản 1 thì giới hạn là 3 lần.",
+      "contexts": [
+        "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên.",
+        "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 9000,
+            "source": "qw-golden-2-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+        },
+        {
+          "metadata": {
+            "chunk_id": 9001,
+            "source": "qw-golden-2-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+        }
+      ],
+      "gen_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "id": "g09",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "question": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "qwen_cache_key": "0d49916444b38fa411e0eb05e87b7ab1d2ab52ab",
+      "qwen_prompt_sha1": "385285f404e95e13d779484a796ba6259c5d0eb6",
+      "raw_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "retrieval_config": null,
+      "retrieval_query": "ai quan ly may photocopy tang hai va so noi bo la gi?",
+      "sources": [
+        {
+          "chars": 280,
+          "chunk_id": 9000,
+          "preview": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nộ…",
+          "rank": 1,
+          "source": "qw-golden-2-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 274,
+          "chunk_id": 9001,
+          "preview": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu t…",
+          "rank": 2,
+          "source": "qw-golden-2-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 0: theo Điều 2, Khoản 2 thì giới hạn là 4 lần.",
+      "contexts": [
+        "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút.",
+        "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần? đăng ký học lại học cải thiện môn học học phần điều kiện",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 10000,
+            "source": "qw-golden-3-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+        },
+        {
+          "metadata": {
+            "chunk_id": 10001,
+            "source": "qw-golden-3-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+        }
+      ],
+      "gen_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "id": "g10",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "question": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "qwen_cache_key": "716a688a8450fc24be5e66a35659704c38df9d9e",
+      "qwen_prompt_sha1": "0d8205b4d7745afead842c54a5a43bc669d94dfc",
+      "raw_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "retrieval_config": null,
+      "retrieval_query": "sinh vien hoc lai toi da bao nhieu lan moi hoc phan? dang ky hoc lai hoc cai thien mon hoc hoc phan dieu kien",
+      "sources": [
+        {
+          "chars": 274,
+          "chunk_id": 10000,
+          "preview": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơ…",
+          "rank": 1,
+          "source": "qw-golden-3-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 239,
+          "chunk_id": 10001,
+          "preview": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày.…",
+          "rank": 2,
+          "source": "qw-golden-3-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 1: theo Điều 3, Khoản 3 thì giới hạn là 5 lần.",
+      "contexts": [
+        "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần.",
+        "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào? hỗ trợ học phí miễn giảm học phí chế độ chính sách học phí",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 11000,
+            "source": "qw-golden-4-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+        },
+        {
+          "metadata": {
+            "chunk_id": 11001,
+            "source": "qw-golden-4-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+        }
+      ],
+      "gen_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "id": "g11",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "question": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "qwen_cache_key": "dde085af9ae400a41265c19bb29eb2ae7614bf75",
+      "qwen_prompt_sha1": "833de2b925b2c3d682856161eac4c3bb1bff5b94",
+      "raw_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "retrieval_config": null,
+      "retrieval_query": "hoc phi hoc ky chinh quy la bao nhieu va nop truoc ngay nao? ho tro hoc phi mien giam hoc phi che do chinh sach hoc phi",
+      "sources": [
+        {
+          "chars": 248,
+          "chunk_id": 11000,
+          "preview": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ…",
+          "rank": 1,
+          "source": "qw-golden-4-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 250,
+          "chunk_id": 11001,
+          "preview": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để đượ…",
+          "rank": 2,
+          "source": "qw-golden-4-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 2: theo Điều 4, Khoản 1 thì giới hạn là 6 lần.",
+      "contexts": [
+        "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017.",
+        "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm? hỗ trợ học phí miễn giảm học phí chế độ chính sách học phí",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 12000,
+            "source": "qw-golden-5-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+        },
+        {
+          "metadata": {
+            "chunk_id": 12001,
+            "source": "qw-golden-5-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+        }
+      ],
+      "gen_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "id": "g12",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "question": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "qwen_cache_key": "4e55824169041f50e7c844282d1f084335930af4",
+      "qwen_prompt_sha1": "7d8283ea1ef950c824e6596b0d29bd4b009b4a78",
+      "raw_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "retrieval_config": null,
+      "retrieval_query": "ti le mien hoc phi cho dien chinh sach la bao nhieu phan tram? ho tro hoc phi mien giam hoc phi che do chinh sach hoc phi",
+      "sources": [
+        {
+          "chars": 262,
+          "chunk_id": 12000,
+          "preview": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong…",
+          "rank": 1,
+          "source": "qw-golden-5-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 261,
+          "chunk_id": 12001,
+          "preview": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thu…",
+          "rank": 2,
+          "source": "qw-golden-5-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 3: theo Điều 5, Khoản 2 thì giới hạn là 7 lần.",
+      "contexts": [
+        "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp.",
+        "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu? chuẩn đầu ra điều kiện công nhận tốt nghiệp",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 13000,
+            "source": "qw-golden-6-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+        },
+        {
+          "metadata": {
+            "chunk_id": 13001,
+            "source": "qw-golden-6-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+        }
+      ],
+      "gen_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "id": "g13",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "question": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "qwen_cache_key": "656e5f731f80d1e1046cf7e94a668c15dd168b0c",
+      "qwen_prompt_sha1": "c51c7d97e3ae9b9a215f236d89dafc8209c3d048",
+      "raw_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "retrieval_config": null,
+      "retrieval_query": "diem trung binh tich luy de xet tot nghiep la bao nhieu? chuan dau ra dieu kien cong nhan tot nghiep",
+      "sources": [
+        {
+          "chars": 256,
+          "chunk_id": 13000,
+          "preview": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để…",
+          "rank": 1,
+          "source": "qw-golden-6-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 274,
+          "chunk_id": 13001,
+          "preview": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại bi…",
+          "rank": 2,
+          "source": "qw-golden-6-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 4: theo Điều 6, Khoản 3 thì giới hạn là 1 lần.",
+      "contexts": [
+        "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt.",
+        "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 14000,
+            "source": "qw-golden-0-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+        },
+        {
+          "metadata": {
+            "chunk_id": 14001,
+            "source": "qw-golden-0-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+        }
+      ],
+      "gen_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "id": "g14",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "question": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "qwen_cache_key": "880aecc7741132c7f93c14f2764f6113d33680be",
+      "qwen_prompt_sha1": "e10904a5af1c18d84cbfdeb2f67243d7ac5f00ad",
+      "raw_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "retrieval_config": null,
+      "retrieval_query": "thu vien mo cua den may gio vao thu bay?",
+      "sources": [
+        {
+          "chars": 262,
+          "chunk_id": 14000,
+          "preview": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thu…",
+          "rank": 1,
+          "source": "qw-golden-0-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 249,
+          "chunk_id": 14001,
+          "preview": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt tro…",
+          "rank": 2,
+          "source": "qw-golden-0-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 0: theo Điều 7, Khoản 1 thì giới hạn là 2 lần.",
+      "contexts": [
+        "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm.",
+        "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 15000,
+            "source": "qw-golden-1-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+        },
+        {
+          "metadata": {
+            "chunk_id": 15001,
+            "source": "qw-golden-1-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+        }
+      ],
+      "gen_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "id": "g15",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "question": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "qwen_cache_key": "50ff5fd4b853858b260fd5dc2c64c4856cf6b5b9",
+      "qwen_prompt_sha1": "38e0fce9e7abcf6772619b61cfd193dc5bf16b9f",
+      "raw_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "retrieval_config": null,
+      "retrieval_query": "sinh vien duoc chuyen nganh may lan va sau bao nhieu hoc ky?",
+      "sources": [
+        {
+          "chars": 248,
+          "chunk_id": 15000,
+          "preview": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ đi…",
+          "rank": 1,
+          "source": "qw-golden-1-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 282,
+          "chunk_id": 15001,
+          "preview": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số n…",
+          "rank": 2,
+          "source": "qw-golden-1-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 1: theo Điều 8, Khoản 2 thì giới hạn là 3 lần.",
+      "contexts": [
+        "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách.",
+        "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 16000,
+            "source": "qw-golden-2-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+        },
+        {
+          "metadata": {
+            "chunk_id": 16001,
+            "source": "qw-golden-2-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+        }
+      ],
+      "gen_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "id": "g16",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "question": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "qwen_cache_key": "73574e08525a9cf603d51a88638a6c083bb7e20a",
+      "qwen_prompt_sha1": "59cf4e85040611dbd7a83f845edf1d23b8d35f77",
+      "raw_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "retrieval_config": null,
+      "retrieval_query": "mot tin chi ly thuyet tuong duong bao nhieu tiet?",
+      "sources": [
+        {
+          "chars": 250,
+          "chunk_id": 16000,
+          "preview": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt tr…",
+          "rank": 1,
+          "source": "qw-golden-2-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 251,
+          "chunk_id": 16001,
+          "preview": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ t…",
+          "rank": 2,
+          "source": "qw-golden-2-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 2: theo Điều 9, Khoản 3 thì giới hạn là 4 lần.",
+      "contexts": [
+        "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên.",
+        "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu? học bổng khuyến khích học tập khen thưởng",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 17000,
+            "source": "qw-golden-3-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+        },
+        {
+          "metadata": {
+            "chunk_id": 17001,
+            "source": "qw-golden-3-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+        }
+      ],
+      "gen_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "id": "g17",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "question": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "qwen_cache_key": "165b23c7c8d5bda2c25621e664266815385e4516",
+      "qwen_prompt_sha1": "378e80789ccb633121403db55990f7c5d1fdf1f0",
+      "raw_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "retrieval_config": null,
+      "retrieval_query": "muc hoc bong khuyen khich loai gioi moi thang la bao nhieu? hoc bong khuyen khich hoc tap khen thuong",
+      "sources": [
+        {
+          "chars": 280,
+          "chunk_id": 17000,
+          "preview": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nộ…",
+          "rank": 1,
+          "source": "qw-golden-3-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 274,
+          "chunk_id": 17001,
+          "preview": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu t…",
+          "rank": 2,
+          "source": "qw-golden-3-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 3: theo Điều 1, Khoản 1 thì giới hạn là 5 lần.",
+      "contexts": [
+        "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút.",
+        "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 18000,
+            "source": "qw-golden-4-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+        },
+        {
+          "metadata": {
+            "chunk_id": 18001,
+            "source": "qw-golden-4-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+        }
+      ],
+      "gen_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "id": "g18",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "question": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "qwen_cache_key": "60070aaf213b3cc87a4a658befe2029fddd33976",
+      "qwen_prompt_sha1": "839d14a624da96c0351af65ec0a0db6017fdb215",
+      "raw_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "retrieval_config": null,
+      "retrieval_query": "thoi gian in giao trinh a4 mat bao nhieu ngay?",
+      "sources": [
+        {
+          "chars": 274,
+          "chunk_id": 18000,
+          "preview": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơ…",
+          "rank": 1,
+          "source": "qw-golden-4-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 239,
+          "chunk_id": 18001,
+          "preview": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày.…",
+          "rank": 2,
+          "source": "qw-golden-4-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 4: theo Điều 2, Khoản 2 thì giới hạn là 6 lần.",
+      "contexts": [
+        "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần.",
+        "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 19000,
+            "source": "qw-golden-5-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+        },
+        {
+          "metadata": {
+            "chunk_id": 19001,
+            "source": "qw-golden-5-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+        }
+      ],
+      "gen_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "id": "g19",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "question": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "qwen_cache_key": "15af21e5a60cd2fafc85d9f1bec45fd008de34f3",
+      "qwen_prompt_sha1": "6742f12bc43822fc9208e441e17f142547468b61",
+      "raw_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "retrieval_config": null,
+      "retrieval_query": "ai quan ly may photocopy tang hai va so noi bo la gi?",
+      "sources": [
+        {
+          "chars": 248,
+          "chunk_id": 19000,
+          "preview": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ…",
+          "rank": 1,
+          "source": "qw-golden-5-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 250,
+          "chunk_id": 19001,
+          "preview": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để đượ…",
+          "rank": 2,
+          "source": "qw-golden-5-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 0: theo Điều 3, Khoản 3 thì giới hạn là 7 lần.",
+      "contexts": [
+        "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017.",
+        "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần? đăng ký học lại học cải thiện môn học học phần điều kiện",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 20000,
+            "source": "qw-golden-6-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+        },
+        {
+          "metadata": {
+            "chunk_id": 20001,
+            "source": "qw-golden-6-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+        }
+      ],
+      "gen_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "id": "g20",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "question": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "qwen_cache_key": "f5f32c7321862e9ad50e66d8c8c8d110e8a28a46",
+      "qwen_prompt_sha1": "0c9f39ad86c363bd9b828b35691affe3dce68e4e",
+      "raw_query": "Sinh viên học lại tối đa bao nhiêu lần mỗi học phần?",
+      "retrieval_config": null,
+      "retrieval_query": "sinh vien hoc lai toi da bao nhieu lan moi hoc phan? dang ky hoc lai hoc cai thien mon hoc hoc phan dieu kien",
+      "sources": [
+        {
+          "chars": 262,
+          "chunk_id": 20000,
+          "preview": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong…",
+          "rank": 1,
+          "source": "qw-golden-6-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 261,
+          "chunk_id": 20001,
+          "preview": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thu…",
+          "rank": 2,
+          "source": "qw-golden-6-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 1: theo Điều 4, Khoản 1 thì giới hạn là 1 lần.",
+      "contexts": [
+        "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp.",
+        "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào? hỗ trợ học phí miễn giảm học phí chế độ chính sách học phí",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 21000,
+            "source": "qw-golden-0-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+        },
+        {
+          "metadata": {
+            "chunk_id": 21001,
+            "source": "qw-golden-0-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+        }
+      ],
+      "gen_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "id": "g21",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "question": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "qwen_cache_key": "650cf92f9c21e3b0ce80708712e5205d8d20a37e",
+      "qwen_prompt_sha1": "a5c7c831d9d5b039584176a573d2ed3b93a36b2e",
+      "raw_query": "Học phí học kỳ chính quy là bao nhiêu và nộp trước ngày nào?",
+      "retrieval_config": null,
+      "retrieval_query": "hoc phi hoc ky chinh quy la bao nhieu va nop truoc ngay nao? ho tro hoc phi mien giam hoc phi che do chinh sach hoc phi",
+      "sources": [
+        {
+          "chars": 256,
+          "chunk_id": 21000,
+          "preview": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để…",
+          "rank": 1,
+          "source": "qw-golden-0-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 274,
+          "chunk_id": 21001,
+          "preview": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại bi…",
+          "rank": 2,
+          "source": "qw-golden-0-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 2: theo Điều 5, Khoản 2 thì giới hạn là 2 lần.",
+      "contexts": [
+        "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt.",
+        "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm? hỗ trợ học phí miễn giảm học phí chế độ chính sách học phí",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 22000,
+            "source": "qw-golden-1-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+        },
+        {
+          "metadata": {
+            "chunk_id": 22001,
+            "source": "qw-golden-1-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+        }
+      ],
+      "gen_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "id": "g22",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "question": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "qwen_cache_key": "ed42a2df4c69e75fda1a3a24fd1cc9a3b958db5a",
+      "qwen_prompt_sha1": "dfb9a4aeede4f130700f48e84d4903ad08e1432f",
+      "raw_query": "Tỉ lệ miễn học phí cho diện chính sách là bao nhiêu phần trăm?",
+      "retrieval_config": null,
+      "retrieval_query": "ti le mien hoc phi cho dien chinh sach la bao nhieu phan tram? ho tro hoc phi mien giam hoc phi che do chinh sach hoc phi",
+      "sources": [
+        {
+          "chars": 262,
+          "chunk_id": 22000,
+          "preview": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thu…",
+          "rank": 1,
+          "source": "qw-golden-1-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 249,
+          "chunk_id": 22001,
+          "preview": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt tro…",
+          "rank": 2,
+          "source": "qw-golden-1-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 3: theo Điều 6, Khoản 3 thì giới hạn là 3 lần.",
+      "contexts": [
+        "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm.",
+        "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu? chuẩn đầu ra điều kiện công nhận tốt nghiệp",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 23000,
+            "source": "qw-golden-2-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+        },
+        {
+          "metadata": {
+            "chunk_id": 23001,
+            "source": "qw-golden-2-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+        }
+      ],
+      "gen_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "id": "g23",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "question": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "qwen_cache_key": "dd2a253821c0d5c903b5c1919a8c887385bb0bfd",
+      "qwen_prompt_sha1": "e69ee44c54f2966675b33f5044dbae62adb88a6d",
+      "raw_query": "Điểm trung bình tích lũy để xét tốt nghiệp là bao nhiêu?",
+      "retrieval_config": null,
+      "retrieval_query": "diem trung binh tich luy de xet tot nghiep la bao nhieu? chuan dau ra dieu kien cong nhan tot nghiep",
+      "sources": [
+        {
+          "chars": 248,
+          "chunk_id": 23000,
+          "preview": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ đi…",
+          "rank": 1,
+          "source": "qw-golden-2-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 282,
+          "chunk_id": 23001,
+          "preview": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số n…",
+          "rank": 2,
+          "source": "qw-golden-2-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 4: theo Điều 7, Khoản 1 thì giới hạn là 4 lần.",
+      "contexts": [
+        "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách.",
+        "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 24000,
+            "source": "qw-golden-3-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+        },
+        {
+          "metadata": {
+            "chunk_id": 24001,
+            "source": "qw-golden-3-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+        }
+      ],
+      "gen_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "id": "g24",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "question": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "qwen_cache_key": "1b1e35c61fb3c360a8cf816ab244439afdacb961",
+      "qwen_prompt_sha1": "b79a41cae1198fd7a9e861f318a74de4f483e46f",
+      "raw_query": "Thư viện mở cửa đến mấy giờ vào thứ Bảy?",
+      "retrieval_config": null,
+      "retrieval_query": "thu vien mo cua den may gio vao thu bay?",
+      "sources": [
+        {
+          "chars": 250,
+          "chunk_id": 24000,
+          "preview": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt tr…",
+          "rank": 1,
+          "source": "qw-golden-3-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 251,
+          "chunk_id": 24001,
+          "preview": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ t…",
+          "rank": 2,
+          "source": "qw-golden-3-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 0: theo Điều 8, Khoản 2 thì giới hạn là 5 lần.",
+      "contexts": [
+        "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên.",
+        "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 25000,
+            "source": "qw-golden-4-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+        },
+        {
+          "metadata": {
+            "chunk_id": 25001,
+            "source": "qw-golden-4-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt."
+        }
+      ],
+      "gen_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "id": "g25",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "question": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "qwen_cache_key": "bd4be82d8b105a92385c6f8b98d384c6510b9d0d",
+      "qwen_prompt_sha1": "7327809b22db0c116022559756a3c443470724be",
+      "raw_query": "Sinh viên được chuyển ngành mấy lần và sau bao nhiêu học kỳ?",
+      "retrieval_config": null,
+      "retrieval_query": "sinh vien duoc chuyen nganh may lan va sau bao nhieu hoc ky?",
+      "sources": [
+        {
+          "chars": 280,
+          "chunk_id": 25000,
+          "preview": "Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nộ…",
+          "rank": 1,
+          "source": "qw-golden-4-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 274,
+          "chunk_id": 25001,
+          "preview": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu t…",
+          "rank": 2,
+          "source": "qw-golden-4-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 1: theo Điều 9, Khoản 3 thì giới hạn là 6 lần.",
+      "contexts": [
+        "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút.",
+        "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 26000,
+            "source": "qw-golden-5-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+        },
+        {
+          "metadata": {
+            "chunk_id": 26001,
+            "source": "qw-golden-5-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm."
+        }
+      ],
+      "gen_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "id": "g26",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "question": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "qwen_cache_key": "a717f4f82550de3ab6d0b6539fa699047b94359e",
+      "qwen_prompt_sha1": "38edef66ca2e4f10636ed24897f131d9857a507a",
+      "raw_query": "Một tín chỉ lý thuyết tương đương bao nhiêu tiết?",
+      "retrieval_config": null,
+      "retrieval_query": "mot tin chi ly thuyet tuong duong bao nhieu tiet?",
+      "sources": [
+        {
+          "chars": 274,
+          "chunk_id": 26000,
+          "preview": "Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơ…",
+          "rank": 1,
+          "source": "qw-golden-5-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 239,
+          "chunk_id": 26001,
+          "preview": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày.…",
+          "rank": 2,
+          "source": "qw-golden-5-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 2: theo Điều 1, Khoản 1 thì giới hạn là 7 lần.",
+      "contexts": [
+        "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần.",
+        "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+      ],
+      "ensemble_calls": 2,
+      "expanded_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu? học bổng khuyến khích học tập khen thưởng",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 27000,
+            "source": "qw-golden-6-0.pdf",
+            "tier": 1
+          },
+          "page_content": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần."
+        },
+        {
+          "metadata": {
+            "chunk_id": 27001,
+            "source": "qw-golden-6-1.pdf",
+            "tier": 2
+          },
+          "page_content": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách."
+        }
+      ],
+      "gen_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "id": "g27",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "question": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "qwen_cache_key": "9aedef4369d80e621575b8c1090ae8cc4a593404",
+      "qwen_prompt_sha1": "f4f68168d9c4e35b45ee538a1f13425d08a9c7d2",
+      "raw_query": "Mức học bổng khuyến khích loại Giỏi mỗi tháng là bao nhiêu?",
+      "retrieval_config": null,
+      "retrieval_query": "muc hoc bong khuyen khich loai gioi moi thang la bao nhieu? hoc bong khuyen khich hoc tap khen thuong",
+      "sources": [
+        {
+          "chars": 248,
+          "chunk_id": 27000,
+          "preview": "Học phí học kỳ chính quy là 7.400.000 đồng, nộp trước ngày 15 tháng 10 hàng năm. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ…",
+          "rank": 1,
+          "source": "qw-golden-6-0.pdf",
+          "tier": "1"
+        },
+        {
+          "chars": 250,
+          "chunk_id": 27001,
+          "preview": "Sinh viên hệ vừa học vừa làm được miễn 30 % học phí nếu thuộc diện chính sách. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để đượ…",
+          "rank": 2,
+          "source": "qw-golden-6-1.pdf",
+          "tier": "2"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 3: theo Điều 2, Khoản 2 thì giới hạn là 1 lần.",
+      "contexts": [
+        "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017.",
+        "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 28000,
+            "source": "qw-golden-0-0.pdf",
+            "tier": 2
+          },
+          "page_content": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong ba ngày. Mỗi tín chỉ lý thuyết tương đương 15 tiết, thực hành tương đương 30 tiết theo Quy chế 40/2017."
+        },
+        {
+          "metadata": {
+            "chunk_id": 28001,
+            "source": "qw-golden-0-1.pdf",
+            "tier": 3
+          },
+          "page_content": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thuê ngoài. Điều 22: Xét tốt nghiệp gồm 4 tiêu chí, trong đó điểm trung bình tích lũy đạt từ 2,0 trở lên."
+        }
+      ],
+      "gen_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "id": "g28",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "question": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "qwen_cache_key": "a700cb0e98a842d1b768eca7f5c877e442dbdc93",
+      "qwen_prompt_sha1": "702a63270c068a3f772432a6222d46d8eab700ac",
+      "raw_query": "Thời gian in giáo trình A4 mất bao nhiêu ngày?",
+      "retrieval_config": null,
+      "retrieval_query": "thoi gian in giao trinh a4 mat bao nhieu ngay?",
+      "sources": [
+        {
+          "chars": 262,
+          "chunk_id": 28000,
+          "preview": "Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút. Giáo trình in tại xưởng in nội bộ, khổ A4, đóng gáy keo nhiệt trong…",
+          "rank": 1,
+          "source": "qw-golden-0-0.pdf",
+          "tier": "2"
+        },
+        {
+          "chars": 261,
+          "chunk_id": 28001,
+          "preview": "Điều 8: Sinh viên được chuyển ngành sau tối thiểu 2 học kỳ và không quá 1 lần. Cây xanh khu B được cắt tỉa định kỳ vào thứ Năm hằng tuần bởi đơn vị dịch vụ thu…",
+          "rank": 2,
+          "source": "qw-golden-0-1.pdf",
+          "tier": "3"
+        }
+      ],
+      "sub_queries": null
+    },
+    {
+      "answer": "Trả lời cố định 4: theo Điều 3, Khoản 3 thì giới hạn là 2 lần.",
+      "contexts": [
+        "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp.",
+        "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+      ],
+      "ensemble_calls": 1,
+      "expanded_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "gen_calls": 1,
+      "gen_docs": [
+        {
+          "metadata": {
+            "chunk_id": 29000,
+            "source": "qw-golden-1-0.pdf",
+            "tier": 3
+          },
+          "page_content": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để được hướng dẫn. Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp."
+        },
+        {
+          "metadata": {
+            "chunk_id": 29001,
+            "source": "qw-golden-1-1.pdf",
+            "tier": 1
+          },
+          "page_content": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại biểu tham dự đủ điều kiện. Thư viện mở cửa từ 7 giờ đến 19 giờ các ngày trong tuần, riêng thứ Bảy đến 11 giờ 30 phút."
+        }
+      ],
+      "gen_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "id": "g29",
+      "labels": null,
+      "leg_calls": [
+        0,
+        0
+      ],
+      "normalized_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "question": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "qwen_cache_key": "028d32e686d2c35f0eeb66eb3ceb61ffa452655d",
+      "qwen_prompt_sha1": "57796b279a0a09a2b383c05b86cf93ca633e2a8d",
+      "raw_query": "Ai quản lý máy photocopy tầng hai và số nội bộ là gì?",
+      "retrieval_config": null,
+      "retrieval_query": "ai quan ly may photocopy tang hai va so noi bo la gi?",
+      "sources": [
+        {
+          "chars": 256,
+          "chunk_id": 29000,
+          "preview": "Học bổng khuyến khích học loại Giỏi là 1.200.000 đồng mỗi tháng, xét theo 10 lớp. Máy photocopy tầng hai do phòng Hành chính quản lý, liên hệ số nội bộ 108 để…",
+          "rank": 1,
+          "source": "qw-golden-1-0.pdf",
+          "tier": "3"
+        },
+        {
+          "chars": 274,
+          "chunk_id": 29001,
+          "preview": "Điều 15, Khoản 2: Sinh viên được phép đăng ký học lại tối đa 2 lần cho mỗi học phần không đạt. Biên bản họp hội đồng sư phạm ngày 12 tháng 3 ghi nhận 27 đại bi…",
+          "rank": 2,
+          "source": "qw-golden-1-1.pdf",
+          "tier": "1"
+        }
+      ],
+      "sub_queries": null
+    }
+  ],
+  "meta": {
+    "env": {
+      "BM25_WEIGHT": "0.5",
+      "CHROMA_WEIGHT": "0.5",
+      "ENABLE_ANSWER_GUARD": "0",
+      "ENABLE_ANSWER_RESCUE": "0",
+      "ENABLE_CLASSIFIER": "0",
+      "ENABLE_DECOUPLED_REFUSAL": "0",
+      "ENABLE_EVIDENCE_SELECTION": "0",
+      "ENABLE_HYBRID_SEARCH": "1",
+      "ENABLE_QUERY_EXPANSION": "1",
+      "ENABLE_RERANKER": "0",
+      "GENERATION_CACHE": "0",
+      "OLLAMA_HOST": "http://127.0.0.1:1",
+      "OLLAMA_MODEL": "t3-golden-model"
+    },
+    "pipeline_has_t3_fields": false,
+    "root": "D:\\DoAn\\hybrid_rag_agu\\tmp\\t3_baseline_head"
+  },
+  "t3": [
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    },
+    {
+      "evidence_selection": "<khong_ton_tai_o_baseline>",
+      "refusal_decision": "<khong_ton_tai_o_baseline>"
+    }
+  ]
+}

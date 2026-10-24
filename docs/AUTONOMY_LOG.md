@@ -435,3 +435,39 @@ Trọng tài giữ nguyên: `git diff` rỗng trên `verify.py`/`answer_guard.py
 
 **Không làm:** không sửa gate/trọng tài/`src/`; không mở `r12`; không đổi ngưỡng; không ghi đè round đã
 đóng (mọi output test vào `tests/`, `tmp/`, `docs/reports/`).
+
+## 24-10 15:49 — Kiểm thử T3 (decoupled refusal + evidence selection)
+
+**Việc user giao (đã xong):** `tests/test_t3_guardrails.py` **75 test / đủ A–D**, xanh; toàn suite
+**854 passed** (37,33 s); trọng tài giữ `9f1179ccab74`, `git diff` rỗng trên
+`verify.py`/`answer_guard.py`/`text_utils.py`/`gate.py`. Báo cáo: `docs/reports/test_T3.md`.
+
+**Golden cờ TẮT dựng đúng cách:** chạy `tools/diag/t3_golden_dump.py` trong **hai cây** — cây hiện
+tại và bản `git archive HEAD` tại `f492f05` (tại đó `src/pipeline.py` không có dòng T3 nào, kiểm
+bằng grep + `meta.pipeline_has_t3_fields=false`). Golden: `tests/golden/t3_off_30items_head_f492f05.json`,
+sha file `e59b9ebb6b12…`, sha khối `core` `344d55cd35ec…` (30 item, 30 cache key phân biệt,
+`gen_calls` 30×1, `leg_calls` 30×(0,0), `ensemble_calls` 15×2 + 15×1). Test hiện tại == golden
+từng item/từng khoá.
+
+**Ngã rẽ đã chọn (bảo thủ):**
+1. Golden ban đầu định lấy từ commit `a8aa042`; `git log -S`/`git status` chứng minh phần nối T3
+   trong `src/pipeline.py` + `src/generator.py` là **chưa commit** và HEAD `f492f05` không có →
+   đổi baseline sang `git archive HEAD`. Lý do: golden phải là "trước khi sửa" thật, không tự sinh.
+2. Ca biên luật 2 không thử được trên `Q_RETAKE`: `content_tokens` chỉ còn 1 token (`phan`) nên
+   overlap chỉ 0/1,0. Chọn fixture riêng `Q_BOUNDARY` (2 thực thể, 3 token; coverage 0,5 /
+   overlap 0,6667) thay vì sửa code/ngưỡng. Hoàn tác: không có thay đổi sản xuất.
+3. Mutation "đảo thứ tự guard/cache" hiện thực bằng M1 (cache ghi `REFUSAL_TEXT`) + M1b (bỏ guard
+   sau sinh) vì kiến trúc hiện tại không có cache phán quyết; cả hai đều bị test bắt.
+
+**Mutation check (`tmp/mutation_check_t3.py`, 7/7 BẮT ĐƯỢC, 7/7 hoàn nguyên byte-identical):**
+M1 cache-refusal (1 đỏ) · M1b bỏ guard (7) · M2 ngưỡng→0 (6) · M3 bỏ nhánh từ chối (23) ·
+M4 đảo mạch đọc câu (1) · M5 đảo tie-break (1) · M6 cache key không tách chế độ (1).
+
+**Phát hiện (đề xuất, KHÔNG tự sửa):** (1) đường Gemini không có nhánh T3 + cache key tĩnh →
+**PA-14**; (2) `DEC_MAX_UNSUPPORTED=1` là dead code, trần hiệu dụng 0 →
+**PA-15**; (3) chữ "từ chối" trong prompt BẬT chỉ nằm trong câu cấm quyền từ chối (đã ghim test,
+không được xoá câu cấm); (4) 10 ca D đều bị luật 2 chặn ở pre nên D một mình không chứng minh
+guard sau sinh — đã bù bằng `TestOuterRefusal` + M1b.
+
+**Không làm:** không sửa `src/`/trọng tài/gate; không chạy round; không đụng `outputs/` hay
+`data/loop/rounds/`; không commit các thay đổi `src/` chưa hoàn tất của phiên khác (PA-8).
