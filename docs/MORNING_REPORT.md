@@ -30,6 +30,26 @@ Hai việc mới, **không đổi thiết kế nào**, không sửa trọng tài
    PerDay**; 5 id còn lại phải chờ cửa sổ quota kế tiếp (retry hint ~14:30 25-10), dùng đúng
    `sample_ids.json` đã đăng ký với `--limit 5`.
 
+## CẬP NHẬT 24-10 23:09 — kiểm tay 5 ca fabrication + 2 đề xuất trọng tài
+
+Không gọi Gemini, không chạy round, không sửa code; chỉ đọc dữ liệu đã có.
+
+- **5/5 ca `FAIL_FABRICATED` của T1(b) không bịa dữ kiện.** Đối chiếu đúng 6 ngữ cảnh r5 +
+  chunk gốc: 2 ca `Theo Bản`, 1 ca `Theo Thông` là dương giả cơ học; `Khoản 1` có căn cứ
+  ("1. Quy chế…" dưới Điều 16); `Mục 2` là diễn giải của "2. Hồ sơ xin học"; `mục 3` trỏ sai mục
+  (c) nằm dưới "GHI CHÚ"). Riêng 1 ca **nội dung SAI**: hỏi ELO của "Áp dụng kiến thức nền
+  tảng…" — tài liệu ghi ELO 1, model trả ELO 9. Nguồn: `docs/reports/T1.md` mục kiểm tay.
+- **Số chính thức giữ nguyên**: PASS_CORRECT 16/25 = 64%, fabrication 5/22 = 22,7%. Kiểm tay
+  (không CI): 20/25 = 80% đúng nội dung; 18/25 = 72% nếu chấm khắt khe cả trích dẫn. Đây là
+  phân tích tay, **không thay số trọng tài**.
+- **PA-2 cập nhật**: đã đủ bằng chứng (3/25 dương giả proper-noun, vượt ngưỡng ≥2/30) + diff
+  stopword cho `answer_guard.py`; **chưa áp dụng** vì đổi chữ ký trọng tài.
+- **PA-20 mới**: `_answer_covers_gold` cho required_entities số ngắn khớp oan ("1" trong
+  "B1"/"2021"); diff strict đề xuất; ước lượng chỉ đọc: r5 **1/14** PASS và r10 **2/16** PASS bị
+  hạ nếu áp dụng, r8/r9 0 ⇒ phải chấm lại r5 (baseline T3/T4) nên **không tự sửa**.
+- `pytest tests -q`: **957 passed** (25,22 s). Việc kế tiếp vẫn là 5 id T1(b) ở cửa sổ ~14:30
+  25-10; T5a chờ PA-19.
+
 ## PHIÊN TIẾP 24-10 (T3 → T7 + kiểm thử T0–T5) — cập nhật cuối phiên
 
 ### A. Đã xong (số liệu + nguồn)

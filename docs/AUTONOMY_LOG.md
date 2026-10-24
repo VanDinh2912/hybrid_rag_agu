@@ -557,3 +557,26 @@ sửa `src/reranker.py`/`src/pipeline.py`/trọng tài/gate, không đụng `out
 
 **Không làm:** không commit `src/*` dirty của phiên khác, không commit `data/loop/rounds/`
 (PA-8), không xóa file, không đổi ngưỡng, không dùng thêm Gemini sau PerDay.
+
+## Phiên 24-10 23:03 → 23:09 — kiểm tay fabrication của T1(b)
+
+**Ngã rẽ:** 5 id T1(b) còn lại bị PerDay chặn tới ~14:30 25-10; T5a chờ PA-19; T5b/T4 chờ duyệt
+hoặc chờ đủ 30 id. Không có việc nào cần model/round mới. **Chọn việc chỉ đọc**: kiểm tay 5 ca
+`FAIL_FABRICATED` đã có, thay vì mở rộng phạm vi hay sửa dụng cụ đo.
+
+1. **Không gọi Gemini** để "thử xem quota mở chưa": retry hint 15h22m đã rõ; gọi bây giờ chỉ sinh
+   thêm dòng PerDay, không giúp gì. Không đốt ngân sách.
+2. **Không sửa trọng tài** dù đã đủ bằng chứng 3/25 dương giả proper-noun: mọi sửa
+   `answer_guard.py`/`verify.py` đổi chữ ký `9f1179ccab74` và buộc chấm lại r5 (baseline T3/T4).
+   Chỉ ghi **PA-2 (diff stopword)** và **PA-20 (diff strict số ngắn)**.
+3. **Không đổi số chính thức**: giữ 16/25 PASS_CORRECT và 5/22 fabrication của trọng tài; phần
+   kiểm tay ghi thành **phân tích tay, không CI, không thay số**. Ghi rõ cả hai để không tự
+   "nâng điểm" công cụ.
+4. **Chỉ đọc `chroma_db`**: dùng `chromadb.PersistentClient` + `get(where=...)` để đối chiếu
+   chunk 83/271/288/289/329/330; không ghi, không build, không đổi index.
+5. **Không suy rộng từ 20/25**: con số 80% là của 25 id tiền tố, không phải ước lượng cho 30 id
+   hay cho toàn bộ 811 item; 5 id còn lại vẫn phải chạy đúng danh sách đã đăng ký.
+6. **Không xóa/không dọn** file tạm, cache, round; không commit `src/` dirty của phiên khác.
+
+**Hoàn tác:** chỉ sửa 4 tài liệu (`T1.md`, `PENDING_APPROVAL.md`, `STATE.md`, `AUTONOMY_LOG.md`)
++ `MORNING_REPORT.md`; không có thay đổi code/dữ liệu, nên `git revert <commit>` là đủ.

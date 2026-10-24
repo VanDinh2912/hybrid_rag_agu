@@ -236,3 +236,28 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   Gemini trùng; sau đó gọi từng lượt foreground (không dùng nền) vì nền bị kill im lặng.
 - Lệnh resume đúng 5 id còn lại (sau khi cửa sổ mở):
   `PYTHONIOENCODING=utf-8 GEMINI_MODEL=gemini-3.8-flash ENABLE_ANSWER_GUARD=1 QWEN_FALLBACK=0 venv/Scripts/python.exe -u tools/diag/ablation_generation.py --config b_gemini_top6 --ids-file data/loop/diag/b_gemini_top6/sample_ids.json --force --limit 5`
+
+## XONG (24-10 23:09 — kiểm tay 5 ca fabrication, cập nhật PA-2, thêm PA-20)
+
+- **Kiểm tay 5/5 ca `FAIL_FABRICATED` của T1(b)** (đối chiếu đúng 6 ngữ cảnh r5 + chunk gốc
+  `chroma_db`, chỉ đọc): **không ca nào bịa dữ kiện**.
+  - C10492769338965: `Theo Bản` dương giả; nội dung **đúng** (ELO 10, chunk 330).
+  - C145524027648409: `Theo Bản` dương giả; nội dung **SAI** (chunk 329 ghi ELO 1, model trả
+    ELO 9). `required_entities=['1']` nhưng `_answer_covers_gold` trả True vì khớp "B1"/"2021".
+  - O103189525480643: `Theo Thông` dương giả; `mục 3` **trỏ sai mục** (c) nằm dưới "GHI CHÚ",
+    chunk 288); dữ kiện 2024-2025 đúng.
+  - O112922606788277: `Khoản 1` **có căn cứ** ("1. Quy chế…" ngay dưới Điều 16, chunk 83);
+    2570 đúng.
+  - Y231035235702969: `Mục 2` là diễn giải của "2. Hồ sơ xin học" (chunk 271); nội dung đúng;
+    lỗi khác: citation cuối trỏ sang tệp 163-tb (ACB).
+- **Số chính thức KHÔNG đổi**: PASS_CORRECT 16/25 = 64%, fabrication 5/22 = 22,7%. Kiểm tay
+  (không CI): 20/25 = 80% đúng nội dung; 18/25 = 72% nếu chấm khắt khe cả trích dẫn.
+  `docs/reports/T1.md` mục "Kiểm tay 5 ca FAIL_FABRICATED".
+- **PA-2 cập nhật**: 3/25 cờ proper là dương giả (vượt ngưỡng tự đặt ≥2/30) + **diff đề xuất**
+  stopword `_PROPER_RUN_STOPWORDS` trong `src/answer_guard.py`; **chưa áp dụng**.
+- **PA-20 mới**: `_answer_covers_gold` cho required_entities số ngắn khớp oan trong "B1"/"2021";
+  diff strict `(?<![\w])…(?![\w])`; ước lượng chỉ đọc: r5 1/14 PASS, r10 2/16 PASS bị hạ,
+  r8/r9 0; **chưa sửa** vì đổi chữ ký trọng tài + phải chấm lại r5 (baseline T3/T4).
+- **Không dùng Gemini** (PerDay còn chặn tới ~14:30 25-10); không chạy round; không build index;
+  không xóa file. 5 id T1(b) còn lại giữ nguyên lệnh resume trong mục trên.
+- `pytest tests -q`: **957 passed** (chạy lại sau thay đổi tài liệu, 25,22 s).

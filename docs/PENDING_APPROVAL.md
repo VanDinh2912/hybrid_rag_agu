@@ -20,12 +20,45 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
 - Chặn: cần (b) đủ n=30 để đếm tỉ lệ dương-giả loại này (≥2/30 mới đáng sửa). Hiện mới n=7.
 - Diff: sẽ bổ sung khi có đủ n; hiện CHƯA có thay đổi code.
 
+**Bổ sung 24-10 23:08 — đã đủ bằng chứng để sửa, nhưng vẫn CHỜ DUYỆT:**
+- Kiểm tay 5/5 ca `FAIL_FABRICATED` của (b) (25 id): **3 cờ proper là dương giả cơ học**
+  (`Theo Bản` ×2, `Theo Thông` ×1); 1 ca `Khoản 1` có căn cứ ("1. Quy chế…" ngay dưới Điều 16);
+  1 ca `Mục 2` là diễn giải của "2. Hồ sơ xin học". Chi tiết + nguồn chunk: `docs/reports/T1.md`
+  mục "Kiểm tay 5 ca FAIL_FABRICATED". Tỉ lệ 3/25 đã vượt ngưỡng tự đặt ≥2/30.
+- **Diff đề xuất** (`src/answer_guard.py`, KHÔNG áp dụng): thêm tập stopword cho từ mở đầu cụm
+  hoa, để "Theo Bản mô tả…"/"Theo Thông báo…" không bị cắt thành tên riêng:
+```diff
+@@
++_PROPER_RUN_STOPWORDS = {fold(w) for w in {
++    "Theo", "Tại", "Căn", "Các", "Trong", "Nếu", "Khi", "Vì", "Do",
++    "Đối", "Phần", "Mục", "Về", "Bằng", "Từ", "Đến", "Với",
++}}
+@@ def _scan_proper_runs(text: str) -> list[tuple[int, int, str]]:
+         tok = m.group(0)
+-        is_cap = bool(tok) and tok[0].isupper() and len(tok) >= 2 and not tok.isdigit()
++        is_cap = (
++            bool(tok)
++            and tok[0].isupper()
++            and len(tok) >= 2
++            and not tok.isdigit()
++            and fold(tok) not in _PROPER_RUN_STOPWORDS
++        )
+```
+- Hệ quả bắt buộc: đổi chữ ký trọng tài `9f1179ccab74` ⇒ phải chấm lại **mọi round đang bật
+  guard** (r5, r5b, r8, r9, r10, T1(b)) và cập nhật mọi bảng số. Vì vậy đề xuất **gộp với PA-20**
+  và làm thành một "referee v2" có một commit riêng + test hồi quy 5 ca này.
+- Test đề xuất: `test_answer_guard.py` thêm 3 ca dương (`Theo Bản`, `Theo Thông`, `Theo Điều`)
+  không sinh entity proper; giữ 1 ca âm ("Trường Đại học An Giang" vẫn được xử lý như hiện tại).
+
 ## PA-3 — cổng gate.py (đang chờ từ trước, không đổi): #23 quy tắc refusal tương đối + veto family
 - Giữ nguyên trạng thái "chờ duyệt"; `gate.py` chưa sửa. Xem `docs/reports/T0.md` mục hệ quả cổng.
 
 ## PA-4 — T1 (b) tiếp tục: cần quota Gemini các ngày sau
 - (b) dừng ở 6/30 vì PerDay. Đề xuất: cho resume các ngày sau (lệnh ở STATE.md) để đủ n rồi mới
   chốt nhánh bảng quyết định (T4 vs T2/T6). Đêm nay KHÔNG gọi thêm.
+- **Cập nhật 24-10 23:09:** đã lên **25/30** (5 id cuối kẹt PerDay, cửa sổ kế tiếp ~14:30 25-10).
+  Đây là **tiền tố theo thứ tự r5**, không phải mẫu ngẫu nhiên — xem giới hạn trong T1.md.
+  Cần thêm đúng 5 lượt ở cửa sổ sau; ngân sách đêm 25-10 vẫn ≤14.
 
 ## PA-5 — T3 / T5 / TT0–TT3: KHÔNG có đặc tả trong repo hay hội thoại → bị chặn
 - Bối cảnh: lệnh tự trị qua đêm ghi "viết code + test cho T3 và T5 với mọi cờ TẮT" và "chạy test
@@ -426,3 +459,39 @@ nạp xong hai model, **chưa chấm được cặp nào**; RAM trống sau khi 
 
 Khuyến nghị bảo thủ: **(b) trước** (không đổi thiết kế); nếu vẫn >60 phút thì **(a) hoặc (f)**.
 Không có thay đổi code nào được áp dụng cho các phương án này.
+
+## PA-20 — trọng tài: required_entities số ngắn khớp oan trong mã khác ("1" khớp "B1"/"2021") (24-10 23:09)
+
+**Bằng chứng (T1(b), không đổi verdict):** `C145524027648409` trả lời **sai** (hỏi ELO của
+"Áp dụng kiến thức nền tảng…" — chunk 329 ghi **ELO 1**, model trả **ELO 9**), nhưng
+`_answer_covers_gold` trả **True** vì `required_entities=['1']` và `_number_in` khớp số "1"
+nằm trong "B1"/"2021". Nếu chỉ gỡ cờ proper của PA-2 mà không sửa chỗ này, ca sai sẽ được
+**PASS_CORRECT oan** (đã gọi trực tiếp hàm để kiểm, không sửa file).
+
+**Đề xuất diff** (`tools/loop/verify.py` — REFEREE_FILES, KHÔNG áp dụng):
+```diff
+@@ def _entity_in_answer(entity: str, answer: str) -> bool:
+ def _entity_in_answer(entity: str, answer: str) -> bool:
++    ent = (entity or "").strip()
++    if re.fullmatch(r"\d{1,2}", ent):
++        # Số ngắn (1–2 chữ số) phải đứng độc lập: không khớp trong "B1", "2021",
++        # "ELO 10" khi cần "1". Giữ nguyên _number_in cho các trường hợp khác.
++        return re.search(rf"(?<![\w]){re.escape(fold(ent))}(?![\w])", fold(answer)) is not None
+     if re.fullmatch(r"[\d.,\s]+đ?%", entity or "") or re.search(r"\d", entity or ""):
+         return _number_in(answer, entity)
+     return fold(entity) in fold(answer)
+```
+- Test hồi quy đề xuất: `required_entities=['1']` + đáp án "ELO 9 … B1 … 2021" ⇒ **False**;
+  "ELO 1 …" ⇒ True; `['2024']` + "2024-2025" ⇒ True; `['2570']` + "2570/QĐ-DHAG" ⇒ True.
+- Hệ quả: đổi chữ ký trọng tài; phải chấm lại mọi round đã đóng. Đề xuất làm **cùng lúc với
+  PA-2** thành "referee v2" và công bố cả số cũ lẫn số mới.
+- Vì sao không sửa `_number_in` toàn cục: nó đang phục vụ nhiều loại thực thể (mã, ngày, tiền);
+  đổi toàn cục có thể làm đỏ các round cũ mà chưa lượng hóa được. Bản đề xuất chỉ thắt đúng ca
+  số ngắn trong `_answer_covers_gold` — phạm vi hẹp, dễ test.
+
+**Ước lượng tác động (chỉ đọc, chưa đổi gì):** áp bản strict lên 4 round đã đóng —
+r5 **1/14** PASS_CORRECT bị hạ, r10 **2/16** bị hạ, r8/r9 **0**; các ca bị hạ đều là số ngắn
+khớp trong chuỗi khác (ví dụ `required=['2']` khớp "2026-2028"; `['20']` khớp "2026").
+Ba ca này **chưa chấm tay** nên chưa được coi là "PASS oan" chắc chắn; nếu duyệt, phải chấm tay
+và công bố lại bảng r5/r8/r9/r10 (r5 là baseline của T3/T4). Vì có thể đổi kết luận các round cũ,
+đây là lý do chính để **không tự sửa**.
