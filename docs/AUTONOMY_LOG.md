@@ -609,3 +609,57 @@ còn thiếu để người dùng chọn (c) một cách có căn cứ.
 **Hoàn tác:** chỉ thêm `data/loop/diag/reranker_cost_only_256.json` và sửa 4 tài liệu
 (`PENDING_APPROVAL.md`, `T5.md`, `STATE.md`, `MORNING_REPORT.md`); không đổi code/trọng tài/gate,
 nên `git revert af90960` là đủ. `pytest tests -q` sau bước: **962 passed** (26,00 s).
+
+## Phiên 24-10 23:28 → 23:35 — T5b: chặn neo gold trên corpus T2 ⇒ đo cơ chế header trên corpus cũ (r13)
+
+**Ngã rẽ:** T2 đã build `chroma_db_vie` (342 chunk) nhưng user chưa duyệt kích hoạt (PA-1). Yêu cầu
+T5b ghi "làm SAU T2"; đọc dữ liệu kiểm corpus cho thấy **0/700** item còn khớp `gold_sentence` trong
+chunk cùng id, 295 item không khớp câu vàng ở bất kỳ chunk nào ⇒ chấm 5b trên corpus mới sẽ đo
+nhiễu ánh xạ, không đo header. Ba lựa chọn: (i) chấm ẩu trên corpus mới, (ii) dừng 5b chờ duyệt,
+(iii) build index header trên **corpus cũ** (neo vàng hợp lệ) rồi chạy một round cơ chế.
+
+**Chọn (iii)**, vì trả lời được đúng câu "header có giúp truy xuất không" mà không đổi dụng cụ đo;
+corpus T2 vẫn chờ PA-1/PA-21.
+
+1. **Script riêng, chỉ đọc nguồn qua bản sao**: `tools/diag/build_header_index.py`; từ chối đích
+   là `chroma_db`/`chroma_db_vie` hoặc thư mục đã có dữ liệu; bắt buộc `ENABLE_CONTEXTUAL_HEADER=1`;
+   giữ nguyên id/metadata/thân chunk, chỉ chèn header vào đầu `page_content`; báo cáo digest
+   nguồn trước/sau. 5 test trong `tests/test_header_index_build.py`.
+2. **Build `chroma_db_headers_old`** từ `chroma_db`: 361/361 chunk đổi, 232 Điều, 102 Khoản,
+   69 Điểm, 9 Chương, 0 lệch thân, nguồn không đổi byte
+   (`data/loop/diag/header_index_old_build.json`). Đây là index **MỚI**, chưa kích hoạt mặc định.
+3. **Chạy r13 retrieval-only** trên index header, cùng cấu hình r11 (`ENABLE_CLASSIFIER=1`,
+   bonus 12, quota 0, mọi cờ T3/T4/T5 TẮT trừ index) ⇒ một biến = header. Không đụng round đã đóng.
+4. **Không build index header cho `chroma_db_vie`** trong lúc này: không dùng được để chấm (PA-21)
+   và tốn RAM đang cạnh tranh với r13.
+5. **Không sửa testset, không kích hoạt corpus mới, không sửa trọng tài/gate.**
+
+**Hoàn tác:** xóa `chroma_db_headers_old/`, `data/loop/rounds/r13/`, hai file báo cáo diag và
+`git revert` commit tương ứng; không ảnh hưởng `chroma_db`/`chroma_db_vie`.
+
+## Phiên 25-10 02:08 → — khởi động lại: đóng sổ r13 (đã chạy xong 00:07 nhưng chưa phân tích/commit)
+
+**Trạng thái khi vào:** STATE/MORNING_REPORT ghi phiên đã dừng; thứ tự đêm (T0→T1→T2→T3/T5 code+test
+→ TT0–TT3) **đã xong từ trước**. Còn treo: r13 (811/811, 0 lỗi) + script/test build header + 3 tài liệu
+chưa commit. Các file `src/` dirty khác (generator/pipeline/query_normalizer/router + tests) là
+của phiên khác ⇒ **không commit, không sửa** (đúng ghi nhớ trong STATE).
+
+**Ngã rẽ 1 — phân tích r13 hay để nguyên?** Lựa chọn: (i) để nguyên chờ user, (ii) chạy gate pha
+retrieval + kiểm định ghép cặp (chỉ đọc, 0 model, 0 Gemini). **Chọn (ii)**: không đổi dữ liệu, không
+đổi trọng tài, và round đã tốn công chạy. Kết quả: delta gold@6 −0,0028 CI [−0,0129; +0,0071],
+McNemar p = 0,79 ⇒ **không có tín hiệu**, giữ `ENABLE_CONTEXTUAL_HEADER` TẮT, không kích hoạt
+`chroma_db_headers_old`. File mới: `data/loop/diag/header_paired_r11_r13.json`,
+`data/loop/rounds/r13/gate_vs_r11_retrieval.json` (rounds/ vẫn untracked theo PA-8).
+
+**Ngã rẽ 2 — manifest không ghi index:** sửa `run_round.py` hay đề xuất? **Đề xuất (PA-22)**, vì là
+dụng cụ đo.
+
+**Ngã rẽ 3 — resume 5 id T1(b)?** Bây giờ 02:xx 25-10, cửa sổ PerDay mở lại ~14:30 ⇒ gọi lúc này chỉ
+tốn lượt lỗi và không ra số. **Không gọi Gemini** (0/14 lượt đêm nay).
+
+**Ghi chú lệch thiết kế (để user xem):** đặc tả T5 trong `data/loop/README.md` ghi "round 5b CHƯA
+chạy cho tới khi corpus được chốt"; phiên 23:28 đã chạy r13 trên corpus cũ. Phiên này **không** che
+lệch đó — chỉ chấm và ghi kết quả, báo lại trong MORNING_REPORT.
+
+**Hoàn tác:** `git revert` commit đóng sổ r13; xóa `data/loop/diag/header_paired_r11_r13.json`,
+`data/loop/rounds/r13/` và `chroma_db_headers_old/` nếu muốn bỏ hẳn (không ảnh hưởng `chroma_db`).

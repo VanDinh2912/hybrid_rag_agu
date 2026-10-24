@@ -1,0 +1,1100 @@
+{
+  "purpose": "Kiểm lại lý do bonus 12 thấp gold@6 hơn bonus 3 trên TOÀN BỘ cặp bất đồng 811 item (ROADMAP P5.16 mới có probe 21 item).",
+  "definitions": {
+    "gold_at_k": "trung bình gold_in_top_k trên item has_gold_chunk — same as tools/loop/gate.py",
+    "anchor": "trung bình expected_source_in_window (toàn cục + family HUMAN)",
+    "tests": "mcnemar_exact + paired_bootstrap 10.000 lượt seed 20261023 (tools/loop/noise_floor.py)",
+    "window": 6
+  },
+  "rounds": {
+    "r11": {
+      "n_items": 811,
+      "n_gold_items": 700,
+      "gold_at_k": 0.74,
+      "gold_ci95": {
+        "ci95": [
+          0.7071,
+          0.7729
+        ]
+      },
+      "settings": {
+        "split": "all",
+        "families": "all",
+        "top_k": 6,
+        "generator": "offline_qwen",
+        "strategy": "stratified",
+        "limit": 811,
+        "only_retrieved": false,
+        "normalize_query": false,
+        "pin_subset_from": null,
+        "testset": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\testset_v1.jsonl",
+        "enable_classifier": "1",
+        "enable_answer_guard": "0",
+        "router_soft_filter": "1",
+        "router_filter_rank_bonus": "12",
+        "router_source_quota": "0",
+        "answer_rescue": "0",
+        "rescue_min_score": "0.8",
+        "normalize_sanity_guard": "0",
+        "normalize_min_containment": "0.3",
+        "decoupled_refusal": "0",
+        "dec_thresholds": {
+          "min_entity_coverage": 0.34,
+          "min_token_overlap": 0.2,
+          "min_rrf_norm": 0.9,
+          "min_grounding": 0.6,
+          "max_unsupported": 1
+        },
+        "evidence_selection": "0",
+        "evidence_reranker": {
+          "requested": "bge-reranker-base",
+          "kind": "chưa_chạy",
+          "notes": []
+        },
+        "retrieval_reranker": {
+          "enabled": false,
+          "requested_model": "BAAI/bge-reranker-v2-m3",
+          "loaded_model": null,
+          "loaded": false,
+          "load_seconds": null,
+          "device": "cpu",
+          "candidate_pool": 20,
+          "keep_candidates": false,
+          "max_length": 512,
+          "batch_size": 4,
+          "query_convention": "fold(query) vs page_content nguyên văn, sắp xếp ổn định theo (-diem, hang RRF+bonus)",
+          "model_error": null,
+          "last_call": {
+            "n_candidates": 0,
+            "n_scored": 0,
+            "seconds": 0.0,
+            "model": "",
+            "device": "",
+            "pool": 0,
+            "top_score": null,
+            "bottom_score": null,
+            "order_changed": false,
+            "notes": []
+          },
+          "last_rerank_call": null,
+          "hybrid_path_available": true
+        },
+        "generator_status": {
+          "generator_model_env": "",
+          "class": "QwenGenerator",
+          "model_name": "local-qwen (qwen2.5:1.5b-instruct)",
+          "ollama_model": "qwen2.5:1.5b-instruct",
+          "temperature": 0.1,
+          "num_ctx": 8192,
+          "prompt_version": "v1.3",
+          "context_char_caps": {
+            "block": 1600,
+            "total": 10000
+          }
+        },
+        "generation_cache_dir": "./.generation_cache",
+        "referee": "9f1179ccab74",
+        "oversample_factor": 2
+      },
+      "anchor_rate_all": 0.8319,
+      "anchor_rate_human": 0.8144,
+      "n_anchor_human": 97,
+      "gold_by_family": {
+        "CLOZE": {
+          "n_gold": 153,
+          "gold_at_k": 0.9085,
+          "ci95": {
+            "ci95": [
+              0.8627,
+              0.9477
+            ]
+          }
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "gold_at_k": 0.9709,
+          "ci95": {
+            "ci95": [
+              0.9466,
+              0.9903
+            ]
+          }
+        },
+        "EXACT": {
+          "n_gold": 52,
+          "gold_at_k": 0.2115,
+          "ci95": {
+            "ci95": [
+              0.1154,
+              0.3269
+            ]
+          }
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "gold_at_k": 0.4375,
+          "ci95": {
+            "ci95": [
+              0.3482,
+              0.5268
+            ]
+          }
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "gold_at_k": 0.6667,
+          "ci95": {
+            "ci95": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "gold_at_k": 0.8529,
+          "ci95": {
+            "ci95": [
+              0.7843,
+              0.9216
+            ]
+          }
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "gold_at_k": 0.1304,
+          "ci95": {
+            "ci95": [
+              0.0,
+              0.2609
+            ]
+          }
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "gold_at_k": 0.4706,
+          "ci95": {
+            "ci95": [
+              0.2353,
+              0.7059
+            ]
+          }
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "gold_at_k": 0.5938,
+          "ci95": {
+            "ci95": [
+              0.4062,
+              0.75
+            ]
+          }
+        }
+      },
+      "gold_by_split": {
+        "test": {
+          "n_gold": 296,
+          "gold_at_k": 0.7297
+        },
+        "trainpool": {
+          "n_gold": 404,
+          "gold_at_k": 0.7475
+        }
+      },
+      "window_concentration": {
+        "mean_modal_source_share": 0.6114,
+        "n_items_window_full_by_one_source": 211,
+        "n_items_modal_ge_4": 348,
+        "n_measured": 811
+      },
+      "rows_without_retrieval_config": 0,
+      "attribution_usable": true,
+      "gold_rank_ceiling": {
+        "EXACT": {
+          "n_gold": 52,
+          "in_window": 11,
+          "outside_window_in_list": 6,
+          "absent_from_list": 35,
+          "gold_at_k": 0.2115,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.3269
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "in_window": 3,
+          "outside_window_in_list": 1,
+          "absent_from_list": 19,
+          "gold_at_k": 0.1304,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.1739
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "in_window": 49,
+          "outside_window_in_list": 10,
+          "absent_from_list": 53,
+          "gold_at_k": 0.4375,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.5268
+        },
+        "CLOZE": {
+          "n_gold": 153,
+          "in_window": 139,
+          "outside_window_in_list": 14,
+          "absent_from_list": 0,
+          "gold_at_k": 0.9085,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "in_window": 87,
+          "outside_window_in_list": 14,
+          "absent_from_list": 1,
+          "gold_at_k": 0.8529,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.9902
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "in_window": 19,
+          "outside_window_in_list": 4,
+          "absent_from_list": 9,
+          "gold_at_k": 0.5938,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.7188
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "in_window": 2,
+          "outside_window_in_list": 0,
+          "absent_from_list": 1,
+          "gold_at_k": 0.6667,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.6667
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "in_window": 200,
+          "outside_window_in_list": 6,
+          "absent_from_list": 0,
+          "gold_at_k": 0.9709,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "in_window": 8,
+          "outside_window_in_list": 2,
+          "absent_from_list": 7,
+          "gold_at_k": 0.4706,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.5882
+        }
+      }
+    },
+    "r13": {
+      "n_items": 811,
+      "n_gold_items": 700,
+      "gold_at_k": 0.7371,
+      "gold_ci95": {
+        "ci95": [
+          0.7043,
+          0.77
+        ]
+      },
+      "settings": {
+        "split": "all",
+        "families": "all",
+        "top_k": 6,
+        "generator": "offline_qwen",
+        "strategy": "stratified",
+        "limit": 811,
+        "only_retrieved": false,
+        "normalize_query": false,
+        "pin_subset_from": null,
+        "testset": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\testset_v1.jsonl",
+        "enable_classifier": "1",
+        "enable_answer_guard": "0",
+        "router_soft_filter": "1",
+        "router_filter_rank_bonus": "12",
+        "router_source_quota": "0",
+        "answer_rescue": "0",
+        "rescue_min_score": "0.8",
+        "normalize_sanity_guard": "0",
+        "normalize_min_containment": "0.3",
+        "decoupled_refusal": "0",
+        "dec_thresholds": {
+          "min_entity_coverage": 0.34,
+          "min_token_overlap": 0.2,
+          "min_rrf_norm": 0.9,
+          "min_grounding": 0.6,
+          "max_unsupported": 1
+        },
+        "evidence_selection": "0",
+        "evidence_reranker": {
+          "requested": "bge-reranker-base",
+          "kind": "chưa_chạy",
+          "notes": []
+        },
+        "retrieval_reranker": {
+          "enabled": false,
+          "requested_model": "BAAI/bge-reranker-v2-m3",
+          "loaded_model": null,
+          "loaded": false,
+          "load_seconds": null,
+          "device": "cpu",
+          "candidate_pool": 20,
+          "keep_candidates": false,
+          "max_length": 512,
+          "batch_size": 4,
+          "query_convention": "fold(query) vs page_content nguyên văn, sắp xếp ổn định theo (-diem, hang RRF+bonus)",
+          "model_error": null,
+          "last_call": {
+            "n_candidates": 0,
+            "n_scored": 0,
+            "seconds": 0.0,
+            "model": "",
+            "device": "",
+            "pool": 0,
+            "top_score": null,
+            "bottom_score": null,
+            "order_changed": false,
+            "notes": []
+          },
+          "last_rerank_call": null,
+          "hybrid_path_available": true
+        },
+        "generator_status": {
+          "generator_model_env": "",
+          "class": "QwenGenerator",
+          "model_name": "local-qwen (qwen2.5:1.5b-instruct)",
+          "ollama_model": "qwen2.5:1.5b-instruct",
+          "temperature": 0.1,
+          "num_ctx": 8192,
+          "prompt_version": "v1.3",
+          "context_char_caps": {
+            "block": 1600,
+            "total": 10000
+          }
+        },
+        "generation_cache_dir": "./.generation_cache",
+        "referee": "9f1179ccab74",
+        "oversample_factor": 2
+      },
+      "anchor_rate_all": 0.8269,
+      "anchor_rate_human": 0.8144,
+      "n_anchor_human": 97,
+      "gold_by_family": {
+        "CLOZE": {
+          "n_gold": 153,
+          "gold_at_k": 0.9085,
+          "ci95": {
+            "ci95": [
+              0.8627,
+              0.9477
+            ]
+          }
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "gold_at_k": 0.9612,
+          "ci95": {
+            "ci95": [
+              0.932,
+              0.9854
+            ]
+          }
+        },
+        "EXACT": {
+          "n_gold": 52,
+          "gold_at_k": 0.2308,
+          "ci95": {
+            "ci95": [
+              0.1154,
+              0.3462
+            ]
+          }
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "gold_at_k": 0.4375,
+          "ci95": {
+            "ci95": [
+              0.3482,
+              0.5268
+            ]
+          }
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "gold_at_k": 0.6667,
+          "ci95": {
+            "ci95": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "gold_at_k": 0.8431,
+          "ci95": {
+            "ci95": [
+              0.7745,
+              0.9118
+            ]
+          }
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "gold_at_k": 0.1304,
+          "ci95": {
+            "ci95": [
+              0.0,
+              0.2609
+            ]
+          }
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "gold_at_k": 0.4706,
+          "ci95": {
+            "ci95": [
+              0.2353,
+              0.7059
+            ]
+          }
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "gold_at_k": 0.5938,
+          "ci95": {
+            "ci95": [
+              0.4062,
+              0.75
+            ]
+          }
+        }
+      },
+      "gold_by_split": {
+        "test": {
+          "n_gold": 296,
+          "gold_at_k": 0.7297
+        },
+        "trainpool": {
+          "n_gold": 404,
+          "gold_at_k": 0.7426
+        }
+      },
+      "window_concentration": {
+        "mean_modal_source_share": 0.6134,
+        "n_items_window_full_by_one_source": 208,
+        "n_items_modal_ge_4": 351,
+        "n_measured": 811
+      },
+      "rows_without_retrieval_config": 0,
+      "attribution_usable": true,
+      "gold_rank_ceiling": {
+        "EXACT": {
+          "n_gold": 52,
+          "in_window": 12,
+          "outside_window_in_list": 5,
+          "absent_from_list": 35,
+          "gold_at_k": 0.2308,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.3269
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "in_window": 3,
+          "outside_window_in_list": 2,
+          "absent_from_list": 18,
+          "gold_at_k": 0.1304,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.2174
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "in_window": 49,
+          "outside_window_in_list": 10,
+          "absent_from_list": 53,
+          "gold_at_k": 0.4375,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.5268
+        },
+        "CLOZE": {
+          "n_gold": 153,
+          "in_window": 139,
+          "outside_window_in_list": 14,
+          "absent_from_list": 0,
+          "gold_at_k": 0.9085,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "in_window": 86,
+          "outside_window_in_list": 14,
+          "absent_from_list": 2,
+          "gold_at_k": 0.8431,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.9804
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "in_window": 19,
+          "outside_window_in_list": 3,
+          "absent_from_list": 10,
+          "gold_at_k": 0.5938,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.6875
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "in_window": 2,
+          "outside_window_in_list": 0,
+          "absent_from_list": 1,
+          "gold_at_k": 0.6667,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.6667
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "in_window": 198,
+          "outside_window_in_list": 8,
+          "absent_from_list": 0,
+          "gold_at_k": 0.9612,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "in_window": 8,
+          "outside_window_in_list": 2,
+          "absent_from_list": 7,
+          "gold_at_k": 0.4706,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.5882
+        }
+      }
+    }
+  },
+  "paired": {
+    "n_common_items": 811,
+    "n_common_gold_items": 700,
+    "baseline": "r11",
+    "candidate": "r13",
+    "gold_flags": {
+      "both_hit": 510,
+      "only_baseline": 8,
+      "only_candidate": 6,
+      "both_miss": 176
+    },
+    "mcnemar_exact": {
+      "n_discordant": 14,
+      "b": 6,
+      "c": 8,
+      "p_two_sided": 0.79052734375
+    },
+    "paired_bootstrap_gold_delta": {
+      "reps_requested": 10000,
+      "reps_valid": 10000,
+      "reps_skipped_zero_denominator": 0,
+      "seed": 20261023,
+      "mean_diff": -0.0028,
+      "ci95_percentile": [
+        -0.0129,
+        0.0071
+      ]
+    },
+    "gold_delta": -0.0029,
+    "by_family": {
+      "EXACT": {
+        "n_gold": 52,
+        "baseline_rate": 0.2115,
+        "candidate_rate": 0.2308,
+        "delta": 0.0192,
+        "mcnemar": {
+          "n_discordant": 1,
+          "b": 1,
+          "c": 0,
+          "p_two_sided": 1.0
+        }
+      },
+      "TRAP": {
+        "n_gold": 23,
+        "baseline_rate": 0.1304,
+        "candidate_rate": 0.1304,
+        "delta": 0.0,
+        "mcnemar": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        }
+      },
+      "TRAP_OCR": {
+        "n_gold": 17,
+        "baseline_rate": 0.4706,
+        "candidate_rate": 0.4706,
+        "delta": 0.0,
+        "mcnemar": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        }
+      }
+    },
+    "anchor": {
+      "n": 797,
+      "baseline_rate": 0.8319,
+      "candidate_rate": 0.8269,
+      "delta": -0.005,
+      "paired_bootstrap": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.0051,
+        "ci95_percentile": [
+          -0.0125,
+          0.0013
+        ]
+      },
+      "human": {
+        "n": 97,
+        "baseline_rate": 0.8144,
+        "candidate_rate": 0.8144,
+        "delta": 0.0,
+        "mcnemar": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        }
+      }
+    },
+    "mechanism": {
+      "lost_in_candidate": {
+        "n": 8,
+        "loser_round": "r13",
+        "by_cause": {
+          "ranking_outside_window": 4,
+          "filter_blocks_gold": 4
+        },
+        "by_family": {
+          "NUMERIC": 2,
+          "CLOZE_OCR": 3,
+          "SOURCE_LOOKUP": 3
+        },
+        "by_split": {
+          "trainpool": 6,
+          "test": 2
+        },
+        "n_gold_just_outside_window_7_to_12": 8,
+        "n_window_taken_by_one_source": 2,
+        "loser_rank_distribution": {
+          "7": 6,
+          "8": 2
+        },
+        "winner_rank_distribution": {
+          "6": 5,
+          "4": 2,
+          "5": 1
+        },
+        "loser_filter_recorded": 5,
+        "winner_filter_recorded": 5,
+        "reading_note": "Hai round cùng chạy classifier + bảng TOPIC_SOURCE_FILTER như nhau (settings giống hệt nhau ngoại trừ con số bonus), nên `filter_blocks_gold` ở đây KHÔNG có nghĩa là bộ lọc CẮT chunk vàng (chế độ mềm không cắt) — mà là: chunk vàng nằm NGOÀI danh sách nguồn được ưu tiên, và bonus đủ lớn (>= cỡ cửa sổ) kéo MỌI chunk trong danh sách lên trước nó, đúng bao nhiêu hạng bằng đúng mức bonus.",
+        "mean_loser_modal_share": 3.5,
+        "mean_winner_modal_share": 3.38,
+        "items": [
+          {
+            "id": "N121570199836064",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "1059-qd-dhag-2020-09-29.pdf",
+            "loser_round": "r13",
+            "winner_round": "r11",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 5,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "888-qd-dhag-2022-08-08.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "N121989377006900",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+            "loser_round": "r13",
+            "winner_round": "r11",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 4,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "O167068396196281",
+            "family": "CLOZE_OCR",
+            "split": "trainpool",
+            "gold_source": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+            "loser_round": "r13",
+            "winner_round": "r11",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 6,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "O180494654644930",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r13",
+            "winner_round": "r11",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+              "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf"
+            ]
+          },
+          {
+            "id": "O231059125133532",
+            "family": "CLOZE_OCR",
+            "split": "trainpool",
+            "gold_source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "loser_round": "r13",
+            "winner_round": "r11",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 4,
+            "loser_filter": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ],
+            "winner_filter": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ],
+            "loser_modal_source_share": 6,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "S159578637645764",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "loser_round": "r13",
+            "winner_round": "r11",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1059-qd-dhag-2020-09-29.pdf"
+            ]
+          },
+          {
+            "id": "S251901157929827",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r13",
+            "winner_round": "r11",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S51301742052946",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "loser_round": "r13",
+            "winner_round": "r11",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 6,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          }
+        ]
+      },
+      "gained_in_candidate": {
+        "n": 6,
+        "loser_round": "r11",
+        "by_cause": {
+          "filter_blocks_gold": 4,
+          "ranking_outside_window": 2
+        },
+        "by_family": {
+          "NUMERIC": 2,
+          "CLOZE_OCR": 1,
+          "SOURCE_LOOKUP": 2,
+          "EXACT": 1
+        },
+        "by_split": {
+          "trainpool": 4,
+          "test": 2
+        },
+        "n_gold_just_outside_window_7_to_12": 6,
+        "n_window_taken_by_one_source": 0,
+        "loser_rank_distribution": {
+          "7": 5,
+          "8": 1
+        },
+        "winner_rank_distribution": {
+          "6": 5,
+          "5": 1
+        },
+        "loser_filter_recorded": 4,
+        "winner_filter_recorded": 4,
+        "reading_note": "Hai round cùng chạy classifier + bảng TOPIC_SOURCE_FILTER như nhau (settings giống hệt nhau ngoại trừ con số bonus), nên `filter_blocks_gold` ở đây KHÔNG có nghĩa là bộ lọc CẮT chunk vàng (chế độ mềm không cắt) — mà là: chunk vàng nằm NGOÀI danh sách nguồn được ưu tiên, và bonus đủ lớn (>= cỡ cửa sổ) kéo MỌI chunk trong danh sách lên trước nó, đúng bao nhiêu hạng bằng đúng mức bonus.",
+        "mean_loser_modal_share": 3.17,
+        "mean_winner_modal_share": 3.0,
+        "items": [
+          {
+            "id": "N110205502928361",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "1059-qd-dhag-2020-09-29.pdf",
+            "loser_round": "r11",
+            "winner_round": "r13",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "N263337507686393",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+            "loser_round": "r11",
+            "winner_round": "r13",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 5,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "O225523197923668",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r11",
+            "winner_round": "r13",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S136602209663909",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r11",
+            "winner_round": "r13",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "S158759023544540",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r11",
+            "winner_round": "r13",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "T93385473533286",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r11",
+            "winner_round": "r13",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 6,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "888-qd-dhag-2022-08-08.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "settings_diff": {},
+  "settings_diff_retrieval_relevant": {}
+}

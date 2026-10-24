@@ -277,3 +277,22 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   không đổi thiết kế; PA-19 giữ nguyên khuyến nghị (b) giải phóng RAM rồi chạy lại probe chính
   thức. Cập nhật `docs/reports/T5.md` §1/§2.2/§3 và PA-19.
 - Không Gemini, không chạy round, không sửa code/trọng tài/gate, không xóa file.
+
+## XONG (25-10 02:15 — khởi động lại: đóng sổ r13 / T5b trên corpus cũ)
+
+- r13 (index `chroma_db_headers_old`, retrieval-only, 811/811, 0 lỗi, xong 00:07) **đã chấm**:
+  gold@6 0,7400 → 0,7371, delta ghép cặp **−0,0028 CI [−0,0129; +0,0071]**, McNemar 8 mất/6 được
+  **p = 0,79**; EXACT 0,2115→0,2308 (+1 item); HUMAN 0,8144 không đổi; gate retrieval 6/6 ĐẠT
+  (= không lùi, KHÔNG phải cải thiện). ⇒ **5b âm trên corpus cũ**, `ENABLE_CONTEXTUAL_HEADER` giữ TẮT.
+  Nguồn: `data/loop/diag/header_paired_r11_r13.json`, `data/loop/rounds/r13/gate_vs_r11_retrieval.json`;
+  báo cáo `docs/reports/T5.md` §2.5.
+- Đề xuất mới **PA-22** (manifest round ghi `chroma_persist_dir`); PA-21 (neo gold corpus T2) đã ghi từ 23:35.
+- pytest: **967 passed** (962 + 5 `tests/test_header_index_build.py`).
+- Gemini đêm nay: **0 lượt** (PerDay mở lại ~14:30 25-10).
+
+## VIỆC KẾ TIẾP (sau 25-10 02:15)
+- Không còn việc tự trị trong thứ tự đêm. **PHIÊN DỪNG.**
+- Sau ~14:30 25-10: resume 5 id T1(b) bằng lệnh ở mục "XONG (24-10 23:10)".
+- Chờ duyệt: PA-1, PA-19 (r12), PA-21, PA-22 và các PA cũ.
+- Lệnh tái lập r13: `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/bonus_paired.py --baseline r11 --candidate r13 --third "" --out data/loop/diag/header_paired_r11_r13.json`
+  · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/loop/gate.py --candidate r13 --baseline r11 --phase retrieval`

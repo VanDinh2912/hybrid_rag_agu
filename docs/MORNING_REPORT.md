@@ -4,7 +4,26 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **962 passed** (26,00 s, chạy lại sau bước đo 256).
+`pytest tests -q` mới nhất: **967 passed** (66,70 s, 25-10 02:1x; 962 + 5 test build header).
+
+## CẬP NHẬT 25-10 02:15 — đóng sổ r13 (header 5b trên corpus cũ): KHÔNG có tín hiệu
+
+- **Đã xong:** r13 = r11 + đổi duy nhất index sang `chroma_db_headers_old` (header
+  `[file] - [Chương] - [Điều] - [Khoản] - [Điểm]`), retrieval-only 811/811, 0 lỗi. gold@6
+  **0,7400 → 0,7371**, delta ghép cặp **−0,0028, CI [−0,0129; +0,0071]**, McNemar 8 mất / 6 được,
+  **p = 0,79**; EXACT +1 item (0,2115→0,2308, p = 1,0); neo HUMAN 0,8144 không đổi. Theo ngưỡng
+  đăng ký trước (|delta| < 11 item, CI chứa 0) ⇒ **cấm gọi là cải thiện**; cờ
+  `ENABLE_CONTEXTUAL_HEADER` giữ TẮT, index header **không kích hoạt**. Gate retrieval 6/6 ĐẠT chỉ
+  nghĩa là không lùi. Nguồn: `data/loop/diag/header_paired_r11_r13.json`,
+  `data/loop/rounds/r13/gate_vs_r11_retrieval.json`, `docs/reports/T5.md` §2.5.
+- **Cần duyệt mới:** [PA-21](PENDING_APPROVAL.md) (neo gold trên corpus T2 gãy 48,81% ⇒ chưa đo
+  được 5b trên `chroma_db_vie`) và [PA-22](PENDING_APPROVAL.md) (manifest round không ghi thư mục
+  index ⇒ r13 trông y hệt r11 trong `settings`; diff 1 dòng ở `run_round.py`).
+- **Quyết định tự trị đáng xem lại:** đặc tả T5 ghi "round 5b chưa chạy tới khi corpus được chốt",
+  nhưng phiên 24-10 23:28 đã chạy r13 trên **corpus cũ**. Số chỉ trả lời "header có giúp trên corpus
+  cũ không", không thay phép đo trên corpus T2. Chi tiết `docs/AUTONOMY_LOG.md` (hai mục cuối).
+- **Không đụng:** 0 lượt Gemini (T1(b) còn 5 id, chờ cửa sổ ~14:30 25-10); không sửa gate/trọng
+  tài/`src/`; các file `src/` dirty của phiên khác vẫn **chưa commit** như trước.
 
 ## CẬP NHẬT 24-10 23:10 — T1(b) 25/30 + T5a dừng theo luật chi phí
 

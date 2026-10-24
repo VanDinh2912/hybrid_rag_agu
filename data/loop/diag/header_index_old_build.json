@@ -1,0 +1,38 @@
+{
+  "kind": "T5b — contextual header index (build-time)",
+  "source_index": "D:\\DoAn\\hybrid_rag_agu\\chroma_db",
+  "source_count": 361,
+  "target_index": "D:\\DoAn\\hybrid_rag_agu\\chroma_db_headers_old",
+  "collection": "agu_regulations",
+  "title_key": null,
+  "source_digest_before": "6b27faa3db23fb30f4180805c0e8789aa902932d5c20fbd29081f552a2406621",
+  "source_digest_after": "6b27faa3db23fb30f4180805c0e8789aa902932d5c20fbd29081f552a2406621",
+  "source_unchanged": true,
+  "source_read_via_copy": true,
+  "stats": {
+    "n": 361,
+    "n_changed": 361,
+    "n_with_article": 232,
+    "n_with_clause": 102,
+    "n_with_point": 69,
+    "n_with_chapter": 9,
+    "n_body_mismatch": 0,
+    "examples": [
+      {
+        "chunk_id": 0,
+        "header": "[1054-qd-dhag-2020-09-28.pdf] - [Phần mở đầu]"
+      },
+      {
+        "chunk_id": 1,
+        "header": "[1054-qd-dhag-2020-09-28.pdf] - [Phần mở đầu]"
+      },
+      {
+        "chunk_id": 2,
+        "header": "[1054-qd-dhag-2020-09-28.pdf] - [Điều 1]"
+      }
+    ]
+  },
+  "dry_run": false,
+  "stored_count": 361,
+  "stored_equals_source": true
+}

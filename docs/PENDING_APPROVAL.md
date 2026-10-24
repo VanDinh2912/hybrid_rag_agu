@@ -518,3 +518,64 @@ vào gold; "20" là tiền tố năm). Hướng an toàn hơn:
    coi là PASS nếu gold chỉ là số trang), C1623-r10 (phải xử lý mẫu "20…" đúng), và ELO 10/2024.
 3. Audit tái lập: `tools/diag/referee_strict_number_audit.py` → `data/loop/diag/referee_strict_number_audit.json`
    (chỉ đọc; 5 test trong `tests/test_referee_strict_number_audit.py`).
+
+## PA-21 — 5b: neo `gold_chunk_id` cũ KHÔNG ánh xạ sang corpus T2, không chấm được header trên `chroma_db_vie` (24-10 23:35)
+
+**Bối cảnh:** T2 đã build `chroma_db_vie` (342 chunk) nhưng chưa kích hoạt (PA-1). Yêu cầu T5b
+là "làm SAU T2 để không đo trên corpus sắp thay". Khi kiểm tra khả năng chấm trên corpus mới,
+neo vàng của testset cũ không còn trỏ đúng chunk:
+
+| Phép kiểm (797 item kiểm được; 14 item không có `gold_sentence`) | `chroma_db` cũ | `chroma_db_vie` mới |
+|---|---:|---:|
+| `gold_sentence` còn khớp (fold, đúng luật `testset.py`) | 700 (87,83%) | 408 (51,19%) |
+| Mất neo | 97 (12,17%) | **389 (48,81%)** |
+| Mất **thêm** do rebuild | — | **292 (36,64%)** |
+| Trong 389 ca mất: gần nội dung (overlap ≥0,6) / mất thật | — | 375 / 14 |
+
+Nguồn: `data/loop/diag/corpus_check/corpus_check.json → gold_coverage` (chỉ đọc).
+
+**Vì sao không tự sửa:** ánh xạ lại gold là **đổi dụng cụ đo** (testset), không phải sửa code
+sản phẩm. Nếu tự chọn quy tắc, mọi so sánh r0–r5 sẽ đổi nghĩa và không thể quy lỗi cho header.
+Ngoài ra 14 item mất thật + 375 item chỉ "gần nội dung" không thể neo lại bằng khớp chuỗi —
+cần người quyết định loại khỏi mẫu số hay chấp nhận neo xấp xỉ.
+
+**Đề xuất (chọn một):**
+| | Phương án | Đánh đổi |
+|---|---|---|
+| a | **Giữ corpus cũ cho mọi so sánh đóng**; 5b đo cơ chế trên `chroma_db` cũ (đã làm, r13) | hợp lệ ngay; chưa nói được header trên corpus T2 |
+| b | Neo lại gold tự động: khớp `gold_sentence` duy nhất trên corpus mới; ca nhập nhằng chọn cùng nguồn + gần offset nhất; còn lại **loại khỏi mẫu số** và công bố | đổi mẫu số; phải chấm lại r0–r5 (PA-1) |
+| c | Neo tay 389 ca mất neo | tốn người; chính xác nhất |
+| d | Build testset mới cho corpus T2 từ đầu | sạch nhất; tốn nhiều người + không so sánh được với lịch sử |
+
+Khuyến nghị bảo thủ: **(a) cho hôm nay** (đã có r13, không đổi dụng cụ đo), và chỉ chuyển sang
+(b) khi user duyệt PA-1. Không có file testset nào bị sửa; `chroma_db_vie` chưa được kích hoạt.
+
+**Ghi chú vận hành:** index header cũ `chroma_db_headers_old` được build từ bản sao
+`chroma_db` (361 chunk, id/metadata/thân chunk giữ nguyên); index gốc không bị ghi. Báo cáo:
+`data/loop/diag/header_index_old_build.json`.
+
+## PA-22 — manifest round không ghi thư mục index ⇒ r13 không phân biệt được với r11 bằng `settings` (25-10 02:15)
+
+**Bằng chứng:** `tools/diag/bonus_paired.py --baseline r11 --candidate r13` báo
+`settings khác nhau giữa hai round: {}` dù r13 đọc `chroma_db_headers_old` còn r11 đọc `chroma_db`.
+Một biến chỉ chứng minh được bằng **nội dung** (4.866/4.866 context r13 mang header mới — xem
+`docs/reports/T5.md` §2.5). Mọi round sau đổi index (PA-1, 5b trên corpus T2) sẽ gặp lại lỗ này.
+
+**Vì sao không tự sửa:** `tools/loop/run_round.py` là dụng cụ đo; luật tự trị = ghi diff chờ duyệt.
+Thêm khoá vào `settings` **không** đổi chữ ký trọng tài (đã kiểm: `REFEREE_FILES` trong
+`tools/loop/verify.py:45` chỉ băm `verify.py`, `src/answer_guard.py`, `src/text_utils.py`), nhưng làm `bonus_paired`/`gate` thấy một khoá mới khác nhau
+giữa round cũ (thiếu khoá) và round mới.
+
+**Diff đề xuất** (`tools/loop/run_round.py`, khối `settings`, cạnh `generation_cache_dir`):
+
+```diff
+             "generation_cache_dir": os.getenv("GENERATION_CACHE_DIR", "./.generation_cache"),
++            # Index truy xuất đang đọc: thiếu khoá này thì round đổi index (r13) trông
++            # y hệt round nền trong `settings` (PA-22).
++            "chroma_persist_dir": os.getenv("CHROMA_PERSIST_DIR", "./chroma_db"),
+             # Chữ ký của dụng cụ đo. Hai round chỉ so được nhau khi cùng chữ ký.
+             "referee": referee_fingerprint(),
+```
+
+Kèm 1 test: đặt `CHROMA_PERSIST_DIR=./x` ⇒ `settings["chroma_persist_dir"] == "./x"`.
+Round đã đóng (r0–r13) **không** sửa hồi tố; r13 ghi chú bằng tài liệu.
