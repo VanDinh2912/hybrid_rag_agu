@@ -6,7 +6,7 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
 `pytest tests -q` mới nhất: **962 passed** (26,00 s, chạy lại sau bước đo 256).
 
-## CẬP NHẬT 24-10 23:20 — T1(b) 25/30 + T5a dừng theo luật chi phí
+## CẬP NHẬT 24-10 23:10 — T1(b) 25/30 + T5a dừng theo luật chi phí
 
 Hai việc mới, **không đổi thiết kế nào**, không sửa trọng tài/gate, không chạy r12:
 
@@ -236,6 +236,9 @@ cùng 100 item r5, chấm bằng trọng tài hiện tại `9f1179ccab74`:
 
 ## 6. Trạng thái repo & lệnh sáng mai
 
+> **Bản ghi đêm đầu** — số commit/HEAD/số test dưới đây đã cũ. Trạng thái hiện tại: xem
+> `docs/STATE.md` (mục cuối) và `git log --oneline -1`; `pytest tests -q` hiện **962 passed**.
+> Lệnh chạy thử index mới và lệnh test bên dưới vẫn đúng.
 - Chi nhánh: `auto/overnight`, 4 commit so với `main` (`65eb70a`, `d51d1db`, `b773446`, `467ee5f`)
   + commit tài liệu PA-8. **Lưu ý khi checkout sạch**: `tools/loop/`, `src/answer_guard.py`,
   `data/loop/rounds/` chưa từng được commit (PA-8) ⇒ code trên nhánh phụ thuộc chúng; muốn chạy
