@@ -145,7 +145,7 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Không ghi đè chroma_db/ hay rounds đã đóng; index mới chỉ ở chroma_db_vie/.
 - Không chạy lại/chấm lại round. Không force-push/reset --hard.
 
-## XONG (bổ sung 24-10 15:49 — KIỂM THỬ T2/T3)
+## XONG (bổ sung 24-10 — KIỂM THỬ T2/T3)
 
 - **T3-test XONG.** `tests/test_t3_guardrails.py` **75 test** (A–D của đề bài), xanh; golden cờ TẮT
   `tests/golden/t3_off_30items_head_f492f05.json` (sha file `e59b9ebb…`, sha `core` `344d55cd…`,
@@ -153,17 +153,24 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   với cây hiện tại; mutation check `tmp/mutation_check_t3.py` **7/7 bắt được, 7/7 hoàn nguyên
   byte-identical**. Báo cáo `docs/reports/test_T3.md`; đề xuất mới **PA-14** (Gemini không có nhánh
   T3) + **PA-15** (`DEC_MAX_UNSUPPORTED` dead code) trong `docs/PENDING_APPROVAL.md`.
-- **T2-test:** `tests/test_corpus_rebuild.py` **43 test** xanh (ca 1–6); `tools/diag/check_corpus.py`
-  đã chạy trên dữ liệu thật → `data/loop/diag/corpus_check/corpus_check.json` +
-  `manual_20_segments_new_index.txt` (13:34). **Ca 9 ĐỎ** (48,81% neo nguyên văn gãy; 292 item
-  thoái do rebuild; chỉ 14 = 1,76% mất gold thật) và **ca 10 sai tiền đề** (chữ ký trọng tài KHÔNG
-  đổi: `9f1179ccab74`; chữ ký DỮ LIỆU index đổi `8031beea81da → 6aa8c0fd9162`).
-- **CÒN LẠI của T2-test:** khối in `[7c]` (ký tự ngoài bảng Việt) trong `check_corpus.py::main()`,
-  unit test cho `char_is_supported`/`foreign_glyph_report`, mutation check T2, và
-  `docs/reports/test_T2.md`.
-- **KẾ TIẾP (theo thứ tự đêm):** hoàn tất T2-test còn lại → kiểm thử T5 (reranker, mọi cờ TẮT,
-  chưa chạy round) → chạy test TT0–TT3 → dừng.
+- **T2-test XONG (24-10 15:57).** `tests/test_corpus_rebuild.py` **78 test** xanh (ca 1–6 + 35 test
+  ký tự ngoài bảng Việt); `tools/diag/check_corpus.py` chạy dữ liệu thật → khối mới **[7c]**:
+  **19** ký tự lạ/324.979 (2 loại: `U+208A ₊` ×16, `U+20AC €` ×3), JSON
+  `data/loop/diag/corpus_check/corpus_check.json` + 20 đoạn `manual_20_segments_new_index.txt`;
+  mutation `tmp/mutation_check_t2.py` **5/5 bắt được, 5/5 hoàn nguyên byte-identical**; toàn repo
+  **889 passed** (`tmp/pytest_t2_final.txt`). Báo cáo `docs/reports/test_T2.md`.
+  **Ca 9 ĐỎ** (389/797 = 48,81% neo nguyên văn gãy; 292 id regression lưu ở
+  `gold_coverage.paired.regressed_ids`; chỉ 14 = 1,76% mất gold thật); ca 10: chữ ký trọng tài
+  KHÔNG đổi `9f1179ccab74`, chữ ký DỮ LIỆU index đổi `8031beea81da → 6aa8c0fd9162` (đúng).
+  Cổng chất lượng: 23/26 tệp tốt, 3 tệp khoảng trống vẫn nằm trong index (2 kế hoạch + TB16 0,000
+  dấu). **Tiêu chí nghiệm thu T2 CHƯA ĐẠT** vì mục 9 đỏ; mục 8 chờ người duyệt 20 đoạn.
+  Đề xuất mới: **PA-16** (nối guard `plan_index_write` vào `ingest.py` — hiện vẫn `rmtree`) và
+  **PA-17** (re-anchor 292 `gold_sentence` trước khi chấm lại); PA-7 bổ sung TB16.
+- **KẾ TIẾP (theo thứ tự đêm):** kiểm thử T5 (reranker + contextual header, mọi cờ TẮT, chưa chạy
+  round) → chạy test TT0–TT3 → dừng.
 - Lệnh tái lập nhanh:
-  `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/test_t3_guardrails.py -q`
+  `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/test_corpus_rebuild.py -q`
+  · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/check_corpus.py`
+  · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tmp/mutation_check_t2.py`
+  · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/test_t3_guardrails.py -q`
   · `venv/Scripts/python.exe tmp/mutation_check_t3.py`
-  · `PYTHONIOENCODING=utf-8 python -c "from tools.loop.verify import referee_fingerprint as f; print(f())"`

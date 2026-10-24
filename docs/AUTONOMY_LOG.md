@@ -471,3 +471,31 @@ guard sau sinh — đã bù bằng `TestOuterRefusal` + M1b.
 
 **Không làm:** không sửa `src/`/trọng tài/gate; không chạy round; không đụng `outputs/` hay
 `data/loop/rounds/`; không commit các thay đổi `src/` chưa hoàn tất của phiên khác (PA-8).
+
+## 24-10 15:57 — Kiểm thử T2 (corpus rebuild)
+
+**Đã làm:** `tests/test_corpus_rebuild.py` **78 test** (ca 1–6 + 35 test cho bộ phân loại ký tự
+ngoài bảng Việt); khối `[7c]` trong `tools/diag/check_corpus.py::main()` + khoá
+`foreign_glyphs` trong JSON; chạy lại trên dữ liệu thật (`corpus_check.json`,
+`manual_20_segments_new_index.txt`, log `tmp/t2_check_corpus_7c.log`); mutation
+`tmp/mutation_check_t2.py` **5/5 bắt được, 5/5 hoàn nguyên byte-identical** (log
+`tmp/t2_mutation.log`); toàn repo **889 passed** (`tmp/pytest_t2_final.txt`); báo cáo
+`docs/reports/test_T2.md`.
+
+**Ngã rẽ đã chọn (bảo thủ):**
+1. `[7c]` là **chẩn đoán**, không phải cổng: không có ngưỡng đăng ký trước ⇒ không đặt ngưỡng,
+   không làm đỏ test, chỉ đếm + mã Unicode + ví dụ. Lý do: thêm ngưỡng sau khi thấy số là đúng
+   điều cấm của phiên (tiêu chí đăng ký trước). Hoàn tác: xoá khối in + khoá JSON.
+2. Mục 9 **ĐỎ** (48,81% > 2%): KHÔNG hạ mức đỏ bằng cách dựa vào chẩn đoán near/absent, KHÔNG sửa
+   ngưỡng, KHÔNG sửa testset. Đề xuất re-anchor để người duyệt → **PA-17**. Hoàn tác: không có
+   thay đổi dữ liệu nào.
+3. Phát hiện `plan_index_write` (hàm thuần đã test) **chưa được nối** vào `ingest.py` — `ingest.py`
+   vẫn `rmtree` đích. KHÔNG sửa code sản xuất trong nhiệm vụ test → **PA-16** kèm diff.
+4. Thêm `paired.regressed_ids` (292 id) vào `corpus_check.json` để PA-17 có danh sách chính xác;
+   đây là dữ liệu chẩn đoán, không đổi logic đo.
+5. Tệp thứ ba `TB16 …pdf` (0,000 dấu) lọt index — bổ sung vào **PA-7** thay vì tạo PA trùng.
+6. KHÔNG commit `data/loop/diag/corpus_check/*` (theo nếp repo: bằng chứng dữ liệu để ngoài git;
+   PA-8 đã ghi rủi ro này). Commit chỉ test/script chẩn đoán/docs.
+
+**Không làm:** không build/ghi index, không kích hoạt `chroma_db_vie`, không chấm lại round,
+không sửa `src/`, trọng tài, `gate.py`; không xoá/di chuyển tệp corpus.

@@ -56,6 +56,12 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
   `data/corpus/_khong_index/` và rebuild `chroma_db_vie/`, hoặc (3) số hóa bảng bằng tay
   (đường T6, tốn công).
 - Chưa làm: KHÔNG xóa/di chuyển file corpus nào (xóa = việc cần duyệt). Hoàn tác: không có thay đổi.
+- **Bổ sung 24-10 (check_corpus mục 7b):** tệp thứ **ba** cũng là "khoảng trống" và vẫn nằm trong
+  index mới: `TB16 THAY DOI CONG RA VAO KTX.pdf` (2 chunk, **0,000** từ có dấu, 328 từ, PDF-TEXT
+  font `Helvetica`, `tounicode_frac=0.0` — nguyên nhân ghi trong `per_file.json`: "text-layer mất
+  dấu không rõ nguyên nhân"). Tệp này **không cứu được bằng re-OCR** (không phải scan); lựa chọn
+  là số hóa lại bằng tay/OCR có kiểm, hoặc loại khỏi corpus. Danh sách leak đầy đủ:
+  `corpus_check.json:gate.leak.leaked` = 3 tệp.
 
 ## PA-8 — Toàn bộ bằng chứng vòng lặp P5 đang KHÔNG nằm trong git (rủi ro mất dữ liệu)
 - Bối cảnh (kiểm chứng 24-10): `git ls-files data/loop/rounds` = **0 file** dù thư mục nặng
@@ -281,3 +287,69 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
 - Rủi ro nếu chọn (a): nới guard (1 thực thể bịa lọt) — ngược mục tiêu chống bịa; chỉ nên làm nếu
   có phép đo cho thấy guard đang chặn oan câu trả lời đúng.
 - Hoàn tác: không có thay đổi nào đang áp dụng (chỉ test đặc tả hiện trạng).
+
+
+## PA-16 — T2: nối cổng an toàn `plan_index_write` vào đường build thật (`ingest.py`)
+
+- Bối cảnh (đo 24-10, test T2): hàm thuần `plan_index_write` trong
+  `tools/diag/check_corpus.py:264` **từ chối** ghi đè thư mục đích đã tồn tại (8 test trong
+  `tests/test_corpus_rebuild.py::TestDataSafety`). NHƯNG đường build thật `ingest.py:24-27` vẫn
+  `reset=True` → `shutil.rmtree(persist_dir)` **không hỏi**. Lần build `chroma_db_vie/` ngày 24-10
+  trỏ vào thư mục mới rỗng nên không mất gì; lần sau gõ nhầm `CHROMA_PERSIST_DIR=./chroma_db`
+  sẽ xóa index đang dùng. Trọng tài không liên quan (không đổi chữ ký).
+- Đề xuất (a) — bảo thủ, tối thiểu (khuyến nghị): thêm cờ env **mặc định TẮT** `INGEST_ALLOW_RESET`
+  vào `ingest.py`; nếu đích đã có dữ liệu và cờ chưa bật ⇒ `SystemExit` in đường dẫn tuyệt đối.
+  Diff dự kiến:
+
+```diff
+--- a/ingest.py
++++ b/ingest.py
+@@ def run_ingestion(...):
+     if reset:
+         if os.path.isdir(persist_dir):
++            if os.listdir(persist_dir) and os.getenv("INGEST_ALLOW_RESET") != "1":
++                raise SystemExit(
++                    f"[an toàn] '{os.path.abspath(persist_dir)}' đã có dữ liệu — từ chối xóa. "
++                    "Đặt INGEST_ALLOW_RESET=1 nếu THẬT SỰ muốn build lại toàn bộ index này."
++                )
+             shutil.rmtree(persist_dir)
+             print(f"\n[1/4] Đã xóa ChromaDB cũ tại '{persist_dir}' (reset toàn bộ index).")
+```
+
+  Kèm: cập nhật lệnh trong README/`docs/reports/T2.md` thành
+  `INGEST_ALLOW_RESET=1 python ingest.py` cho lần build chủ đích; thêm 2 test cặp
+  (thiếu cờ ⇒ từ chối, có cờ ⇒ cho phép) nếu chuyển logic thành hàm thuần.
+- Đề xuất (b) — nếu không muốn đổi `ingest.py`: giữ nguyên, ghi rõ trong README "ingest.py xóa
+  toàn bộ thư mục đích; luôn kiểm `CHROMA_PERSIST_DIR` trước khi chạy".
+- Đề xuất bảo thủ: **(a)** — đúng bài học "đích đã tồn tại thì từ chối", mặc định TẮT nên không
+  đổi hành vi trừ khi người dùng chủ động bật.
+- Hoàn tác: xóa 2 dòng `if ... INGEST_ALLOW_RESET` (chưa áp dụng gì).
+
+
+## PA-17 — T2: re-anchor `gold_sentence` cho 292 item regression trước khi chấm lại round
+
+- Bối cảnh (đo 24-10, `corpus_check.json:gold_coverage`): index mới mất neo **389/797 = 48,81%**
+  (ngưỡng đăng ký 2% ⇒ ĐỎ). Trong đó **97 item đã mất neo ngay trên index CŨ** (12,17%),
+  **292 item là regression riêng do rebuild** (36,64%; danh sách id đầy đủ ở
+  `corpus_check.json:gold_coverage.paired.regressed_ids`, 292 id không trùng). Chẩn đoán:
+  375/389 là "near" (nội dung còn, câu chữ OCR khác), 14 là "absent" (1,76%).
+- Vì sao phải re-anchor: `gold_sentence` là neo **nguyên văn** dùng để đo gold@k của round; giữ
+  nguyên thì mọi round trên corpus mới sẽ bị tính "trượt" vì lý do OCR viết khác, không phải vì
+  truy xuất kém. Re-anchor là thay đổi DỮ LIỆU ĐO ⇒ cần duyệt, và phải làm **trước** khi chấm lại.
+- Đề xuất (a) — bảo thủ (khuyến nghị): tạo tệp **MỚI** `data/loop/testset_v1_reanchored.jsonl`
+  (KHÔNG ghi đè tệp gốc):
+  1) với từng id trong `regressed_ids`, tìm chunk mới có overlap token cao nhất với `gold_sentence`
+     cũ; nếu overlap ≥ 0,60, thay `gold_sentence` bằng **câu nguyên văn** trong chunk đó (câu có
+     overlap cao nhất), giữ nguyên `id`, `family`, câu hỏi, `required_entities`;
+  2) lưu bản đồ `old → new` + overlap vào `data/loop/diag/reanchor_map.json`;
+  3) kiểm: 811 id duy nhất, không thêm/bớt item, `gold_sentence` không rỗng ở đúng những item
+     trước đây có; chạy lại `check_corpus.py` với `--testset` mới ⇒ mục 9 phải ≤ 2%;
+  4) xác nhận bất biến #6: không có đường runtime nào đọc `gold_sentence`
+     (`grep -rn "gold_sentence" src tools/loop | grep -v testset.py`).
+- Đề xuất (b): không re-anchor; chấp nhận mọi so sánh round trên corpus mới là **baseline mới**
+  (không so cặp item với r0–r11), và ghi rõ mục 9 đỏ trong mọi báo cáo.
+- Đề xuất bảo thủ: **(a)** nhưng chỉ sau khi người dùng duyệt; không tự sửa testset trong phiên tự trị.
+- Rủi ro nếu chọn (a): re-anchor có thể vô tình "làm đẹp" số (chọn câu dễ trúng) ⇒ bắt buộc giữ
+  nguyên phân bố family và công bố cả tỉ lệ near/absent trước–sau; mọi round chấm trên testset
+  mới là **nguồn số mới**, không được ghép với số cũ.
+- Hoàn tác: xóa 2 tệp mới (`testset_v1_reanchored.jsonl`, `reanchor_map.json`); tệp gốc không đổi.
