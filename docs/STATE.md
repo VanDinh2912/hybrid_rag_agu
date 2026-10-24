@@ -94,6 +94,27 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
   > 60 phút cho 811 item thì DỪNG và báo) → `r12` = r11 + `ENABLE_RERANKER=1 RERANKER_KEEP_CANDIDATES=1`
   → gate/attribute/bonus_paired → `docs/reports/T5.md`. **5b chưa chạy round** (chờ PA-1).
 
+## XONG (bổ sung 24-10 — T6: làm chắc kết luận trước hội đồng)
+Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là ĐỀ XUẤT diff — `gate.py` không đổi.**
+- **6a (PA-13, chờ duyệt):** đề xuất cổng `refusal_rate_bounded` tuyệt đối → **tương đối**
+  (`candidate ≤ baseline + GATE_MAX_REFUSAL_RATE_DELTA=0.05`; thiếu baseline = CẤM), trần 0,35 hạ
+  thành **cảnh báo không phủ quyết**. Logic + test ở bản tạm: `tools/diag/gate_refusal_relative_proposal.py`
+  + `tests/test_gate_refusal_relative_proposal.py` (**8 case, không import gate.py**). Diff đầy đủ ở PA-13.
+- **6b (chờ nhãn tay):** `tools/diag/referee_sample.py` trích **60 mẫu phân tầng từ r5** (dung 14 /
+  tu_boi_dung 15 / tu_boi_oan 15 / sai 16), **ẩn verdict + mọi trường vàng** khỏi phiếu; khoá chấm ở
+  `data/loop/diag/referee_sample_manifest.json`. `tools/diag/referee_agreement.py` tính accuracy +
+  **Cohen's kappa** + precision/recall/F1/ma trận khi có nhãn (tự-nhãn-bằng-verdict → 1.0/1.0).
+  Phiếu: `data/loop/diag/referee_labeling_r5.{jsonl,md}`. **Hiện `n_filled=0` — chờ user đọc tay.**
+- **6c (khung, chờ câu thật):** `tools/eval/real_questions.jsonl` + `score_real_questions.py` (pipeline
+  thật + `check_grounding` + cột người đọc "giúp được", `--dry-run` đếm lượt model trước) + README giới
+  hạn + `tests/test_score_real_questions.py` (**6 case**, stub không nạp model). `--dry-run` = "0 câu thật".
+- **6d (xong):** `tools/diag/metric_ci.py` bootstrap CI 95% (10.000 lượt) cho chỉ số chính, **điểm ước
+  lượng dùng đúng công thức `gate.metrics`** (match 100%) → bảng **5.1** trong `danh_gia_tong_quan_2026-10-23.md`
+  + `metric_ci_r{5,7}_full.json`. **Tổng điểm trọng số ĐÃ khớp số học: 0.20·9.2+0.15·8.2+0.20·7.0+0.20·8.5+
+  0.25·4.0 = 7,17 → 7,2** (không còn 7,4 ngoài dòng đính chính). Muốn ra 7,1 phải dùng bộ điểm CŨ
+  (9,0/8,0/…) — là phán chấm điểm, cần user chốt, **không tự đổi điểm thành phần**.
+- pytest toàn repo sau T6: **691 passed** (677 + 8 gate + 6 eval).
+
 ## VIỆC KẾ TIẾP (theo thứ tự đề bài)
 1. ~~T2 Bước 3~~ ~~T2 Bước 4~~ ~~T3~~ ~~T4~~ — xong, xem các mục XONG.
 2. **T5a đang chạy** (r11 → cost probe → r12); **T5b chặn ở PA-1** (corpus chưa chốt).
@@ -114,8 +135,8 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
 - Đo từ có dấu trên một ChromaDB index (chỉ đọc):
   `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/measure_index.py --db ./chroma_db_vie --out data/loop/diag/corpus_diagnostics/index_after.json`
 - Resume T1 (b) (khi quota reset ~14:00 VN): `PYTHONIOENCODING=utf-8 ENABLE_ANSWER_GUARD=1 ./venv/Scripts/python.exe tools/diag/ablation_generation.py --config b_gemini_top6 --ids-file data/loop/diag/b_gemini_top6/sample_ids.json --limit 30`
-- Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng **677** xanh — 24-10;
-  563 là mốc trước T3, 610 trước T4/T5a). **Phải chạy bằng `venv` của app**, không dùng python hệ
+- Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng **691** xanh — sau T6;
+  677 sau T4/T5a, 610 trước T4). **Phải chạy bằng `venv` của app**, không dùng python hệ
   thống (thiếu `streamlit`/`pypdfium2` → 3 file UI lỗi collection dù code không sai).
 
 ## GHI NHỚ BẢO THỦ

@@ -136,3 +136,110 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
   hướng SFT cho tới khi đổi máy.
 - Chưa làm: không đổi bộ dữ liệu nào, không train. Hoàn tác: không có thay đổi.
 
+
+## PA-13 — T6a: cổng `refusal_rate_bounded` chuyển từ TUYỆT ĐỐI sang TƯƠNG ĐỐI (giữ 0,35 làm cảnh báo)
+
+- Bối cảnh: `tools/loop/gate.py::compare()` hiện veto một round chỉ vì
+  `candidate.refusal_rate > GATE_MAX_REFUSAL_RATE (0.35)`, bất kể baseline. Hệ quả đã thấy ở
+  T3: r8/r9 bị báo KHÔNG ĐẠT một phần vì trần tuyệt đối, trong khi độ tăng refusal so với baseline
+  mới là "cái giá" thật sự của lever. Khi corpus có nhiều câu ngoài phạm vi, một round tốt vẫn bị
+  veto oan; ngược lại candidate 0,34 luôn lọt dù baseline chỉ 0,05.
+- Đề xuất (CHỈ diff, chưa nối vào gate.py):
+  1) Luật phủ quyết thành TƯƠNG ĐỐI: `candidate <= baseline + GATE_MAX_REFUSAL_RATE_DELTA`
+     (mặc định 0,05). Thiếu `baseline.refusal_rate` ⇒ KHÔNG ĐO ĐƯỢC = CẤM (đúng quy tắc gate:
+     rule không đo được không được tính là ĐẠT).
+  2) Trần tuyệt đối 0,35 giữ nguyên nhưng hạ cấp thành CẢNH BÁO (`warnings`, in ra hội đồng,
+     không nằm trong `checks` nên không kéo `passed` xuống).
+  3) Thêm ngưỡng mới `GATE_MAX_REFUSAL_RATE_DELTA` vào dict `thresholds` để truy vết.
+- Logic đã chứng minh ở bản tạm: `tools/diag/gate_refusal_relative_proposal.py` +
+  `tests/test_gate_refusal_relative_proposal.py` (8 case: tăng≤delta→ĐẠT, tăng>delta→BỊ,
+  thiếu baseline→CẤM, candidate giảm→ĐẠT, 0,38>trần nhưng tương đối ĐẠT kèm warning, delta chỉnh
+  được, mặc định 0,35, retrieval-phase không thêm gì).
+- Diff dự kiến vào `tools/loop/gate.py`:
+
+```diff
+@@ compare() — khai báo ngưỡng + danh sách cảnh báo
+     fab_delta = _env_float("GATE_MAX_FABRICATION_DELTA", 0.0)
+     missed_delta = _env_int("GATE_MAX_MISSED_REFUSAL_DELTA", 0)
+     max_refusal = _env_float("GATE_MAX_REFUSAL_RATE", 0.35)
++    max_refusal_delta = _env_float("GATE_MAX_REFUSAL_RATE_DELTA", 0.05)
+     min_family_n = _env_int("GATE_MIN_FAMILY_N", 8)
+ 
+     checks: list[dict] = []
++    warnings: list[dict] = []
+ 
+     def add(name: str, ok: bool, detail: str) -> None:
+         checks.append({"rule": name, "ok": bool(ok), "detail": detail})
+ 
++    def warn(name: str, detail: str) -> None:
++        warnings.append({"rule": name, "severity": "warning", "detail": detail})
+```
+
+```diff
+@@ compare() — luật 4 (thay toàn bộ khối cũ)
+-    # 4. cái giá từ chối oan có trần
+-    cr = candidate["refusal_rate"]
+-    if cr is not None:
+-        add(
+-            "refusal_rate_bounded",
+-            cr <= max_refusal,
+-            f"candidate={cr} baseline={baseline['refusal_rate']} (trần {max_refusal})",
+-        )
++    # 4. cái giá từ chối oan: TEST TƯƠNG ĐỐI (phủ quyết) + trần tuyệt đối (chỉ cảnh báo)
++    cr = candidate["refusal_rate"]
++    br = baseline["refusal_rate"]
++    if cr is not None:
++        if br is not None:
++            add(
++                "refusal_rate_not_increased",
++                cr <= br + max_refusal_delta,
++                f"candidate={cr} baseline={br} delta={_delta(cr, br)} "
++                f"(ngưỡng tương đối +{max_refusal_delta})",
++            )
++        else:
++            add(
++                "refusal_rate_not_increased",
++                False,
++                f"KHÔNG ĐO ĐƯỢC: candidate={cr} nhưng baseline thiếu refusal_rate "
++                "(round đối chiếu chạy bằng verify cũ/khác pha) — chạy lại baseline rồi mở cổng",
++            )
++        if cr > max_refusal:
++            warn(
++                "refusal_rate_absolute_ceiling",
++                f"candidate={cr} vượt trần tuyệt đối {max_refusal} — cảnh báo cho hội đồng, "
++                "không tự phủ quyết",
++            )
+```
+
+```diff
+@@ compare() — payload trả về
+         "passed": passed,
+         "n_common_items": len(common_ids),
+         "thresholds": {
+             ...
+             "GATE_MAX_REFUSAL_RATE": max_refusal,
++            "GATE_MAX_REFUSAL_RATE_DELTA": max_refusal_delta,
+             "GATE_MAX_RECALL_DROP": _env_float("GATE_MAX_RECALL_DROP", 0.02),
+             "GATE_MIN_FAMILY_N": min_family_n,
+         },
+         "checks": checks,
++        "warnings": warnings,
+         "family_deltas": fam_lines,
+```
+
+```diff
+@@ main() — in báo cáo
+     for check in result["checks"]:
+         print(f"  [{'ĐẠT ' if check['ok'] else 'VI PHẠM'}] {check['rule']:34s} {check['detail']}")
++    for w in result.get("warnings", []):
++        print(f"  [CANH BAO] {w['rule']:34s} {w['detail']}")
+```
+
+- Rủi ro / lưu ý: delta 0,05 là Ngưỡng ĐĂNG KÝ TRƯỚC; nếu hội đồng muốn siết/nới thì chốt con số
+  này TRƯỚC khi mở round, không chỉnh sau khi thấy số. Đổi tên rule từ `refusal_rate_bounded` sang
+  `refusal_rate_not_increased` làm các báo cáo gate cũ (JSON trên đĩa) không còn khớp tên — chỉ ảnh
+  hưởng hiển thị, không ảnh hưởng verdict đã ghi. round_summary/gate không đổi chữ ký trọng tài.
+- Chưa làm: KHÔNG sửa `gate.py`. Hoàn tác: không có thay đổi; chỉ có module tạm + test tạm mới.
+- Việc cần duyệt: (1) chốt delta mặc định 0,05; (2) cho phép áp diff vào `gate.py`; (3) xác nhận
+  việc đổi tên rule (nếu muốn giữ tên cũ `refusal_rate_bounded` thì báo trước để không tách nhánh
+  báo cáo).

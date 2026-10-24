@@ -371,3 +371,34 @@ quota 0, mọi cờ T3/T4/T5 TẮT, `--strategy all --limit 811` cho đúng th�
 nhiệt độ 0, không phải code drift; điều này khiến cặp `r11 vs r2` vẫn dùng được làm thước đo drift.
 Chi phí reranker **chưa đo** (phải đo trên item thật của r11, theo đúng thứ tự đã đăng ký), nên
 chưa bấm r12.
+
+---
+
+## 24-10 (chiều) — T6: dựng khung kiểm chứng để mọi kết luận đứng trước hội đồng
+
+Lồng ghép trong lúc `r11` (811 item) vẫn chạy nền; **T6 không bấm thêm model/GPU** — chỉ đọc
+verdict có trên đĩa và chạy bootstrap/schema.
+
+**Quyết định đã tự chốt (trong phạm vi cho phép):**
+- T6a: coi `gate.py` là vùng cấm theo bất biến #5 ⇒ viết luật refusal tương đối ở **module tạm
+  không import gate** + test 8 case + diff đầy đủ ở **PA-13**; **không sửa gate.py**. Chọn cách
+  "warning không nằm trong `checks`" để cảnh báo tuyệt đối 0,35 **không** kéo `passed` xuống
+  (thay vì đánh dấu ok=True trong checks — vừa in vừa vô hiệu hoá `all(checks)` một cách khó đọc).
+- T6b: xếp `FAIL_RETRIEVAL` vào lớp "sai" vì phía người học, đáp án thiếu căn cứ vẫn không dùng
+  được; **ẩn cả verdict lẫn trường vàng** để nhãn tay là phán quyết ĐỘC LẬP, không bị neo.
+- T6c: dùng stub pipeline trong test (nạp Ollama/Chroma trong unit test là không ổn) và `--dry-run`
+  bắt đếm lượt model trước (bất biến #8). Ghi `extra_haystack`=tên nguồn khi chấm grounding để
+  khỏi gọi số trong tên file là "bịa" (đúng like pipeline sản xuất đã làm).
+- T6d: **không tự đổi điểm thành phần.** Số học tổng đã khớp 7,17→7,2; con số 7,1 user nhớ ứng với
+  bộ điểm CŨ. Đây là phán chấm điểm ⇒ đưa vào mục "cần user chốt", không âm thầm sửa.
+
+**Không làm (đúng cổng duyệt):** không áp diff vào `gate.py`; không chạy `referee_agreement` ra số
+(thiếu nhãn tay, `n_filled=0`); không chấm câu hỏi thật (0 câu được điền); không chạy `r12`.
+
+**Kiểm:** `pytest tests -q` = **691 passed** (thêm 8 gate proposal + 6 eval framework). Điểm ước
+lượng `metric_ci.py` khớp `gate.metrics` trên mọi chỉ số dùng chung (`match_gate=True`), nên CI không
+dựng nên thang đo thứ hai. Không sửa `src/` sản xuất; không ghi đè round đã đóng (mọi output T6 vào
+`data/loop/diag/`, `tools/eval/`, `docs/`).
+
+**Bằng chứng chờ (nợ user):** (1) nhãn 60 mẫu 6b; (2) duyệt PA-13 để áp cổng tương đối; (3) 30–50
+câu hỏi thật cho 6c; (4) chốt có muốn đầu ra ghi 7,1 (=dùng điểm cũ) hay giữ 7,2.

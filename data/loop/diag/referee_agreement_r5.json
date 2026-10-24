@@ -1,0 +1,88 @@
+{
+  "generated_at": "2026-10-24T10:47:07",
+  "round": "r5",
+  "worksheet": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\diag\\referee_labeling_r5.jsonl",
+  "n_worksheet_rows": 60,
+  "n_filled": 0,
+  "n_unfilled": 60,
+  "n_no_referee": 0,
+  "n_unclear_dropped": 0,
+  "n_scored": 0,
+  "overall_accuracy": null,
+  "cohen_kappa": null,
+  "per_class": {
+    "dung": {
+      "support_human": 0,
+      "n_predicted_by_referee": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "sai": {
+      "support_human": 0,
+      "n_predicted_by_referee": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "tu_boi_dung": {
+      "support_human": 0,
+      "n_predicted_by_referee": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null
+    },
+    "tu_boi_oan": {
+      "support_human": 0,
+      "n_predicted_by_referee": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null
+    }
+  },
+  "confusion_human_rows_x_referee_cols": {
+    "dung": {
+      "dung": 0,
+      "sai": 0,
+      "tu_boi_dung": 0,
+      "tu_boi_oan": 0
+    },
+    "sai": {
+      "dung": 0,
+      "sai": 0,
+      "tu_boi_dung": 0,
+      "tu_boi_oan": 0
+    },
+    "tu_boi_dung": {
+      "dung": 0,
+      "sai": 0,
+      "tu_boi_dung": 0,
+      "tu_boi_oan": 0
+    },
+    "tu_boi_oan": {
+      "dung": 0,
+      "sai": 0,
+      "tu_boi_dung": 0,
+      "tu_boi_oan": 0
+    }
+  },
+  "referee_verdict_breakdown": {},
+  "class_labels": {
+    "dung": "Đúng & có căn cứ",
+    "sai": "Sai / không căn cứ",
+    "tu_boi_dung": "Từ chối đúng",
+    "tu_boi_oan": "Từ chối oan"
+  }
+}

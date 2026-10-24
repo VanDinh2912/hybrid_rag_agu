@@ -1,0 +1,386 @@
+{
+  "round": "r5",
+  "generated_at": "2026-10-24T10:46:16",
+  "seed": 20261024,
+  "targets": {
+    "dung": 14,
+    "tu_boi_dung": 15,
+    "tu_boi_oan": 15,
+    "sai": 16
+  },
+  "available_by_stratum": {
+    "dung": 14,
+    "tu_boi_dung": 17,
+    "tu_boi_oan": 37,
+    "sai": 32
+  },
+  "n_selected": 60,
+  "selected_by_stratum": {
+    "dung": 14,
+    "tu_boi_dung": 15,
+    "tu_boi_oan": 15,
+    "sai": 16
+  },
+  "samples": [
+    {
+      "sample_index": 1,
+      "id": "HQ01",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 2,
+      "id": "S128111294790282",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 3,
+      "id": "C126485669658863",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 4,
+      "id": "T24199159682252",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 5,
+      "id": "R248745011260307",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 6,
+      "id": "N172171203676287",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 7,
+      "id": "T70568322614840",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 8,
+      "id": "N135865507843783",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 9,
+      "id": "O101995178075997",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 10,
+      "id": "O10235702435549",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 11,
+      "id": "O105878724802157",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 12,
+      "id": "T274957825497798",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 13,
+      "id": "Y57173144541416",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 14,
+      "id": "T84810705430065",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 15,
+      "id": "R184746228824203",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 16,
+      "id": "Y215997632637955",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 17,
+      "id": "N13560832540059",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 18,
+      "id": "R68503960632110",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_HALLUCINATED_ON_UNANSWERABLE"
+    },
+    {
+      "sample_index": 19,
+      "id": "S147418342963925",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 20,
+      "id": "S100040424033217",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 21,
+      "id": "T111158251954171",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 22,
+      "id": "T130276288816834",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 23,
+      "id": "O106830364358307",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 24,
+      "id": "C129706954034989",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 25,
+      "id": "P246967067930891",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 26,
+      "id": "C141453164501757",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_INCOMPLETE"
+    },
+    {
+      "sample_index": 27,
+      "id": "Y157881864411299",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 28,
+      "id": "M41101106085990",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 29,
+      "id": "M142438753261798",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 30,
+      "id": "C159725752125707",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 31,
+      "id": "T56549597345139",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 32,
+      "id": "HQ04",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 33,
+      "id": "R46113069284544",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 34,
+      "id": "R224075874292646",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 35,
+      "id": "Y188194188155446",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 36,
+      "id": "N121570199836064",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 37,
+      "id": "M153742466270767",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 38,
+      "id": "T43714716473179",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 39,
+      "id": "R254376862841044",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 40,
+      "id": "M234529971158912",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 41,
+      "id": "T320008594923",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 42,
+      "id": "HQ02",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 43,
+      "id": "C188669893116147",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 44,
+      "id": "S13195954021918",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 45,
+      "id": "S103676246349149",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 46,
+      "id": "M28020617412449",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    },
+    {
+      "sample_index": 47,
+      "id": "HQ06",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 48,
+      "id": "O10172700165077",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 49,
+      "id": "O102464711059095",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 50,
+      "id": "N121989377006900",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 51,
+      "id": "Y276949344929833",
+      "stratum": "tu_boi_oan",
+      "referee_verdict": "FAIL_OVERREFUSAL"
+    },
+    {
+      "sample_index": 52,
+      "id": "N143662722487347",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 53,
+      "id": "R165719960918606",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_HALLUCINATED_ON_UNANSWERABLE"
+    },
+    {
+      "sample_index": 54,
+      "id": "S21358280526248",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_INCOMPLETE"
+    },
+    {
+      "sample_index": 55,
+      "id": "S131375215439331",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 56,
+      "id": "N172171203676287#2",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 57,
+      "id": "C176702127689533",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_INCOMPLETE"
+    },
+    {
+      "sample_index": 58,
+      "id": "S112834129362285",
+      "stratum": "dung",
+      "referee_verdict": "PASS_CORRECT"
+    },
+    {
+      "sample_index": 59,
+      "id": "C154042131342800",
+      "stratum": "sai",
+      "referee_verdict": "FAIL_RETRIEVAL"
+    },
+    {
+      "sample_index": 60,
+      "id": "M208944617251005",
+      "stratum": "tu_boi_dung",
+      "referee_verdict": "PASS_REFUSAL"
+    }
+  ]
+}
