@@ -266,3 +266,14 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   3 là PASS oan (1 số trang lẫn gold, 1 refusal không đổi verdict, 1 mẫu "20…" điền hợp lệ) ⇒
   **không áp strict một mình**, phải sửa metadata required_entities trước.
 - `pytest tests -q`: **962 passed** (957 cũ + 5 test audit; 23,59 s).
+
+## XONG (24-10 23:12 — đo thêm phương án hạ max_length 256 cho PA-19)
+
+- Chạy `tools/diag/reranker_cost_only.py` với `RERANKER_MAX_LENGTH=256`, 5 item × 20 cặp
+  (NGOÀI thiết kế đăng ký, chỉ để trả lời PA-19): nạp 15,17 s (model 7,98 s); median
+  **9,294 s/item** (mean 9,248 · p95 9,407 · max 9,423); ngoại suy 811 item = **125,0 phút
+  (2,08 giờ)**; RAM trống sau nạp 1.646,6 MiB. Nguồn: `data/loop/diag/reranker_cost_only_256.json`.
+- Kết luận: hạ 256 cắt ~50% thời gian chấm nhưng **vẫn vượt luật 60 phút** ⇒ không áp dụng,
+  không đổi thiết kế; PA-19 giữ nguyên khuyến nghị (b) giải phóng RAM rồi chạy lại probe chính
+  thức. Cập nhật `docs/reports/T5.md` §1/§2.2/§3 và PA-19.
+- Không Gemini, không chạy round, không sửa code/trọng tài/gate, không xóa file.

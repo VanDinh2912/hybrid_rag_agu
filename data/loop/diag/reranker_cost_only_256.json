@@ -1,0 +1,107 @@
+{
+  "kind": "BỔ SUNG — không phải probe đăng ký trước, không dùng để chốt T5a",
+  "source_round": "r11",
+  "seed": 20261024,
+  "n_items": 5,
+  "pool": 20,
+  "reranker_env": {
+    "model": "BAAI/bge-reranker-v2-m3",
+    "device": "cpu",
+    "max_length": "256",
+    "batch_size": "4"
+  },
+  "memory_before": {
+    "method": "GlobalMemoryStatusEx",
+    "memory_load_percent": 74,
+    "total_phys_mib": 16088.1,
+    "avail_phys_mib": 4135.2
+  },
+  "load_seconds": 15.17,
+  "status_after_load": {
+    "enabled": false,
+    "requested_model": "BAAI/bge-reranker-v2-m3",
+    "loaded_model": "loaded BAAI/bge-reranker-v2-m3 on cpu in 7.98s, max_length=256",
+    "loaded": true,
+    "load_seconds": 7.98,
+    "device": "cpu",
+    "candidate_pool": 20,
+    "keep_candidates": false,
+    "max_length": 256,
+    "batch_size": 4,
+    "query_convention": "fold(query) vs page_content nguyên văn, sắp xếp ổn định theo (-diem, hang RRF+bonus)",
+    "model_error": null,
+    "last_call": {
+      "n_candidates": 0,
+      "n_scored": 0,
+      "seconds": 0.0,
+      "model": "",
+      "device": "",
+      "pool": 0,
+      "top_score": null,
+      "bottom_score": null,
+      "order_changed": false,
+      "notes": []
+    }
+  },
+  "memory_after_load": {
+    "method": "GlobalMemoryStatusEx",
+    "memory_load_percent": 89,
+    "total_phys_mib": 16088.1,
+    "avail_phys_mib": 1646.6
+  },
+  "per_item": [
+    {
+      "id": "T153781448113107",
+      "family": "TRAP",
+      "seconds": 9.341,
+      "n_pairs": 20,
+      "chars": 21492
+    },
+    {
+      "id": "S103676246349149",
+      "family": "SOURCE_LOOKUP",
+      "seconds": 9.158,
+      "n_pairs": 20,
+      "chars": 24262
+    },
+    {
+      "id": "HQ24",
+      "family": "HUMAN",
+      "seconds": 9.022,
+      "n_pairs": 20,
+      "chars": 18733
+    },
+    {
+      "id": "C197174221512403",
+      "family": "CLOZE",
+      "seconds": 9.294,
+      "n_pairs": 20,
+      "chars": 22417
+    },
+    {
+      "id": "N141690845650560",
+      "family": "NUMERIC",
+      "seconds": 9.423,
+      "n_pairs": 20,
+      "chars": 23852
+    }
+  ],
+  "seconds": {
+    "min": 9.022,
+    "median": 9.294,
+    "mean": 9.248,
+    "p95": 9.407,
+    "max": 9.423,
+    "total_seconds": 46.24
+  },
+  "extrapolation_811_items": {
+    "minutes": 125.0,
+    "basis": "mean giây/item × 811; KHÔNG gồm thời gian nạp model và pipeline"
+  },
+  "memory_after_scoring": {
+    "method": "GlobalMemoryStatusEx",
+    "memory_load_percent": 90,
+    "total_phys_mib": 16088.1,
+    "avail_phys_mib": 1599.5
+  }
+}

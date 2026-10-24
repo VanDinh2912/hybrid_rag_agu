@@ -30,6 +30,14 @@ Hai việc mới, **không đổi thiết kế nào**, không sửa trọng tài
    PerDay**; 5 id còn lại phải chờ cửa sổ quota kế tiếp (retry hint ~14:30 25-10), dùng đúng
    `sample_ids.json` đã đăng ký với `--limit 5`.
 
+## CẬP NHẬT 24-10 23:12 — đo thêm `max_length=256` cho PA-19 (vẫn không chạy r12)
+
+Đo ngoài thiết kế, 5 item × 20 cặp, chỉ để trả lời phương án (c) của PA-19: nạp 15,17 s;
+median **9,294 s/item** (mean 9,248 · p95 9,407) so với 18,473 s ở 512 ⇒ giảm ~50%, nhưng
+ngoại suy 811 item vẫn **125,0 phút (2,08 giờ)**, chưa tính pipeline; RAM trống sau nạp
+1.646,6 MiB. ⇒ **(c) một mình vẫn vượt luật 60 phút**, không áp dụng, không đổi thiết kế.
+Nguồn: `data/loop/diag/reranker_cost_only_256.json`; `docs/reports/T5.md` §2.2.
+
 ## CẬP NHẬT 24-10 23:09 — kiểm tay 5 ca fabrication + 2 đề xuất trọng tài
 
 Không gọi Gemini, không chạy round, không sửa code; chỉ đọc dữ liệu đã có.

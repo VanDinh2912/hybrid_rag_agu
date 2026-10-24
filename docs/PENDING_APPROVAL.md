@@ -460,6 +460,13 @@ nạp xong hai model, **chưa chấm được cặp nào**; RAM trống sau khi 
 Khuyến nghị bảo thủ: **(b) trước** (không đổi thiết kế); nếu vẫn >60 phút thì **(a) hoặc (f)**.
 Không có thay đổi code nào được áp dụng cho các phương án này.
 
+**Đo bổ sung 24-10 23:11 — phương án (c) max_length 256 (NGOÀI thiết kế đăng ký):**
+cùng script, 5 item × 20 cặp, `RERANKER_MAX_LENGTH=256`: nạp 15,17 s; **median 9,294 s/item**
+(mean 9,248, p95 9,407) so với 18,473 s ở 512 ⇒ giảm ~50%, nhưng ngoại suy 811 item vẫn
+**125,0 phút (2,08 giờ)**, chưa tính pipeline. RAM trống sau nạp 1.646,6 MiB. Kết luận:
+**(c) một mình vẫn vượt luật 60 phút**; nếu chọn (c) phải đăng ký lại ngưỡng và vẫn cần ~2 giờ
+chạy. Nguồn: `data/loop/diag/reranker_cost_only_256.json` (5 item nên chỉ là ước lượng thô).
+
 ## PA-20 — trọng tài: required_entities số ngắn khớp oan trong mã khác ("1" khớp "B1"/"2021") (24-10 23:09)
 
 **Bằng chứng (T1(b), không đổi verdict):** `C145524027648409` trả lời **sai** (hỏi ELO của
