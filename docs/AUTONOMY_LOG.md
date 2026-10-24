@@ -663,3 +663,26 @@ lệch đó — chỉ chấm và ghi kết quả, báo lại trong MORNING_REPOR
 
 **Hoàn tác:** `git revert` commit đóng sổ r13; xóa `data/loop/diag/header_paired_r11_r13.json`,
 `data/loop/rounds/r13/` và `chroma_db_headers_old/` nếu muốn bỏ hẳn (không ảnh hưởng `chroma_db`).
+
+## Phiên 25-10 02:20 — T5 giao lại: chạy 5a trên GPU bằng venv riêng
+
+**Ngã rẽ:** đề bài T5 (giao lại) yêu cầu mỗi mục một round retrieval-only + gate và "đo VRAM". 5a bị
+dừng vì chi phí CPU vượt luật 60 phút (249 phút ở 512, 125 phút ở 256). Lựa chọn:
+(i) giữ dừng, chỉ báo (PA-19); (ii) hạ `max_length`/đổi model nhỏ — **đổi biến số của lever**, cấm;
+(iii) chạy **đúng model + đúng max_length 512 + đúng pool/batch**, chỉ đổi **thiết bị tính** sang GPU
+(RTX 3050 4 GB) qua `RERANKER_DEVICE=cuda` — biến môi trường đã có sẵn trong thiết kế.
+
+**Chọn (iii)** vì: thiết bị không phải tham số của lever (điểm cross-encoder fp32 trên GPU = CPU tới
+sai số dấu phẩy động; tie-break vẫn là hạng cũ); đề bài chủ động yêu cầu đo VRAM (tức kỳ vọng GPU);
+không đụng trọng tài/gate/dữ liệu; 0 lượt Gemini. Luật 60 phút **giữ nguyên**, áp lên probe GPU.
+Ghi chú "không chuyển GPU" ở T5.md §3 trước đây là lựa chọn bảo thủ của phiên trước, không phải
+ngưỡng đăng ký; lệch này được báo lại trong MORNING_REPORT.
+
+**Cách làm không phá môi trường:** tạo `venv_gpu/` MỚI (torch 2.14.1+cu126 + đúng `requirements-lock.txt`),
+**không** sửa `venv/` (app, CPU) và `venv_train/` (huggingface_hub 2.3 sẽ bị hạ nếu cài chồng). Embedding
+bge-m3 bị ghim `device='cpu'` trong `src/vector_db.py:60` ⇒ nhánh truy xuất giống r11; chỉ reranker lên GPU.
+`venv_gpu/` thêm vào `.git/info/exclude` (không sửa `.gitignore`). Pip dùng cache người dùng có sẵn
+(tiền lệ: cài easyocr 24-10).
+
+**Hoàn tác:** xóa thư mục `venv_gpu/` + dòng `venv_gpu/` trong `.git/info/exclude`; round mới (r12) nằm
+riêng trong `data/loop/rounds/r12/`.

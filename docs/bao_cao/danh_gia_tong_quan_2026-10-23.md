@@ -157,6 +157,18 @@ Thang 10; mỗi điểm kèm lý do và *điểm trừ cụ thể*.
 | **Tài liệu & trình bày** | **8,5** | ROADMAP có chương trình + lý lịch quyết định; chương 3–4 có nguồn cho từng số; kiến trúc trùng khớp code. Trừ: tài liệu kỹ thuật nằm rải (ROADMAP/README/prompts) — nên gom một "sổ quyết định" cho bản nộp. |
 | **Điểm tổng thể (có trọng số theo mục tiêu đề tài)** | **7,2/10** | Trọng số: phương pháp 20%, hệ thống 15%, thực nghiệm 20%, an toàn 20%, hữu dụng 25%; tổng có trọng số của bảng trên = **7,17** (kiểm tra lại bằng phép tính, không lấy từ trí nhớ). **Đính chính:** bản thảo đầu ghi 7,4/10 — sai số học; với đúng các điểm cũ (9,0/8,0/7,0/8,5/4,0) tổng chỉ là **7,10**. **Đối chiếu lại 24-10 (T6d):** chạy lại phép nhân trọng số = `0.20·9.2 + 0.15·8.2 + 0.20·7.0 + 0.20·8.5 + 0.25·4.0 = 7,17`, làm tròn 7,2 — **khớp, không có ô nào còn hiển thị 7,4 ngoài chính ghi chú đính chính này**. Đồ án mạnh ở phần mà đa số đồ án khác bỏ qua (kiểm chứng), và yếu ở phần mà hội đồng sẽ đánh đầu tiên (câu trả lời thật). |
 
+> **ĐÍNH CHÍNH 25-10 (viết sau khi có số T5/T2 — các dòng bảng ở trên giữ nguyên như bản gốc,
+> điểm KHÔNG tự đổi vì đó là phán chấm điểm, xem PA-23):**
+> (i) Dòng *Thiết kế hệ thống RAG* ghi "evidence-selection và reranker chưa có" nay đã cũ: cả hai
+> **đã có, đã đo, kết quả âm** (evidence-selection: `docs/reports/T3.md`; reranker 5a: `docs/reports/T5.md`;
+> contextual header 5b: r13, delta gold@6 −0,0028 CI [−0,0129; +0,0071], p = 0,79).
+> (ii) Dòng *Chất lượng thực nghiệm* ghi "thiếu bootstrap CI" nay đã đóng cho các chỉ số chính (bảng 5.1).
+> (iii) Dòng *Chất lượng dữ liệu nền* ghi "18,6% từ có dấu" là số của corpus ĐANG dùng; T2 đã tái tạo
+> corpus vào `chroma_db_vie` đo được **80,29%** từ có dấu (337/342 chunk ≥50% dấu so với 79/361),
+> nhưng **chưa được duyệt kích hoạt** (PA-1) và neo vàng của bộ test gãy 48,81% trên corpus đó (PA-21),
+> nên điểm 4,5 vẫn đúng với trạng thái đang chạy thật.
+> (iv) Dòng *Kỹ thuật phần mềm* ghi "563 test xanh" — hiện tại **967 test xanh**.
+
 ### 5.1 Bảng chỉ số chính kèm khoảng tin cậy 95% (bootstrap theo item — T6d)
 
 Mọi điểm ước lượng dưới đây lấy đúng công thức mẫu số của `gate.metrics`; CI bằng bootstrap
@@ -175,6 +187,24 @@ tương đương tỉ lệ 14% nhưng khoảng 95% là 8–21% — chưa đủ b
 | `fabrication_rate_on_answered` (n=38) | r7 | 0,026 | [0,00 ; 0,08] | chống bịa chắc |
 | `mean_grounding_score` (n=38) | r7 | 0,996 | [0,987 ; 1,000] | câu đã trả lời thì bám căn cứ |
 | `PASS_CORRECT` | r5 | 0,14 | [0,07 ; 0,21] | baseline; bằng r7 trong băng nhiễu ±3 |
+
+**Cùng chuẩn CI cho các chỉ số truy xuất (T5, bootstrap 10.000 lượt, seed 20261023, theo 700 item
+có chunk vàng):** nguồn `data/loop/diag/bonus_paired_r1_r2.json`,
+`data/loop/diag/header_paired_r11_r13.json` (và `reranker_paired_r11_r12.json` khi r12 chấm xong).
+
+| chỉ số | round | điểm | CI 95% | đọc |
+|---|---|---|---|---|
+| `gold@6` (n=700) | r11 | 0,7400 | [0,7071 ; 0,7729] | nền truy xuất, tái lập đúng r2 |
+| `gold@6` (n=700) | r13 (header 5b) | 0,7371 | [0,7043 ; 0,7700] | CI chồng hoàn toàn với r11 |
+| delta ghép cặp r11→r13 | | −0,0028 | [−0,0129 ; +0,0071] | 8 mất / 6 được, McNemar p = 0,79 ⇒ **không tín hiệu** |
+| `gold@6` family EXACT (n=52) | r11 → r13 | 0,2115 → 0,2308 | [0,1154 ; 0,3269] → [0,1154 ; 0,3462] | +1 câu; CI cực rộng vì n=52 |
+| `gold@6` family TRAP (n=23) | r11 → r13 | 0,1304 → 0,1304 | [0,0000 ; 0,2609] | không đổi |
+| neo HUMAN đúng-nguồn (n=97) | r11 → r13 | 0,8144 → 0,8144 | — (không đổi, McNemar p = 1,0) | header không phá neo |
+
+Quy lỗi `FAIL_RETRIEVAL` trước/sau (nguồn `data/loop/rounds/r11/attribution_retrieval.json`,
+`data/loop/rounds/r13/attribution_retrieval.json`): 182 → 184; `filter_blocked_wrong_topic` 68 → 67,
+`filter_blocked_wrong_table` 20 → 20, `ranking_no_filter` 57 → 59, `ranking_despite_filter` 37 → 38
+⇒ nhóm `ranking_*` mà 5b nhắm vào **tăng nhẹ** (+3), nhất quán với delta âm-không-ý-nghĩa ở trên.
 
 > Hệ quả cho hội đồng: cặp chênh r5↔r7 trên mọi chỉ số đều **có CI chồng lấn**, nên không được
 > diễn giải 0,31→0,32 hay 14→14 thành "tiến bộ có ý nghĩa thống kê". Đây chính là lý do mục

@@ -579,3 +579,18 @@ giữa round cũ (thiếu khoá) và round mới.
 
 Kèm 1 test: đặt `CHROMA_PERSIST_DIR=./x` ⇒ `settings["chroma_persist_dir"] == "./x"`.
 Round đã đóng (r0–r13) **không** sửa hồi tố; r13 ghi chú bằng tài liệu.
+
+## PA-23 — bốn dòng trong bảng tự chấm điểm đã cũ so với số mới (25-10 02:50)
+
+`docs/bao_cao/danh_gia_tong_quan_2026-10-23.md` §5 vẫn ghi: "evidence-selection và reranker chưa có",
+"thiếu bootstrap CI", "18,6% từ có dấu", "563 test xanh". Cả bốn đã được đo lại/làm xong sau đó
+(T3, T5, T2, T6d, 967 test). **Đã thêm khối ĐÍNH CHÍNH 25-10 ngay dưới bảng** (không đổi dòng gốc),
+nhưng **điểm thành phần KHÔNG tự đổi** vì đó là phán chấm điểm của người duyệt — đúng quy tắc
+"ngưỡng/điểm đã ghi trước thì không tự chỉnh".
+
+**Đề xuất:** user quyết có nâng điểm nào không. Gợi ý chỉ để tham khảo, chưa áp dụng:
+`Chất lượng thực nghiệm` 7,0 (đã có CI + quy lỗi + 3 round kiểm chứng âm công bố) và
+`Kỹ thuật phần mềm` 8,5 (967 test) là hai dòng đáng xem lại; `Chất lượng dữ liệu nền` 4,5 **giữ nguyên**
+cho tới khi PA-1 kích hoạt `chroma_db_vie`, vì hệ thống đang chạy thật vẫn đọc corpus 18,6% dấu.
+Nếu đổi điểm, phải tính lại tổng có trọng số (công thức ở dòng cuối §5) và sửa lại cả câu
+"đính chính 7,4 → 7,2".
