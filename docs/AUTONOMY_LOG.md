@@ -585,3 +585,27 @@ hoặc chờ đủ 30 id. Không có việc nào cần model/round mới. **Ch�
 
 **Hoàn tác:** chỉ sửa 4 tài liệu (`T1.md`, `PENDING_APPROVAL.md`, `STATE.md`, `AUTONOMY_LOG.md`)
 + `MORNING_REPORT.md`; không có thay đổi code/dữ liệu, nên `git revert <commit>` là đủ.
+
+## Phiên 24-10 23:11 → 23:12 — đo thêm `max_length=256` cho PA-19
+
+**Ngã rẽ:** sau khi 512-token cho 249 phút, PA-19 có 6 phương án; (b) cần người dùng đóng ứng
+dụng, (a)/(f) là quyết định của người dùng. Câu hỏi còn lại có thể trả lời bằng máy: **hạ
+`max_length` 512 → 256 có đưa chi phí dưới 60 phút không?** Chọn **đo 5 item × 20 cặp** (khoảng
+46 s chấm + 15 s nạp) thay vì (i) đoán theo lý thuyết hay (ii) bỏ qua, vì đây là số duy nhất
+còn thiếu để người dùng chọn (c) một cách có căn cứ.
+
+1. **Đo ngoài thiết kế, dán nhãn rõ**: tệp JSON ghi `kind = "BỔ SUNG — không phải probe đăng ký
+   trước, không dùng để chốt T5a"`; n=5 item nên chỉ là ước lượng thô, không suy rộng chất lượng.
+2. **Không áp dụng 256**: kết quả 9,294 s/item ⇒ 811 item = 125,0 phút, vẫn >60 phút. Không đổi
+   `RERANKER_MAX_LENGTH`, không đổi thiết kế, không chạy r12. Ghi vào PA-19 là phương án (c)
+   **một mình không đủ**.
+3. **Không dùng RAM bằng mọi giá**: không kill ứng dụng của người dùng để giải phóng RAM; (b) giữ
+   nguyên là việc người dùng phải chủ động.
+4. **Không thêm biến thể khác** (batch lớn hơn, model nhỏ hơn, GPU) — mỗi cái là đổi thiết kế
+   đã đăng ký, phải duyệt; đo thêm chỉ làm loãng câu hỏi.
+5. **Sửa nhãn giờ**: mục PA-19 ban đầu ghi 23:30; giờ thật lúc đo là **23:11** (kiểm bằng `date`)
+   — sửa lại, không giữ timestamp tự suy.
+
+**Hoàn tác:** chỉ thêm `data/loop/diag/reranker_cost_only_256.json` và sửa 4 tài liệu
+(`PENDING_APPROVAL.md`, `T5.md`, `STATE.md`, `MORNING_REPORT.md`); không đổi code/trọng tài/gate,
+nên `git revert af90960` là đủ. `pytest tests -q` sau bước: **962 passed** (26,00 s).

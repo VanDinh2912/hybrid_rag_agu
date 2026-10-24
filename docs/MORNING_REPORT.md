@@ -1,10 +1,10 @@
 # BÁO CÁO SÁNG (MORNING_REPORT) — phiên tự trị qua đêm 23-10 → 24-10
 
-Chi nhánh: `auto/overnight`, hiện **16 commit** so với `main` (`29f37dc`); HEAD `85d40a0`.
+Chi nhánh: `auto/overnight`, hiện **21 commit** so với `main` (`29f37dc`); HEAD `af90960`.
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **957 passed** (`tmp/pytest_t5_final.txt`, 26,84 s).
+`pytest tests -q` mới nhất: **962 passed** (26,00 s, chạy lại sau bước đo 256).
 
 ## CẬP NHẬT 24-10 23:20 — T1(b) 25/30 + T5a dừng theo luật chi phí
 
@@ -25,7 +25,8 @@ Hai việc mới, **không đổi thiết kế nào**, không sửa trọng tài
    Sáu phương án ở **PA-19** (`docs/PENDING_APPROVAL.md`), khuyến nghị (b) giải phóng RAM rồi
    chạy lại probe chính thức trước khi quyết. Nguồn: `data/loop/diag/reranker_cost_only.json`,
    `docs/reports/T5.md`.
-3. `pytest tests -q`: **957 passed** (chạy lại cuối phiên, 29,68 s). Sổ dòng của T1(b):
+3. `pytest tests -q`: **962 passed** (26,00 s, chạy lại sau bước đo 256; trước đó 957 rồi
+   962 sau 5 test audit). Sổ dòng của T1(b):
    `rows.jsonl` = 96 dòng → **28 dòng hợp lệ (25 id duy nhất, 3 dòng trùng id) + 68 dòng lỗi
    PerDay**; 5 id còn lại phải chờ cửa sổ quota kế tiếp (retry hint ~14:30 25-10), dùng đúng
    `sample_ids.json` đã đăng ký với `--limit 5`.
