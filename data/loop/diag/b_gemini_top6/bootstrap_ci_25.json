@@ -1,0 +1,27 @@
+{
+  "n": 25,
+  "seed": 20261023,
+  "resamples": 10000,
+  "method": "bootstrap percentile, gộp id giữ dòng hợp lệ đầu tiên",
+  "pass_correct": {
+    "value": 0.64,
+    "ci95": [
+      0.44,
+      0.84
+    ]
+  },
+  "refusal": {
+    "value": 0.12,
+    "ci95": [
+      0.0,
+      0.24
+    ]
+  },
+  "fabrication": {
+    "value": 0.2273,
+    "ci95": [
+      0.0526,
+      0.4167
+    ]
+  }
+}

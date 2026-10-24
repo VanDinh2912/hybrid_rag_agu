@@ -1,0 +1,282 @@
+{
+  "kind": "BỔ SUNG — không phải probe đăng ký trước, không dùng để chốt T5a",
+  "source_round": "r11",
+  "seed": 20261024,
+  "n_items": 30,
+  "pool": 20,
+  "reranker_env": {
+    "model": "BAAI/bge-reranker-v2-m3",
+    "device": "cpu",
+    "max_length": "512",
+    "batch_size": "4"
+  },
+  "memory_before": {
+    "method": "GlobalMemoryStatusEx",
+    "memory_load_percent": 70,
+    "total_phys_mib": 16088.1,
+    "avail_phys_mib": 4822.3
+  },
+  "load_seconds": 17.0,
+  "status_after_load": {
+    "enabled": false,
+    "requested_model": "BAAI/bge-reranker-v2-m3",
+    "loaded_model": "loaded BAAI/bge-reranker-v2-m3 on cpu in 7.61s, max_length=512",
+    "loaded": true,
+    "load_seconds": 7.61,
+    "device": "cpu",
+    "candidate_pool": 20,
+    "keep_candidates": false,
+    "max_length": 512,
+    "batch_size": 4,
+    "query_convention": "fold(query) vs page_content nguyên văn, sắp xếp ổn định theo (-diem, hang RRF+bonus)",
+    "model_error": null,
+    "last_call": {
+      "n_candidates": 0,
+      "n_scored": 0,
+      "seconds": 0.0,
+      "model": "",
+      "device": "",
+      "pool": 0,
+      "top_score": null,
+      "bottom_score": null,
+      "order_changed": false,
+      "notes": []
+    }
+  },
+  "memory_after_load": {
+    "method": "GlobalMemoryStatusEx",
+    "memory_load_percent": 88,
+    "total_phys_mib": 16088.1,
+    "avail_phys_mib": 1793.0
+  },
+  "per_item": [
+    {
+      "id": "T153781448113107",
+      "family": "TRAP",
+      "seconds": 16.525,
+      "n_pairs": 20,
+      "chars": 21492
+    },
+    {
+      "id": "S103676246349149",
+      "family": "SOURCE_LOOKUP",
+      "seconds": 18.261,
+      "n_pairs": 20,
+      "chars": 24262
+    },
+    {
+      "id": "HQ24",
+      "family": "HUMAN",
+      "seconds": 15.265,
+      "n_pairs": 20,
+      "chars": 18733
+    },
+    {
+      "id": "C197174221512403",
+      "family": "CLOZE",
+      "seconds": 19.288,
+      "n_pairs": 20,
+      "chars": 22417
+    },
+    {
+      "id": "N141690845650560",
+      "family": "NUMERIC",
+      "seconds": 17.634,
+      "n_pairs": 20,
+      "chars": 23852
+    },
+    {
+      "id": "HQ63",
+      "family": "HUMAN",
+      "seconds": 18.281,
+      "n_pairs": 20,
+      "chars": 21924
+    },
+    {
+      "id": "HQ48",
+      "family": "HUMAN",
+      "seconds": 17.73,
+      "n_pairs": 20,
+      "chars": 22134
+    },
+    {
+      "id": "S21358280526248",
+      "family": "SOURCE_LOOKUP",
+      "seconds": 17.59,
+      "n_pairs": 20,
+      "chars": 21792
+    },
+    {
+      "id": "HQ42",
+      "family": "HUMAN",
+      "seconds": 18.871,
+      "n_pairs": 20,
+      "chars": 23080
+    },
+    {
+      "id": "O40009272787566",
+      "family": "CLOZE_OCR",
+      "seconds": 18.049,
+      "n_pairs": 20,
+      "chars": 20889
+    },
+    {
+      "id": "HQ07",
+      "family": "HUMAN",
+      "seconds": 19.314,
+      "n_pairs": 20,
+      "chars": 23213
+    },
+    {
+      "id": "N256452387567079",
+      "family": "NUMERIC",
+      "seconds": 18.514,
+      "n_pairs": 20,
+      "chars": 22728
+    },
+    {
+      "id": "C118708752958570",
+      "family": "CLOZE",
+      "seconds": 19.357,
+      "n_pairs": 20,
+      "chars": 23339
+    },
+    {
+      "id": "T98060249660567",
+      "family": "TRAP",
+      "seconds": 15.443,
+      "n_pairs": 20,
+      "chars": 19655
+    },
+    {
+      "id": "Y24713785309453",
+      "family": "YESNO_FACT",
+      "seconds": 17.668,
+      "n_pairs": 20,
+      "chars": 21418
+    },
+    {
+      "id": "O206486579734043",
+      "family": "CLOZE_OCR",
+      "seconds": 18.604,
+      "n_pairs": 20,
+      "chars": 20079
+    },
+    {
+      "id": "S63283026393699",
+      "family": "SOURCE_LOOKUP",
+      "seconds": 18.432,
+      "n_pairs": 20,
+      "chars": 22341
+    },
+    {
+      "id": "R184746228824203",
+      "family": "REFUSE_OOD",
+      "seconds": 17.872,
+      "n_pairs": 20,
+      "chars": 21396
+    },
+    {
+      "id": "O273233375430123",
+      "family": "CLOZE_OCR",
+      "seconds": 20.226,
+      "n_pairs": 20,
+      "chars": 21739
+    },
+    {
+      "id": "S128111294790282",
+      "family": "SOURCE_LOOKUP",
+      "seconds": 19.263,
+      "n_pairs": 20,
+      "chars": 22732
+    },
+    {
+      "id": "C176702127689533",
+      "family": "CLOZE",
+      "seconds": 19.89,
+      "n_pairs": 20,
+      "chars": 22092
+    },
+    {
+      "id": "C8136679323305",
+      "family": "CLOZE",
+      "seconds": 19.54,
+      "n_pairs": 20,
+      "chars": 21726
+    },
+    {
+      "id": "S187766037164750",
+      "family": "SOURCE_LOOKUP",
+      "seconds": 18.925,
+      "n_pairs": 20,
+      "chars": 22796
+    },
+    {
+      "id": "C280836160312335",
+      "family": "CLOZE",
+      "seconds": 19.946,
+      "n_pairs": 20,
+      "chars": 21929
+    },
+    {
+      "id": "HQ61",
+      "family": "HUMAN",
+      "seconds": 18.112,
+      "n_pairs": 20,
+      "chars": 21632
+    },
+    {
+      "id": "O83377574823489",
+      "family": "CLOZE_OCR",
+      "seconds": 20.774,
+      "n_pairs": 20,
+      "chars": 21595
+    },
+    {
+      "id": "S253725380247852",
+      "family": "SOURCE_LOOKUP",
+      "seconds": 18.145,
+      "n_pairs": 20,
+      "chars": 23102
+    },
+    {
+      "id": "C104212190105341",
+      "family": "CLOZE",
+      "seconds": 19.636,
+      "n_pairs": 20,
+      "chars": 20219
+    },
+    {
+      "id": "Y231035235702969",
+      "family": "YESNO_FACT",
+      "seconds": 18.587,
+      "n_pairs": 20,
+      "chars": 23663
+    },
+    {
+      "id": "N244127642424168",
+      "family": "NUMERIC",
+      "seconds": 17.515,
+      "n_pairs": 20,
+      "chars": 22125
+    }
+  ],
+  "seconds": {
+    "min": 15.265,
+    "median": 18.473,
+    "mean": 18.442,
+    "p95": 20.1,
+    "max": 20.774,
+    "total_seconds": 553.26
+  },
+  "extrapolation_811_items": {
+    "minutes": 249.3,
+    "basis": "mean giây/item × 811; KHÔNG gồm thời gian nạp model và pipeline"
+  },
+  "memory_after_scoring": {
+    "method": "GlobalMemoryStatusEx",
+    "memory_load_percent": 85,
+    "total_phys_mib": 16088.1,
+    "avail_phys_mib": 2391.8
+  }
+}

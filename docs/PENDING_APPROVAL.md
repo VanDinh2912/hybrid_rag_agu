@@ -403,3 +403,26 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
   dụng gì, chỉ build vào thư mục mới và có thể xóa thư mục đó.
 - **Còn treo để nghiệm thu T5:** chạy lại gold@6 cấu hình TẮT trên 811 item và so với round đã
   đóng (đề bài yêu cầu); hiện chỉ có golden 30 item `pipeline.run`.
+
+## PA-19 — T5a: chi phí reranker vượt ngưỡng 60 phút, r12 CHƯA chạy (24-10 23:20)
+
+**Số đo (nguồn `data/loop/diag/reranker_cost_only.json`, đo bổ sung ngoài thiết kế):**
+nạp riêng reranker 17,0 s; chấm 20 cặp/item median 18,47 s, mean 18,44 s, p95 20,10 s trên
+30 item r11 (max_length 512, batch 4, CPU). Ngoại suy 811 item = **249,3 phút (4,15 giờ)**,
+chưa tính nạp pipeline. Probe chính thức (pipeline bge-m3 + reranker) chạy ~45–50 phút mới
+nạp xong hai model, **chưa chấm được cặp nào**; RAM trống sau khi nạp reranker chỉ 1.793 MiB
+⇒ không giữ đồng thời hai model. Theo luật đăng ký trước ("dừng nếu ngoại suy >60 phút"),
+**r12 không chạy**. Không sửa model/device/max_length/batch/model để "cho chạy được".
+
+**Cần duyệt một trong các hướng:**
+| | Phương án | Đánh đổi |
+|---|---|---|
+| a | Chạy r12 qua đêm trên CPU, bỏ ngưỡng 60 phút | ~5 giờ; có thể fail giữa chừng |
+| b | Đóng ứng dụng nền để trống ≥6 GB rồi chạy lại probe chính thức | **không đổi thiết kế**; cần người dùng đóng ứng dụng |
+| c | Hạ `RERANKER_MAX_LENGTH` 512 → 256 | đổi thiết kế đã đăng ký; phải đăng ký lại ngưỡng |
+| d | Đổi reranker nhỏ hơn (`bge-reranker-base`) | đổi model đã đăng ký; mất chất lượng |
+| e | Chuyển GPU (`venv_train`, torch CUDA) | đổi device đã đăng ký; 4 GB VRAM có thể không đủ |
+| f | Bỏ T5a, giữ cờ TẮT | không có kết quả hiệu quả; tiết kiệm thời gian |
+
+Khuyến nghị bảo thủ: **(b) trước** (không đổi thiết kế); nếu vẫn >60 phút thì **(a) hoặc (f)**.
+Không có thay đổi code nào được áp dụng cho các phương án này.

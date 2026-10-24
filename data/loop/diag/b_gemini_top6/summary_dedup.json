@@ -12,82 +12,84 @@
     "USE_QWEN_GENERATOR": null
   },
   "counting_rule": "giữ dòng hợp lệ ĐẦU TIÊN mỗi id (gộp dòng trùng id do tiến trình chồng nhau)",
-  "n_rows_in_file": 58,
-  "n_valid_rows_in_file": 9,
-  "n_items_deduped": 7,
+  "n_rows_in_file": 81,
+  "n_valid_rows_in_file": 14,
+  "n_items_deduped": 12,
   "collapsed_duplicate_ids": [
     "O10235702435549",
     "T24199159682252"
   ],
-  "n_error_rows": 49,
+  "n_error_rows": 67,
   "overall": {
-    "n": 7,
-    "n_answered": 6,
-    "refusal_rate": 0.1429,
-    "pass_correct": 5,
-    "pass_correct_rate": 0.7143,
-    "pass_any_rate": 0.7143,
-    "fabrication_rate_on_answered": 0.1667,
-    "fabricated_items": 1,
+    "n": 12,
+    "n_answered": 11,
+    "refusal_rate": 0.0833,
+    "pass_correct": 9,
+    "pass_correct_rate": 0.75,
+    "pass_any_rate": 0.75,
+    "fabrication_rate_on_answered": 0.1818,
+    "fabricated_items": 2,
     "hallucinated_on_unanswerable": 0,
     "overrefusal": 1,
     "verdict_counts": {
-      "FAIL_FABRICATED": 1,
-      "PASS_CORRECT": 5,
+      "FAIL_FABRICATED": 2,
+      "PASS_CORRECT": 9,
       "FAIL_OVERREFUSAL": 1
     },
-    "median_latency": 201.49
+    "median_latency": 178.9
   },
   "overall_answerable80": {
-    "n": 7,
-    "n_answered": 6,
-    "refusal_rate": 0.1429,
-    "pass_correct": 5,
-    "pass_correct_rate": 0.7143,
-    "pass_any_rate": 0.7143,
-    "fabrication_rate_on_answered": 0.1667,
-    "fabricated_items": 1,
+    "n": 12,
+    "n_answered": 11,
+    "refusal_rate": 0.0833,
+    "pass_correct": 9,
+    "pass_correct_rate": 0.75,
+    "pass_any_rate": 0.75,
+    "fabrication_rate_on_answered": 0.1818,
+    "fabricated_items": 2,
     "hallucinated_on_unanswerable": 0,
     "overrefusal": 1,
     "verdict_counts": {
-      "FAIL_FABRICATED": 1,
-      "PASS_CORRECT": 5,
+      "FAIL_FABRICATED": 2,
+      "PASS_CORRECT": 9,
       "FAIL_OVERREFUSAL": 1
     },
-    "median_latency": 201.49
+    "median_latency": 178.9
   },
   "by_family": {
     "CLOZE": {
-      "n": 1,
-      "n_answered": 1,
+      "n": 3,
+      "n_answered": 3,
       "refusal_rate": 0.0,
-      "pass_correct": 0,
-      "pass_correct_rate": 0.0,
-      "pass_any_rate": 0.0,
-      "fabrication_rate_on_answered": 1.0,
+      "pass_correct": 2,
+      "pass_correct_rate": 0.6667,
+      "pass_any_rate": 0.6667,
+      "fabrication_rate_on_answered": 0.3333,
       "fabricated_items": 1,
       "hallucinated_on_unanswerable": 0,
       "overrefusal": 0,
       "verdict_counts": {
-        "FAIL_FABRICATED": 1
+        "FAIL_FABRICATED": 1,
+        "PASS_CORRECT": 2
       },
-      "median_latency": 292.34
+      "median_latency": 78.04
     },
     "CLOZE_OCR": {
-      "n": 3,
-      "n_answered": 3,
+      "n": 5,
+      "n_answered": 5,
       "refusal_rate": 0.0,
-      "pass_correct": 3,
-      "pass_correct_rate": 1.0,
-      "pass_any_rate": 1.0,
-      "fabrication_rate_on_answered": 0.0,
-      "fabricated_items": 0,
+      "pass_correct": 4,
+      "pass_correct_rate": 0.8,
+      "pass_any_rate": 0.8,
+      "fabrication_rate_on_answered": 0.2,
+      "fabricated_items": 1,
       "hallucinated_on_unanswerable": 0,
       "overrefusal": 0,
       "verdict_counts": {
-        "PASS_CORRECT": 3
+        "PASS_CORRECT": 4,
+        "FAIL_FABRICATED": 1
       },
-      "median_latency": 201.49
+      "median_latency": 178.9
     },
     "EXACT": {
       "n": 1,
@@ -121,6 +123,22 @@
       },
       "median_latency": 178.87
     },
+    "SOURCE_LOOKUP": {
+      "n": 1,
+      "n_answered": 1,
+      "refusal_rate": 0.0,
+      "pass_correct": 1,
+      "pass_correct_rate": 1.0,
+      "pass_any_rate": 1.0,
+      "fabrication_rate_on_answered": 0.0,
+      "fabricated_items": 0,
+      "hallucinated_on_unanswerable": 0,
+      "overrefusal": 0,
+      "verdict_counts": {
+        "PASS_CORRECT": 1
+      },
+      "median_latency": 5.97
+    },
     "YESNO_FACT": {
       "n": 1,
       "n_answered": 1,
@@ -141,20 +159,20 @@
   "ci95_answerable": {
     "pass_correct": {
       "ci95": [
-        0.4286,
+        0.5,
         1.0
       ]
     },
     "refusal_rate": {
       "ci95": [
         0.0,
-        0.4286
+        0.25
       ]
     },
     "fabrication_rate_on_answered": {
       "ci95": [
         0.0,
-        0.5
+        0.4444
       ]
     }
   }

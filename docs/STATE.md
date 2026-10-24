@@ -213,3 +213,26 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   **198 passed** trong 10,28 s (`tmp/pytest_tt0_tt3_final.txt`).
 - **`docs/MORNING_REPORT.md` đã cập nhật** mục "PHIÊN TIẾP 24-10" ở đầu (bản ghi đêm đầu giữ
   nguyên phía dưới). **PHIÊN DỪNG** tại đây theo thứ tự đêm: không chạy round, không gọi Gemini.
+
+## XONG (24-10 23:10 — T1(b) 25/30 + kiểm tra mẫu lệch)
+
+- Resume (b): 12 → **25/30 id hợp lệ**; 5 id còn lại bị PerDay chặn (cửa sổ kế tiếp ~14:30
+  25-10; lần chặn cuối báo `Please retry in 15h22m`). n=25: PASS_CORRECT **16 (64,0%,
+  bootstrap 95% [44,0; 84,0])**, refusal **3/25 (12,0%)**, fabrication **5/22 (22,7%)**,
+  FAIL_INCOMPLETE 1. Nguồn: `data/loop/diag/b_gemini_top6/summary_dedup_25.json`,
+  `bootstrap_ci_25.json` (seed 20261023, 10.000 lượt).
+- **Mẫu lệch:** 5 id thiếu đúng là **5 id cuối theo `r5_order`** (82–97); 25 id hợp lệ phủ
+  1–81. family/`contexts_chars` không tách được khỏi hiệu ứng thứ tự; `gold_rank` cân bằng
+  (median 2 cả hai). ⇒ (b) hiện là **tiền tố 25/30 theo thứ tự r5**, chưa ngoại suy;
+  **chưa được kết luận "năng lực model là nút thắt"** (điều kiện user: đủ 30/30).
+- Công cụ mới (chỉ đọc): `tools/diag/t1b_id_status.py` → `id_status.json` (đủ 30 dòng:
+  family, r5_order, contexts_chars, gold_rank, status, error_kind).
+- 5 FAIL_FABRICATED: 2 ca chỉ vì proper-noun `Theo Bản` (PA-2); 3 ca token pháp lý
+  (`Theo Thông`+`mục 3`, `Khoản 1`, `Mục 2`) **chưa kiểm chứng tay** — nếu là dương-giả thì
+  fabrication thật ≤3/22. Không sửa trọng tài.
+- `rows.jsonl` 96 dòng, 28 hợp lệ nhưng 25 id duy nhất (3 id trùng do tiến trình chồng nhau:
+  `N121989377006900`, `O10235702435549`, `T24199159682252`); phép đếm gộp giữ dòng đầu.
+- **Thao tác vận hành:** đã dừng 2 tiến trình (b) chạy chồng + probe reranker để tránh gọi
+  Gemini trùng; sau đó gọi từng lượt foreground (không dùng nền) vì nền bị kill im lặng.
+- Lệnh resume đúng 5 id còn lại (sau khi cửa sổ mở):
+  `PYTHONIOENCODING=utf-8 GEMINI_MODEL=gemini-3.8-flash ENABLE_ANSWER_GUARD=1 QWEN_FALLBACK=0 venv/Scripts/python.exe -u tools/diag/ablation_generation.py --config b_gemini_top6 --ids-file data/loop/diag/b_gemini_top6/sample_ids.json --force --limit 5`

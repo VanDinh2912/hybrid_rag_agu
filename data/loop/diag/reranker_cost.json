@@ -1,0 +1,29 @@
+{
+  "registered_design": {
+    "RERANKER_MODEL": "BAAI/bge-reranker-v2-m3",
+    "RERANKER_DEVICE": "cpu",
+    "pool": 20,
+    "window": 6,
+    "batch_size": 4,
+    "max_length": "512"
+  },
+  "seed": 20261024,
+  "baseline_round_for_hard_sample": "r11",
+  "n_hard_candidates_in_disk": 57,
+  "sample_sizes": {
+    "random": 30,
+    "hard_reranker_target": 30
+  },
+  "memory_before": {
+    "process": {
+      "method": "không đo được (ModuleNotFoundError)"
+    },
+    "system": {
+      "method": "GlobalMemoryStatusEx",
+      "memory_load_percent": 82,
+      "total_phys_mib": 16088.1,
+      "avail_phys_mib": 2774.5
+    }
+  },
+  "note": "Số này đo CHI PHÍ. Tín hiệu đúng/sai trong đây KHÔNG dùng để chỉnh thiết kế đã đăng ký; số hiệu quả chính thức là round r12 + cổng gate."
+}

@@ -6,6 +6,30 @@ Chi nhánh: `auto/overnight`, hiện **16 commit** so với `main` (`29f37dc`); 
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
 `pytest tests -q` mới nhất: **957 passed** (`tmp/pytest_t5_final.txt`, 26,84 s).
 
+## CẬP NHẬT 24-10 23:20 — T1(b) 25/30 + T5a dừng theo luật chi phí
+
+Hai việc mới, **không đổi thiết kế nào**, không sửa trọng tài/gate, không chạy r12:
+
+1. **T1(b) lên 25/30 id** (thêm 18 id trong cửa sổ quota tối 24-10; 5 id còn lại kẹt PerDay).
+   Trên 25 id hợp lệ: **16 PASS_CORRECT = 64,0% [44,0; 84,0]**, refusal 12,0% [0; 24,0],
+   fabrication 5/22 = 22,7% [5,3; 41,7] (trong đó ≥2 ca là dương-giả "Theo Bản" → thật ≤3/22),
+   1 FAIL_INCOMPLETE. **Nhưng 5 id thiếu đúng là 5 id cuối theo thứ tự r5 (rank 82–97)** ⇒ 64%
+   chỉ mô tả **tiền tố 25 id**, không suy rộng được; family/độ dài ngữ cảnh khác nhau đều bị
+   nhiễu bởi thứ tự. Vẫn **cấm** kết luận "năng lực model là nút thắt" cho tới 30/30.
+   Nguồn: `data/loop/diag/b_gemini_top6/{summary_dedup_25,bootstrap_ci_25,id_status}.json`,
+   `docs/reports/T1.md` mục "Cập nhật 24-10 23:05".
+2. **T5a: r12 KHÔNG chạy — chi phí vượt luật 60 phút đã đăng ký.** Probe chính thức (bge-m3 +
+   reranker) chạy ~45–50 phút chỉ để load, không chấm được cặp nào vì RAM còn ~1,8 GB; đo bổ
+   sung reranker-only: median **18,473 s/item** (20 cặp), suy ra 811 item ≈ **249 phút (4,15 h)**.
+   r11 retrieval-only vẫn hợp lệ làm baseline (gold@6 **518/700 = 0,7400**, trùng khít r2).
+   Sáu phương án ở **PA-19** (`docs/PENDING_APPROVAL.md`), khuyến nghị (b) giải phóng RAM rồi
+   chạy lại probe chính thức trước khi quyết. Nguồn: `data/loop/diag/reranker_cost_only.json`,
+   `docs/reports/T5.md`.
+3. `pytest tests -q`: **957 passed** (chạy lại cuối phiên, 29,68 s). Sổ dòng của T1(b):
+   `rows.jsonl` = 96 dòng → **28 dòng hợp lệ (25 id duy nhất, 3 dòng trùng id) + 68 dòng lỗi
+   PerDay**; 5 id còn lại phải chờ cửa sổ quota kế tiếp (retry hint ~14:30 25-10), dùng đúng
+   `sample_ids.json` đã đăng ký với `--limit 5`.
+
 ## PHIÊN TIẾP 24-10 (T3 → T7 + kiểm thử T0–T5) — cập nhật cuối phiên
 
 ### A. Đã xong (số liệu + nguồn)

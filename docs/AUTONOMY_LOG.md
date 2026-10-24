@@ -533,3 +533,27 @@ không sửa `src/`, trọng tài, `gate.py`; không xoá/di chuyển tệp corp
 **Không làm:** không chạy round, không dùng Gemini (0 lượt), không build/kích hoạt index, không
 sửa `src/reranker.py`/`src/pipeline.py`/trọng tài/gate, không đụng `outputs/` hay
 `data/loop/rounds/`.
+
+## Phiên 24-10 21:50 → 23:20 — resume T1(b), dừng T4, probe T5
+
+**Ngã rẽ đã chọn (bảo thủ):**
+1. **Resume (b) đúng 30 id đã đăng ký, không thay id:** pool có 33 nhưng 3 id ngoài mẫu không
+   được dùng để "bù" — mẫu đã chốt trước cuộc gọi đầu. 5 id còn lại chờ cửa sổ PerDay sau.
+2. **Dừng 2 tiến trình (b) chạy chồng + probe reranker** khi phát hiện 3 tiến trình tranh RAM và
+   cùng gọi Gemini: giữ đúng một lượt, tránh đốt quota và tránh thêm dòng trùng id. Đã ghi 3 id
+   trùng vào báo cáo; phép đếm gộp giữ dòng đầu (quy ước cũ).
+3. **Chuyển sang gọi từng lượt foreground** sau khi hàng loạt tiến trình nền bị kill im lặng
+   (không traceback). Không sửa script, không tăng `--limit`; mỗi lượt ~60–335 s.
+4. **Không kết luận từ 25/30** dù khoảng cách với Qwen oracle rất lớn (64% vs 8,75%), vì (b)
+   hiện là **tiền tố theo thứ tự r5**, không phải mẫu ngẫu nhiên; đúng điều kiện user "đủ 30 id
+   mới mở lại T4". Ghi giới hạn vào T1.md.
+5. **Không sửa trọng tài** dù 2/5 FAIL_FABRICATED chỉ vì "Theo Bản" và 3 ca token pháp lý chưa
+   kiểm tay; giữ nguyên verdict, ghi PA-2.
+6. **T5: dừng probe sau ~25 phút không qua bước nạp model** (RAM trống ~2,1 GB; bge-m3 2,97 GB
+   working set + 12 nhân CPU 100%, paging). Không đổi `RERANKER_MODEL`/device/max_length để
+   "cho chạy được" — mọi thay đổi đó là đổi thiết kế đã đăng ký. Ghi blocker + đề xuất duyệt.
+7. **Không chạy r12** khi chưa có số chi phí theo đúng luật đăng ký ("đo chi phí TRƯỚC khi bấm
+   round; nếu ngoại suy >60 phút thì dừng").
+
+**Không làm:** không commit `src/*` dirty của phiên khác, không commit `data/loop/rounds/`
+(PA-8), không xóa file, không đổi ngưỡng, không dùng thêm Gemini sau PerDay.

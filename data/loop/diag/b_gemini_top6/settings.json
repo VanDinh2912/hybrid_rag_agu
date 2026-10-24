@@ -8,7 +8,7 @@
     "ANSWER_GUARD_MAX_UNSUPPORTED": null,
     "ENABLE_ANSWER_RESCUE": null,
     "RESCUE_MIN_SCORE": null,
-    "QWEN_FALLBACK": null,
+    "QWEN_FALLBACK": "0",
     "GEMINI_MODEL": "gemini-3.8-flash",
     "USE_QWEN_GENERATOR": null
   },
