@@ -6,6 +6,32 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
 `pytest tests -q` mới nhất: **967 passed** (66,70 s, 25-10 02:1x; 962 + 5 test build header).
 
+## CẬP NHẬT 25-10 03:10 — T5/T6 giao lại: 5a đo được trên GPU, r12 đang chạy
+
+- **T6 (6a–6d) đã có đủ artifact từ 24-10**, phiên này chỉ bổ sung phần còn thiếu so với tiêu chí
+  "mọi bảng chính có CI và nguồn file": thêm **CI cho chỉ số truy xuất** (gold@6 r11/r13, delta ghép
+  cặp, EXACT/TRAP, neo HUMAN) + quy lỗi `attribute.py` r11→r13 vào bảng 5.1 của
+  `docs/bao_cao/danh_gia_tong_quan_2026-10-23.md`; thêm khối **ĐÍNH CHÍNH 25-10** cho bốn dòng tự
+  chấm đã cũ (reranker/evidence-selection, CI, 18,6% dấu, 563 test) — **điểm thành phần không tự đổi**,
+  đề xuất ở **PA-23**. Phiếu gán nhãn 6b (`data/loop/diag/referee_labeling_r5.md`, 60 mẫu, ẩn verdict)
+  vẫn chờ anh đọc tay (`n_filled=0`); khung 6c chờ câu hỏi thật (`tools/eval/real_questions.jsonl`
+  hiện chỉ có schema).
+- **5a đã gỡ được nút chi phí:** dựng `venv_gpu/` riêng (torch cu126 + đúng `requirements-lock.txt`,
+  không sửa `venv/` và `venv_train/`; pytest trên đó 967 passed) rồi đo lại probe **giữ nguyên thiết
+  kế** (model, `max_length=512`, pool 20, batch 4), chỉ đổi thiết bị sang GPU: median **2,046 s/item**
+  (tầng random) và **2,217 s** (tầng hard), ngoại suy 811 item = **27,3 / 29,6 phút** ⇒ **dưới luật
+  60 phút**, nên r12 được chạy mà không phải hạ `max_length` hay đổi model. VRAM **3.594/4.096 MiB**
+  khi nạp reranker; RAM trống sau nạp 2.967 MiB. Nguồn: `data/loop/diag/reranker_cost_gpu.json`,
+  `tmp/r12_gpu_probe.log`, `tmp/vram_r12_probe.log`; báo cáo `docs/reports/T5.md` §2.6.
+- **r12 đang chạy** (r11 + `ENABLE_RERANKER=1 RERANKER_KEEP_CANDIDATES=1`, retrieval-only 811 item,
+  log `tmp/r12_run.log`): 170/811 lúc 03:07, **0 lỗi**, median 4,66 s/item (≈2 s rerank + ≈2,7 s
+  truy xuất/classifier như r11) ⇒ ETA ~03:58, tổng ~63 phút. Nhãn classifier **trùng r11 ở 74/74**
+  item đã kiểm ⇒ tranh chấp VRAM với Ollama không làm lệch confound. Chấm xong sẽ có: gate r12-vs-r11,
+  `attribute.py`, kiểm định ghép cặp, `gold_rank_ceiling` pool 20 (§2.7).
+- **5b đã đóng (r13, §2.5):** delta gold@6 −0,0028 CI [−0,0129; +0,0071], p = 0,79 ⇒ không tín hiệu,
+  cờ giữ TẮT. Quy lỗi r11→r13: nhóm `ranking_*` 94 → 97 (+3), nhóm filter đi ngang.
+- Gemini: **0 lượt** (T1(b) còn 5 id, chờ cửa sổ ~14:30).
+
 ## CẬP NHẬT 25-10 02:15 — đóng sổ r13 (header 5b trên corpus cũ): KHÔNG có tín hiệu
 
 - **Đã xong:** r13 = r11 + đổi duy nhất index sang `chroma_db_headers_old` (header
