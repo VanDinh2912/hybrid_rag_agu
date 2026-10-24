@@ -499,3 +499,37 @@ ngoài bảng Việt); khối `[7c]` trong `tools/diag/check_corpus.py::main()` 
 
 **Không làm:** không build/ghi index, không kích hoạt `chroma_db_vie`, không chấm lại round,
 không sửa `src/`, trọng tài, `gate.py`; không xoá/di chuyển tệp corpus.
+
+## 24-10 16:13 — Kiểm thử T5 (reranker + contextual header)
+
+**Đã làm:** `tests/test_t5_reranker_contract.py` **26 test** (mục 1–6, fake cross-encoder) +
+`tests/test_t5_contextual_header.py` **42 test** (mục 7–10); module mới build-time
+`src/contextual_header.py` (cờ `ENABLE_CONTEXTUAL_HEADER` mặc định TẮT); mutation
+`tmp/mutation_check_t5.py` **10/10 bắt được, 10/10 hoàn nguyên byte-identical**
+(`tmp/mutation_check_t5.log`); toàn repo **957 passed** (`tmp/pytest_t5_final.txt`); báo cáo
+`docs/reports/test_T5.md`; đề xuất mới **PA-18**.
+
+**Ngã rẽ đã chọn (bảo thủ):**
+1. **Mục 5 đề bài vs thiết kế đã đăng ký:** đề bài đòi lùi RRF + cảnh báo, thiết kế T5 trong
+   `data/loop/README.md` cấm lùi thầm. Chọn **giữ nguyên hành vi ném `RerankerUnavailable`** (không
+   tự đổi thiết kế đã đăng ký, một biến một lần) và ghim bằng test tên
+   `test_de_bai_muc_5_noi_lui_rrf_nhung_thiet_ke_da_dang_ky_thi_khong`; ghi rõ mục 5 chỉ xanh theo
+   thiết kế, **không** xanh theo câu chữ. Cờ fallback tuỳ chọn → **PA-18(a)**. Hoàn tác: xóa test
+   ghim nếu người duyệt đổi thiết kế.
+2. **Mục 10 không build index thật:** chọn unit-level (guard + index nhỏ `tmp_path` + digest hai
+   index thật) thay vì build `chroma_db_headers`, vì chưa duyệt PA-1/PA-16, corpus chưa chốt và đêm
+   quy định "chưa chạy round". Hoàn tác: không có gì ghi đĩa.
+3. **Golden mục 1:** dùng lại golden T3 (`f492f05`) thay vì tạo golden mới, vì tại HEAD đó T5 chưa
+   tồn tại nên golden đúng là "trước khi nối T5"; tránh artifact trùng và tránh golden tự sinh vòng
+   tròn. Không cần hoàn tác.
+4. **Chương:** chỉ đưa `[Chương …]` khi có tiêu đề trong chunk hoặc do nơi build truyền
+   `chapters_for_chunks`; không suy diễn từ thứ tự tài liệu. Đo thật: 9/361 và 18/342 chunk có
+   Chương. Hoàn tác: bỏ nhánh chapter trong `build_header`.
+5. **Mutation trên file dirty của phiên khác** (`src/reranker.py`, `src/pipeline.py`): chọn
+   byte-anchor + backup + SHA-256; đã xác nhận hoàn nguyên từng byte. Không commit các file đó
+   (PA-8).
+6. **Không commit `tmp/`** (repo không track `tmp/`); báo cáo dẫn đường dẫn tương đối tới log.
+
+**Không làm:** không chạy round, không dùng Gemini (0 lượt), không build/kích hoạt index, không
+sửa `src/reranker.py`/`src/pipeline.py`/trọng tài/gate, không đụng `outputs/` hay
+`data/loop/rounds/`.

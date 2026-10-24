@@ -353,3 +353,53 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
   nguyên phân bố family và công bố cả tỉ lệ near/absent trước–sau; mọi round chấm trên testset
   mới là **nguồn số mới**, không được ghép với số cũ.
 - Hoàn tác: xóa 2 tệp mới (`testset_v1_reanchored.jsonl`, `reanchor_map.json`); tệp gốc không đổi.
+
+## PA-18 — T5: ba quyết định thiết kế trước khi nghiệm thu (fallback, header-trong-context, wire/build)
+
+- Bối cảnh (đo 24-10, `docs/reports/test_T5.md`): 68 test T5 xanh, mutation 10/10 bắt được và
+  hoàn nguyên byte-identical. Hai điểm **chưa khớp câu chữ đề bài**:
+  1) mục 5 yêu cầu reranker lỗi thì "lùi về thứ tự RRF + log cảnh báo"; thiết kế T5 đã đăng ký
+     trước trong `data/loop/README.md` lại **cấm lùi thầm** và hiện `src/pipeline.py` ném
+     `RerankerUnavailable` lên trên;
+  2) mục 10 yêu cầu index mới ở thư mục khác, nhưng `src/contextual_header.py` chưa được nối
+     vào `ingest.py` và chưa build index T5b thật (chờ PA-1/PA-16).
+- Đề xuất (a) — **fallback tuỳ chọn, mặc định TẮT** (khuyến nghị):
+  thêm cờ `RERANKER_FALLBACK` (mặc định `0`) đọc trong `src/reranker.py`; khi BẬT, pipeline
+  bắt `RerankerUnavailable`, in cảnh báo `[Reranker] …`, ghi manifest `fallback_used=true` và
+  trả **đúng danh sách trước rerank** (thứ tự RRF+bonus), không rơi xuống `similarity_search`.
+  Diff dự kiến trong `src/pipeline.py`:
+
+```diff
+--- a/src/pipeline.py
++++ b/src/pipeline.py
+@@             except RerankerUnavailable:
+                 # Không để reranker rơi vào nhánh lùi về similarity_search ở dưới: một
+                 # round đo nhầm lever còn tệ hơn round dừng tường minh.
+-                raise
++                if not reranker_fallback_enabled():
++                    raise
++                print(f"[Reranker] Cảnh báo: {exc} — lùi về thứ tự RRF trước rerank "
++                      "(RERANKER_FALLBACK=1).")
++                self.last_rerank_call = {"fallback_used": True, "error": str(exc)}
++                return docs[:k]
+```
+
+  Kèm 2 test cặp: cờ TẮT ⇒ ném lỗi như hiện tại (nguyên văn); cờ BẬT ⇒ trả đúng thứ tự
+  trước rerank, có log, **không** gọi `similarity_search`, manifest ghi `fallback_used=true`.
+  Không đổi ngưỡng/round; không ảnh hưởng đường đang chạy vì mặc định TẮT.
+- Đề xuất (b) — **header có/không đi vào ngữ cảnh generator**: thiết kế hiện tại đặt header
+  trong `page_content` (giống header cũ đang chạy), nên `contexts` gửi generator có header;
+  `sources`/citation vẫn lấy từ metadata. Giữ nguyên (khuyến nghị) hoặc tách header sang
+  metadata riêng — phương án sau phải sửa `describe_document`, prompt và mọi nơi đọc
+  `page_content`, và phải đo lại vì đổi đầu vào generator. Chưa làm.
+- Đề xuất (c) — **wire + build index T5b** (chỉ sau khi duyệt PA-1/PA-16):
+  trong `ingest.py`, sau bước chunk và trước embed, nếu `ENABLE_CONTEXTUAL_HEADER=1` thì gọi
+  `apply_contextual_headers(...)` với `titles` từ metadata tệp và `chapters` từ
+  `chapters_for_chunks(full_text, chunks)`; đích bắt buộc qua `ensure_separate_index_target`
+  (ví dụ `./chroma_db_headers`), **không** ghi `chroma_db`/`chroma_db_vie`. Sau đó mới chạy
+  retrieval-only 811 item (r11/r12 của T5a, task #34/#35) để có số gold@6/F1 theo family.
+- Đề xuất bảo thủ: duyệt (a) dạng cờ TẮT; giữ (b) như thiết kế; hoãn (c) tới khi chốt corpus.
+- Hoàn tác: (a) xóa cờ + 5 dòng trong nhánh `except`; (b) không có thay đổi nào; (c) chưa áp
+  dụng gì, chỉ build vào thư mục mới và có thể xóa thư mục đó.
+- **Còn treo để nghiệm thu T5:** chạy lại gold@6 cấu hình TẮT trên 811 item và so với round đã
+  đóng (đề bài yêu cầu); hiện chỉ có golden 30 item `pipeline.run`.

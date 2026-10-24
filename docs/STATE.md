@@ -117,7 +117,10 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 
 ## VIỆC KẾ TIẾP (theo thứ tự đề bài)
 1. ~~T2 Bước 3~~ ~~T2 Bước 4~~ ~~T3~~ ~~T4~~ — xong, xem các mục XONG.
-2. **T5a đang chạy** (r11 → cost probe → r12); **T5b chặn ở PA-1** (corpus chưa chốt).
+2. **T5-test xong 24-10 16:13** (68 test + mutation 10/10, mọi cờ TẮT, chưa chạy round; xem mục
+   XONG cuối file). **T5a:** r11 nền retrieval-only đã khởi chạy trước đó; phiên này **không** kiểm
+   tiến trình nền — cần xác nhận r11/r12 trước khi chạy tiếp. **T5b chặn ở PA-1** (corpus chưa chốt)
+   và PA-18 (wire + build index).
 3. **T1(b): resume tới 30 id sau window PerDay ~14:00 VN**, giữ nguyên `sample_ids.json`,
    ≤14 lượt/ngày, checkpoint từng lượt.
 4. Hai hướng tiếp theo của tầng sinh đều **chờ duyệt, chưa tự làm**: PA-9 (luật ngoài phủ trên
@@ -135,8 +138,8 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Đo từ có dấu trên một ChromaDB index (chỉ đọc):
   `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/measure_index.py --db ./chroma_db_vie --out data/loop/diag/corpus_diagnostics/index_after.json`
 - Resume T1 (b) (khi quota reset ~14:00 VN): `PYTHONIOENCODING=utf-8 ENABLE_ANSWER_GUARD=1 ./venv/Scripts/python.exe tools/diag/ablation_generation.py --config b_gemini_top6 --ids-file data/loop/diag/b_gemini_top6/sample_ids.json --limit 30`
-- Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng **854** xanh
-  — sau kiểm thử T2/T3 ngày 24-10 15:49; 691 sau T6, 677 sau T4/T5a, 610 trước T4). **Phải chạy
+- Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng **957** xanh
+  — sau kiểm thử T5 ngày 24-10 16:13; 889 sau T2-test, 691 sau T6, 677 sau T4/T5a, 610 trước T4). **Phải chạy
   bằng `venv` của app**, không dùng python hệ thống (thiếu `streamlit`/`pypdfium2` → 3 file UI
   lỗi collection dù code không sai).
 
@@ -174,3 +177,34 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tmp/mutation_check_t2.py`
   · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/test_t3_guardrails.py -q`
   · `venv/Scripts/python.exe tmp/mutation_check_t3.py`
+
+## XONG (bổ sung 24-10 16:13 — KIỂM THỬ T5)
+
+- **T5-test XONG phần unit.** `tests/test_t5_reranker_contract.py` **26 test** (mục 1–6, fake
+  cross-encoder) + `tests/test_t5_contextual_header.py` **42 test** (mục 7–10) = **68 test xanh**;
+  toàn repo **957 passed** (`tmp/pytest_t5_final.txt`, 26,84 s; trước mutation
+  `tmp/pytest_t5_before_mutation.txt` 957 passed). Không sửa test cũ, không sửa
+  `src/reranker.py`/`src/pipeline.py`, không đổi trọng tài.
+- **Module mới build-time** `src/contextual_header.py`: cờ `ENABLE_CONTEXTUAL_HEADER` mặc định
+  **TẮT**; hàm thuần, không ghi đĩa/gọi model; header = `[title] - [Chương] - [Điều] - [Khoản] -
+  [Điểm]` + hậu tố `(phần i/n)`, nhãn dự phòng `Phần mở đầu/Bảng biểu/Phụ lục/Toàn văn`, không bao
+  giờ phát `None`/`[]`; thân chunk nguyên văn; idempotent; guard `ensure_separate_index_target`
+  chặn `chroma_db`/`chroma_db_vie` + thư mục cha. **CHƯA nối vào `ingest.py`, CHƯA build index.**
+- **Golden mục 1:** dùng lại `tests/golden/t3_off_30items_head_f492f05.json` (sha file
+  `e59b9ebb…`, sha `core` `344d55cd…`); `pipeline.run` 30 item khớp **từng item/từng khoá**.
+- **Mutation check** `tmp/mutation_check_t5.py`: **10/10 bắt được, 10/10 hoàn nguyên byte-identical**
+  (log `tmp/mutation_check_t5.log`); riêng 4 đột biến trên file dirty của phiên khác
+  (`src/reranker.py`, `src/pipeline.py`) đã kiểm SHA-256 sau khôi phục.
+- **Số liệu header trên index thật (chỉ đọc):** `chroma_db` 361 chunk = article 232 (64,27%) +
+  preamble 21 + table 1 + whole 107; chapter 9 (2,49%). `chroma_db_vie` 342 = article 227 (66,37%)
+  + preamble 20 + table 1 + whole 94; chapter 18 (5,26%). Digest trước/sau không đổi
+  (`chroma_db` `c68623f7…`, `chroma_db_vie` `15dab0c9…`).
+- **Hai điểm chưa khớp câu chữ đề bài:** mục 5 (đề bài đòi lùi RRF + cảnh báo; thiết kế đã đăng ký
+  cấm lùi thầm ⇒ test ghim hành vi ném lỗi) và mục 10 (chưa có index T5b thật). Cả hai ghi ở
+  **PA-18**, báo cáo `docs/reports/test_T5.md`. **Tiêu chí "kiểm lại gold@6 cấu hình TẮT so với
+  round đã đóng" CHƯA chạy** (đêm quy định chưa chạy round) ⇒ nghiệm thu T5 đầy đủ còn treo.
+- Lệnh tái lập nhanh:
+  `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/test_t5_reranker_contract.py tests/test_t5_contextual_header.py -q`
+  · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tmp/mutation_check_t5.py`
+- **KẾ TIẾP (đúng thứ tự đêm):** chạy test tương ứng TT0–TT3 (T0/T1/T2/T3) → viết
+  `docs/MORNING_REPORT.md` → dừng. Không chạy round, không dùng Gemini.
