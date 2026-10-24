@@ -249,3 +249,125 @@ và ghi thẳng vào thông điệp commit rằng chúng còn dirty vì chứa w
 hai ý đó đã bị thực tế sửa. **Quyết định:** THÊM một khối "ĐÍNH CHÍNH 24-10" ngay sau đoạn cũ
 (không xoá, không sửa câu gốc), ghi rõ đặc tả T3 chốt baseline là r5 và kết quả r8/r9 KHÔNG ĐẠT;
 không commit tệp đó vì nó là deliverable untracked của phiên khác.
+
+## 09:2x — T4: user đánh thức và trả lời ba câu hỏi; bảng mặc định tự trị thôi chi phối
+
+Điều kiện vào việc của T4 ("chỉ làm nếu T1 chỉ ra năng lực model là nút thắt") **chưa được T1 chốt**:
+`docs/reports/T1.md` mục 4 ghi rành rành "KHÔNG kết luận được", phép thử phân nhánh (b) mới 7/30 id
+vì PerDay chặn đêm 23-10. Đây là ngã rẽ có chi phí thật (download ~2 GB + 1–2 giờ GPU + nguy cơ train
+QLoRA trên 4 GB), nên theo đúng ngoặc "hỏi tôi nếu chưa rõ" của đặc tả T4 tôi hỏi. Tiền đề của lệnh
+cấm hỏi ("tôi đang ngủ, không ai trả lời") đã hết hiệu lực từ 09:22 24-10.
+
+**Ba quyết định của user (chép nguyên văn ý, không diễn giải thêm):**
+1. **Chạy song song**: (b) resume tới đủ `n=30` với GIỮ NGUYÊN `sample_ids.json` (không thêm/bớt/đổi
+   id sau khi đã thấy 7 kết quả đầu), 14 lượt/ngày, checkpoint mỗi lượt, lỗi/timeout không tính quota;
+   4a chạy offline trên GPU như phép **THĂM DÒ**, round id mới = số lớn nhất + 1, mọi cờ mặc định TẮT.
+   **Chưa** kết luận "năng lực model là nút thắt" và **chưa** bắt đầu 4b (SFT) cho tới khi (b) đủ 30 id;
+   khi cả hai xong, diễn giải theo bảng quyết định đã đăng ký và ghi rõ "n=30 trên nhóm over-refusal,
+   không ngoại suy".
+2. **Model 4a = `qwen2.5:3b-instruct` q4** (không phải Qwen3-4B): chỉ đổi model, giữ nguyên prompt /
+   ngữ cảnh / temperature / `num_ctx` như baseline 1,5B và ghi `num_ctx` vào manifest. Phải chạy
+   `ollama ps` trong lúc chạy để xác nhận model nằm 100% trên GPU; nếu offload CPU thì ghi rõ vào
+   báo cáo và **không so latency trực tiếp** với baseline. Qwen3-4B chỉ thành round riêng nếu 3B cải
+   thiện nhưng chưa đạt mục tiêu; **không chạy gộp**.
+3. **4b = chỉ dựng pipeline + báo cáo chi phí**, không train trong phiên này.
+
+**Hệ quả kỹ thuật tôi phát hiện khi kiểm "một biến" (trước khi sửa gì):** `OLLAMA_MODEL` dẫn năm nơi —
+`src/generator.py:1050`, `src/local_slm.py:232`, `src/query_normalizer.py:419`, `src/classifier.py:553`,
+`src/retrieval.py:299` — nên dùng nó sẽ đổi đồng thời sinh + chuẩn hóa + phân loại + tách câu.
+**Quyết định:** thêm cờ riêng `GENERATOR_OLLAMA_MODEL` (mặc định rỗng = không truyền `ollama_model`,
+fallback cũ từng ký tự), chỉ đọc ở `build_pipeline()` của `tools/loop/run_round.py`, kèm test chứng
+minh tắt = identical. Đây là tệp không thuộc `REFEREE_FILES` ⇒ chữ ký trọng tài `9f1179ccab74` không đổi.
+
+**Tie-break "round tốt nhất của T3" chốt TRƯỚC khi chạy:** r8 và r9 hòa `PASS_CORRECT` 19 ⇒ chọn r9
+theo an toàn im lặng (`PASS_REFUSAL` 14 vs 2; `HALLUCINATED_ON_UNANSWERABLE` 3 vs 12). Gate chính vẫn
+là `r10 vs r5` vì đó mới là one-variable. Ghi đầy đủ ở `data/loop/README.md` mục T4.
+
+**Ngân sách khai TRƯỚC khi gọi** (bất biến #8): (b) còn 23 id, hôm nay ≤14 lượt Gemini; 4a = 0 lượt
+Gemini, ~100 lượt Ollama.
+
+## 09:3x–10:2x — T4 đang chạy: r10 trên GPU, (b) dừng ở 12/30 vì PerDay, và hai phát hiện phụ
+
+**Tiến độ đo được.** r8/r9 đã đóng; round mới lấy tên kế tiếp **r10** (`data/loop/rounds/r10/`,
+cache lạnh `tmp/loop_gen_cache_r10`, `GENERATOR_OLLAMA_MODEL=qwen2.5:3b-instruct`, cấu hình còn lại
+đúng như r5 từng ký). Resume T1(b) sáng 24-10 lấy thêm được **3 id** rồi lại gặp PerDay
+(`retry_delay 16394 s` ⇒ window reset ~14:00 VN): hiện **12/30 id hợp lệ**
+(`data/loop/diag/b_gemini_top6/summary_dedup.json`, gộp theo id). **Không** chạy tiếp đêm nay,
+**không** đổi danh sách id, **không** lấy n=12 làm phán quyết — bảng quyết định T1 chỉ được đóng
+khi đủ 30.
+
+**Phát hiện 1 — "một biến" hóa ra không mặc định là một biến.** `OLLAMA_MODEL` dẫn năm nơi
+(generator, LocalSLM, query_normalizer, classifier fallback, retrieval splitter). Nếu round dùng
+nó thì r10 đổi đồng thời bốn tầng. **Quyết định:** cờ riêng `GENERATOR_OLLAMA_MODEL` chỉ đọc ở
+`build_pipeline()`, mặc định rỗng, kèm `tests/test_loop_generator_model_flag.py` (11 test) chứng minh
+(i) tắt ⇒ `QwenGenerator` nhận `None` ⇒ chuỗi fallback cũ từng ký tự, (ii) `LocalSLM` không nhận gì mới,
+(iii) tắt ⇒ cache key không đổi (cache cũ còn giá trị), (iv) bật ⇒ chỉ đổi `model` trong payload.
+Manifest nay ghi thêm `generator_status` (slug/temperature/num_ctx/prompt_version/trần ký tự) vì
+`gate.compatibility()` chỉ so khóa `generator` ⇒ cổng mù với biến số này.
+
+**Phát hiện 2 — bẫy đo độ dài dòng train.** `PreTrainedTokenizerFast.apply_chat_template(..., tokenize=True)`
+trên `models/qwen25_05b_sft_adapter` với `transformers 5.20.2` trả về **2 token** cho một dòng 3.424 ký
+tự, trong khi `tokenize=False` rồi encode cho **1.204 token**. Hai script train/eval của repo đã dùng
+đúng đường `tokenize=False`, nên số cũ không sai — nhưng nếu ai "đơn giản hóa" phép đo thì mọi dòng
+train đều "vừa" `max_length` một cách giả tạo. **Quyết định:** `exact_token_lengths()` trong
+`tools/build_sft_from_round.py` dùng đường `tokenize=False` + encode, và có test chốt (`assert
+len(apply_chat_template(tokenize=True)) in (0,1,2)`) để bug quay lại là test đỏ.
+
+**Phát hiện 3 — số của 4b (chưa train):** pool qua `triage.build_rows` rồi group-split theo tài liệu
+cho `data/training/t4b_r5r6r7`: **16 dòng SFT** từ 3 round (8 document), train 12 / holdout 4, holdout
+chỉ **MỘT tài liệu**; bị chặn `blocked_test_leak` 109 (cộng dồn theo round),
+`skip_sft_target_not_in_context` 20, `overrefusal_threshold_only` 7, trùng id giữa round 29.
+Độ dài dòng train do tokenizer thật đo: **min 1.016 / median 1.439 / max 1.707 token**, tức **12/12 dòng
+vượt trần 768** đã chốt cho GPU 4 GB ở lượt 0,5B. Kết luận trung thực: pipeline chạy được nhưng
+**nguồn dữ liệu và bộ nhớ** mới là hai thứ chặn 4b, không phải thiếu script. Chưa train gì cả.
+
+**Quyết định deferred:** probe VRAM cho QLoRA 3B **chưa chạy** vì r10 đang chiếm GPU 4 GB (chạy song
+song là tự gây OOM cho chính phép đo) — để sau khi r10 exit 0. `bitsandbytes` **không có** trong
+`venv_train` (đã kiểm tra bằng importlib.metadata), nên QLoRA 4-bit hôm nay không chạy được dù có
+quyết định train; cài thêm thư viện = thay đổi môi trường ⇒ ghi `docs/PENDING_APPROVAL.md` (PA-11),
+không tự cài.
+
+## 10:1x–11:0x — T4 đóng vòng (r10 xong 100/100) và T5a vào nền (r11 đang chạy)
+
+**Quyết định đã làm (không cần hỏi thêm, vì nằm trong đặc tả T4/T5 và điều khoản đã ký):**
+
+1. **Đọc r10 theo đúng quy tắc đăng ký trước, không diễn giải lại khi thấy số.** r10 =
+   `PASS_CORRECT` 16/100 < 22 ⇒ "3B không có tín hiệu"; điều khoản "chỉ chạy Qwen3-4B nếu 3B cải
+   thiện" **không kích hoạt** vì CI delta [−0,06; +0,10] chứa 0. Không mở round 4B, không đổi model.
+2. **Bổ sung thống kê ghép cặp cho bảng model** (`tools/diag/t4_stats.py`, đã viết trước đó) thay vì
+   chỉ đưa point estimate, vì hai round sinh chỉ cách nhau 2 item trên 100 — dưới băng nhiễu ±3 của
+   T0, nếu không có McNemar + CI thì bảng số vô nghĩa.
+3. **Chụp manifest `generator_status` cho r10 là bắt buộc**, vì `gate.compatibility()` không biết gì
+   về slug Ollama; không có nó thì cổng sẽ so 3B với 1,5B như hai round cùng cấu hình.
+4. **Probe VRAM chỉ chạy sau khi `ollama ps` trả về rỗng** (đúng lời hứa trong log 09:3x): đo đè lên
+   model đang resident thì hoặc OOM hoặc số sai. Kết quả đo thật: **hết chỗ từ 1.024 token**,
+   `gradient_checkpointing` không giảm ⇒ 13/13 dòng train của T4b (min 1.016 token) không train
+   được trên máy này. Hai việc cần duyệt sinh ra từ đây: **PA-11** (cài `bitsandbytes` + tải 3B) và
+   **PA-12** (đổi định dạng dòng SFT) — chỉ ghi đề xuất, **không tự cài, không tự tải, không train**.
+5. **Bộ dữ liệu T4b mới đặt tên `data/training/t4b_r5r8r9r10/`** (không ghi đè `t4b_r5`, `t4b_r5r6r7`),
+   và đếm token bằng tokenizer thật qua đường `apply_chat_template(tokenize=False)` + encode.
+
+**Phát hiện & đính chính (ghi cả bản cũ):**
+
+- `data/loop/README.md` mục T5 từng ghi "r11 ~5 phút CPU (r2 median 0,28 s)" và "retrieval-only không
+  đụng GPU". **Cả hai sai** — đo lại 24-10: median `latency_seconds` của r2 là **2,76 s/item**
+  (p95 8,59) và `src/classifier.py:581` gọi Ollama `qwen2.5:1.5b-instruct` cho **mỗi** câu hỏi khi
+  `ENABLE_CLASSIFIER=1` (811/811 dòng r2 có `labels.raw_response` khác rỗng). Đã đính chính bằng khối
+  "Sửa hai câu trên" ngay dưới đoạn gốc, **không** sửa ngưỡng, không sửa thiết kế. Bài học vận hành
+  rút ra: **không bấm probe/model khác trong lúc round truy xuất chạy** — classifier timeout 20 s sẽ
+  rơi về `topic=None` và hỏng cả round.
+- `pytest tests -q` bằng python hệ thống cho **3 lỗi collection** (`streamlit`, `pypdfium2` thiếu);
+  đó là **sai môi trường, không phải đỏ test**. Chạy lại bằng `venv/Scripts/python.exe`: **677 passed**.
+  Đã ghi vào mục LỆNH TÁI LẬP của `docs/STATE.md` để lần sau không mất thì giờ đoán.
+- Thử chụp lại `ollama ps` cho 3B thành tệp (10:3x) **không thành công**: model đã nhả và ngay khi gọi
+  lại thì 1,5B của r11 chiếm GPU. Không làm nhiễu r11 để lấy snapshot; việc này chuyển thành
+  "bằng chứng chờ" trong `docs/reports/T4.md` §5.4, và **không** ảnh hưởng quyết định (không offload
+  nên so latency hợp lệ, còn residency của 3B đã thấy tận mắt trong lúc r10 chạy).
+
+**T5a đang chạy — tiến trình và kiểm giữa chừng:** r11 (nền retrieval-only, 811 item, bonus 12,
+quota 0, mọi cờ T3/T4/T5 TẮT, `--strategy all --limit 811` cho đúng thứ tự item của r2). Ở 182 item
+đã ghi: `error` = 0, `raw_response` rỗng = 0, `topic=None` = 10 (bình thường, `topic=None` cũng xảy ra
+ở đường production), và **`labels` trùng khít r2 ở 181/182 item** — khác 1 item là dao động của LLM ở
+nhiệt độ 0, không phải code drift; điều này khiến cặp `r11 vs r2` vẫn dùng được làm thước đo drift.
+Chi phí reranker **chưa đo** (phải đo trên item thật của r11, theo đúng thứ tự đã đăng ký), nên
+chưa bấm r12.

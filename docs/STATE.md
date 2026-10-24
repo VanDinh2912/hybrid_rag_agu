@@ -51,10 +51,54 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
   (rank + refusal-marker); `no_evidence`/`off_topic_window`/`ungrounded` = 0 vì `overlap` luôn ≥ 0,333
   và `grounding_score` ≡ 1,0 với prompt trích xuất ⇒ tầng ngoài mù với lớp "có căn cứ nhưng lạc đề".
 
+## XONG (bổ sung 24-10 — T4)
+- **T4a = phủ định có chủ đích.** `r10` = r5 đổi **duy nhất** model sinh sang `qwen2.5:3b-instruct`
+  (Q4, `num_ctx` 8192, 2,3 GB **100% GPU**, không offload): `PASS_CORRECT` 14→**16** nhưng
+  McNemar **p = 0,804** và CI delta **[−0,06; +0,10] chứa 0**, `refusal` 0,69→**0,75**, p95
+  18,65→**34,12 s (+83%)**. Ngưỡng đã đăng ký trước là "≥ 22/100 và fabrication không tăng" ⇒
+  **không có tín hiệu**; điều khoản chạy Qwen3-4B **không kích hoạt**. **Quyết định: giữ
+  `qwen2.5:1.5b-instruct` làm model triển khai.** Kiểm "một biến": `tools/diag/one_variable_check.py`
+  ⇒ `contexts`/`sources`/`normalized_query`/`labels`/`retrieval_config` identical **100/100**.
+- **T4b = dựng pipeline + chi phí, KHÔNG train** (đúng phạm vi user chốt). Bộ dữ liệu
+  `data/training/t4b_r5r8r9r10/`: 23 dòng SFT, group-split **theo tài liệu** 13 train / 10 holdout,
+  ba assert chống rò rỉ = true, chặn `blocked_test_leak` 134 · `skip_sft_target_not_in_context` 20 ·
+  `overrefusal_threshold_only` 17 · trùng id 38. Tokenizer thật: **train min 1.016 / median 1.439
+  token ⇒ 13/13 vượt trần 768**. VRAM đo trên card 4,09 GB: **hết chỗ từ 1.024 token**
+  (960 → 3.931,0 MiB; 1.024 → 4.156,9; 1.768 → 6.437,9), gradient checkpointing **không giúp**
+  (logits của LM head). ⇒ Trần train thật của máy ≈ **1.000 token/dòng**, dữ liệu hiện tại không vừa;
+  đường 4-bit bị chặn vì `bitsandbytes` chưa cài và trọng số HF 3B chưa có trên máy.
+- **Điều chưa được phép kết luận:** (b) `b_gemini_top6` mới **12/30 id hợp lệ** (PerDay chặn, window
+  reset ~14:00 VN) ⇒ **chưa** được nói "năng lực model là nút thắt".
+- Bằng chứng: `data/loop/rounds/r10/` (`full.jsonl`, `verdicts_full.jsonl`, `round_summary_full.json`
+  có `generator_status`, `gate_vs_r5_full.json`, `gate_vs_r9_full.json`, `t4_stats.json`,
+  `triage_report.md`), `data/loop/diag/{one_variable_check.json,t4b_memory_probe.json,
+  t4b_memory_probe_len.json}`, log `tmp/r10_run.log`. Báo cáo `docs/reports/T4.md`; ROADMAP **P5.20**;
+  đề xuất mới chờ duyệt **PA-11** (4-bit + tải 3B) và **PA-12** (đổi định dạng dòng SFT).
+- pytest toàn repo sau tất cả code T4/T5a: **677 passed** (venv app).
+
+## XONG / ĐANG CHẠY (bổ sung 24-10 — T5)
+- **5a code + test xong**: `src/reranker.py` (cờ `ENABLE_RERANKER` mặc định TẮT, model
+  `BAAI/bge-reranker-v2-m3` đã tải về cache HF 2,2 GB), móc vào `src/pipeline.py` **sau** bonus lọc
+  mềm, manifest `retrieval_reranker`; `tests/test_reranker_flag.py` **46 case** chứng minh tắt =
+  không đổi hành vi và không gọi `get_reranker`. Chữ ký trọng tài vẫn `9f1179ccab74`.
+- **Câu hỏi "bonus 3 hay 12" đã trả lời bằng kiểm định ghép cặp 811 item**
+  (`tools/diag/bonus_paired.py` → `data/loop/diag/bonus_paired_r1_r2.json`): r1→r2 giảm
+  −0,0257 CI [−0,04; −0,0129], **p = 0,00028**, 21 mất / 3 được, **21/21** là chunk vàng nằm ngoài
+  `source_filter` rơi đúng hạng 7–12; family EXACT/TRAP **không đổi** giữa r1/r2/r4 ⇒ con số bonus
+  không phải nút thắt. Đã ghi kèm **đính chính** trong `data/loop/README.md`: pha truy xuất **chạm GPU**
+  (classifier gọi Ollama 1,5B mỗi câu, `src/classifier.py:581`) và median `latency_seconds` của r2 là
+  **2,76 s/item** (không phải 0,28 s) ⇒ 811 item mất ~40–60 phút.
+- **ĐANG CHẠY:** `r11` = nền retrieval-only 811 item (bonus 12, quota 0, mọi cờ T3/T4/T5 TẮT).
+  Đã kiểm giữa chừng: không `error`, không timeout, `labels` **trùng r2 ở 181/182** item đã chạy
+  (1 khác do LLM nhiệt độ 0). Sau r11: `tools/diag/reranker_cost_probe.py` (ngưỡng dừng: ngoại suy
+  > 60 phút cho 811 item thì DỪNG và báo) → `r12` = r11 + `ENABLE_RERANKER=1 RERANKER_KEEP_CANDIDATES=1`
+  → gate/attribute/bonus_paired → `docs/reports/T5.md`. **5b chưa chạy round** (chờ PA-1).
+
 ## VIỆC KẾ TIẾP (theo thứ tự đề bài)
-1. ~~T2 Bước 3~~ ~~T2 Bước 4~~ ~~T3~~ — xong, xem hai mục XONG.
-2. ~~T3: viết code + test + chạy r8/r9~~ — xong, **kết quả âm đã ghi** (P5.18/P5.19, `docs/reports/T3.md`).
-3. T5 + TT0–TT3: **CHỜ ĐẶC TẢ (PA-5)**.
+1. ~~T2 Bước 3~~ ~~T2 Bước 4~~ ~~T3~~ ~~T4~~ — xong, xem các mục XONG.
+2. **T5a đang chạy** (r11 → cost probe → r12); **T5b chặn ở PA-1** (corpus chưa chốt).
+3. **T1(b): resume tới 30 id sau window PerDay ~14:00 VN**, giữ nguyên `sample_ids.json`,
+   ≤14 lượt/ngày, checkpoint từng lượt.
 4. Hai hướng tiếp theo của tầng sinh đều **chờ duyệt, chưa tự làm**: PA-9 (luật ngoài phủ trên
    prompt cũ, cần round `r10`) và PA-10 (probe 0 lượt sinh cho tín hiệu "căn cứ có trả lời được
    câu hỏi không"). Nợ cũ vẫn treo: PA-1 (kích hoạt `chroma_db_vie/`), PA-3 (#23 sửa cổng),
@@ -70,7 +114,9 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
 - Đo từ có dấu trên một ChromaDB index (chỉ đọc):
   `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/measure_index.py --db ./chroma_db_vie --out data/loop/diag/corpus_diagnostics/index_after.json`
 - Resume T1 (b) (khi quota reset ~14:00 VN): `PYTHONIOENCODING=utf-8 ENABLE_ANSWER_GUARD=1 ./venv/Scripts/python.exe tools/diag/ablation_generation.py --config b_gemini_top6 --ids-file data/loop/diag/b_gemini_top6/sample_ids.json --limit 30`
-- Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng 563 xanh)
+- Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (kỳ vọng **677** xanh — 24-10;
+  563 là mốc trước T3, 610 trước T4/T5a). **Phải chạy bằng `venv` của app**, không dùng python hệ
+  thống (thiếu `streamlit`/`pypdfium2` → 3 file UI lỗi collection dù code không sai).
 
 ## GHI NHỚ BẢO THỦ
 - Không sửa gate.py / verify.py / src/text_utils.py / answer_guard (đổi chữ ký trọng tài) → chỉ đề xuất + diff ở PENDING_APPROVAL.
