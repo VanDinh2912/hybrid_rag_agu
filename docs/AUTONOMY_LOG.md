@@ -239,7 +239,7 @@ cho ba cột và ghi chú rõ con số của manifest, để không ai đọc ch
 một commit "bundle" sẽ khiến người sau không revert riêng T3 được.
 **Quyết định:** commit `fc80222` chỉ gồm `docs/reports/T3.md`, `docs/STATE.md`,
 `docs/PENDING_APPROVAL.md`, `docs/AUTONOMY_LOG.md`; ROADMAP + src + tests **để nguyên trên đĩa**
-và ghi thẳng vào thông điệp commit rằng chúng còn dirty vìReason khác. Văn P5.18/P5.19 vẫn đọc được
+và ghi thẳng vào thông điệp commit rằng chúng còn dirty vì chứa work của phiên khác. Văn P5.18/P5.19 vẫn đọc được
 ở `ROADMAP.md` (chưa vào git) — trùng đúng tình trạng PA-8.
 
 ## 07:0x — Đính chính lớp phủ trên báo cáo tự đánh giá 23-10 (không viết lại lịch sử)
