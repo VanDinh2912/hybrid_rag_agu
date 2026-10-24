@@ -230,3 +230,22 @@ cho ba cột và ghi chú rõ con số của manifest, để không ai đọc ch
 
 `pytest tests -q` tốn CPU trong lúc Ollama sinh câu trả lời; độ trễ là chỉ số đã đăng ký đo
 (p95/median). **Quyết định:** xếp pytest sau khi r9 exit 0 → **610 passed** (`tmp/pytest_t3_final.txt`).
+
+## 07:0x — Phạm vi commit của T3: chỉ tệp tài liệu thuần của T3
+
+`git diff --stat` cho thấy `ROADMAP.md` (+783), `src/generator.py` (+310), `src/pipeline.py` (+201),
+`tests/test_pipeline.py` (+96) **đang chứa cả công việc dở của phiên khác** lẫn chữ của T3
+(P5.18/P5.19 nằm trong tệp ROADMAP trộn lẫn). Bảng mặc định không cho phép ghi đè/commit hộ, và
+một commit "bundle" sẽ khiến người sau không revert riêng T3 được.
+**Quyết định:** commit `fc80222` chỉ gồm `docs/reports/T3.md`, `docs/STATE.md`,
+`docs/PENDING_APPROVAL.md`, `docs/AUTONOMY_LOG.md`; ROADMAP + src + tests **để nguyên trên đĩa**
+và ghi thẳng vào thông điệp commit rằng chúng còn dirty vìReason khác. Văn P5.18/P5.19 vẫn đọc được
+ở `ROADMAP.md` (chưa vào git) — trùng đúng tình trạng PA-8.
+
+## 07:0x — Đính chính lớp phủ trên báo cáo tự đánh giá 23-10 (không viết lại lịch sử)
+
+`docs/bao_cao/danh_gia_tong_quan_2026-10-23.md` (untracked, của phiên trước) còn ghi
+"evidence-selection và reranker chưa có" và đề xuất baseline cổng cho bước 4 là **r6/r7**. Sau T3,
+hai ý đó đã bị thực tế sửa. **Quyết định:** THÊM một khối "ĐÍNH CHÍNH 24-10" ngay sau đoạn cũ
+(không xoá, không sửa câu gốc), ghi rõ đặc tả T3 chốt baseline là r5 và kết quả r8/r9 KHÔNG ĐẠT;
+không commit tệp đó vì nó là deliverable untracked của phiên khác.
