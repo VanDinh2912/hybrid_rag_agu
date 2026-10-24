@@ -402,3 +402,36 @@ dựng nên thang đo thứ hai. Không sửa `src/` sản xuất; không ghi đ
 
 **Bằng chứng chờ (nợ user):** (1) nhãn 60 mẫu 6b; (2) duyệt PA-13 để áp cổng tương đối; (3) 30–50
 câu hỏi thật cho 6c; (4) chốt có muốn đầu ra ghi 7,1 (=dùng điểm cũ) hay giữ 7,2.
+
+---
+
+## 24-10 (ca ngày) — Kiểm thử T1 (the task user giao) + quét trạng tháiLoop Guardian
+
+**Việc user giao (đã xong):** unit test cho `tools/diag/ablation_generation.py` bằng STUB
+generator — KHÔNG gọi model thật. `tests/test_ablation_generation.py` **24 test / 7 ca đề bài**,
+xanh; toàn suite **736 passed** (baseline 712 + 24). Báo cáo: `docs/reports/test_T1.md`.
+Hai seam thêm vào script (chỉ phục vụ đo, không phải lever `src/`, không đổi hành vi sản xuất):
+(1) guard `--force` (mặc định từ chối đè thư mục đã có `rows.jsonl`); (2) `interpret_decision(...)`
+thuần mã hóa bảng quyết định đã đăng ký, ngưỡng **tham số hóa** (a=0,15 / b=0,30 / band=0,02) vì
+README chỉ đăng ký chiều, không đăng ký con số.
+
+**Mutation check (`tmp/mutation_check_t1.py`, patch bytes trên ĐÚNG ablation script, không đụng
+`verify.py`; 3/3 BẮT ĐƯỢC, 3/3 hoàn nguyên byte-identical sha256 `9c7ffa1734a5`):**
+- M-T1-1 lấy nhầm chunk (`chunks.get(gold_id)`→`+1`) → đỏ `test_a_chi_goi_dung_chunk_vang` + 3 `test_c_*`.
+- M-T1-2 bỏ ràng buộc cùng item id (`if unknown:`→`if False:`) → đỏ `test_id_ngoai_r5_bi_tu_choi`.
+- M-T1-3 bỏ force guard → đỏ `test_thu_muc_da_co_rows_tu_choi`.
+Trọng tài giữ nguyên: `git diff` rỗng trên `verify.py`/`answer_guard.py`/`text_utils.py`, chữ ký `9f1179ccab74`.
+
+**Quét trạng thái (Loop Guardian):**
+- `r11` (T5a retrieval-only, 811 item) **ĐÃ XONG** ~11:02, không cần resume (log kết bằng summary
+  JSON: 182 FAIL_RETRIEVAL, 629 PENDING_GENERATION). Bước kế tiếp ĐỂ NGAY: gate/attribution r11 vs
+  r5 rồi mới cân nhắc `r12` — **không tự mở r12** (nằm sau quyết định, thuộc phạm vi user).
+- T1(b) Gemini: recount_dedup → **12/30 id** hợp lệ (9 PASS_CORRECT, refusal 0,083, 2 FAIL_FABRICATED,
+  1 OVERREFUSAL). Tín hiệu tiếp tục **nghiêng T4 (năng lực model)** nhưng **<30 ⇒ chưa chốt nhánh**.
+  2 FAIL_FABRICATED = **cảnh báo ≥2/30** cho nhánh "nghi trọng tài" (`Theo Bản` kiểu `LOOKS_LIKE_FORMATTING`)
+  → ghi vào **PA-2 (chờ duyệt)**, KHÔNG tự sửa `answer_guard.py`.
+- **KHÔNG gọi Gemini tiếp ca này**: đồng hồ (~11:00) **trước** quota window ~14:00 VN; để dành lượt
+  cho khi window mở (≤14/ngày).
+
+**Không làm:** không sửa gate/trọng tài/`src/`; không mở `r12`; không đổi ngưỡng; không ghi đè round đã
+đóng (mọi output test vào `tests/`, `tmp/`, `docs/reports/`).

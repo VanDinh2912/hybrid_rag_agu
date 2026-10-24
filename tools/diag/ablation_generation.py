@@ -190,10 +190,17 @@ def build_result(row: dict, docs: list[dict], answer: str, latency: float) -> di
     }
 
 
-def run_config(config: str, limit: Optional[int], dry_run: bool, ids_file: Optional[Path] = None) -> Path:
+def run_config(config: str, limit: Optional[int], dry_run: bool,
+               ids_file: Optional[Path] = None, force: bool = False) -> Path:
     out_dir = DIAG_DIR / config
-    out_dir.mkdir(parents=True, exist_ok=True)
     rows_path = out_dir / "rows.jsonl"
+    # An toàn thư mục (ca #5): thư mục diag ĐÃ có kết quả thì không tự ý ghi tiếp/đè —
+    # phải nói rõ bằng --force. (Resume có chủ đích = cho phép, nhưng là lựa chọn tường minh.)
+    if rows_path.exists() and not force:
+        raise SystemExit(
+            f"[out] {out_dir} đã có rows.jsonl; thêm --force để chạy tiếp (resume) vào cùng thư mục."
+        )
+    out_dir.mkdir(parents=True, exist_ok=True)
     all_rows = load_jsonl(rows_path) if rows_path.exists() else []
     # Chỉ dòng CÓ KẾT QUẢ được tính là xong; dòng error phải được thử lại khi resume
     # (quota Gemini theo ngày — PerDay là chuyện thường, không phải hết item).
@@ -349,6 +356,67 @@ def summarize(config: str) -> dict:
     return summary
 
 
+# ------------------------------------------------------------------- bảng quyết định (đăng ký trước)
+# Điều kiện định tính ĐÃ đăng ký ở `data/loop/README.md` mục "Ablation tầng sinh T1":
+#   (a) cao            -> bỏ (b); nút thắt là CHỌN/ĐỘ DÀI ngữ cảnh      -> ưu tiên T3
+#   (a) thấp + (b) cao -> năng lực model (Qwen không trích xuất được)   -> ưu tiên T4
+#   (a) thấp + (b) thấp -> trọng tài hoặc corpus                        -> ưu tiên T2+T6
+#   số SÁT ngưỡng       -> "không kết luận được" (KHÔNG bẻ nhánh theo số nhiễu)
+# README chỉ chốt hướng, không chốt con số; các ngưỡng số dưới đây là tham số minh
+# bạch để hàm diễn giải tái lập được và mutation-check bắt được (không đổi ý nghĩa nhánh).
+T1_A_PASS_THRESHOLD = 0.15
+T1_B_PASS_THRESHOLD = 0.30
+T1_BAND = 0.02  # vùng "sát ngưỡng": |rate - ngưỡng| <= BAND => không kết luận được
+
+
+def _side_of(value: float, threshold: float, band: float) -> str:
+    if value >= threshold + band:
+        return "high"
+    if value < threshold - band:
+        return "low"
+    return "near"
+
+
+def interpret_decision(
+    a_pass_rate: Optional[float],
+    b_pass_rate: Optional[float] = None,
+    *,
+    a_threshold: float = T1_A_PASS_THRESHOLD,
+    b_threshold: float = T1_B_PASS_THRESHOLD,
+    band: float = T1_BAND,
+) -> dict[str, Any]:
+    """Diễn giải bộ số (a)/(b) theo bảng quyết định T1 -> nhãn ưu tiên + trạng thái từng nhánh.
+
+    Trả dict có `label` một trong: "T3", "T4", "T2+T6", "không kết luận được",
+    "chờ (b)". Không bẻ nhánh khi một trong hai tỉ lệ rơi vào vùng sát ngưỡng.
+    """
+    if a_pass_rate is None:
+        return {"label": "không kết luận được", "a_status": None, "b_status": None,
+                "note": "thiếu số liệu (a)"}
+
+    a_status = _side_of(a_pass_rate, a_threshold, band)
+    if a_status == "near":
+        return {"label": "không kết luận được", "a_status": "near", "b_status": None,
+                "note": f"(a)={a_pass_rate} sát ngưỡng {a_threshold} (band ±{band})"}
+    if a_status == "high":
+        return {"label": "T3", "a_status": "high", "b_status": None,
+                "note": "(a) cao => bỏ (b): nút thắt là chọn/độ dài ngữ cảnh"}
+
+    # (a) thấp => cần (b) để tách "năng lực model" khỏi "trọng tài/corpus".
+    if b_pass_rate is None:
+        return {"label": "chờ (b)", "a_status": "low", "b_status": None,
+                "note": "(a) thấp, chưa có (b) => chưa phán quyết nhánh"}
+    b_status = _side_of(b_pass_rate, b_threshold, band)
+    if b_status == "near":
+        return {"label": "không kết luận được", "a_status": "low", "b_status": "near",
+                "note": f"(b)={b_pass_rate} sát ngưỡng {b_threshold} (band ±{band})"}
+    if b_status == "high":
+        return {"label": "T4", "a_status": "low", "b_status": "high",
+                "note": "(a) thấp + (b) cao => năng lực model (Qwen không trích xuất nổi)"}
+    return {"label": "T2+T6", "a_status": "low", "b_status": "low",
+            "note": "(a) thấp + (b) thấp => trọng tài hoặc corpus"}
+
+
 def make_b_sample(n: int = 30, seed: int = 20261023) -> Path:
     """Chốt danh sách (b) TRƯỚC khi gọi Gemini, theo điều đăng ký trước trong
     `data/loop/README.md`: item FAIL_OVERREFUSAL của r5 CÓ chunk vàng trong cửa sổ,
@@ -399,6 +467,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=None, help="cắt n nhỏ cho smoke test")
     parser.add_argument("--ids-file", default=None, help="JSON {ids:[...]} — chỉ chạy đúng danh sách đã chốt")
     parser.add_argument("--dry-run", action="store_true", help="không gọi model")
+    parser.add_argument("--force", action="store_true",
+                        help="cho phép chạy tiếp/ghi vào thư mục diag ĐÃ có rows.jsonl (mặc định từ chối)")
     parser.add_argument("--summarize-only", action="store_true")
     parser.add_argument("--make-b-sample", action="store_true",
                         help="chốt sample_ids.json cho (b) — chạy TRƯỚC khi gọi Gemini")
@@ -414,7 +484,7 @@ def main() -> int:
         summary = summarize(args.config)
     else:
         run_config(args.config, args.limit, args.dry_run,
-                   Path(args.ids_file) if args.ids_file else None)
+                   Path(args.ids_file) if args.ids_file else None, force=args.force)
         if args.dry_run:
             return 0
         summary = summarize(args.config)
