@@ -1,6 +1,6 @@
 # BÁO CÁO SÁNG (MORNING_REPORT) — phiên tự trị qua đêm 23-10 → 24-10
 
-Chi nhánh: `auto/overnight`, hiện **21 commit** so với `main` (`29f37dc`); HEAD `af90960`.
+Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), tách từ `main` (`29f37dc`);
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
