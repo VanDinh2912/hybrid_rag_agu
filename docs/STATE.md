@@ -296,3 +296,22 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Chờ duyệt: PA-1, PA-19 (r12), PA-21, PA-22 và các PA cũ.
 - Lệnh tái lập r13: `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/bonus_paired.py --baseline r11 --candidate r13 --third "" --out data/loop/diag/header_paired_r11_r13.json`
   · `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/loop/gate.py --candidate r13 --baseline r11 --phase retrieval`
+
+## ĐANG LÀM (25-10 02:55 — T5 giao lại: chạy 5a trên GPU bằng venv riêng)
+
+- Đề bài T5/T6 được giao lại. T6 (6a–6d) **đã có đủ artifact từ 24-10**; phiên này bổ sung:
+  CI cho chỉ số **truy xuất** vào bảng 5.1 báo cáo đánh giá + khối ĐÍNH CHÍNH 25-10 + **PA-23**
+  (bốn dòng tự chấm đã cũ; điểm KHÔNG tự đổi). Commit `875a313`.
+- 5b đã chấm xong ở commit `c0b23f2` (r13: delta −0,0028 CI chứa 0, p = 0,79 ⇒ không tín hiệu).
+  Phiên này chạy thêm `attribute.py` r11 và r13 (trước/sau): FAIL_RETRIEVAL 182→184,
+  `filter_blocked_wrong_topic` 68→67, `filter_blocked_wrong_table` 20→20, `ranking_no_filter`
+  57→59, `ranking_despite_filter` 37→38 (ghi vào `data/loop/rounds/r11/r13/attribution_retrieval.json`).
+- **5a:** dựng `venv_gpu/` MỚI (torch 2.14.1+cu126 + `requirements-lock.txt` + các gói còn thiếu
+  đúng version của `venv/`; chỉ khác nhóm easyocr/opencv — không ảnh hưởng đường chạy round).
+  `venv/` và `venv_train/` **không bị sửa**. pytest trên `venv_gpu`: **967 passed** (24,01 s).
+  Embedding vẫn CPU (ghim ở `src/vector_db.py:60`) ⇒ r12 chỉ khác r11 ở reranker.
+  Đang chạy probe chi phí GPU: `RERANKER_DEVICE=cuda` (max_length 512, pool 20, batch 4 — đúng thiết kế)
+  → `data/loop/diag/reranker_cost_gpu.json`, log `tmp/r12_gpu_probe.log`.
+  VRAM quan sát được khi nạp reranker: **3.594/4.096 MiB, util 100%** (Ollama chưa nạp lúc đó).
+- **Luật giữ nguyên:** probe ngoại suy > 60 phút cho 811 item ⇒ DỪNG, không chạy r12, báo PA-19.
+- Gemini: **0 lượt**.
