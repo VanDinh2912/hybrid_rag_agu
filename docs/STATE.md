@@ -27,13 +27,38 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
 
 ## ĐANG LÀM
 - Không còn việc tự trị. **PHIÊN ĐÃ DỪNG** tại cổng duyệt; tổng kết ở `docs/MORNING_REPORT.md`
-  và 8 đề xuất chờ duyệt ở `docs/PENDING_APPROVAL.md` (PA-1..PA-8).
+  và **10 đề xuất chờ duyệt** ở `docs/PENDING_APPROVAL.md` (PA-1..PA-10).
+
+## XONG (bổ sung 24-10 — T3)
+- **T3 đã chạy xong hai round và KHÔNG ĐẠT tiêu chí đã đăng ký trước.** `r8` = r5 +
+  `ENABLE_DECOUPLED_REFUSAL=1`; `r9` = r8 + `ENABLE_EVIDENCE_SELECTION=1`; mỗi round 100/100 item,
+  exit 0, **0 lượt Gemini**, chữ ký trọng tài `9f1179ccab74` khớp cả ba round (không round cũ nào
+  phải chấm lại). Số: `PASS_CORRECT` 14→**19**→19 (tiêu chí ≥25 ⇒ không đạt), refusal
+  0,69→**0,28**→0,57, fabrication 0,0323→**0,0**→0,0, nhưng `PASS_REFUSAL` 17→**2**→14 và
+  `FAIL_HALLUCINATED_ON_UNANSWERABLE` 2→**12**→3; p95 19,08→19,93→**33,27 s**. Ba cổng
+  (r8-vs-r5, r9-vs-r8, r9-vs-r5) đều **KHÔNG ĐẠT**. Hai cờ **giữ mặc định TẮT**; theo điều khoản đã
+  ký, **không** thêm lever thứ ba và **không** chỉnh ngưỡng theo số.
+- Code + test đã commit `a8aa042`: `src/refusal_policy.py`, `src/evidence_selection.py`,
+  `EXTRACT_ONLY_HEAD`/`effective_prompt_version()` trong `src/generator.py`, `_collect_leg_ranks` +
+  móc luật trong `src/pipeline.py`, manifest mới trong `tools/loop/run_round.py`,
+  `tests/test_decoupled_refusal.py` (24 hàm/29 case) + `tests/test_evidence_selection.py` (18 case).
+  **Toàn repo: 610 passed** (`tmp/pytest_t3_final.txt`, chạy lại SAU hai round; trước T3 là 563).
+- Bằng chứng trên đĩa: `data/loop/rounds/r8/` và `data/loop/rounds/r9/`
+  (`full.jsonl`, `verdicts_full.jsonl`, `round_summary_full.json`, `gate_vs_*.json`,
+  `attribution_vs_*.txt`) + log `tmp/r8_run.log`, `tmp/r9_run.log`. Báo cáo: `docs/reports/T3.md`;
+  ROADMAP: **P5.18 / P5.19**; sổ round: `data/loop/README.md` mục "Số đo đã có" (khối r8 + r9).
+- Phát hiện đáng giá nhất (để đừng mất công lần sau): trong năm luật **chỉ hai luật bắt**
+  (rank + refusal-marker); `no_evidence`/`off_topic_window`/`ungrounded` = 0 vì `overlap` luôn ≥ 0,333
+  và `grounding_score` ≡ 1,0 với prompt trích xuất ⇒ tầng ngoài mù với lớp "có căn cứ nhưng lạc đề".
 
 ## VIỆC KẾ TIẾP (theo thứ tự đề bài)
-1. ~~T2 Bước 3~~ ~~T2 Bước 4~~ — xong, xem mục XONG.
-2. T3 + T5: viết code + test, MỌI cờ TẮT mặc định, chưa chạy round → **CHỜ ĐẶC TẢ (PA-5)**.
-3. Chạy test TT0–TT3 tương ứng → **CHỜ ĐẶC TẢ (PA-5)**.
-4. docs/MORNING_REPORT.md.
+1. ~~T2 Bước 3~~ ~~T2 Bước 4~~ ~~T3~~ — xong, xem hai mục XONG.
+2. ~~T3: viết code + test + chạy r8/r9~~ — xong, **kết quả âm đã ghi** (P5.18/P5.19, `docs/reports/T3.md`).
+3. T5 + TT0–TT3: **CHỜ ĐẶC TẢ (PA-5)**.
+4. Hai hướng tiếp theo của tầng sinh đều **chờ duyệt, chưa tự làm**: PA-9 (luật ngoài phủ trên
+   prompt cũ, cần round `r10`) và PA-10 (probe 0 lượt sinh cho tín hiệu "căn cứ có trả lời được
+   câu hỏi không"). Nợ cũ vẫn treo: PA-1 (kích hoạt `chroma_db_vie/`), PA-3 (#23 sửa cổng),
+   PA-8 (commit freeze — nay rounds = 48 MB, r0…r9, vẫn 0 file tracked).
 
 ## LỆNH TÁI LẬP
 - Bảng chẩn đoán: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/corpus_diacritics.py`

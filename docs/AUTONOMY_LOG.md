@@ -184,3 +184,49 @@ từ riêng của module, đăng ký env + ghi lý do vào README TRƯỚC khi c
 toàn bộ ngưỡng từ chối đã duyệt.
 
 **Quyết định: (B).** Ngưỡng `DEC_*` của năm luật từ chối KHÔNG đổi một chữ.
+
+## 05:54–06:56 — Chạy r8 rồi r9 theo đúng đăng ký trước (0 lượt Gemini)
+
+Ngã rẽ: có chạy hai round ngay trong phiên tự trị hay chờ duyệt. Theo đề bài T3 ("làm lần lượt,
+mỗi lần một biến, thành 2 round") + bảng mặc định (id round = số lớn nhất + 1; không tái dùng;
+thư mục mới không ghi đè), **quyết định chạy**. r8 = cấu hình r5 từng ký tự +
+`ENABLE_DECOUPLED_REFUSAL=1`, cache lạnh `tmp/loop_gen_cache_r8`; r9 = r8 +
+`ENABLE_EVIDENCE_SELECTION=1`, cache lạnh `tmp/loop_gen_cache_r9`. Cả hai 100/100 item, exit 0,
+**0 lượt Gemini** (chỉ Ollama cục bộ), thư mục `data/loop/rounds/r8`/`r9` là thư mục MỚI —
+không đụng r0–r7 đã đóng. Log: `tmp/r8_run.log`, `tmp/r9_run.log`.
+
+## 06:56–07:03 — Số ra ÂM: giữ điều khoản đã ký, không cứu số
+
+`PASS_CORRECT` 19/100 ở cả r8 và r9 (< 25), ba cổng đều KHÔNG ĐẠT. Lựa chọn:
+(A) hạ `DEC_MIN_RRF_NORM` hoặc đổi `EV_MAX_SENTENCES` rồi chạy lại cho đẹp số → **LOẠI**, vi phạm
+điều khoản "ngưỡng đăng ký trước, không chỉnh theo kết quả" và quy tắc "không thêm lever thứ ba";
+(B) ghi kết quả âm kèm phân tích cơ chế, giữ hai cờ mặc định TẮT.
+**Quyết định: (B)** — `docs/reports/T3.md`, ROADMAP P5.18/P5.19, `data/loop/README.md` (khối
+"r8 + r9" trong mục Số đo đã có), `docs/STATE.md`.
+
+## 06:56–07:03 — Hai ý tưởng tiếp theo CHỈ ghi thành đề xuất, chưa viết code
+
+PA-9 (tầng luật ngoài phủ trên prompt cũ, cần round r10) và PA-10 (probe 0 lượt sinh cho tín hiệu
+"căn cứ có trả lời được câu hỏi không") đã vào `docs/PENDING_APPROVAL.md`. Không tự code, không tự
+mở round — đây là ngã rẽ cần người, và bảng mặc định quy ước chọn phương án bảo thủ nhất.
+
+## 06:56–07:03 — Một ký tự CJK lạc trong ô MÔ TẢ của README đã đăng ký trước
+
+`data/loop/README.md` dòng `DEC_MAX_UNSUPPORTED` có chữ "đồng口径" (ký tự CJK lẫn vào). Lựa chọn:
+(A) để nguyên vì "đừng sửa tệp đăng ký trước"; (B) sửa thành "cùng chuẩn" và ghi rõ trong chính
+README rằng đây là sửa chính tả, KHÔNG đổi ngưỡng và KHÔNG đổi ý nghĩa luật.
+**Quyết định: (B)** — ô ngưỡng (`1`) và các `DEC_*` khác giữ nguyên từng ký tự; ghi chú nội tuyến
+ngay dưới dòng sửa để người sau không đọc nhầm thành chỉnh sửa sau khi có số.
+
+## 06:56–07:03 — p95 latency: hai cách lấy phân vị cho hai số khác nhau
+
+`round_summary_full.json` (dùng `run_round._percentile`, phần tử thứ `ceil(0,95·n)−1`) ghi
+r8 19,73 / r9 33,20; phép tính lại chung cho cả ba round bằng `tmp/probe_t3_table.py`
+(phần tử thứ `int(0,95·n)`) ghi 19,93 / 33,27 và là số duy nhất có được cho r5 (r5 chạy trước khi
+chìa khóa `p95_latency` tồn tại). **Quyết định:** bảng trong `docs/reports/T3.md` dùng MỘT cách tính
+cho ba cột và ghi chú rõ con số của manifest, để không ai đọc chênh 0,2 s thành chênh dữ liệu.
+
+## 06:56–07:03 — Chạy pytest SAU khi round kết thúc, không chạy song song
+
+`pytest tests -q` tốn CPU trong lúc Ollama sinh câu trả lời; độ trễ là chỉ số đã đăng ký đo
+(p95/median). **Quyết định:** xếp pytest sau khi r9 exit 0 → **610 passed** (`tmp/pytest_t3_final.txt`).
