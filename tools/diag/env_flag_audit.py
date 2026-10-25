@@ -35,6 +35,16 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 ROOT = Path(__file__).resolve().parents[2]
+# Console Windows mặc định cp1252: in tiếng Việt có dấu sẽ văng UnicodeEncodeError và exit code 1,
+# người tái lập đọc nhầm thành "máy kiểm KHÔNG ĐẠT" (D-36 — máy kiểm phải báo lỗi đúng nguyên nhân).
+# Đặt lại stdout/stderr sang UTF-8 ngay lúc import; bọc try/except để bước này không bao giờ
+# làm hỏng phép đo (kể cả khi chạy dưới pytest capsys).
+for _dong in (sys.stdout, sys.stderr):
+    try:
+        _dong.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:  # pragma: no cover - chỉ khi mang console không phải TextIOWrapper
+        pass
+
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 

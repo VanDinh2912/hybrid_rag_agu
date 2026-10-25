@@ -1035,3 +1035,126 @@ Không che: phát hiện bằng `grep -c "^| D-"` + liệt kê số thứ tự (
 tục, `docs_consistency_check --scope all` vẫn **0 lỗi / 5 cảnh báo**. Bài học: chèn dòng vào bảng bằng Edit
 thì `new_string` phải **bao gồm cả dòng neo**, không chỉ dòng mới.
 
+
+---
+
+## PHIÊN 25-10 19:0x — sau commit `c508876`: một lần đỏ không đến từ code (D-35)
+
+**Ngã rẽ 14 — 10 test đỏ/ERROR khi chạy lại nghiệm thu cuối: quy kết cho code, cho test, hay cho môi trường?**
+Bằng chứng đầu tiên mâu thuẫn: `pytest tests/test_final_secret_scan.py -q` chạy **riêng** thì **14 passed**,
+chạy **cùng nhóm** file khác thì 6 ERROR ở fixture. Không vội kết luận "test phụ thuộc thứ tự": lần lượt
+thử (i) chạy riêng từng file, (ii) thêm điều kiện stdin (`< /dev/null`), (iii) đổi interpreter. Kết quả:
+đỏ là do **interpreter** (`python` hệ thống 3.14, không phải `venv/Scripts/python.exe`) **kết hợp stdin đóng**,
+với traceback `OSError: [WinError 6] The handle is invalid` bên trong `subprocess`. Cùng lúc, Python 3.14
+thiếu `pypdfium2`/`streamlit` ⇒ 4 file test lỗi **collection** (`test_corpus_rebuild`, `test_demo_streamlit_display`,
+`test_ui_generator_flag`, `test_ui_labels`) — dấu hiệu rõ rằng đây là môi trường khác, không phải repo hỏng.
+Chọn ghi nguyên cả hai hiện tượng (không "làm đẹp" bằng cách chỉ chạy venv), vì người tái lập rất có thể
+gõ `python` chứ không gõ `venv/Scripts/python.exe`.
+
+**Ngã rẽ 15 — siết ở đâu, và siết cái gì?**
+Ba đường: (a) chỉ thêm một dòng "phải dùng venv của repo" → **LOẠI làm cách duy nhất**, vì nó để lại đúng
+chỗ nguy hiểm: `git_state()` báo `khong-co-git` cho một file **đã tracked và sạch** — máy kiểm suy diễn kết
+luận về repo từ một lỗi spawn; (b) siết `stdin=subprocess.DEVNULL` cho mọi lời gọi subprocess trong phạm vi
+nghiệm thu cuối + đưa cả hai lời gọi git vào cùng `try` (theo đúng khuôn `docs_consistency_check.py` đã dùng
+từ đợt T7) → **CHỌN**; (c) siết toàn repo (`tools/loop/run_chain.py`, `tools/diag/t4_latency_probe.py`) →
+**LOẠI trong phiên này**, vì `run_chain.py` là công cụ đã sinh artifact tái lập r0 đã công bố (D-30), đổi nó
+dù "không đổi hành vi" vẫn phá thoả thuận "không chạy lại dụng cụ đã đo"; các lời gọi còn thiếu `stdin` được
+liệt kê thành rủi ro ở `test_final.md` §11, thay vì im lặng — **và con số đó đã bị sửa hai lần**, xem Ngã rẽ 22.
+
+**Ngã rẽ 16 — test ghim phải có răng kiểu gì khi lỗi chỉ lộ ở môi trường đặc biệt?**
+Không có cách nào tạo "handle stdin hỏng" một cách tất định từ trong test (đã đo: `os.close(0)` trong process
+con **không** tái hiện lỗi — `subprocess` tự mở NUL, cả hai interpreter đều trả `NAI-NHAN 0`). Nên răng được
+đặt ở hai nơi tất định: (i) **AST source-pin** — mọi `subprocess.run/Popen/check_*` trong 8 file phạm vi phải
+truyền `stdin=`, kèm test chống-rỗng (phải đếm được ≥ 8 lời gọi và số lời gọi mỗi file là con số đã ghim, để
+mutation không lọt bằng cách xoá lời gọi) và (ii) **`git_state()` với `subprocess` giả** — buộc từng nhánh nhãn:
+lỗi spawn ở lời gọi thứ hai không được crash, lỗi spawn không được thành `tracked-sach`, `rc=1` mới là
+`chua-commit`, file không tồn tại không được gọi git. **21 test**; đột biến **6/6 bị bắt, 0 lọt**
+(`tmp/mutation_check_stdin_guard.log`), riêng K6 (lỗi spawn → `tracked-sach`) bị **hai** test bắt.
+
+**Ngã rẽ 17 — sự cố phụ đáng ghi: harness đột biến tự làm đổi line ending và báo "khôi phục thất bại".**
+`Path.write_text()` trên Windows dịch `\n` thành `\r\n`, nên bản "khôi phục" tuy **giống nội dung** nhưng
+**khác byte** ⇒ `sha256` khác ⇒ harness abort ở K1. Kiểm tra xem có phá gì không: `git ls-files --eol` cho
+thấy index vẫn `i/lf` và `core.autocrlf=true`, `git diff --stat` chỉ hiện 3–5 dòng thay đổi thật ở mỗi file
+⇒ không hư hại nội dung. Cách sửa: harness đọc/ghi **theo bytes**, giữ đúng kiểu line ending của file
+(`_doc`/`_ghi`), đối chiếu SHA trên bytes. Bài học: trên Windows, "đã khôi phục" phải được chứng minh bằng
+**byte**, không bằng "nội dung có vẻ giống"; và đột biến trên file thật chỉ an toàn khi có `finally` khôi phục
++ so sánh SHA + chạy đúng một file test trong cửa sổ vài giây.
+
+Số sau siết (không đổi bất kỳ con số đã công bố nào): `pytest tests -q` (venv) = **1359 passed / 5 skipped /
+126,52 s**; cùng nhóm 5 file nghiệm thu cuối chạy bằng **Python 3.14 với stdin đóng** = **131 passed / 1 skipped**
+(trước siết: 1 FAILED + 9 ERROR); kiểm toán số **55 dòng / 0 LỆCH**; chữ ký trọng tài **`9f1179ccab74`**;
+secret scan **0 secret / 0 đường dẫn cá nhân / 89 PII / 8 file**; docs checker **35 mục / 264 lệnh /
+100 đường dẫn / 0 lỗi / 5 cảnh báo**. Không gọi Gemini; không ghi `data/loop/rounds/` hay `outputs/`;
+`gate.py`, `verify.py`, `answer_guard.py`, `text_utils.py` **không đổi một byte**.
+
+PHIÊN 25-10 20:0x — **D-36 (console) + ba đính chính số đo**, tiếp ngay sau D-35. Ba ngã rẽ mới,
+cả ba đều là "số mình vừa viết ra có đúng không", không phải ngã rẽ kỹ thuật.
+
+**Ngã rẽ 18 — máy kiểm in hỏng vì bảng mã: dùng `locale.getpreferredencoding()` trong test, ép cp1252,
+hay ép cả hai?** Hiện tượng đo được: `tools/diag/council_check_gold6.py` trả **exit code 1** khi
+`PYTHONIOENCODING`/`PYTHONUTF8` bị gỡ, traceback `UnicodeEncodeError` tại ký tự `ệ`. Ba lựa chọn:
+(a) test đọc bảng mã thật của máy (`locale.getpreferredencoding()`) → **LOẠI**, vì test sẽ tự đổi kỳ vọng
+theo máy: trên CI Linux/UTF-8, điều khiển âm "bảng mã không in nổi tiếng Việt" trở nên sai và cả lớp test
+mất nghĩa; (b) chỉ ép cp1252 (tất định, mọi máy Windows đều có) → **ĐỦ VỀ KỸ THUẬT nhưng SAI VỀ MÔ TẢ**,
+vì đo `chcp` = **1258** và `locale.getpreferredencoding()` = **cp1258**: báo cáo nói "console mặc định
+cp1252" là khẳng định sai về máy đang đo; (c) **CHỌN** — giữ cp1252 làm stand-in tất định **và** thêm
+cp1258 vào cùng điều khiển âm (parametrized), đồng thời sửa mọi chỗ mô tả trong docs thành
+"console của máy đo là cp1258". Bộ test phòng thủ môi trường thành **34 test** (lớp console: 13).
+Chi phí phải trả và đã chấp nhận: mọi con số liên quan (toàn bộ test, số dòng kiểm toán, nhãn trong
+`final_number_audit.py`) phải đo lại — xem Ngã rẽ 20.
+
+**Ngã rẽ 19 — đính chính D-35: "interpreter khác" là khác bản hay khác package?** Khi viết D-35 em ghi
+"chạy bằng interpreter khác (`python` hệ thống 3.14)", ngụ ý khác phiên bản. Đo lại: **cả hai là
+3.14.8** — `venv\pyvenv.cfg` khai `home = %LOCALAPPDATA%\Python\pythoncore-3.14-64`,
+`include-system-site-packages = false`; khác biệt duy nhất là tập package (`pypdfium2`, `streamlit` chỉ có
+trong `venv`). Lựa chọn: (a) để nguyên vì "cũng là interpreter khác" → **LOẠI**, người đọc sẽ đi tìm nguyên
+nhân sai (nâng/hạ bản Python) thay vì `pip install -r`; (b) **CHỌN** — sửa tại chỗ dòng D-35 (thêm ngoặc
+đính chính, không viết lại toàn bộ) và ghi vào §11/§14 của `test_final.md`, vì đây là loại sai lệch phải sửa
+bằng lời chứ không bằng cách xoá kỳ vọng. Kèm theo: D-35 ghi "21 test / đột biến 6/6" — sau D-36 thành
+"34 test / 9/9"; **giữ con số cũ trong ngoặc** vì nó là số đo tại thời điểm đó, không phải số bị sai.
+
+**Ngã rẽ 20 — lượt đỏ thứ ba: máy quét secret bắt **chính báo cáo đang viết**, có được nới máy quét không?**
+`pytest tests -q` (19:5x) = **1 FAILED / 1.371 passed** ở
+`test_khong_co_duong_dan_ca_nhan_trong_file_track`; thủ phạm là một câu em vừa viết vào §11
+`test_final.md`, chứa đường dẫn tuyệt đối theo tên user. Lần thứ hai trong cùng phiên cho cùng một lớp lỗi
+(lần đầu: mẫu gieo trong `test_final_secret_scan.py`, D-34). Ba lựa chọn: (a) thêm whitelist cho file docs →
+**LOẠI**, vì đó là nới thước đo để khớp kết luận, đúng điều đã cấm; (b) bỏ luôn câu mô tả đường dẫn → **LOẠI
+một phần**, vì người tái lập cần biết đường nào là `python` hệ thống; (c) **CHỌN** — che thành dạng
+`%LOCALAPPDATA%\Python\pythoncore-3.14-64` (đủ thông tin, không chứa danh tính), **giữ nguyên** log lượt đỏ ở
+`tmp/pytest_batch3_caught_pii_path.txt` thay vì xoá hoặc ghi đè (bằng chứng "test đỏ vì đúng"), và nâng nguyên
+tắc D-34 thành: **quét trước khi stage**, vì `secret_scan --scope tracked` (mặc định) đọc **working tree** của
+file đã track — nội dung chưa commit cũng bị quét.
+
+**Ngã rẽ 21 — sự cố do script nội bộ của phiên: nhân đôi CR khi vá DECISION_LOG.** Đoạn vá dùng
+`s.replace("\n", "\r\n")` trên một chuỗi **đã có CRLF** ⇒ mỗi dòng thành `\r\r\n` rồi `\r\r\r\n`;
+`git diff --stat` báo **191 insertions / 190 deletions** (tưởng như viết lại cả file) dù nội dung chỉ thêm
+1 dòng. Chọn cách xử lý: (a) `git checkout -- file` rồi viết lại → **LOẠI**, vì sẽ mất dòng D-35 chưa commit;
+(b) **CHỌN** — chuẩn hoá bằng `split("\r\n")` + `join("\r\n")` (không replace lồng), xác nhận
+`loneCR = loneLF = 0` và diff còn **1 insertion**; đăng ký thành quy ước mới cho mọi script vá file: **ghi
+theo bytes, cấm replace ký tự xuống dòng trên chuỗi đã chuẩn hoá, in số đo line ending sau khi ghi**. Cùng
+lỗi này giải thích vì sao `docs/PENDING_APPROVAL.md` có 41 dòng LF lạc loài trong khối CRLF (heredoc +
+`write_text`): đã chuẩn hoá về CRLF toàn file trước khi vá PA-34 và diff vẫn chỉ là 41 dòng thêm thật.
+
+**Ngã rẽ 22 — con số "mấy lời gọi subprocess chưa siết" sai hai lần, và cả hai lần đều do đếm tay.**
+Lúc viết PA-34 (19:1x) em ghi **4**; khi soạn §11 em nâng lên **5** sau khi thêm `tests/test_t7_tmp_cleanup.py`,
+nhưng vẫn không kiểm `tests/test_t4_*`/`test_t6_*` — vốn chỉ nằm trong một mệnh đề "cùng nhóm" mờ. Cách đáng tin
+là hỏi máy: viết `tmp/count_stdin_sites.py` (AST, quét `tools/` + `tests/` + `src/`, nhận diện
+`subprocess.run/Popen/check_output/call`, xem có keyword `stdin` không) ⇒ **17 lời gọi / 13 file; 9 đã siết;
+8 còn thiếu ở 6 file**. Lựa chọn: (a) sửa silently thành "vài lời gọi" cho khỏi phải đính chính → **LOẠI**, vì
+báo cáo mất con số tái lập được; (b) **CHỌN** — ghi 8/6 kèm đường dẫn artifact đếm (`tmp/count_stdin_sites.txt`),
+đính chính ngay trong PA-34, §11 và §14.6; (c) thêm một dòng DECISION_LOG (D-37) → **LOẠI**, vì đây là lỗi *đếm
+của người viết báo cáo*, không phải một quyết định về repo; ĐÃ XỬ LÝ ở tầng văn bản + AUTONOMY_LOG là đủ, và số
+"36 mục DECISION_LOG" đã công bố trong batch này không bị xáo. Cùng bài học với D-34/§14.5: **số trong báo cáo
+phải do máy đếm, không do trí nhớ.**
+
+Số chốt của phiên (đo lại sau mọi thay đổi, không số nào đã công bố bị đổi): `pytest tests -q` (venv) =
+**1372 passed / 5 skipped — 91,44 s** (`tmp/pytest_final_batch3.txt`); 5 file nghiệm thu cuối = **144 passed /
+1 skipped** (venv 44,33 s; interpreter hệ thống + stdin đóng 45,60 s); `test_final_subprocess_stdin_guard.py`
+**34 test / 145 của cả bộ**; đột biến phòng thủ môi trường **9/9**; kiểm toán số công bố **63 dòng / 0 LỆCH**
+(`tmp/final_number_audit_batch3.json`); docs checker **36 mục / 264 lệnh / 100 đường dẫn / 0 lỗi / 5 cảnh báo**
+(`tmp/docs_check_after_d36.json`); secret scan `--scope tracked` = **282/250 file sau `git add`** (trước stage 281/249), 340 dòng khớp,
+0 secret, 0 đường dẫn cá nhân, 89 PII / 8 file** (`tmp/secret_scan_batch3.json`); chữ ký trọng tài
+**`9f1179ccab74`**. Đếm lại bằng AST (`tmp/count_stdin_sites.py`): **17** lời gọi `subprocess.run/Popen/
+check_output/call` trong `tools/` + `tests/` + `src/`, **9** đã có `stdin`, **8** còn thiếu ở **6 file** → PA-34.
+**0 lượt Gemini**; `gate.py`, `verify.py`, `answer_guard.py`, `text_utils.py` **không đổi một byte**; không ghi vào
+`data/loop/rounds/` hay `outputs/`; không xoá file nào.

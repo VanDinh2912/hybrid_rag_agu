@@ -1050,3 +1050,62 @@ kèm artifact theo PA-26 (i). Kèm theo đó nên có `scripts/freeze_for_repro.
 stage để không ai phải dùng `git add -A`.
 **Không tự làm** vì `.gitignore` quyết định nội dung commit của PA-26 — hai quyết định này dính nhau.
 
+
+## PA-34 — Điều kiện "chạy được bộ test" chưa được đăng ký ở đâu cả: interpreter + bảng mã console + 8 lời gọi subprocess còn thiếu `stdin` ở 6 file (D-35 + D-36, 25-10 19:1x → 20:0x)
+
+**Vấn đề (đo được, không suy đoán).** Mọi số đã công bố của T0–T7 được đo bằng
+`venv\Scripts\python.exe`. Máy này có **hai interpreter cùng bản 3.14.8** — cái trong `venv` cài
+đủ package, cái ngoài PATH (`%LOCALAPPDATA%\Python\pythoncore-3.14-64`, `include-system-site-packages = false`) thì
+không. Nếu người tái lập gõ `python` trên PATH thì:
+
+* **4 file test lỗi collection** — `tests/test_corpus_rebuild.py`, `tests/test_demo_streamlit_display.py`,
+  `tests/test_ui_generator_flag.py`, `tests/test_ui_labels.py`, vì `pypdfium2` và `streamlit` chỉ có trong
+  `venv/` (bằng chứng: `tmp/pytest_baseline_stdin_closed.txt` — `Interrupted: 4 errors during collection`);
+* **console của máy đo là cp1258** (`chcp` = 1258, `locale.getpreferredencoding()` = cp1258), không phải UTF-8
+  ⇒ một máy kiểm in tiếng Việt có dấu sẽ văng `UnicodeEncodeError` và trả **exit code 1**, dễ đọc nhầm thành
+  "máy kiểm KHÔNG ĐẠT". Đã đặt guard UTF-8 ở 7 máy kiểm (D-36); chưa có chỗ nào ngoài báo cáo này ghi điều
+  kiện bảng mã cho người tái lập.
+* trước đợt siết D-35, **10 test đỏ/ERROR** chỉ vì `subprocess` kế thừa handle stdin hỏng
+  (`OSError: [WinError 6]`) — đã sửa cho các máy kiểm trong phạm vi nghiệm thu cuối, **còn 8 lời gọi
+  chưa siết ở 6 file**. Con số này **đếm bằng AST**, không đếm tay: `tmp/count_stdin_sites.py` đi qua
+  toàn bộ `tools/` + `tests/` + `src/`, gặp `subprocess.run/Popen/check_output/call` và kiểm tham số
+  `stdin` ⇒ **17** lời gọi, **9** đã có `stdin`, **8** còn thiếu:
+  `tools/loop/run_chain.py:284` và `:289`, `tools/diag/t4_latency_probe.py:65`,
+  `tests/test_t7_tmp_cleanup.py:181` và `:225` (`mklink /J`), `tests/test_t4_gpu_slow.py:41`,
+  `tests/test_t4_sft_invariants.py:444`, `tests/test_t6_gate_refusal_and_regression.py:325`.
+  Bộ test hiện vẫn xanh với các file đó, nên đây là **rủi ro tiềm ẩn**, không phải lỗi đang đỏ.
+
+**Vì sao KHÔNG tự sửa.** (i) `run_chain.py` là dụng cụ đã sinh artifact tái lập r0 đã công bố (D-30) —
+thay đổi dù "không đổi hành vi" vẫn đi ngược thoả thuận không chạy lại/không đụng dụng cụ đã đo;
+(ii) sửa CLI/README về interpreter là nội dung người dùng cuối đọc theo, cần anh duyệt;
+(iii) `t4_latency_probe.py` là máy đo đã công bố số latency/VRAM (T4).
+
+**Đề xuất (chọn một hoặc kết hợp):**
+- (a) **Rẻ nhất, nên làm ngay:** thêm vào README mục chạy test hai dòng — lệnh chuẩn
+  `venv\Scripts\python.exe -m pytest tests -q` và ghi chú "Python hệ thống không có `pypdfium2`/`streamlit`
+  ⇒ 4 file test sẽ lỗi collection". Kèm `requirements-lock.txt` đã liệt kê đủ hai gói này hay chưa.
+- (b) Siết `stdin=subprocess.DEVNULL` cho 8 lời gọi còn lại (6 file) theo khuôn 
+  `tools/diag/docs_consistency_check.py` (không đổi tham số, không đổi env, không đổi output) — chạy lại
+  `pytest tests -q` và đối chiếu **1372 passed / 5 skipped**; riêng `run_chain.py` chỉ siết
+  khi nào anh chấp nhận đo lại tái lập r0 (artifact đã công bố, D-30).
+- (c) Thêm `tools/diag/env_probe.py` (chỉ đọc) in ra interpreter + phiên bản pytest + sự hiện diện của
+  `pypdfium2`/`streamlit`/`torch` + **bảng mã console** (`locale.getpreferredencoding()`), để báo cáo
+  "không chạy được" phân biệt được **code sai** với **môi trường sai** ngay từ dòng đầu tiên.
+- (d) Gộp vào PA-26: khi freeze nguồn, đóng kèm `environment.yml`/`requirements-lock.txt` và một
+  `make test`/`scripts/run_tests.ps1` trỏ thẳng interpreter của repo.
+
+**Đã làm trong phiên này:** siết 3 máy kiểm (`tools/diag/council_kit.py`, `tools/diag/secret_scan.py`,
+`tools/diag/final_number_audit.py`) + 2 bộ test (`tests/test_final_secret_scan.py`,
+`tests/test_final_env_flag_defaults.py`), thêm `tests/test_final_subprocess_stdin_guard.py` **34 test**
+(đột biến **9/9** bắt được), đặt khối guard in UTF-8 ở **7** máy kiểm, và ghi nguyên ba hiện tượng
+môi trường vào `docs/reports/test_final.md` §14. **Không** đổi số đã công bố: kiểm toán **63 dòng**
+vẫn `0 dòng LỆCH`, chữ ký `9f1179ccab74`, secret scan `0/0/89/8`. Phát hiện mới của đợt này: chính một
+câu của báo cáo này chứa đường dẫn cá nhân ghép từ `C:` + `Users` + tên người dùng ⇒ máy quét bắt được
+và test ghim hiện trạng báo đỏ — đã che lại, **không nới máy quét, không hạ assertion** (§14.5).
+(Cùng lúc, một cách viết cũ dùng **dấu ngoặc nhọn** bọc chữ 'tên' để mô tả hiểm hoạ đã trúng luật
+`Placeholder đã biết`, nâng BI_MAU 251 → 252; đã **đổi câu** chứ không đổi máy quét, để số công bố
+khớp đúng tree sẽ commit.)
+
+**Hoàn tác:** `git revert` commit của đợt D-35 + D-36 là đủ — phạm vi chỉ gồm `stdin` ở 3 máy
+kiểm, khối in UTF-8 ở 7 máy kiểm, 1 bộ test mới (34 test) + 2 bộ test bổ sung, và tài liệu.
+Nếu anh từ chối PA-34 thì xoá mục này; các test đã siết vẫn xanh và không đòi hỏi thêm gì.

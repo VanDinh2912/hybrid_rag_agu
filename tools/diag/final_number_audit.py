@@ -24,6 +24,16 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+# Console Windows mặc định cp1252: in tiếng Việt có dấu sẽ văng UnicodeEncodeError và exit code 1,
+# người tái lập đọc nhầm thành "máy kiểm KHÔNG ĐẠT" (D-36 — máy kiểm phải báo lỗi đúng nguyên nhân).
+# Đặt lại stdout/stderr sang UTF-8 ngay lúc import; bọc try/except để bước này không bao giờ
+# làm hỏng phép đo (kể cả khi chạy dưới pytest capsys).
+for _dong in (sys.stdout, sys.stderr):
+    try:
+        _dong.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:  # pragma: no cover - chỉ khi mang console không phải TextIOWrapper
+        pass
+
 for _p in (str(ROOT), str(ROOT / "tools" / "loop"), str(ROOT / "tools" / "eval"), str(ROOT / "tools" / "diag")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
@@ -75,6 +85,9 @@ def collect_counts() -> dict[str, int]:
         proc = subprocess.run(
             [sys.executable, "-m", "pytest", "--collect-only", "-q", "tests"],
             cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+            # stdin=DEVNULL (D-35): lỗi spawn trên Windows (`OSError: [WinError 6]`)
+            # không được biến số lượng test thành "không đo được".
+            stdin=subprocess.DEVNULL,
         )
         counts: dict[str, int] = {}
         for line in proc.stdout.splitlines():
@@ -319,6 +332,23 @@ ROWS: list[tuple[str, str, str, str]] = [
      lambda: tail_line("tmp/pytest_t7_dot2_final.txt")),
     ("Chung", "1.228 passed, 4 skipped (chạy lại)", "`tmp/pytest_t7_dot3_final.txt` (chạy lại lần 2)",
      lambda: tail_line("tmp/pytest_t7_dot3_final.txt")),
+    # --- Nghiệm thu cuối + đợt siết môi trường đo D-35 (them 25-10 19:3x, ĐÍNH CHÍNH tăng 55 -> 59 dong)
+    ("Chung", "1.338 passed, 5 skipped", "`tmp/pytest_post_commit_venv.txt` (sau commit `c508876`, stdin đóng)",
+     lambda: tail_line("tmp/pytest_post_commit_venv.txt")),
+    ("Chung", "1.359 passed, 5 skipped", "`tmp/pytest_after_d35.txt` (sau đợt siết D-35 + 21 test mới)",
+     lambda: tail_line("tmp/pytest_after_d35.txt")),
+    ("Chung", "1.371 passed, 5 skipped", "`tmp/pytest_after_d36.txt` (sau cả hai lớp siết D-35 + D-36)",
+     lambda: tail_line("tmp/pytest_after_d36.txt")),
+    ("NCC", "34 test phòng thủ môi trường của máy kiểm", "collect-only `test_final_subprocess_stdin_guard.py`",
+     lambda: n_test("test_final_subprocess_stdin_guard.py")),
+    ("NCC", "9/9 đột biến phòng thủ môi trường", "`tmp/mutation_check_stdin_guard.log` (dòng kết quả)",
+     lambda: mutation_total("tmp/mutation_check_stdin_guard.log")),
+    ("Chung", "1.372 passed, 5 skipped", "`tmp/pytest_final_batch3.txt` (đợt siết cuối, đỏ 1 test vì đường dẫn cá nhân trong docs — xem `tmp/pytest_batch3_caught_pii_path.txt`)",
+     lambda: tail_line("tmp/pytest_final_batch3.txt")),
+    ("NCC", "144 passed, 1 skipped", "`tmp/pytest_final5_batch3.txt` (bộ nghiệm thu cuối, venv)",
+     lambda: tail_line("tmp/pytest_final5_batch3.txt")),
+    ("NCC", "144 passed, 1 skipped", "`tmp/pytest_final5_py314_stdin_closed_batch3.txt` (bộ cùng chạy bằng interpreter hệ thống, stdin đóng)",
+     lambda: tail_line("tmp/pytest_final5_py314_stdin_closed_batch3.txt")),
 ]
 
 

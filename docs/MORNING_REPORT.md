@@ -4,10 +4,49 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.338 passed, 5 skipped** (60,25 s, 25-10 18:3x; mốc trước 1.228 rồi 1.124,
-thêm 111 test tổng kiểm tra cuối; 5 skipped = 2 test T4 **slow** (chạy riêng bằng `T4_RUN_SLOW=1`, đã chạy:
+`pytest tests -q` mới nhất: **1.372 passed, 5 skipped** (91,44 s, 25-10 20:1x; mốc trong ngày:
+1.228 → 1.338 (tổng kiểm tra cuối, +111 test) → 1.359 (D-35 stdin, +21) → 1.371 → 1.372 (D-36 console, +13);
+5 skipped = 2 test T4 **slow** (chạy riêng bằng `T4_RUN_SLOW=1`, đã chạy:
 **2 passed, 82,32 s**) + 2 test symlink thường trên Windows (2 test **junction** vẫn chạy, là bằng chứng
 M12/M14) + 1 cờ `RERANKER_KEEP_CANDIDATES` không có accessor đơn — vẫn bị kiểm tĩnh trong cùng module).
+
+## CẬP NHẬT 25-10 20:1x — DỌN MÔI TRƯỜNG MÁY ĐO (D-35 stdin + D-36 console): 1.372 xanh, 34 test phòng thủ, 9/9 đột biến, 63/63 số tái lập
+
+Chi tiết: [`docs/reports/test_final.md`](reports/test_final.md) §14 (bản 18:5x vẫn đúng nội dung, chỉ số đã được
+nâng ở mục này). **Không có sửa đổi nào vào dụng cụ đo hay trọng tài** — cả ba lớp siết đều ở phía *máy in và
+máy spawn process*.
+
+- **Chuyện gì xảy ra**: sau commit `c508876`, nghiệm thu cuối chạy bằng **python hệ thống** với stdin đóng làm
+  **10 test đỏ/ERROR** — nguyên nhân là `subprocess.run(..., capture_output=True)` kế thừa handle stdin hỏng của
+  process cha (`OSError: [WinError 6]`), **không phải** lỗi logic. Nghiêm trọng hơn: `council_kit.git_state()` bắt
+  OSError rồi trả nhãn `khong-co-git` cho **một file đã tracked và sạch** — tức máy kiểm suy diễn kết luận về repo
+  từ một lỗi spawn, đúng kiểu sai lầm mà câu hỏi 2 của hội đồng sinh ra để bắt.
+- **Hiểm hoạ thứ hai, với người tái lập**: máy kiểm in tiếng Việt có dấu trên console **cp1258** (bảng mã thật của
+  máy này — `chcp` 1258) sẽ văng `UnicodeEncodeError` và **exit code 1**, đọc thành "câu hỏi hội đồng KHÔNG ĐẠT".
+- **Cách sửa (3 lớp, tất cả ở phía máy kiểm)**: `stdin=subprocess.DEVNULL` cho mọi lời gọi subprocess trong phạm
+  vi; **cả hai** lời gọi `git` nằm cùng một `try`; khối `reconfigure(encoding="utf-8", errors="replace")` lúc import
+  trong **7** máy kiểm — lấy khuôn có sẵn của `docs_consistency_check.py`, không nới test, không bắt người dùng cấu
+  hình máy, không đổi nhãn phán quyết.
+- **Răng**: `tests/test_final_subprocess_stdin_guard.py` **34 test** — 11 ghim nguồn bằng AST (chống "xanh vì làm
+  trống phạm vi": phải đếm đủ số lời gọi đã ghim từng file), 7 buộc `git_state` trả đúng nhãn cho từng nhánh
+  (lỗi spawn **không được** thành `tracked-sach`), 3 ghim hiện trạng dụng cụ đo, 13 console (2 điều khiển âm
+  chứng minh cp1252 **và** cp1258 không in nổi `ĐẠT — 0,5186`; 4 chạy process con thật bị nén bảng mã, kỳ vọng
+  `rc=0`). Harness đột biến **9/9** (`tmp/mutation_check_stdin_guard.log`); sổ cái **135/135**.
+- **Số sau siết** (mọi số đã công bố giữ nguyên): `pytest tests -q` **1372 passed / 5 skipped — 91,44 s**; bộ 5 file
+  nghiệm thu cuối **144/1** trên **cả hai** interpreter; kiểm toán **63 dòng / 0 LỆCH**; secret scan
+  **0 secret / 0 đường dẫn / 89 PII / 8 file**; docs checker **36 mục / 0 lỗi**; chữ ký **`9f1179ccab74`**.
+- **Ba đính chính do đo lại, không do suy đoán**: (1) **cp1252 → cp1258** (bảng mã máy đo); (2) "venv 3.11" → **cả
+  hai interpreter cùng 3.14.8**, khác nhau ở **tập package** ⇒ python hệ thống thiếu `pypdfium2`/`streamlit` →
+  **4 file test lỗi collection**; (3) "4 rồi 5 lời gọi subprocess chưa siết" → **8 lời gọi ở 6 file** khi đếm bằng
+  AST (`tmp/count_stdin_sites.py`). Bài học ghi ở AUTONOMY_LOG Ngã rẽ 22: **số trong báo cáo phải do máy đếm**.
+- **Một lần đỏ đúng**: máy quét secret bắt chuỗi `C:\Users\…` **chính em viết** trong §11 của báo cáo ⇒ redact
+  thành `%LOCALAPPDATA%\…`, **giữ nguyên log đỏ** (`tmp/pytest_batch3_caught_pii_path.txt`), **không đụng máy
+  quét**. Nguyên tắc mới: **quét trước khi stage** — `--scope tracked` đọc working tree của file đã track.
+- **Cần anh duyệt**: **PA-34** — README chưa ghi "dùng `venv\Scripts\python.exe`" và điều kiện bảng mã; 8 lời gọi
+  `subprocess` còn lại chưa siết vì nằm trong **dụng cụ đã sinh artifact đã công bố** (`run_chain.py`,
+  `t4_latency_probe.py`) và các test T4/T6/T7; đề nghị thêm `tools/diag/env_probe.py` (chỉ đọc) để lần sau phân
+  biệt **code sai** với **môi trường sai** ngay từ dòng đầu.
+
 
 ## CẬP NHẬT 25-10 18:5x — TỔNG KIỂM TRA CUỐI (6 mục nghiệm thu): 1.338 xanh, 55/55 số tái lập, 126/126 đột biến, 0 secret
 

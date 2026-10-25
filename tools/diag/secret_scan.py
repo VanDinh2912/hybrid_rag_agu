@@ -35,6 +35,16 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 ROOT = Path(__file__).resolve().parents[2]
+# Console Windows mặc định cp1252: in tiếng Việt có dấu sẽ văng UnicodeEncodeError và exit code 1,
+# người tái lập đọc nhầm thành "máy kiểm KHÔNG ĐẠT" (D-36 — máy kiểm phải báo lỗi đúng nguyên nhân).
+# Đặt lại stdout/stderr sang UTF-8 ngay lúc import; bọc try/except để bước này không bao giờ
+# làm hỏng phép đo (kể cả khi chạy dưới pytest capsys).
+for _dong in (sys.stdout, sys.stderr):
+    try:
+        _dong.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:  # pragma: no cover - chỉ khi mang console không phải TextIOWrapper
+        pass
+
 
 SKIPPED_PARTS = {"venv", "venv_gpu", "venv_train", "node_modules", "__pycache__", ".git",
                  "chroma_db", "chroma_db_vie", "chroma_db_headers_old", ".ocr_cache",
@@ -82,7 +92,10 @@ FIXTURE_VALUE_RE = re.compile(
 def tracked_files(scope: str) -> List[str]:
     if scope == "worktree":
         return sorted(str(p.relative_to(ROOT).as_posix()) for p in ROOT.rglob("*") if p.is_file())
-    out = subprocess.run(["git", "ls-files", "-z"], cwd=str(ROOT), capture_output=True)
+    # `stdin=DEVNULL`: tránh Windows kế thừa handle stdin hỏng của process cha
+    # (D-35) -> `OSError: [WinError 6]`; kết quả quét không được phụ thuộc cách chạy.
+    out = subprocess.run(["git", "ls-files", "-z"], cwd=str(ROOT), capture_output=True,
+                         stdin=subprocess.DEVNULL)
     return sorted(x.decode("utf-8", "replace") for x in out.stdout.split(b"\x00") if x)
 
 

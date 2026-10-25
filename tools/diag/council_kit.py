@@ -162,11 +162,20 @@ def sha256_of(path: Any) -> str:
 
 
 def git_state(path: Any) -> str:
-    """'tracked-sach' | 'tracked-ban' | 'chua-commit' | 'khong-co-git'.
+    """'tracked-sach' | 'tracked-ban' | 'chua-commit' | 'thieu-file' | 'khong-co-git'.
 
     Dùng cho câu hỏi 'dụng cụ đo có bị sửa để qua cổng không': nếu file chưa vào
     git thì KHÔNG THỂ nói 'không đổi so với HEAD' — đó là khoảng trống PA-26, phải
     in ra đúng như vậy.
+
+    `stdin=DEVNULL` (D-35): hai lời gọi git kế thừa stdin của process cha. Khi bộ test
+    chạy với stdin đã đóng/hỏng (Python 3.14 + `pytest … < /dev/null`), `subprocess`
+    trên Windows raise `OSError: [WinError 6] The handle is invalid`. Trước khi siết,
+    lỗi spawn đó bị biến thành nhãn `khong-co-git` cho một file **thực sự đã tracked** —
+    tức công cụ suy diễn "repo không có git" từ một lỗi môi trường, đúng kiểu sai lầm mà
+    câu hỏi 2 định bắt. Nay cả hai lời gọi được gán `stdin=DEVNULL` (device NUL, không
+    kế thừa handle của process cha) và cùng nằm trong `try`, nên
+    `khong-co-git` chỉ còn xuất hiện khi git không chạy được thật.
     """
     p = Path(path)
     if not p.exists():
@@ -175,15 +184,17 @@ def git_state(path: Any) -> str:
         tracked = subprocess.run(
             ["git", "ls-files", "--error-unmatch", rel(p)],
             cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8", errors="replace",
+            stdin=subprocess.DEVNULL,
+        )
+        dirty = subprocess.run(
+            ["git", "status", "--porcelain", "--", rel(p)],
+            cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8", errors="replace",
+            stdin=subprocess.DEVNULL,
         )
     except OSError:
         return "khong-co-git"
     if tracked.returncode != 0:
         return "chua-commit"
-    dirty = subprocess.run(
-        ["git", "status", "--porcelain", "--", rel(p)],
-        cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8", errors="replace",
-    )
     return "tracked-ban" if (dirty.stdout or "").strip() else "tracked-sach"
 
 

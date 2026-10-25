@@ -592,9 +592,57 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - **Trạng thái git**: 47 file nguồn/công cụ/test **chưa tracked** (3 `src` + 25 `tools` + 19 `tests`, PA-26);
   11 file tracked đang sửa (6 file PA-8 **không stage** + 5 docs). `data/loop/rounds/`, `outputs/` không bị ghi.
 
+## XONG (25-10 20:1x — DỌN MÔI TRƯỜNG MÁY ĐO: stdin (D-35) + bảng mã console (D-36), 34 test + 9/9 đột biến)
+
+- **Bộ test chốt**: `pytest tests -q` (venv) = **1.372 passed, 5 skipped — 91,44 s**
+  (`tmp/pytest_final_batch3.txt`). Diễn tiến trong phiên: **1.338** → 1.359 (D-35 + 21 test) → **1.371** →
+  **1.372** (D-36 + 13 test, trong đó 1 test bảng mã cp1258). Bộ 5 file `tests/test_final_*.py` =
+  **144 passed / 1 skipped** (venv 44,33 s; chạy bằng **interpreter hệ thống + stdin đóng** cũng **144 / 1** —
+  45,60 s, `tmp/pytest_final5_py314_stdin_closed_batch3.txt`).
+- **Chữ ký trọng tài vẫn `9f1179ccab74`**; `gate.py`, `verify.py`, `answer_guard.py`, `text_utils.py`
+  **không đổi một byte**; **0 lượt Gemini**; `data/loop/rounds/` + `outputs/` **không bị ghi**; không xoá file nào.
+- **D-35 — stdin**: `subprocess.run(..., capture_output=True)` kế thừa handle stdin của process cha ⇒
+  `OSError: [WinError 6]` làm **10 test đỏ/ERROR sai** khi chạy bằng python hệ thống. `os.close(0)` trong process
+  con **không** tái hiện (`tmp/probe_stdin_closed.py`), nên răng đặt ở *ghim nguồn bằng AST* + `git_state()` với
+  `subprocess` giả chứ không ở *tái hiện triệu chứng*. Đã siết `stdin=subprocess.DEVNULL` cho các máy kiểm trong
+  phạm vi và đưa **cả hai** lời gọi git vào cùng `try` (trước đó `git status` thứ hai nằm ngoài `try` ⇒ máy kiểm
+  chết giữa phép đo). **Không đổi nhãn, không đổi kỳ vọng.**
+- **D-36 — console**: chạy `tools/diag/council_check_gold6.py` trên console nén bảng mã văng
+  `UnicodeEncodeError` và trả **exit code 1** — người tái lập đọc thành "máy kiểm KHÔNG ĐẠT" trong khi máy đo vẫn
+  đúng. Máy đo thật dùng **cp1258** (`chcp` 1258, `locale.getpreferredencoding()`), **không phải** cp1252 (cp1252
+  chỉ là stand-in tất định trong test). Sửa: khối guard lúc import ở **7** máy kiểm —
+  `reconfigure(encoding="utf-8", errors="replace")` cho stdout + stderr, bọc `try/except Exception` — **lấy đúng
+  khuôn có sẵn của `docs_consistency_check.py`** từ đợt T7, không phát minh chuẩn mới.
+- **Răng mới**: `tests/test_final_subprocess_stdin_guard.py` **34 test** (11 ghim nguồn / 7 nhãn `git_state` /
+  3 hiện trạng dụng cụ đo / 13 console) + harness đột biến **9/9** (`tmp/mutation_check_stdin_guard.py`, tự hoàn
+  tác và đối chiếu SHA-256). Sổ cái đột biến **135/135** trên 14 harness.
+- **Kiểm toán lại mọi số đã công bố** (không số nào bị đổi): `final_number_audit.py` mở **55 → 63 dòng, vẫn
+  0 dòng LỆCH** (`tmp/final_number_audit_batch3.json`); `secret_scan --scope tracked` = **282 ứng viên / 250 đã
+  đọc / 340 dòng khớp / 251 chỉ điểm / 89 PII trên 8 file / 0 secret / 0 đường dẫn**
+  (`tmp/secret_scan_post_stage.json`, quét sau `git add`; lượt trước stage là 281/249); `docs_consistency_check.py` = **36 mục DECISION_LOG / 264 lệnh / 100 đường dẫn /
+  0 lỗi / 5 cảnh báo** (`tmp/docs_check_after_d36.json`); 3 script hội đồng + `env_flag_audit` +
+  `train_data_audit` chạy lại: **0 dòng LỆCH**.
+- **Lần đỏ thứ ba trong đợt này là đỏ ĐÚNG**: máy quét bắt chuỗi `C:\Users\…` **chính em viết** trong
+  `docs/reports/test_final.md` §11 ⇒ redact thành `%LOCALAPPDATA%\Python\pythoncore-3.14-64\…`, **không sửa máy
+  quét**, giữ nguyên log đỏ (`tmp/pytest_batch3_caught_pii_path.txt`). Nguyên tắc mới: **quét trước khi stage**,
+  vì `--scope tracked` (mặc định) đọc **working tree** của file đã track.
+- **Hai đính chính ngay trong batch này** (số do người viết báo cáo, không phải số dụng cụ đo):
+  (1) "4 rồi 5 lời gọi subprocess chưa siết (3 file)" → **8 lời gọi ở 6 file**, vì đếm tay; đếm lại bằng AST
+  (`tmp/count_stdin_sites.py`: 17 lời gọi `run/Popen/check_output/call` trong `tools/` + `tests/` + `src/`,
+  **9** đã có `stdin`) — AUTONOMY_LOG Ngã rẽ 22; (2) "interpreter venv 3.11" → **cả hai interpreter đều 3.14.8**,
+  khác nhau ở **tập package** (`pypdfium2`/`streamlit` chỉ có trong venv ⇒ python hệ thống lỗi collection
+  4 file test).
+- **Chưa làm, chờ anh (PA-34)**: (a) README ghi lệnh chuẩn `venv\Scripts\python.exe -m pytest tests -q` + điều
+  kiện interpreter/bảng mã; (b) siết nốt `stdin` cho **8** lời gọi còn lại (`tools/loop/run_chain.py:284/289`,
+  `tools/diag/t4_latency_probe.py:65`, `tests/test_t7_tmp_cleanup.py:181/225`, `tests/test_t4_gpu_slow.py:41`,
+  `tests/test_t4_sft_invariants.py:444`, `tests/test_t6_gate_refusal_and_regression.py:325`) — riêng `run_chain.py`
+  chỉ siết khi anh chấp nhận đo lại tái lập r0 (artifact đã công bố, D-30); (c) `tools/diag/env_probe.py` in
+  interpreter + package + **bảng mã console**.
+
 ## VIỆC KẾ TIẾP (khi anh duyệt)
 
-1. PA-26 + PA-33 + PA-31 quyết định "fresh clone chạy được 1.338 test" — làm trước, theo thứ tự đó.
+1. PA-26 + PA-33 + PA-31 + **PA-34** quyết định "fresh clone chạy được **1.372** test" — làm trước,
+   theo thứ tự đó (PA-34 rẻ nhất: ba dòng README + `env_probe.py`).
 2. PA-17 re-anchor rồi mới chấm lại round trên index mới (T2 mục 9 vẫn ĐỎ 48,81%).
 3. PA-11/PA-12 để đóng T4 mục 5 (trần 1.024 token trên GPU 4 GB).
 4. Nhãn tay 60 mẫu (`referee_labeling_r5`) để có kappa/P–R — T6 6b.
@@ -608,7 +656,7 @@ T4_RUN_SLOW=1 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/tes
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -c "from tools.loop import verify; print(verify.referee_fingerprint())"
 for s in fabrication referee gold6; do PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/council_check_$s.py --json tmp/council_$s.json; done
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/env_flag_audit.py --json tmp/env_flag_audit.json
-PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/secret_scan.py --json tmp/secret_scan.json
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/secret_scan.py --json tmp/secret_scan.json   # chạy TRƯỚC khi stage
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/train_data_audit.py --json tmp/train_data_audit.json
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/final_number_audit.py --json tmp/final_number_audit.json
 ```

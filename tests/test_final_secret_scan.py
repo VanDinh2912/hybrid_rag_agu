@@ -150,7 +150,7 @@ class TestHienTrangRepo:
         assert ".env" not in files
         assert ".env.example" in files
         kiem = subprocess.run(["git", "check-ignore", "-q", ".env"], cwd=str(ROOT),
-                              capture_output=True)
+                              capture_output=True, stdin=subprocess.DEVNULL)
         assert kiem.returncode == 0, ".env phải nằm trong ignore"
 
     def test_ghim_hien_trang_pii_trong_artifact(self, ket_qua):
@@ -176,6 +176,8 @@ class TestHienTrangRepo:
         """
         dry = subprocess.run(["git", "add", "--dry-run", "-A"], cwd=str(ROOT),
                              capture_output=True, text=True,
+                             # stdin=DEVNULL: không kế thừa handle stdin hỏng của cha (D-35).
+                             stdin=subprocess.DEVNULL,
                              encoding="utf-8", errors="replace")
         dong = [l for l in dry.stdout.splitlines() if l.strip()]
         gom = {l.split("'")[1].split("/")[0] for l in dong if "'" in l}

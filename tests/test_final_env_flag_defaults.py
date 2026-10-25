@@ -184,6 +184,9 @@ def golden_hien_chup(tmp_path_factory):
         [sys.executable, str(ROOT / "tools" / "diag" / "t3_golden_dump.py"), "--out", str(out)],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
         cwd=str(ROOT), timeout=600,
+        # stdin=DEVNULL: process con không kế thừa handle stdin hỏng của process cha
+        # (D-35) — trên Windows lỗi đó là `OSError: [WinError 6] The handle is invalid`.
+        stdin=subprocess.DEVNULL,
         env={**os.environ, "PYTHONIOENCODING": "utf-8", **{n: "" for n in TEN_CO}})
     assert proc.returncode == 0, (proc.stdout or "") + (proc.stderr or "")
     return json.loads(out.read_text(encoding="utf-8"))
