@@ -659,6 +659,13 @@ Hoàn tác: `tmp/` không nằm trong git (`.gitignore` có `tmp/`? — kiểm: 
 được commit), nên **xoá là mất hẳn**; đó là lý do phải duyệt trước. Nếu muốn an toàn hơn: chuyển
 sang `tmp/_trash_20261025/` rồi xoá sau 7 ngày.
 
+**Cập nhật 25-10 11:3x (sau T7).** Thêm vào **A. GIỮ** (nay được dẫn trong ROADMAP P5.23 /
+`docs/DECISION_LOG.md`): `mutation_check_cache_policy.py`, `mutation_check_t7.py`, `chain_demo3/`
+(evidence chuỗi run_chain chạy end-to-end 2×20 item). Thêm vào **A. GIỮ** vì đã thành dẫn chứng cho
+PA-25 / T5.md §2.7: `probe_r12_fold.py`, `probe_r12_fold.json`. Thêm vào **D. ĐỀ XUẤT XOÁ**:
+`chain_demo/`, `chain_demo2/` (hai lượt thử đầu, hỏng cấu hình, đã thay bằng `chain_demo3/`).
+`chain_demo_manifest.json` giữ (manifest tất định của lượt demo cuối). Không xoá gì ở bước này.
+
 ## PA-25 — 5a: `score_pairs` fold query MẤT DẤU rồi chấm với passage CÒN DẤU ⇒ r12 sụp; đề xuất bỏ fold + chạy r14 (25-10 03:45)
 
 **Vấn đề (đã kiểm, không suy đoán).** `src/reranker.py:242` chấm `fold(query)` (mất dấu thanh) với
@@ -710,3 +717,54 @@ docstring), luật tự trị buộc ghi diff chờ duyệt; và r12 đã cho **
 **Trần để kỳ vọng đúng:** oracle pool 20 = **0,8871** (EXACT 0,6154; SOURCE_LOOKUP/CLOZE 1,000).
 Nếu reranker query-nguyên văn kéo được dù chỉ nửa khoảng cách 0,7400→0,8871 thì EXACT mới có cửa +10 điểm;
 probe 28/30 (hạng 1) là tín hiệu mạnh nhưng **probe 30 item chọn thiên lệch, không thay round 811 item**.
+
+## PA-26 — HEAD KHÔNG tái lập được cây đã test: 41 file nguồn/test chưa được commit + 6 file đang sửa dở (mở rộng PA-8; 25-10 11:3x)
+
+**Vấn đề (đo được, không suy đoán).** `git status --short` tại HEAD `456f35c` cho thấy **một fresh
+clone sẽ không chạy nổi test**: `src/cache_policy.py` (mới) import `src/answer_guard.py` — file **chưa
+tracked**; `src/generator.py` trong working tree có `effective_prompt_version()`/`answer_rescue_enabled()`
+mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.004 test xanh hiện tại thuộc về
+**working tree**, không thuộc về commit nào. Đây là lỗ tái lập, không phải lỗi chức năng.
+
+**Danh sách chính xác** (`git ls-files --others --exclude-standard src tools tests | grep -v __pycache__`):
+
+- Nguồn chưa tracked (3): `src/answer_guard.py`, `src/reranker.py`, `src/cache_policy.py`
+- Công cụ chưa tracked (22): toàn bộ `tools/loop/` (`run_round.py`, `gate.py`, `attribute.py`, `verify.py`,
+  `testset.py`, `triage.py`, `audit_guard.py`, `calibrate_guard.py`, `noise_floor.py`, `run_chain.py`,
+  `run_chain.ps1`, `run_chain.sh`, `chains/t5a_reranker.json`, `chains/demo_dryrun.json`), `tools/build_sft_from_round.py`,
+  `tools/build_training_data.py`, `tools/validate_training_data.py`, `tools/diag/{bonus_paired,one_variable_check,qlora_memory_probe,reranker_cost_probe,t4_stats}.py`
+- Test chưa tracked (16): `test_answer_guard.py`, `test_answer_rescue.py`, `test_build_sft_from_round.py`,
+  `test_cache_policy.py`, `test_loop_{attribute,gate,generator_model_flag,round,testset,triage,verify}.py`,
+  `test_noise_floor.py`, `test_query_normalizer_guard.py`, `test_reranker_flag.py`, `test_router_soft_filter.py`,
+  `test_run_chain.py`
+- File tracked đang sửa (6): `src/generator.py` (+369/−…), `src/pipeline.py` (+235), `src/query_normalizer.py` (+161),
+  `src/router.py` (+105), `tests/test_pipeline.py` (+96), `tests/test_subquery.py` (+1/−1)
+- Artifact **KHÔNG nên commit**: `models/` 321 MB, `data/loop/rounds/` 78 MB, `chroma_db_vie/` 6,0 MB,
+  `chroma_db_headers_old/` 5,7 MB, `.ocr_cache_vie/` 300 KB, `.generation_cache/` 977 KB — trừ khi chọn (i).
+
+**Vì sao em không tự commit:** luật tự trị "KHÔNG commit file `src/` dirty của phiên khác"; 6 file tracked
+đang sửa thuộc công việc T3–T5 của phiên trước, và `src/generator.py` chứa lẫn 310 dòng của phiên đó với
+đúng 2 hunk T7 của em. Commit cả file sẽ gán sai tác giả/thời điểm cho thay đổi chưa được phiên này kiểm.
+
+**Phần T7 của em đã xong trong working tree, chờ đúng một lần commit này:**
+`src/cache_policy.py` + 2 hunk `_cache_key` trong `src/generator.py` + `tests/test_cache_policy.py`
+(26 test, mutation **10/10 bị bắt** — bảng ở `tmp/mutation_check_cache_policy.py`), cùng
+`tools/loop/run_chain.{py,ps1,sh}` + `chains/*.json` + `tests/test_run_chain.py` (11 test, mutation 6/6).
+
+**Ba phương án cần anh chọn:**
+
+| | Nội dung | Ưu | Nhược |
+|---|---|---|---|
+| (i) | **Freeze đầy đủ**: commit 3 nguồn + 22 công cụ + 16 test + 6 file sửa + `data/loop/rounds/` | tái lập 100%, round là bằng chứng đi kèm | repo +80 MB; không xoá được round cũ dễ dàng |
+| (ii) | **Freeze mã + bằng chứng gọn** (đề xuất): commit nguồn/công cụ/test/6 file sửa + chỉ `data/loop/rounds/**/{round_summary_*.json,gate_*.json,attribution_*.json,*_tally.txt}`, thêm `models/`, `chroma_*`, `data/loop/rounds/**/full.jsonl` vào `.gitignore` | tái lập test + số liệu, repo nhỏ | muốn xem lại từng câu phải chạy round (hoặc xin file) |
+| (iii) | Giữ nguyên hiện trạng, chỉ commit docs | không rủi ro | **không bao giờ tái lập được**; "người ngoài chạy lại từ README" thất bại |
+
+**Lệnh kiểm chứng sau khi duyệt (em sẽ chạy, không cần anh gõ):**
+```
+git clone D:/DoAn/hybrid_rag_agu tmp/_fresh_clone && cd tmp/_fresh_clone \
+  && python -m pytest tests -q          # kỳ vọng: 1004 passed
+python -m pytest tests -q               # trong cây chính, sau commit
+git status --short                      # kỳ vọng: chỉ còn artifact trong .gitignore
+```
+Hoàn tác: commit freeze là commit thường (không force-push) ⇒ `git revert <sha>` nếu sai; không đụng
+`data/loop/rounds` trên đĩa khi chọn (ii).

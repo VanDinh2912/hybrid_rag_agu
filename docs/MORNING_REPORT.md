@@ -4,7 +4,31 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **967 passed** (66,70 s, 25-10 02:1x; 962 + 5 test build header).
+`pytest tests -q` mới nhất: **1.004 passed** (26,3 s, 25-10 11:3x; 967 + 11 `test_run_chain` +
+26 `test_cache_policy`).
+
+## CẬP NHẬT 25-10 11:3x — T7 XONG trong working tree (đọc mục này trước mục 04:1x)
+
+- **`tools/loop/run_chain.{py,ps1,sh}` + spec `chains/t5a_reranker.json` + `chains/demo_dryrun.json`:**
+  chạy một chuỗi round bằng một lệnh, có dry-run và manifest tất định. Đã kiểm bằng chạy thật chuỗi
+  demo (`tmp/chain_demo3`, 2 round × 20 item, gate **ĐẠT**, attribute) và bằng
+  `tests/test_run_chain.py` (**11 test**, mutation **6/6** bắt — `tmp/mutation_check_t7.py`).
+- **Khóa chính sách trong cache sinh:** `src/cache_policy.py` + 2 hunk `_cache_key` trong
+  `src/generator.py` (Gemini + Qwen). Thể chế mặc định giữ **đúng công thức cache cũ** (bất biến #2,
+  cache cũ còn dùng); chỉ khi ngưỡng cứu/từ chối/guard/chọn câu bằng chứng/chuẩn hóa **lệch mốc**
+  `d0b4c6a65f83` thì khóa mới tách. `tests/test_cache_policy.py` **26 test**, mutation **10/10** bắt
+  (`tmp/mutation_check_cache_policy.py`, hoàn nguyên byte-identical). Quyết định + đánh đổi:
+  `docs/AUTONOMY_LOG.md` 25-10 11:2x, `docs/DECISION_LOG.md` D-21.
+- **`docs/DECISION_LOG.md`**: 23 quyết định (D-01…D-23); snippet kiểm đường dẫn chạy sạch (không thiếu
+  file nào). **README** thêm mục 5.10 (cách chạy round/chuỗi) và 8.1 ("Giới hạn thật lòng", 10 mục,
+  mỗi mục có nguồn). **ROADMAP** thêm P5.21/P5.22/P5.23.
+- **CHƯA COMMIT phần mã T7** — đây là việc cần anh quyết: `src/generator.py` là file tracked dirty của
+  phiên T3–T5 (310 dòng của phiên đó + 2 hunk T7), `src/cache_policy.py` phụ thuộc
+  `src/answer_guard.py` chưa tracked. **PA-26** (mở rộng PA-8) liệt kê đúng 41 file chưa tracked +
+  6 file sửa dở và ba phương án commit freeze; đề xuất (ii) commit mã + tổng hợp round, bỏ `models/`,
+  `chroma_*`, `full.jsonl`. Cho tới khi duyệt, "fresh clone" **không** tái lập được 1.004 test dù cây
+  hiện tại xanh.
+- PA-24 (`tmp/`) vẫn **chưa xoá gì**; Gemini đêm nay **0/14**.
 
 ## CẬP NHẬT 25-10 04:1x — r12 CHẤM XONG: kết quả âm, nguyên nhân là quy ước fold (đọc mục này trước)
 
@@ -139,6 +163,10 @@ Không dùng thêm lượt Gemini nào trong phiên tiếp này (**0 lượt**);
 
 ### B. Bị chặn / chưa nghiệm thu
 
+> Đây là **ảnh chụp cuối phiên 24-10**. Hai mục đã đổi từ đó: (iii) r12 **đã chạy và chấm xong**
+> 25-10 (kết quả âm — xem mục 04:1x ở trên); mục 6 về git nay là **PA-26** (chi tiết 41 file chưa
+> tracked + 6 file sửa dở + ba phương án). Các mục còn lại vẫn đúng.
+
 1. **T5 chưa nghiệm thu đầy đủ theo câu chữ đề bài:** (i) mục 5 đòi "lùi RRF + cảnh báo" nhưng
    thiết kế đã đăng ký **cấm lùi thầm** ⇒ test ghim hành vi ném lỗi, ghi rõ khác biệt (PA-18);
    (ii) **chưa chạy lại gold@6 cấu hình TẮT trên 811 item** để so round đã đóng; (iii) **r12
@@ -148,8 +176,8 @@ Không dùng thêm lượt Gemini nào trong phiên tiếp này (**0 lượt**);
 3. **T1(b)/T4(b) dừng ở 12/30 id** vì PerDay Google; chỉ được nói "chưa đủ n", không kết luận.
 4. **T2 mục 9 ĐỎ** (48,81% neo nguyên văn gãy > ngưỡng 2%); re-anchor 292 id ở PA-17, chưa làm.
 5. **T6b/T6c chưa có dữ liệu người:** 60 phiếu `n_filled=0`; benchmark câu thật 0 câu.
-6. **PA-8 vẫn treo:** `tools/loop/`, `data/loop/rounds/`, `src/answer_guard.py`, testset chưa
-   tracked; không commit hộ file `src/` dirty của phiên khác.
+6. **PA-8 vẫn treo** (nay chi tiết hoá ở **PA-26**): `tools/loop/`, `data/loop/rounds/`,
+   `src/answer_guard.py`, testset chưa tracked; không commit hộ file `src/` dirty của phiên khác.
 
 ### C. Việc cần duyệt
 

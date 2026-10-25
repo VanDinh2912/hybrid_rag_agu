@@ -561,6 +561,53 @@ Cấu trúc màn hình:
 
 **Chế độ demo nhanh (replay):** nếu `logs/benchmark/results_all.json` có entry của câu đang chọn và khớp tham số (`top_k`, generator trong meta), app dùng **số liệu đã đo** thay vì chạy live — demo tức thì không cần Ollama; nhãn trạng thái hiện rõ `📅 Replay từ lượt benchmark <timestamp>` hay `⚡ Live` cho từng chiến lược. Chưa có file này thì app vẫn chạy live và hiển thị gợi ý lệnh `python benchmark_chunking.py --generator qwen` để tạo dữ liệu replay.
 
+### 5.10. Vòng lặp đo P5 — chạy lại một round hoặc cả chuỗi round
+
+Vòng lặp tự cải thiện nằm trong `tools/loop/` và dùng **bộ đo cố định 811 item**
+(`data/loop/testset_v1.jsonl`): mỗi thay đổi phải chạy lại trên đúng bộ đó, qua đúng trọng tài
+deterministic (`tools/loop/verify.py`, chữ ký `9f1179ccab74`), rồi mới được kết luận. Sổ round và
+quy ước từng round: `data/loop/README.md`; sổ quyết định (ngày, giả thuyết, số đo, file nguồn,
+trạng thái giữ/bác): `docs/DECISION_LOG.md`.
+
+```bash
+# 1) một round retrieval-only (pha rẻ, 811 item, không gọi model sinh)
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/loop/run_round.py \
+    --round r11 --phase retrieval --split all --top-k 6 \
+    --out-root data/loop/rounds            # bỏ qua id đã chạy nếu chạy tiếp cùng round
+
+# 2) chấm cổng so với round nền + quy lỗi theo tầng
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/loop/gate.py \
+    --round r12 --baseline r11 --phase retrieval      # exit 1 = KHÔNG ĐẠT (kết quả, không phải lỗi)
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/loop/attribute.py \
+    --round r12 --compare r11 --phase retrieval
+
+# 3) cả chuỗi round bằng MỘT lệnh, có manifest tái lập (khuyến nghị)
+tools/loop/run_chain.ps1 -Chain tools/loop/chains/t5a_reranker.json -DryRun   # chỉ in lệnh
+tools/loop/run_chain.ps1 -Chain tools/loop/chains/t5a_reranker.json           # chạy thật
+# Linux/macOS: tools/loop/run_chain.sh tools/loop/chains/t5a_reranker.json
+```
+
+Spec chuỗi là JSON (`tools/loop/chains/*.json`): biến môi trường mặc định, từng round (`round`,
+`phase`, `limit`, `pin_subset_from`, `env`), rồi `gate`/`attribute` so với round nền. `run_chain.py`:
+
+- **Preflight** trước bước đầu: thiếu biến bắt buộc ⇒ dừng, không chạy nửa chuỗi.
+- **Không ghi đè** thư mục round đã có dữ liệu (trừ `--resume`); biến bí mật không được đi qua `--set`.
+- **Cổng trả mã 1 vẫn đi tiếp sang `attribute`** (kết quả âm phải được quy lỗi); chỉ dừng khi cổng
+  không tạo được báo cáo.
+- **Manifest tất định** (`--manifest-out`, mặc định `tmp/`): cùng spec ⇒ cùng bytes, có `spec_sha256`,
+  đường dẫn tương đối, không timestamp ⇒ hai lần dry-run so được bằng `diff`.
+
+**Cache sinh và khóa chính sách.** Từ T7, khóa cache của cả `GeminiGenerator` và `QwenGenerator`
+(`src/cache_policy.py`) mang thêm trường `policy` **khi và chỉ khi** ngưỡng cứu/từ chối/guard/chọn câu
+bằng chứng/chuẩn hóa lệch mặc định đã đăng ký (mốc `DEFAULT_CACHE_TOKEN`, test tính lại dưới env rỗng).
+Thể chế mặc định giữ nguyên công thức cũ từng byte nên cache cũ vẫn dùng được; đổi một ngưỡng là mọi
+câu trả lời của thể chế cũ bị tách khỏi cache mới. Đánh đổi có chủ đích: đổi ngưỡng hậu xử lý sẽ tốn
+lại lượt sinh — thà tốn lượt hơn trộn hai thể chế vào một phép đo.
+
+> Trạng thái đóng gói: các file `tools/loop/*`, `src/answer_guard.py`, `src/reranker.py`,
+> `src/cache_policy.py` và nhiều test hiện **chưa được commit** (xem PA-26 trong
+> `docs/PENDING_APPROVAL.md`). Trong working tree hiện tại, `pytest tests -q` = **1.004 passed**.
+
 ---
 
 ## 6. Quản lý file tự sinh — `logs/` và `outputs/`
@@ -613,8 +660,43 @@ Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ đư�
 | Từ chối oan (trong 97 câu in corpus) | 46/97 | 49/97 | +3 câu |
 
 Nhóm tăng rõ nhất: chương trình đào tạo Hit@3 45,5% → 90,9% (n=22, nhờ lọc nguồn theo chủ đề); `SO_SANH` MRR 0,4333 → 0,8286 (n=5, nhờ tách truy vấn con). GATE P4.3 **ĐẠT**: không chỉ số truy xuất nào giảm quá 5% tương đối. Lưu ý khi đọc: generator là Qwen 1.5B offline nên số tuyệt đối của tầng trích dẫn chỉ mang tính so sánh nội bộ giữa 2 lượt; điểm giảm trung thực cần nhắc: number support −3,05 pp, đánh giá rèn luyện Hit@3 −18,2 pp (n=11).
-- **Bộ unit test (319 test):** chạy bằng `python -m pytest` — hoàn toàn offline (fake Qwen/ChromaDB/Gemini, monkeypatch), không tốn quota; gồm test 3 chiến lược chunking, pipeline (fold-query + oversampling), classifier + router (few-shot, guardrail, ánh xạ cấu hình), tách truy vấn con, prompt biến thể, guardrail Local SLM, các hàm đánh giá và cờ GUI/CLI.
+- **Bộ unit test (1.004 test, 25-10):** chạy bằng `python -m pytest` — hoàn toàn offline (fake Qwen/ChromaDB/Gemini, monkeypatch), không tốn quota; gồm test 3 chiến lược chunking, pipeline (fold-query + oversampling), classifier + router (few-shot, guardrail, ánh xạ cấu hình), tách truy vấn con, prompt biến thể, guardrail Local SLM, các hàm đánh giá và cờ GUI/CLI, cùng bộ test vòng lặp P5 (`tests/test_loop_*.py`, `test_run_chain.py`, `test_cache_policy.py`). Con số này là của **working tree**; xem PA-26 về khoảng trống giữa HEAD và cây đã test.
 - **Bộ benchmark:** 5 file trong `data/evaluation/` — 15 câu GUI tự sinh (schema 10 khóa cũ), **50 câu** và **100 câu v1/v2** (đúng 12 khóa, do các agent sinh theo playbook); benchmark mặc định của `src/evaluation.py` là 100 câu v2, của `benchmark_chunking.py` và demo là 50 câu. Ngoài ra `data/evaluation/manual_test_checklist.md` có **34 câu kiểm tra tay chia 7 nhóm tài liệu** (kèm nhóm câu ngoài corpus để thử hành vi từ chối) — dùng để đánh giá thủ công sau mỗi lần đổi pipeline.
 - **Benchmark v3 (2026-10-20):** `data/evaluation/benchmark_100_questions_v3.json` — 100 câu, 13 khóa (12 khóa v2 + `question_type` theo [TAXONOMY.md](TAXONOMY.md)), nhãn đã duyệt; phân bố `TRA_CUU`=87 / `SO_SANH`=5 / `THU_TUC`=5 / `NGOAI_PHAM_VI`=3. Mặc định của `src/evaluation.py` vẫn là 100 câu v2; **lượt A/B chính thức dùng `--benchmark ...v3.json`** (mục 5.7).
 - **Hành vi cần lưu ý của Qwen2.5-1.5B (tầng chuẩn hóa):** khi câu hỏi nằm ngoài phân bố few-shot, model có xu hướng **tự trả lời** thay vì viết lại câu hỏi, sinh ra nhận định không có căn cứ. Các lớp chặn hiện có: (1) system prompt chống bịa + few-shot của `src/query_normalizer.py` — đường đi chính trong pipeline, kèm active learning từ phản hồi người dùng; (2) `is_acceptable()` (4 điều kiện: không rỗng, ≤ 300 ký tự, phải có dấu `?`, không chứa mẫu lạc đề) và `guardrail_violation()` (bảo toàn con số + tỉ lệ token trùng với câu gốc ≥ 30%) trong `src/local_slm.py` — dùng khi chuẩn hóa trực tiếp qua wrapper `LocalSLM`, có test riêng trong `tests/test_local_slm.py`. Mọi đường đều suy giảm mềm: nghi ngờ là dùng lại câu hỏi gốc để truy xuất.
 - **Lịch sử xử lý lỗi chất lượng:** file mẫu `quy_che_dao_tao_mau.txt` từng xếp hạng #1 cho một câu hỏi quy chế thật và được Gemini dùng làm căn cứ — đã chuyển sang `data/evaluation/reference/` nên không còn bị index. Điểm yếu còn lại của truy xuất nằm ở các chủ đề ít từ khóa trùng lặp (xem cột Hit@6 và MRR trong `outputs/evaluation_summary.md` để theo dõi sau mỗi lần cải tiến chunking/retrieval).
+
+### 8.1. Giới hạn thật lòng (cập nhật 25-10, sau r0–r13)
+
+Những điều dưới đây **không** được che bằng số đẹp; mỗi mục kèm nơi kiểm chứng.
+
+1. **Tầng sinh là nút thắt, không phải truy xuất.** Gold@6 = **0,7400** (r11, 811 item) nhưng
+   `PASS_CORRECT` của pha sinh chỉ **14–19/100** qua r1→r12 và **không** vượt ngưỡng 25 ở bất kỳ
+   round nào (`data/loop/README.md`, `docs/reports/T3.md`, `T4.md`). Câu hỏi "model 1,5B có phải
+   trần?" **chưa được trả lời dứt khoát**: 3B không cải thiện (p = 0,804) và mới có 25/30 id T1(b).
+2. **Corpus còn mất dấu thanh.** Đo từ `chroma_db`: **18,6%** số từ còn dấu; 171/361 chunk < 5%;
+   `.docx` giữ 78–81% ⇒ nút thắt nằm ở **pipeline convert PDF**, không ở chunking. Mọi số retrieval
+   hiện tại đều đo trên corpus này (nguồn: `data/loop/diag/corpus_check/`, `docs/PENDING_APPROVAL.md`
+   PA-1/PA-2/PA-3).
+3. **Trần truy xuất có giới hạn đo được.** Oracle trong pool 12 = **0,8214** (EXACT 0,3269); pool 20 =
+   **0,8871**. Reranker hiện tại (cross-encoder chấm fold query) đi **ngược**: gold@6 0,7400→0,6686
+   (r12), nên mọi kỳ vọng "+10 điểm EXACT" phải chờ PA-25 (bỏ fold) và round r14.
+4. **Contextual header chưa có tín hiệu.** r13: gold@6 0,7371, delta **−0,0028** CI [−0,0129; +0,0071],
+   p = 0,79; header dạng `[tên file] - [Điều]` vốn đã có trong 253/361 chunk nên phạm vi can thiệp thật
+   chỉ còn Chương/Khoản + 108 chunk fallback (`docs/reports/T5.md` §5).
+5. **Bộ đo 811 item chỉ có một phiên bản, không có tập giữ riêng.** Nhãn do luật sinh, **không phải
+   người gán**; mẫu 60 câu phân tầng để đo đồng thuận người–máy đã dựng nhưng `n_filled = 0`
+   (`docs/reports/T6.md` §6b), nên `referee_agreement` **chưa có số**. Mọi kết luận "tăng/giảm" chỉ đúng
+   trong bộ đo này, chưa suy ra được cho câu hỏi thật ngoài đời (`tools/eval/real_questions.jsonl` hiện 0 câu).
+6. **Nhiễu ±3 item.** Các chênh lệch 1–3 item giữa hai round được ghi là "đi ngang", không phải cải
+   thiện; quy ước ở `tools/loop/noise_floor.py` + `data/loop/README.md`.
+7. **SFT bị chặn bởi bộ nhớ, không phải ý tưởng.** Card 4 GB hết chỗ từ **1.024 token** (~3 MiB/token)
+   trong khi **13/13 dòng train ≥ 1.016 token** ⇒ chưa train được trên máy này (PA-11 4-bit / PA-12
+   đổi định dạng chờ duyệt; `docs/reports/T4.md` §5).
+8. **HEAD không tái lập được cây đã test**: 41 file nguồn/công cụ/test chưa commit + 6 file đang sửa.
+   "Người ngoài chạy lại từ README" chỉ đúng trong working tree hiện tại cho tới khi PA-26 được duyệt.
+9. **Chi phí round được đo, không ngoại suy.** r12 thật = **≈66 phút** (3.855,5 s tổng latency, median
+   4,74 s/item), không phải con số ngoại suy 27–30 phút từng công bố; bài học đã ghi ở T5.md §2.6.
+10. **Ngân sách đo là hữu hạn.** Toàn bộ chuỗi r0–r13 chạy trên một máy, một GPU 4 GB, ngân sách
+    Gemini ≤ 14 lượt/ngày; không có lặp đa seed cho từng round, nên mọi CI là bootstrap trên **một**
+    lượt đo (10.000 lần lấy mẫu lại, seed 20261023).

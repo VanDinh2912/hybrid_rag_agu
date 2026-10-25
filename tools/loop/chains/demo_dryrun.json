@@ -1,0 +1,37 @@
+{
+  "name": "demo_dryrun",
+  "description": "Spec mẫu NHỎ để thử run_chain mà không đụng dữ liệu thật: 2 round retrieval, 20 item CLOZE (đủ ngưỡng GATE_MIN_COMMON=20), ghi vào tmp/chain_demo3/. Dùng --dry-run để xem lệnh; chạy thật mất ~1-2 phút vì phải nạp bge-m3, không đụng data/loop/rounds.",
+  "requires": [],
+  "out_root": "tmp/chain_demo3",
+  "defaults": {
+    "ENABLE_CLASSIFIER": "0",
+    "ENABLE_ANSWER_GUARD": "0",
+    "ENABLE_RERANKER": "0"
+  },
+  "rounds": [
+    {
+      "round": "demo_a",
+      "phase": "retrieval",
+      "split": "test",
+      "families": "CLOZE",
+      "limit": 20,
+      "top_k": 6
+    },
+    {
+      "round": "demo_b",
+      "phase": "retrieval",
+      "split": "test",
+      "families": "CLOZE",
+      "pin_subset_from": "demo_a",
+      "top_k": 6,
+      "gate": {
+        "baseline": "demo_a",
+        "phase": "retrieval"
+      },
+      "attribute": {
+        "compare": "demo_a",
+        "phase": "retrieval"
+      }
+    }
+  ]
+}

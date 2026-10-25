@@ -339,3 +339,36 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   `docs/DECISION_LOG.md`, `tools/loop/run_chain`, policy key trong cache key tầng sinh
   (`src/generator.py` đang dirty của phiên khác ⇒ phải làm cực cẩn thận, xem PA-8), rồi pytest +
   README/ROADMAP + "Giới hạn thật lòng".
+
+## XONG (25-10 11:3x — T7: run_chain + DECISION_LOG + khóa chính sách; mục "04:1x" ở trên đã kết thúc)
+
+- **`tools/loop/run_chain.{py,ps1,sh}` + `chains/{t5a_reranker,demo_dryrun}.json`** (mới): chạy một
+  chuỗi round bằng một lệnh. Đã kiểm: dry-run **0 lần** gọi subprocess; manifest tất định (`diff` sạch,
+  `spec_sha256`, đường dẫn tương đối, không timestamp); preflight env dừng **trước** bước đầu; thư mục
+  round đã có dữ liệu bị từ chối (trừ `--resume`); `--set` chặn biến bí mật; **cổng exit 1 có báo cáo
+  ⇒ đi tiếp `attribute`**, không có báo cáo ⇒ dừng. Đã chạy end-to-end chuỗi demo
+  `tmp/chain_demo3` (2×20 item, gate ĐẠT, attribute). `tests/test_run_chain.py` **11 test**;
+  mutation **6/6** bắt (`tmp/mutation_check_t7.py`).
+- **Khóa chính sách trong cache sinh:** `src/cache_policy.py` (mới) + 2 hàm `_cache_key`
+  (`GeminiGenerator`, `QwenGenerator`) trong `src/generator.py`. Khóa chỉ thêm trường `policy` **khi
+  ngưỡng lệch mốc** `DEFAULT_CACHE_TOKEN = d0b4c6a65f83` (mốc tính bằng env rỗng, test đối chiếu);
+  thể chế mặc định giữ **khóa cũ 4 trường từng byte** ⇒ không đỏ 7 test T3/T5, cache cũ còn dùng.
+  `tests/test_cache_policy.py` **26 test**; mutation **10/10** bắt
+  (`tmp/mutation_check_cache_policy.py`, hoàn nguyên byte-identical). Quyết định + đánh đổi:
+  `docs/AUTONOMY_LOG.md` 25-10 11:2x, `docs/DECISION_LOG.md` D-21.
+- **`docs/DECISION_LOG.md`**: 23 quyết định D-01…D-23 (thêm D-21 cache policy, D-22 run_chain,
+  D-23 khoảng trống HEAD); đã chạy snippet kiểm đường dẫn ⇒ **không thiếu file nào** (11 citation dạng
+  `rounds/...` được sửa thành `data/loop/rounds/...`).
+- **README:** thêm mục **5.10** (cách chạy một round / cả chuỗi / dry-run / manifest / ngữ nghĩa cổng /
+  cache policy) và **8.1 "Giới hạn thật lòng"** (10 mục, mỗi mục có nguồn); cập nhật số test
+  **1.004**. **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
+- **pytest toàn repo: 1.004 passed** (967 + 11 run_chain + 26 cache_policy). Chữ ký trọng tài
+  `9f1179ccab74` (không đụng `verify.py`).
+- **CHƯA COMMIT được phần mã T7:** `src/generator.py` là file tracked dirty của phiên T3–T5 (310 dòng
+  của phiên đó + 2 hunk T7); `src/cache_policy.py` phụ thuộc `src/answer_guard.py` chưa tracked.
+  ⇒ **PA-26** (commit freeze, 3 phương án; đề xuất (ii): commit mã + tổng hợp round, bỏ `models/`,
+  `chroma_*`, `full.jsonl`). Toàn bộ 41 file chưa tracked + 6 file sửa dở được liệt kê trong PA-26.
+- Gemini đêm nay: **0/14 lượt**. PA-24 (tmp/) vẫn chờ duyệt — **chưa xoá gì**.
+- **KẾ TIẾP (đều cần user):** PA-26 (commit freeze) ⇒ PA-25 (bỏ fold + r14 ≈66 phút) ⇒ PA-1 (kích hoạt
+  `chroma_db_vie`) ⇒ PA-13/PA-23 ⇒ T1(b) 5 id còn lại (cửa sổ PerDay ~14:30 25-10) ⇒ đề bài kiểm thử
+  T0–T7 (file test theo từng nhiệm vụ + `docs/reports/test_final.md`).

@@ -705,3 +705,30 @@ lúc đó là sai*.
 không phải `probe_rerank` một mình; 2,0 s + 2,78 s ≈ 4,8 s/item khớp đúng số đo 4,74 s.
 
 **Hoàn tác:** `git checkout -- docs/reports/T5.md` (đính chính chỉ là chữ, không đụng dữ liệu/round).
+
+## Phiên 25-10 11:2x — khóa chính sách trong cache sinh: chọn "chỉ thêm khi lệch mặc định"
+
+**Ngã rẽ:** T7 yêu cầu "đặt PROMPT_VERSION/policy key vào cache để đổi ngưỡng cứu/từ chối không tái
+dùng cache cũ". Hai cách:
+(i) **luôn** thêm trường `policy` vào khóa — đúng chữ nhưng làm **đỏ 7 test cũ** đang ghim công thức
+cache (T3/T5: `test_off_cache_key_unchanged`, golden 30 lượt byte-identical) và làm 351+ entry cache
+hiện có thành rác dù thể chế không đổi, phá bất biến #2 "cờ TẮT = hành vi cũ từng ký tự" ở mức cache;
+(ii) **chỉ thêm `policy` khi thể chế lệch mặc định đã đăng ký** (`cache_policy_deviation()`), so với mốc
+`DEFAULT_CACHE_TOKEN = d0b4c6a65f83` do test tính lại dưới env rỗng.
+
+**Chọn (ii)** vì: yêu cầu "đổi ngưỡng ⇒ không tái dùng cache cũ" được thỏa đúng; thể chế mặc định giữ
+khóa cũ từng byte; cờ T3 (decoupled) đã được `prompt_version` mã hóa nên token **cố ý** bỏ qua
+`enabled` của nó, chỉ giữ **ngưỡng** `DEC_*`. Không sửa test cũ, không đụng trọng tài/gate.
+
+**Bằng chứng:** 26 test mới (`tests/test_cache_policy.py`), mutation **10/10 bị bắt**
+(`tmp/mutation_check_cache_policy.py` — hoàn nguyên byte-identical từng lần); toàn repo **1.004 passed**.
+Qwen cũng được vá (`QwenGenerator._cache_key`) — vòng lặp chạy Qwen qua cache này, thiếu chỗ đó là lever
+mới bị cache cũ che.
+
+**Không commit được đêm nay:** `src/generator.py` là file tracked đang sửa dở của phiên T3–T5 (310 dòng
+của phiên đó + 2 hunk T7); `src/cache_policy.py` phụ thuộc `src/answer_guard.py` chưa tracked. Theo luật
+"KHÔNG commit file `src/` dirty của phiên khác" ⇒ ghi **PA-26** (commit freeze, 3 phương án) và giữ unit
+này trong working tree. Đây là lỗ tái lập đã biết từ trước, không phải lỗi mới.
+
+**Hoàn tác:** `git checkout -- src/generator.py` rồi xóa `src/cache_policy.py` + `tests/test_cache_policy.py`
+(sẽ mất phần T7; PA-26 vẫn còn mô tả). Không đụng dữ liệu/round/cache trên đĩa.

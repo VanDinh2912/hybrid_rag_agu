@@ -142,6 +142,9 @@ duyệt khiến mọi thay đổi phải chứng minh không làm tăng bịa đ
 | P5.18 | T3 đòn bẩy 1+2: bỏ đường từ chối khỏi prompt, quyền từ chối chuyển xuống tầng ngoài deterministic (5 luật, ngưỡng đăng ký trước) | `src/refusal_policy.py` + `EXTRACT_ONLY_HEAD`/`effective_prompt_version()` trong `src/generator.py` + `_collect_leg_ranks`/luật trong `src/pipeline.py`, cờ `ENABLE_DECOUPLED_REFUSAL` (mặc định TẮT), `tests/test_decoupled_refusal.py` (24 hàm/29 case), round `r8` | **ĐO XONG 24-10 — KHÔNG ĐẠT** (`PASS_CORRECT` 19 < 25; fabrication 1→0 là vế duy nhất đạt): refusal **0,69→0,28** (dưới trần 0,35 lần đầu trong chuỗi r), `FAIL_OVERREFUSAL` **37→23**, +16 câu từ over-refusal thành đúng, nhưng **`PASS_REFUSAL` 17→2** ⇒ 12 câu ngoài phạm vi được trả lời sai + 4 ca tiền giả sai, `pass_rate` 0,31→0,21, cổng veto ở 5 quy tắc. **Năm luật chỉ hai luật bắt** (rank 25, refusal-marker 3); `no_evidence`/`off_topic_window`/`ungrounded` = 0 vì grounding ≡ 1,0 với prompt trích xuất ⇒ tầng ngoài mù với "có căn cứ nhưng lạc đề". Giữ cờ TẮT, code + test + round giữ làm bằng chứng (chi tiết P5.18) |
 | P5.19 | T3 đòn bẩy 3: extract-then-generate — cửa sổ sinh là 3–5 CÂU bằng chứng thay vì ~7k ký tự | `src/evidence_selection.py` (bậc thang thực thể→keyword→tên nguồn→reranker, metadata sao nguyên vẹn) + móc trong `src/pipeline.py`, cờ `ENABLE_EVIDENCE_SELECTION` (mặc định TẮT), `tests/test_evidence_selection.py` (18 case), round `r9` | **ĐO XONG 24-10 — KẾT QUẢ ÂM**: phần pre giống hệt r8 (25 từ chối, gold@k 0,7125 không đổi ⇒ phép một biến đúng), nhưng 75/75 cửa sổ đều **đúng 5 câu** (6898→1022 ký tự) làm `model_still_refuses` **3→32**, refusal **0,28→0,57** (vượt trần), `FAIL_OVERREFUSAL` 23→35, CLOZE_OCR `PASS_CORRECT` **8→3**, p95 **19,93→33,27 s (+67%)**; `PASS_CORRECT` đi ngang 19 nhưng tập câu khác (giao nhau 11 id). Reranker lùi bi-encoder `bge-m3` (cross-encoder không tải được) — đã ghi trong `settings.evidence_reranker`. Không chỉnh ngưỡng `EV_*`; không đo lại trước khi corpus có dấu / model sinh mạnh hơn (chi tiết P5.19) |
 | P5.20 | T4a: generator 3B trên đúng máy triển khai (một biến = model sinh) + T4b pipeline dữ liệu SFT/chi phí bộ nhớ | cờ `GENERATOR_OLLAMA_MODEL` (`src/generator.py`, `src/pipeline.py`), manifest `generator_status` (`tools/loop/run_round.py`), `tests/test_loop_generator_model_flag.py` (11 case), round `r10` (100 item, cache lạnh `tmp/loop_gen_cache_r10`), `tools/build_sft_from_round.py` + `data/training/t4b_r5r8r9r10/`, `tools/diag/{t4_stats,one_variable_check,qlora_memory_probe}.py` | **ĐO XONG 24-10 — 3B KHÔNG đạt ngưỡng đã đăng ký trước** (`PASS_CORRECT` 14→16 < 22; McNemar p = 0,804, CI delta [−0,06; +0,10] chứa 0) trong khi p95 **18,65→34,12 s (+83%)**, model 2,3 GB **100% GPU**, không offload; refusal 0,69→0,75, fabrication 0,0323→0,0. `one_variable_check`: 100/100 item giống nhau từng ký tự ở `contexts`/`sources`/`normalized_query`/`labels`/`retrieval_config`. ⇒ **giữ 1,5B, không mở round Qwen3-4B** (điều khoản: chỉ mở nếu 3B cải thiện). 4b: **trần train đo được của card 4 GB ≈ 1.000 token/dòng** (960 → 3.931,0 MiB; 1.024 → 4.156,9 MiB; gradient checkpointing không giúp) trong khi **13/13 dòng train ≥ 1.016 token** ⇒ cần duyệt PA-11 (4-bit) / PA-12 (đổi định dạng dữ liệu). Chi tiết: `docs/reports/T4.md` |
+| P5.21 | T5a: reranker cross-encoder trên pool 20 RRF → top-6 (bge-reranker-v2-m3, GPU riêng `venv_gpu`) | `src/reranker.py` (`ENABLE_RERANKER`, `RERANKER_*`, mặc định TẮT), nối trong `src/pipeline.py`, `tests/test_reranker_flag.py` + `tests/test_t5_reranker_contract.py` (46 case), round `r12`, `tools/diag/reranker_cost_probe.py` | **ĐO XONG 25-10 — KẾT LUẬN ÂM, giữ cờ TẮT**: gold@6 **0,7400→0,6686** (delta −0,0714 CI [−0,1014; −0,0414], McNemar 83 mất/33 được **p = 3,9e−06**), EXACT **0,2115→0,0385**, TRAP→0, neo HUMAN 0,8144→0,7010, `FAIL_RETRIEVAL` 182→232, cổng **6/8 kiểm tra vi phạm**; round thật **≈66 phút** (median 4,74 s/item — vượt ngưỡng tự đặt 60 phút, đính chính ở T5.md §2.6). Nguyên nhân đo được: `score_pairs` chấm `fold(query)` với passage còn dấu (0/30 chunk vàng vào top-6 so với 28/30 khi dùng query nguyên văn) ⇒ **PA-25** chờ duyệt để bỏ fold + chạy r14. Trần oracle pool-20 = 0,8871. Chi tiết: `docs/reports/T5.md` |
+| P5.22 | T5b: contextual chunk header `[tên file] - [Điều/Khoản]` trong ngữ cảnh sinh | `ENABLE_CONTEXTUAL_HEADER` (mặc định TẮT), metadata header dựng sẵn cho 253/361 chunk, `tests/test_t5_contextual_header.py`, round `r13` | **ĐO XONG 25-10 — KHÔNG CÓ TÍN HIỆU**: gold@6 **0,7371**, delta **−0,0028** CI [−0,0129; +0,0071] (chứa 0), McNemar **p = 0,79**, EXACT +1 item; cổng **6/6 kiểm tra ĐẠT**. Phạm vi can thiệp thật nhỏ vì header `[file] - [Điều]` đã có sẵn ở 253/361 chunk; phần còn lại là Chương/Khoản + 108 chunk fallback. Có **lệch thiết kế đã ghi** (chạy trên `chroma_db` cũ thay vì index header riêng — PA-21/PA-22). Chi tiết: `docs/reports/T5.md` §5 |
+| P5.23 | T7: tái lập một chuỗi round bằng một lệnh + sổ quyết định + khóa chính sách trong cache sinh | `tools/loop/run_chain.{py,ps1,sh}` + `chains/*.json` (dry-run, manifest tất định, preflight, không ghi đè round), `tests/test_run_chain.py` (11 test), `src/cache_policy.py` + `tests/test_cache_policy.py` (26 test), `docs/DECISION_LOG.md`, mục README 5.10 + 8.1 | **XONG TRONG WORKING TREE 25-10**: `run_chain` chạy end-to-end chuỗi demo 2 round × 20 item + gate + attribute; mutation run_chain **6/6**, cache policy **10/10** bị bắt; toàn repo **1.004 passed**. Cache sinh chỉ thêm trường `policy` khi ngưỡng lệch mặc định ⇒ cờ TẮT giữ khóa cũ từng byte. **Chưa commit được**: 41 file nguồn/công cụ/test chưa tracked + 6 file sửa dở ⇒ **PA-26** (commit freeze) chờ duyệt |
 
 ### P5.12 — over-refusal đến từ tầng nào (23-10, 100 item pha sinh)
 
@@ -850,9 +853,62 @@ Theo đặc tả của user, phiên này **chỉ dựng pipeline + báo cáo chi
 "chứng minh bằng `PASS_CORRECT` trên test group tách rời" vẫn **chưa** được thỏa.
 
 
+#### P5.21 — T5a: reranker cross-encoder là kết luận âm, và nguyên nhân là một quy ước chấm (25-10)
+
+Cấu hình r12 = **đúng r11** (811 item, retrieval-only, bonus 12, quota 0) chỉ thêm
+`ENABLE_RERANKER=1 RERANKER_KEEP_CANDIDATES=1 RERANKER_DEVICE=cuda` — pool 20 RRF → cross-encoder
+`bge-reranker-v2-m3` → top-6. Round chạy **02:53 → 03:58 = ≈66 phút** (tổng `latency_seconds` 811 dòng
+= 3.855,5 s; median 4,74 s/item, p95 5,09 — nguồn `data/loop/rounds/r12/round_summary_retrieval.json`),
+0 lượt Gemini. **Vượt ngưỡng tự đặt 60 phút**, ghi lại thay vì che.
+
+| Chỉ số | r11 (nền) | r12 (rerank) | Ghép cặp |
+|---|---:|---:|---|
+| gold@6 | **0,7400** [0,7071; 0,7729] | **0,6686** | delta −0,0714 CI [−0,1014; −0,0414], McNemar 83/33 **p = 3,9e−06** |
+| EXACT | 0,2115 | **0,0385** | sụp gần hết |
+| TRAP | — | **0** | mất toàn bộ |
+| neo HUMAN | 0,8144 | 0,7010 | giảm |
+| `FAIL_RETRIEVAL` | 182 | **232** | +50 |
+
+Cổng r12-vs-r11: **6/8 kiểm tra vi phạm** (EXACT, SOURCE_LOOKUP, TRAP, YESNO_FACT, neo HUMAN,
+`retrieval_not_degraded`). Trần oracle pool-20 = **0,8871** (EXACT 0,6154) — tức vấn đề không phải
+"model yếu" mà là "chấm sai cặp". Probe 30 item r11-có-vàng-nhưng-r12-mất (`tmp/probe_r12_fold.json`):
+RRF gốc 27/30, `fold(query)` **0/30**, query nguyên văn **28/30 (đa số hạng 1)** ⇒ thủ phạm là
+`score_pairs` chấm query mất dấu với passage còn dấu. Sửa fold + chạy r14 = **PA-25** (chờ duyệt).
+
+#### P5.22 — T5b: header `[file] - [Điều]` không có tín hiệu vì phần lớn đã có sẵn (25-10)
+
+r13 = **đúng r11** + `ENABLE_CONTEXTUAL_HEADER=1`, 811 item. gold@6 **0,7400 → 0,7371** (delta −0,0028,
+CI [−0,0129; +0,0071] chứa 0, McNemar **p = 0,79**), EXACT **+1 item**, cổng **6/6 ĐẠT**.
+Không kết luận "header vô dụng" chung chung: đo trên đĩa cho thấy **253/361 chunk đã có header dạng
+`[tên file] - [Điều]`**, nên lever chỉ còn tác dụng trên Chương/Khoản + 108 chunk fallback — đúng
+phạm vi nhỏ, delta nằm trong băng nhiễu ±3 item. Có **lệch thiết kế** (chạy trên `chroma_db` cũ thay vì
+index header riêng vì neo `gold_chunk_id` không ánh xạ — PA-21/PA-22); đã ghi ở T5.md §5, không sửa
+số. Nguồn: `data/loop/rounds/r13/round_summary_retrieval.json`.
+
+#### P5.23 — T7: chuỗi round tái lập bằng một lệnh, và cache sinh không trộn hai thể chế (25-10)
+
+Ba phần, đều có test phá được (mutation) chứ không chỉ "chạy được":
+
+1. **`tools/loop/run_chain.py`** (+ wrapper `.ps1`/`.sh`, spec JSON trong `chains/`): thay các driver
+   `.sh` viết tay bằng spec + manifest tất định (`spec_sha256`, đường dẫn tương đối, không timestamp).
+   Preflight env trước bước đầu; từ chối thư mục round đã có dữ liệu (trừ `--resume`); cổng trả mã 1
+   **vẫn đi tiếp sang attribute** (kết quả âm phải được quy lỗi), chỉ dừng khi không tạo được báo cáo;
+   `--set` chặn biến bí mật. `tests/test_run_chain.py` 11 test, mutation **6/6** bắt
+   (`tmp/mutation_check_t7.py`). Đã chạy end-to-end chuỗi demo 2×20 item + gate "ĐẠT" + attribute.
+2. **`src/cache_policy.py`**: khóa cache của `GeminiGenerator`/`QwenGenerator` mang thêm trường `policy`
+   **khi và chỉ khi** ngưỡng cứu/từ chối/guard/chọn câu bằng chứng/chuẩn hóa lệch mốc
+   `DEFAULT_CACHE_TOKEN = d0b4c6a65f83`. Thể chế mặc định giữ **đúng công thức cũ 4 trường** (bất biến
+   #2, 351+ entry cache còn dùng); đổi một ngưỡng là tách không gian cache. `tests/test_cache_policy.py`
+   26 test, mutation **10/10** bắt (`tmp/mutation_check_cache_policy.py`, phục hồi byte-identical).
+   Đánh đổi đã ghi: đổi ngưỡng hậu xử lý buộc sinh lại — thà tốn lượt hơn trộn hai thể chế.
+3. **Sổ quyết định `docs/DECISION_LOG.md`** (20 quyết định D-01…D-20, mỗi dòng ngày/giả thuyết/số
+   đo/file nguồn/trạng thái) + README mục 5.10 (cách chạy) và 8.1 ("Giới hạn thật lòng").
+
+Toàn repo **1.004 passed**. **Chưa commit** được vì HEAD thiếu 41 file nguồn/công cụ/test và 6 file
+đang sửa dở của phiên T3–T5 ⇒ **PA-26** (ba phương án commit freeze; đề xuất (ii): commit mã + tổng
+hợp round, không commit `models/`, `chroma_*`, `full.jsonl`).
+
 ### P5.6 — số đo hiện trạng (round r0, pha truy xuất, 811 item, 23-10)
-
-
 
 | Chỉ số | Giá trị |
 |---|---|

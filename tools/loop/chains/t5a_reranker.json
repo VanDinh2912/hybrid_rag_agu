@@ -1,0 +1,41 @@
+{
+  "name": "t5a_reranker",
+  "description": "T5a: nền retrieval-only r11 rồi r12 = r11 + reranker cross-encoder. ĐÂY LÀ CHUỖI ĐÃ CHẠY 25-10; chạy lại sẽ bị từ chối vì r11/r12 đã có dữ liệu (dùng round mới hoặc --resume).",
+  "requires": [],
+  "out_root": "data/loop/rounds",
+  "defaults": {
+    "ENABLE_CLASSIFIER": "1",
+    "ENABLE_ANSWER_GUARD": "0",
+    "ROUTER_SOFT_FILTER": "1",
+    "ROUTER_FILTER_RANK_BONUS": "12",
+    "ROUTER_SOURCE_QUOTA": "0",
+    "ENABLE_ANSWER_RESCUE": "0",
+    "NORMALIZE_SANITY_GUARD": "0",
+    "ENABLE_DECOUPLED_REFUSAL": "0",
+    "ENABLE_EVIDENCE_SELECTION": "0",
+    "ENABLE_CONTEXTUAL_HEADER": "0",
+    "ENABLE_RERANKER": "0"
+  },
+  "rounds": [
+    {
+      "round": "r11",
+      "phase": "retrieval",
+      "split": "all",
+      "top_k": 6,
+      "env": {}
+    },
+    {
+      "round": "r12",
+      "phase": "retrieval",
+      "split": "all",
+      "top_k": 6,
+      "env": {
+        "ENABLE_RERANKER": "1",
+        "RERANKER_KEEP_CANDIDATES": "1",
+        "RERANKER_DEVICE": "cuda"
+      },
+      "gate": { "baseline": "r11", "phase": "retrieval" },
+      "attribute": { "compare": "r11", "phase": "retrieval" }
+    }
+  ]
+}
