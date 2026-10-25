@@ -4,8 +4,32 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.016 passed** (29,3 s, 25-10 12:1x; 967 + 11 `test_run_chain` +
-26 `test_cache_policy` + 1 test biên T6a + 1 test T0 + 5 test T1 + 3 test T2 + 2 test T3 A1').
+`pytest tests -q` mới nhất: **1.057 passed, 2 skipped** (22,58 s, 25-10 12:3x; mốc trước 1.016,
+thêm 62 test nhanh của T4; 2 skipped là hai test T4 **slow**, chạy riêng bằng `T4_RUN_SLOW=1`).
+
+## CẬP NHẬT 25-10 12:3x — KIỂM THỬ T4: mục 1–4 xanh, mục 5 ĐỎ do DỮ LIỆU, số mục 8 đã ghi
+
+- **Test mới: 62 nhanh + 2 slow.** `tests/test_t4_sft_invariants.py` (29 — mục 1–5),
+  `tests/test_t4_generator_contract.py` (12 — mục 6–7 + ca đọc lại số mục 8),
+  `tests/test_t4_gpu_slow.py` (2 — mục 8–9, marker `slow`, mặc định skip). 21 test T4 cũ giữ nguyên.
+- **Checker chỉ-đọc mới** `tools/diag/check_sft_invariants.py` trên artifact đã công bố
+  `data/training/t4b_r5r8r9r10` (nguồn `tmp/t4_invariants_report.json`):
+  - mục 1: 0/13 dòng thiếu thực thể/nguồn **trong chính ngữ cảnh**; 5/13 thiếu câu vàng (INFO);
+  - mục 2: 58 item test — **0** rò rỉ theo id, **0** theo `gold_sentence` đã fold;
+  - mục 3: **0** tài liệu chồng lấn train/holdout; 7 nhóm (tài liệu, Điều), **0** nhóm cắt đôi;
+  - mục 4: **0** dòng từ chối, **0** ca "không đáp án" bị gán nhãn trả lời;
+  - **mục 5 ĐỎ**: train **13/13** dòng > 768 token (min 1.016, max 1.707), holdout **8/10** (min 657) ⇒
+    kế hoạch QLoRA 4 GB không chạy được với dữ liệu này. **Không hạ ngưỡng, không sửa dữ liệu** — đây là
+    đỏ của DỮ LIỆU, không phải của test.
+- **Phát hiện mới → PA-28:** bộ sinh SFT **giữ** dòng thiếu *thực thể vàng* (luật nới 2/N), trái mục 1 đề bài;
+  chỉ ghi đề xuất + bằng chứng, không tự sửa bộ sinh.
+- **Mục 8 đã có số** (`data/loop/diag/t4_latency_20q.json`, 20 câu thật, cache TẮT): p50 **2,900 s**,
+  p95 **4,421 s**, câu đầu 9,626 s, VRAM đỉnh **1.401 MiB** (150 mẫu). Test không đặt ngưỡng cứng.
+- **Mục 9:** adapter LoRA thật cho đầu ra **khác** base (greedy) và **nạp hỏng → `ValueError`** (không lùi
+  im lặng). Cảnh báo: adapter train trên QA mã nguồn, **không** phải T4b ⇒ chỉ chứng minh cơ chế.
+- **Mutation 8/8** (`tmp/mutation_check_t4_new.log`), gồm đúng hai đột biến đề bài yêu cầu (bỏ kiểm thực thể,
+  trộn split theo item). **Toàn repo 1.057 passed, 2 skipped** (`tmp/pytest_t4_final.log`); slow
+  **2 passed** 79,04 s (`tmp/pytest_t4_slow.log`); trọng tài `9f1179ccab74`; **0 lượt Gemini**.
 
 ## CẬP NHẬT 25-10 12:1x — T3 đo lại sau T7: A xanh, D không đỏ, nhưng lộ PA-27
 

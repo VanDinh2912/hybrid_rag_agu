@@ -68,3 +68,16 @@ def test_absolute_ceiling_default_is_035():
     _, w2 = evaluate_refusal_rule(0.36, 0.35)
     assert w1 == []
     assert len(w2) == 1
+
+
+def test_hoa_dung_nguong_tuong_doi_van_dat_vuot_mot_chut_thi_bi():
+    """Biên của luật `<=`: candidate == baseline + delta ĐẠT; vượt 0,0001 mới BỊ.
+
+    Test này bổ sung sau mutation check T6a-M1: đổi `<=` thành `<` từng sống sót vì
+    các case cũ chỉ thử trong lòng ngưỡng, chưa thử đúng biên.
+    """
+    checks, _ = evaluate_refusal_rule(0.35, 0.30, max_refusal_delta=0.05)
+    assert _refusal_check(checks)["ok"] is True
+    checks2, _ = evaluate_refusal_rule(0.3501, 0.30, max_refusal_delta=0.05)
+    assert _refusal_check(checks2)["ok"] is False
+

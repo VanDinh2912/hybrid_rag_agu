@@ -864,3 +864,45 @@ venv/Scripts/python.exe tmp/mutation_check_t3.py    # kỳ vọng 9/9, M2 không
 ```
 Hoàn tác: `git checkout -- src/cache_policy.py tests/test_cache_policy.py tests/test_t3_guardrails.py`
 (hoặc `git revert <sha>`) — không đụng dữ liệu, không đụng trọng tài.
+
+## PA-28 — Bộ sinh SFT GIỮ dòng thiếu THỰC THỂ vàng (luật 2/N), trái mục 1 của đặc tả T4 (25-10 12:2x)
+
+**Vấn đề (đo được, không suy đoán).** Đặc tả T4 mục 1 đòi *mọi dòng train phải chứa thực thể vàng và
+tên nguồn trong ngữ cảnh của chính dòng đó*. Bộ sinh hiện hành (`tools/loop/triage.py`, dòng
+`if not blocks or (frags and len(covered) < min(2, len(frags)))`) chỉ đòi **2 mẩu bất kỳ** trong
+`frags = required_entities + primary_entity + gold_sentence + source_document`. Vì vậy một dòng có
+**nguồn + câu vàng** nhưng **không có thực thể** vẫn được giữ.
+
+Bằng chứng:
+
+| Đo | Kết quả | Nguồn |
+|---|---|---|
+| Dòng giả: ngữ cảnh chỉ có nguồn + câu vàng, item đòi thực thể `42` | **được GIỮ** (`skip_sft_target_not_in_context = 0`) | `tests/test_t4_sft_invariants.py::test_dong_thieu_thuc_the_nhung_du_nguon_va_cau_vang_hien_hanh_van_giu` |
+| Cùng dòng đó đưa vào bộ kiểm | **ĐỎ** `missing_by_kind = {"entity": 1}` | `tools/diag/check_sft_invariants.py` |
+| Dòng giả: ngữ cảnh không có cả nguồn lẫn thực thể | bị loại, đếm `skip… = 1` | `test_dong_thieu_ca_thuc_the_va_nguon_bi_loai_va_dem` |
+| Artifact đã công bố `t4b_r5r8r9r10` (13 train/10 holdout) | **0/13 dòng thiếu thực thể**; 5/13 thiếu `gold_sentence` (chỉ là INFO) | `tmp/t4_invariants_report.json` |
+
+Nghĩa là: dữ liệu **đã công bố** không vi phạm mục 1, nhưng bộ sinh **có thể** sinh ra dòng vi phạm
+nếu lần chạy sau rơi vào đúng tổ hợp đó — rủi ro nằm ở producer, không nằm ở artifact hiện tại.
+
+**Vì sao KHÔNG tự sửa.** Nới/siết luật này đổi **phân bố dữ liệu** của mọi round tương lai và (nếu
+siết) có thể loại thêm dòng của artifact sắp dùng cho PA-11/PA-12 ⇒ phải duyệt thiết kế trước, không
+được sửa lặng lẽ trong phiên kiểm thử. Đồng thời chưa đo được luật "bắt buộc đủ mọi `required_entities`"
+sẽ loại bao nhiêu dòng (các family SOURCE_LOOKUP/TRAP có thể không có thực thể trong câu vàng).
+
+**Đề xuất (chọn một):**
+- (a) **Siết có kiểm soát**: bắt buộc `source_document` + mọi `required_entities`/`primary_entity`;
+  `gold_sentence` vẫn tuỳ chọn. Trước khi đổi, chạy `collect()` trên r5/r8/r9/r10 ở chế độ chỉ-đọc
+  và báo **số dòng bị loại thêm** (kỳ vọng: nhỏ, vì artifact hiện tại 13/13 dòng đều có thực thể).
+- (b) **Giữ 2/N** và ghi rõ trong `data/loop/README.md` rằng "thực thể là mẩu ưu tiên, không bắt buộc"
+  — chấp nhận rủi ro dòng thiếu thực thể.
+- (c) Siết + **sinh lại artifact T4b** (thư mục mới, không ghi đè) để dùng cho lượt train sau.
+
+**Đã làm trong phiên này (không đụng dữ liệu):** thêm bộ kiểm chỉ-đọc
+`tools/diag/check_sft_invariants.py`, 29 test `tests/test_t4_sft_invariants.py` (có ca ghim đúng trạng
+thái 2/N hiện hành + ca chứng minh bộ kiểm báo ĐỎ cho nó), mutation **M1 "bỏ kiểm thực thể" bị bắt**
+(2 test đỏ, `tmp/mutation_check_t4_new.log`).
+
+**Hoàn tác:** xoá 3 tệp mới (`tools/diag/check_sft_invariants.py`,
+`tests/test_t4_sft_invariants.py`, `tests/test_t4_generator_contract.py`) hoặc `git revert <sha>`
+commit test T4; **không có dữ liệu/`src/` nào bị đổi**.

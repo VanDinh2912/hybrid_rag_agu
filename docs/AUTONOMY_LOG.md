@@ -810,3 +810,41 @@ golden SHA `e59b9ebb…` và `core` `344d55cd…` không đổi; trọng tài `9
 
 **Hoàn tác:** `git checkout -- tests/test_t3_guardrails.py docs/` rồi xoá `tmp/t3_mutation_recheck_9.log`,
 `tmp/pytest_t3_final_1016.txt`. Không đụng `src/` (kể cả `cache_policy.py`), golden, index, round.
+
+## Phiên 25-10 12:0x → 12:3x — kiểm thử T4: giữ nguyên dữ liệu và bộ sinh, ghi số thay vì đặt ngưỡng
+
+**Bối cảnh.** Đề bài kiểm thử T4 có 9 mục (bất biến dữ liệu SFT, giao diện generator, cache key, số đo
+GPU). Trước khi viết test, đo hiện trạng bằng checker chỉ-đọc mới
+`tools/diag/check_sft_invariants.py` trên artifact **đã công bố** `data/training/t4b_r5r8r9r10`.
+
+**Ngã rẽ 1 — mục 5 đỏ (13/13 dòng train > 768 token): hạ `max_length`, cắt dòng, hay báo đỏ?**
+Chọn **báo đỏ**. Ngưỡng 768 đã đăng ký trước cho GPU 4 GB; cắt dòng sẽ làm artifact và số đếm đã công bố
+sai đi, còn hạ ngưỡng là chỉnh thước sau khi đo — cả hai đều bị luật tự trị cấm. Hệ quả ghi rõ: mục 5
+KHÔNG ĐẠT và điều đó chặn kế hoạch QLoRA (PA-11/PA-12), không phải chặn bộ test.
+
+**Ngã rẽ 2 — phát hiện bộ sinh SFT giữ dòng thiếu *thực thể vàng* (luật nới 2/N): sửa ngay hay đề xuất?**
+Chọn **đề xuất (PA-28)**. Sửa `tools/build_sft_from_round.py` sẽ đổi tập dữ liệu đã công bố và mọi con số
+đếm dòng của artifact — việc cần duyệt, không phải sửa lặng lẽ. Test được viết để ghim **cả hai nửa**
+(hiện trạng bộ sinh + checker báo đỏ), nên khi PA-28 được duyệt sẽ có test đỏ nhắc cập nhật.
+
+**Ngã rẽ 3 — mục 9 cần adapter LoRA: train mới theo T4b hay dùng adapter sẵn có?** Chọn **dùng adapter
+sẵn có** (`models/qwen25_05b_sft_adapter`) và ghi rõ **cảnh báo nguồn gốc**: nó train trên QA mã nguồn,
+không phải T4b. Train mới bất khả thi (mục 5) và tốn GPU; dùng adapter sẵn có chỉ chứng minh *cơ chế* nạp
+LoRA, đúng phạm vi mục 9. Không suy ra kết luận chất lượng nào cho T4b từ phép đo này.
+
+**Ngã rẽ 4 — chạy lại hai test slow để có log nguồn: có ghi đè artifact công bố không?** Không. Hai probe
+nhận `--out`; test truyền `tmp_path` của pytest ⇒ chạy lại chỉ tạo file tạm, `data/loop/diag/t4_latency_20q.json`
+và `t4_adapter_probe.json` giữ nguyên (kiểm mtime 12:21–12:22). Log mới: `tmp/pytest_t4_slow.log`
+(**2 passed**, 79,04 s).
+
+**Bằng chứng.** Checker: mục 1–4 XANH, mục 5 ĐỎ (`tmp/t4_invariants_report.json`). Số mục 8: p50 2,900 s,
+p95 4,421 s, câu đầu 9,626 s, VRAM đỉnh 1.401 MiB/150 mẫu (`data/loop/diag/t4_latency_20q.json`).
+Mục 9: đầu ra adapter khác base, nạp hỏng → `ValueError: Can't find 'adapter_config.json'`
+(`data/loop/diag/t4_adapter_probe.json`). Mutation **8/8** (`tmp/mutation_check_t4_new.log`), gồm đúng hai
+đột biến đề bài yêu cầu: bỏ kiểm thực thể, trộn split theo item. Toàn repo **1.057 passed, 2 skipped**
+(`tmp/pytest_t4_final.log`); trọng tài `9f1179ccab74`; **0 lượt Gemini**.
+
+**Hoàn tác:** xoá `tools/diag/check_sft_invariants.py`, `tools/diag/t4_adapter_probe.py`,
+`tools/diag/t4_latency_probe.py`, `tests/test_t4_sft_invariants.py`, `tests/test_t4_generator_contract.py`,
+`tests/test_t4_gpu_slow.py`, bỏ khối `pytest_configure` trong `tests/conftest.py` (hoặc `git revert` commit
+tương ứng). Không đụng `src/`, dữ liệu, artifact công bố, `data/loop/rounds/`.

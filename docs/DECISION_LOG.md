@@ -44,6 +44,7 @@ Nguyên tắc bất biến đứng trên mọi dòng: **ngưỡng đã đăng k�
 | D-22 | 25-10 | Driver `.sh` viết tay trong `tmp/` là đủ để tái lập một round | Không: thiếu log là mất danh sách env; thay bằng spec JSON + manifest tất định. Chuỗi demo 2×20 item chạy end-to-end (gate ĐẠT + attribute); 11 test, mutation **6/6** bắt | `tools/loop/run_chain.py`, `tools/loop/chains/t5a_reranker.json`, `tests/test_run_chain.py`, `tmp/mutation_check_t7.log` | GIỮ — **đã commit** `79a02e5` |
 | D-23 | 25-10 | HEAD tài liệu tái lập được cây đã test 1.016 test | **Sai**: còn 35 file nguồn/công cụ/test chưa tracked (gồm `tools/loop/noise_floor.py`, `src/answer_guard.py`, `src/cache_policy.py`) + 6 file sửa dở; bản `src/generator.py` trong HEAD không có `effective_prompt_version` | `docs/PENDING_APPROVAL.md` PA-26, `docs/STATE.md` | **MỞ** — chờ chọn phương án commit freeze |
 | D-24 | 25-10 | Có thể sửa `cache_policy.py` để khóa TẮT không phụ thuộc env của lever TẮT ngay trong phiên kiểm thử T3 | Phát hiện **đúng** (cả hai cờ T3 TẮT: deviation `None` → `e95e6efa2617`/`1670eb7035ac`/`94515a7efa5d`, đầu ra 30 item byte-identical), nhưng sửa là chạm khóa cache T7 + buộc đổi 3 test đã có ⇒ ghi **PA-27**, không sửa; chỉ thêm 2 test ghim cả hai nửa (đầu ra bất biến / khóa tách là hiện trạng) | `tests/test_t3_guardrails.py`, `docs/reports/test_T3.md` §9, `docs/PENDING_APPROVAL.md` PA-27 | **CHỜ DUYỆT** — PA-27 |
+| D-25 | 25-10 | Pipeline SFT + generator T4 thỏa đủ 9 mục đặc tả (bất biến dữ liệu, giao diện chung, cache, số đo GPU) | Mục 1–4 **XANH** trên artifact thật (13 train / 10 holdout / 58 item test); **mục 5 ĐỎ do DỮ LIỆU** (13/13 dòng train + 8/10 holdout > 768 token, min 1.016); mục 8: p50 **2,900 s** / p95 **4,421 s** / VRAM đỉnh **1.401 MiB**; mục 9: adapter khác base + nạp hỏng ném `ValueError`; mutation **8/8** | `tmp/t4_invariants_report.json`, `data/loop/diag/t4_latency_20q.json`, `data/loop/diag/t4_adapter_probe.json`, `tmp/mutation_check_t4_new.log`, `docs/reports/test_T4.md` §10 | GIỮ bộ test; mục 5 ĐỎ = **PA-28**; adapter chỉ chứng minh cơ chế |
 
 ---
 
@@ -141,6 +142,25 @@ không import nổi (`src/cache_policy.py` → `src/answer_guard.py` chưa track
 file `src/` dirty của phiên khác, việc đóng khoảng trống này là **PA-26** với ba phương án; đề xuất (ii)
 commit mã + tổng hợp round, không commit `models/` (321 MB), `chroma_*`, `full.jsonl`. Khi được duyệt,
 kiểm chứng bằng fresh clone + `pytest tests -q` kỳ vọng **1.016 passed**.
+
+### D-25 — Kiểm thử T4: đo được gì, không sửa gì (25-10)
+
+Đề bài yêu cầu 9 mục; bộ test mới phủ đủ, trong đó **chỉ mục 1–4 đạt trên artifact thật**. Kết quả mục 5
+là **ĐỎ do dữ liệu**, không phải do test: 13/13 dòng train dài 1.016–1.707 token, vượt `max_length` 768
+dự kiến cho GPU 4 GB (holdout 8/10, min 657). Theo luật đã đăng ký trước, **không** hạ ngưỡng và **không**
+cắt dữ liệu để đạt; báo cáo giữ nguyên đỏ và chỉ ra hệ quả: kế hoạch QLoRA trên máy này vẫn bị chặn
+(PA-11/PA-12).
+
+Kiểm tra mục 1 phát hiện thêm một khoảng trống thật ở **bộ sinh**: luật `len(covered) < min(2, len(frags))`
+cho phép dòng tổng hợp chỉ khớp nguồn + câu vàng đi qua dù **thiếu thực thể vàng** — trái câu chữ mục 1.
+Sửa bộ sinh sẽ đổi tập dữ liệu đã công bố và số đếm của artifact ⇒ ghi **PA-28** (3 phương án, kèm bằng
+chứng và cách hoàn tác), không tự sửa. Test ghim **cả hai nửa**: hành vi hiện tại của bộ sinh và việc
+checker báo đỏ `{"entity": 1}` — để khi PA-28 được duyệt, test đỏ lên và buộc cập nhật có chủ đích.
+
+Mục 8 ghi số thật (p50 2,900 s, p95 4,421 s, VRAM đỉnh 1.401 MiB trên 20 câu) nhưng test **không** đặt
+ngưỡng cứng — máy khác/model khác sẽ ra số khác; ngưỡng cứng sẽ biến phép đo thành test giả. Mục 9 chứng
+minh **cơ chế** nạp LoRA (khác đầu ra + nạp hỏng ném lỗi), nhưng adapter hiện có train trên dữ liệu QA mã
+nguồn, **không** phải T4b, nên **không** được dùng để nói T4b tốt hay xấu; điều này ghi rõ trong báo cáo.
 
 ## Cách kiểm sổ này
 

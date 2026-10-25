@@ -436,3 +436,36 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - PA-24: ba báo cáo mới dẫn trực tiếp `tmp/mutation_check_t{4,6}.*` + `tmp/pytest_t4t6_final.txt`
   ⇒ đã bổ sung vào nhóm GIỮ. Gemini đêm nay **0/14**.
 
+## XONG (25-10 12:2x — KIỂM THỬ T4: bất biến dữ liệu SFT + giao diện generator + phần slow)
+
+- **Đã phủ đủ mục 1–9 của đề bài T4**, thêm **62 test nhanh + 2 test slow** (21 test T4 cũ giữ nguyên,
+  không sửa test cũ): `tests/test_t4_sft_invariants.py` (29), `tests/test_t4_generator_contract.py` (12),
+  `tests/test_t4_gpu_slow.py` (2, marker `slow`, chỉ chạy khi `T4_RUN_SLOW=1`); `tests/conftest.py`
+  khai báo marker. Công cụ đo mới (chỉ đọc): `tools/diag/check_sft_invariants.py`,
+  `tools/diag/t4_adapter_probe.py`, `tools/diag/t4_latency_probe.py`.
+- Chạy checker trên artifact đã công bố `data/training/t4b_r5r8r9r10` (100 item; 13 train / 10 holdout):
+  **mục 1–4 XANH, mục 5 ĐỎ**. Nguồn: `tmp/t4_invariants_report.json`.
+  - (1) 0/13 dòng thiếu thực thể/nguồn trong chính ngữ cảnh; 5/13 thiếu `gold_sentence` (INFO, không chặn).
+  - (2) 58 item test: **0** rò rỉ theo id, **0** theo `gold_sentence` đã fold.
+  - (3) 0 tài liệu chồng lấn (7 train / 2 holdout); 7 nhóm (tài liệu, Điều) không cắt đôi; 16 dòng không có nhãn Điều.
+  - (4) 0 dòng từ chối; 0 ca "không đáp án" bị gán nhãn trả lời.
+  - (5) **ĐỎ do DỮ LIỆU**: train **13/13** dòng > 768 token (min 1.016, median 1.439, max 1.707);
+    holdout **8/10** (min 657, max 1.488) ⇒ trái kế hoạch QLoRA 4 GB. **Không hạ ngưỡng, không sửa dữ liệu.**
+- **Phát hiện → PA-28**: bộ sinh SFT giữ dòng thiếu *thực thể vàng* (luật nới `len(covered) < min(2, len(frags))`);
+  đo được: dòng tổng hợp giữ lại, checker báo `{"entity": 1}` — trái mục 1 đề bài ⇒ đề xuất, không tự sửa.
+- **Mục 8 (slow)** — 20 câu thật qua Ollama, cache TẮT: p50 **2,900 s**, p95 **4,421 s**, câu đầu 9,626 s,
+  tổng 68,6 s; VRAM đỉnh **1.401 MiB** (150 mẫu `nvidia-smi`): `data/loop/diag/t4_latency_20q.json`.
+  Test chỉ kiểm số đo hợp lệ, **không** đặt ngưỡng cứng.
+- **Mục 9 (slow)** — adapter LoRA thật (`models/qwen25_05b_sft_adapter` qua `venv_train`): đầu ra **khác**
+  base trên mẫu cố định (greedy); nạp adapter hỏng → `ValueError` nổi lên, **không** lùi im lặng; VRAM đỉnh
+  1.025,4 MiB (base 964,0). **Cảnh báo trung thực**: adapter train trên QA mã nguồn (1.635 dòng),
+  **không** phải T4b ⇒ chứng minh cơ chế nạp, không nói gì về chất lượng SFT T4b.
+- **Mutation mới 8/8** (`tmp/mutation_check_t4_new.py`, log `tmp/mutation_check_t4_new.log`): bỏ kiểm thực thể,
+  chia split theo item, bỏ bắt rò rỉ id/câu, cho nhãn trả lời ở ca không đáp án, bỏ kiểm độ dài, cố định model
+  trong khóa cache, tắt chuẩn hóa từ chối — mỗi đột biến đỏ đúng test tương ứng; hoàn nguyên byte-identical.
+- **Toàn repo: 1.057 passed, 2 skipped** (22,58 s, `tmp/pytest_t4_final.log`; 2 skipped = hai test slow);
+  `T4_RUN_SLOW=1 pytest tests/test_t4_gpu_slow.py -q` = **2 passed** (79,04 s, `tmp/pytest_t4_slow.log`).
+  Trọng tài `9f1179ccab74`; `gate.py`/`verify.py`/`answer_guard.py`/`text_utils.py` không đổi; **0 lượt Gemini**.
+- Tài liệu: `docs/reports/test_T4.md` §10; `docs/reports/test_final.md` cập nhật **76/76** mutation;
+  `docs/PENDING_APPROVAL.md` PA-28; quyết định `docs/DECISION_LOG.md` D-25.
+
