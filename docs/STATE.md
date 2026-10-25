@@ -361,8 +361,8 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   `rounds/...` được sửa thành `data/loop/rounds/...`).
 - **README:** thêm mục **5.10** (cách chạy một round / cả chuỗi / dry-run / manifest / ngữ nghĩa cổng /
   cache policy) và **8.1 "Giới hạn thật lòng"** (10 mục, mỗi mục có nguồn); cập nhật số test
-  **1.005** (1.004 tại thời điểm T7, +1 test biên T6a). **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
-- **pytest toàn repo: 1.005 passed** (967 + 11 run_chain + 26 cache_policy + 1 test biên T6a). Chữ ký trọng tài
+  **1.006** (1.004 tại thời điểm T7, +1 test biên T6a, +1 test T0). **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
+- **pytest toàn repo: 1.006 passed** (967 + 11 run_chain + 26 cache_policy + 1 test biên T6a + 1 test T0). Chữ ký trọng tài
   `9f1179ccab74` (không đụng `verify.py`).
 - **CHƯA COMMIT được phần mã T7:** `src/generator.py` là file tracked dirty của phiên T3–T5 (310 dòng
   của phiên đó + 2 hunk T7); `src/cache_policy.py` phụ thuộc `src/answer_guard.py` chưa tracked.
@@ -381,8 +381,12 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - **Tổng mutation 64/64 bị bắt**; mọi lần hoàn nguyên byte-identical. Hai lỗ test được đóng bằng
   **thêm test mới**, không sửa kỳ vọng cũ: T4a ghim "một biến" (`LocalSLM(model=override)`), T6a ghim
   đúng biên `candidate = baseline + delta` (0,3500 ĐẠT; 0,3501 KHÔNG).
-- **pytest toàn repo: 1.005 passed** (28,27 s) — nguồn `tmp/pytest_t4t6_final.txt`; trọng tài
-  `9f1179ccab74`. Số 1.004 trong báo cáo T7 giữ nguyên lịch sử + ghi chú ngày.
+- **`tests/test_noise_floor.py` được siết thêm 1 ca (T0):** test cũ so CI với **trung bình bootstrap**;
+  thêm `test_ci_chua_uoc_luong_diem_giai_tich_khong_chi_trung_binh_bootstrap` so với **hiệu tỉ lệ tính
+  từ dữ liệu** (0,15) và `rate_ci` từng round chứa tỉ lệ thô (0,40/0,55). 22 test, mutation **5/5** bắt
+  (`tmp/mutation_check_t0.log`).
+- **pytest toàn repo: 1.006 passed** (32,54 s) — nguồn `tmp/pytest_t0_final.txt`; trọng tài
+  `9f1179ccab74`. Số 1.004/1.005 trong các báo cáo T0/T7 giữ nguyên lịch sử + ghi chú ngày.
 - **Commit docs-only** các báo cáo + chỉnh đồng bộ số test/HEAD; `tests/test_gate_refusal_relative_proposal.py`
   (thêm 1 test) và phần mã T7 vẫn chờ PA-26 theo luật không commit `src/` dirty của phiên khác.
 - PA-24: ba báo cáo mới dẫn trực tiếp `tmp/mutation_check_t{4,6}.*` + `tmp/pytest_t4t6_final.txt`

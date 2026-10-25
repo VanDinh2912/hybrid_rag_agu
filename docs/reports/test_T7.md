@@ -82,6 +82,10 @@ phải bằng sửa test.
 > toàn repo hiện **1.005 passed** (`tmp/pytest_t4t6_final.txt`). Con số 1.004 ở trên là ảnh chụp đúng
 > tại thời điểm T7.
 
+> Cập nhật 25-10 11:51: thêm **1 test T0** (CI phải chứa **ước lượng điểm giải tích**, không chỉ trung
+> bình bootstrap) ⇒ toàn repo **1.006 passed** (`tmp/pytest_t0_final.txt`). 1.005 ở trên là ảnh chụp
+> đúng tại thời điểm viết báo cáo T4/T6.
+
 ### 2.2 Từng mục của đề bài T7
 
 | Mục | Trạng thái | Bằng chứng |

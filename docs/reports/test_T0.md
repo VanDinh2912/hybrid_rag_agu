@@ -3,6 +3,14 @@
 Ngày: 2026-10-24 · Nhánh `auto/overnight` · Đối tượng: `tools/loop/noise_floor.py`
 · Test mới: `tests/test_noise_floor.py` · Harness: `tmp/mutation_check_t0.py`
 
+> **Cập nhật 25-10 11:51 — làm chặt đúng chữ "CI luôn chứa ước lượng điểm":** thêm test
+> `test_ci_chua_uoc_luong_diem_giai_tich_khong_chi_trung_binh_bootstrap`. Test cũ so CI với
+> **trung bình các lượt bootstrap** (dễ đúng theo vòng tròn); test mới so với **hiệu tỉ lệ tính từ
+> dữ liệu** (0,55 − 0,40 = 0,15) và kiểm `rate_ci` từng round chứa tỉ lệ thô (0,40 / 0,55).
+> Kết quả: `tests/test_noise_floor.py` **22 passed**; toàn repo **1.006 passed**
+> (`tmp/pytest_t0_final.txt`); mutation vẫn **5/5 bắt** (`tmp/mutation_check_t0.log`). Các số
+> **21 test / 712 passed** ở §2 và §6 là **mốc lịch sử của phiên 24-10**, giữ nguyên.
+
 ## 1. Đã làm gì
 
 1. Đọc `data/loop/README.md` (7 bất biến), quy tắc P-00, và `noise_floor.py` + `docs/reports/T0.md`.
