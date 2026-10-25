@@ -362,8 +362,8 @@ T3–T5 nên backup NGUYÊN BYTE trong bộ nhớ + so SHA-256 sau mỗi lần; 
 | 9 | Adapter nạp được, khác base ≥1 mẫu, nạp hỏng lỗi rõ | **ĐẠT** (kèm caveat nguồn gốc adapter ở §10.8) |
 | — | Mutation "bỏ kiểm thực thể" + "trộn split theo item" bị bắt | **ĐẠT** (8/8) |
 
-Toàn bộ test: `pytest tests -q` = **1.057 passed, 2 skipped** (24,72 s, `tmp/pytest_t4_final.log`);
-hai test skip là mục 8–9 (`T4_RUN_SLOW=1` thì **2 passed** trong 73,05 s).
+Toàn bộ test: `pytest tests -q` = **1.057 passed, 2 skipped** (22,58 s, `tmp/pytest_t4_final.log`);
+hai test skip là mục 8–9 (`T4_RUN_SLOW=1` thì **2 passed** trong 79,04 s, `tmp/pytest_t4_slow.log`).
 
 ### 10.12 Việc chưa làm / khoảng trống
 
@@ -386,7 +386,7 @@ PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest \
     tests/test_t4_sft_invariants.py tests/test_t4_generator_contract.py -q
 PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q
 
-# mục 8–9 (cần GPU/Ollama; ~73 s)
+# mục 8–9 (cần GPU/Ollama; ~80 s)
 T4_RUN_SLOW=1 PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests/test_t4_gpu_slow.py -q
 
 # đột biến T4 (8 ca, tự hoàn nguyên + so SHA-256)
