@@ -4,9 +4,53 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.228 passed, 4 skipped** (36,68 s, 25-10 17:2x; mốc trước 1.124,
-thêm 106 test kiểm thử T7 đợt 2; 4 skipped = 2 test T4 **slow** (chạy riêng bằng `T4_RUN_SLOW=1`)
-+ 2 test symlink thường trên Windows — 2 test **junction** vẫn chạy và là bằng chứng M12/M14).
+`pytest tests -q` mới nhất: **1.338 passed, 5 skipped** (60,25 s, 25-10 18:3x; mốc trước 1.228 rồi 1.124,
+thêm 111 test tổng kiểm tra cuối; 5 skipped = 2 test T4 **slow** (chạy riêng bằng `T4_RUN_SLOW=1`, đã chạy:
+**2 passed, 82,32 s**) + 2 test symlink thường trên Windows (2 test **junction** vẫn chạy, là bằng chứng
+M12/M14) + 1 cờ `RERANKER_KEEP_CANDIDATES` không có accessor đơn — vẫn bị kiểm tĩnh trong cùng module).
+
+## CẬP NHẬT 25-10 18:5x — TỔNG KIỂM TRA CUỐI (6 mục nghiệm thu): 1.338 xanh, 55/55 số tái lập, 126/126 đột biến, 0 secret
+
+Báo cáo đầy đủ: [`docs/reports/test_final.md`](reports/test_final.md) (bản này **thay** bản 13:26).
+
+- **Mục 1–2 — số:** `tools/diag/final_number_audit.py` (chỉ-đọc) đối chiếu **55 số đã công bố** của T0–T7
+  ⇒ **55/55 KHỚP**, 0 dòng LỆCH. Ba **đính chính** được ghi nguyên: "79/79 đột biến" → **126/126** (phép
+  cộng cũ vừa thiếu 3 harness vừa tự mâu thuẫn: 5+4+6+9+7+10+13+10+17 = 81) — DECISION_LOG **D-33**;
+  delta r13 "−0,0028" → **−0,0029** theo artifact — D-31; T7 "17/17" → **16/16**.
+- **Mục 3 — cờ env:** `tools/diag/env_flag_audit.py` + 41 test ⇒ **13/13 lever mặc định TẮT** trên 5 lớp
+  (khai báo, code default, `setdefault`, chain, `.env.example`), **cộng golden chạy thật**: chụp lại
+  `t3_golden_dump` trên cây hiện tại cho khối `core` trùng **từng byte** (sha256 `344d55cd35ec…`) với
+  `tests/golden/t3_off_30items_head_f492f05.json`. Không có `setdefault` bật ngầm nào trên đường production;
+  2 site ép bật nằm trong `tools/diag/reranker_cost_probe.py` (script đo, có nhãn).
+- **Mục 4 — bí mật/PII:** `tools/diag/secret_scan.py` + 14 test ⇒ 269 file phạm vi / 237 đã quét / 296 dòng
+  khớp = 207 chỉ điểm + 89 cảnh báo nhân thân; **0 secret**, **0 đường dẫn theo tên user**. 89 dòng PII nằm
+  trên 8 file **đang untracked** ⇒ **PA-31** (mask trước khi freeze), em không tự redact vì golden `referee_labeling_r5`
+  được test T6 đếm theo dòng.
+- **Mục 5 — dữ liệu train:** `tools/diag/train_data_audit.py` + 13 test ⇒ 12 file / **10.619 dòng** khớp
+  manifest 12/12; **0 leak nội dung**; **3 id trùng tên** giữa train/val/benchmark (khác nội dung) ⇒ **PA-32**;
+  bất biến #7 trên code-QA **ĐẠT** (1.635 dòng, 1.049 trích dẫn, 890 định danh, 0 vi phạm); artifact SFT
+  vòng lặp vẫn ĐỎ **chỉ ở check độ dài > 768 token** (PA-11/PA-12/PA-28, không đổi).
+- **Mục 6 — ba câu hỏi hội đồng** (script chạy được, exit 0, nguồn in kèm; `tmp/council_*.txt` là bài đầy đủ):
+  · *có bịa không?* 1.000 dòng/10 round → **7 câu trái ngữ cảnh = đúng 1 item** (`S115028976296200`),
+    43 ca nặng = **18 item khác nhau**; **36/43 ca nặng mù với thước** `fabrication_rate_on_answered`.
+  · *trọng tài đáng tin không?* **19 round/phase dùng chung 1 chữ ký**, **1.000/1.000 câu chấm lại khớp**
+    (1,57 s), verdict không đổi khi poisoning 8 biến env, cổng `gate.compatibility` từ chối bản khác —
+    nhưng **`n_filled = 0`** ⇒ chưa có kappa, và `verify.py`/`answer_guard.py` **chưa tracked** (PA-26).
+  · *gold@6 = 0,5186 nghĩa là gì?* **363/700** câu có chunk vàng; **111 item bị loại khỏi mẫu số**;
+    r7 gold 0,80 nhưng PASS_CORRECT 0,14 ⇒ đo cổng đầu, không đo chất lượng chữ; **trần pool-12 = 0,8214**,
+    **125 item trượt recall**; **không so được giữa hai index** cho tới PA-17 (mất neo 0,4881 ĐỎ).
+- **Răng:** `tests/test_final_council_scripts.py` 43 test (9 đột biến nội tiến trình) + harness
+  **18/18** (`tmp/mutation_check_final_council.log`). Lượt đầu **17/18**: K-M1 lọt vì row test có
+  `answer_chars = 0`; siết test biên chứ **không hạ kỳ vọng** (D-33).
+- **Bốn đề xuất mới, chưa tự làm:** **PA-30** `.env.example` không khai báo 13 cờ lever · **PA-31** mask 89
+  dòng PII · **PA-32** id độc nhất giữa split · **PA-33** `.gitignore` thiếu `tmp/`, `models/`,
+  `data/loop/rounds/`… ⇒ `git add -A` sẽ stage **1.980** đường dẫn (321 MB `models/`).
+- **Nguyên trạng:** `gate.py`, `verify.py`, `answer_guard.py`, `text_utils.py` **không đổi một byte**
+  (chữ ký `9f1179ccab74`); **0 lượt Gemini**; `data/loop/rounds/` và `outputs/` **không bị ghi**; 6 file
+  PA-8 vẫn dirty, không stage.
+- **Phán quyết:** test + số + an toàn cờ = **ĐẠT**; "fresh clone chạy lại được" = **CHƯA** (PA-26 + PA-33);
+  tầng sinh vẫn là nút thắt (r7 0,14; r10 3B p=0,804; r12/r13 âm).
+
 
 ## CẬP NHẬT 25-10 17:2x — KIỂM THỬ T7 (đợt 2): 106 test phủ mục 1–7, mutation 20/20, **tái lập thật r0 bằng một lệnh**
 
@@ -196,7 +240,7 @@ thêm 106 test kiểm thử T7 đợt 2; 4 skipped = 2 test T4 **slow** (chạy 
 - Ghi chú vận hành: ngoại suy chi phí trước khi chạy đã **thiếu hạng tử truy xuất nền** (2,0 s rerank
   + 2,78 s baseline ≈ 4,8 s/item); round vì thế vượt ngưỡng tự đặt 60 phút. Round vẫn hợp lệ để kết
   luận, nhưng lý do cho phép chạy lúc đó sai — ghi ở `AUTONOMY_LOG.md` 25-10 04:0x.
-- **5b đã đóng (r13, §2.5):** delta gold@6 −0,0028 CI [−0,0129; +0,0071], p = 0,79 ⇒ không tín hiệu,
+- **5b đã đóng (r13, §2.5):** delta gold@6 −0,0029 CI [−0,0129; +0,0071], p = 0,79 ⇒ không tín hiệu,
   cờ giữ TẮT. Quy lỗi r11→r13: nhóm `ranking_*` 94 → 97 (+3), nhóm filter đi ngang.
 - Gemini: **0 lượt** (T1(b) còn 5 id, chờ cửa sổ ~14:30).
 
@@ -204,7 +248,7 @@ thêm 106 test kiểm thử T7 đợt 2; 4 skipped = 2 test T4 **slow** (chạy 
 
 - **Đã xong:** r13 = r11 + đổi duy nhất index sang `chroma_db_headers_old` (header
   `[file] - [Chương] - [Điều] - [Khoản] - [Điểm]`), retrieval-only 811/811, 0 lỗi. gold@6
-  **0,7400 → 0,7371**, delta ghép cặp **−0,0028, CI [−0,0129; +0,0071]**, McNemar 8 mất / 6 được,
+  **0,7400 → 0,7371**, delta ghép cặp **−0,0029, CI [−0,0129; +0,0071]**, McNemar 8 mất / 6 được,
   **p = 0,79**; EXACT +1 item (0,2115→0,2308, p = 1,0); neo HUMAN 0,8144 không đổi. Theo ngưỡng
   đăng ký trước (|delta| < 11 item, CI chứa 0) ⇒ **cấm gọi là cải thiện**; cờ
   `ENABLE_CONTEXTUAL_HEADER` giữ TẮT, index header **không kích hoạt**. Gate retrieval 6/6 ĐẠT chỉ

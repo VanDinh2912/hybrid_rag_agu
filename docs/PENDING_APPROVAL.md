@@ -975,3 +975,78 @@ kèm test ghim đúng danh sách 5 cảnh báo của repo thật
 **Hoàn tác:** không có thay đổi nào ở script production để hoàn tác; nếu anh từ chối PA-29 thì chỉ cần
 xoá mục này — cảnh báo vẫn còn trong `tmp/docs_check_t7_dot2.json` và bộ test không đổi kết luận.
 
+## PA-30 — `.env.example` không khai báo 13 cờ lever ⇒ người mới không biết lever tồn tại (nghiệm thu cuối, 25-10 18:5x)
+
+**Vấn đề (đo được).** `tools/diag/env_flag_audit.py` → `tmp/env_flag_audit.json`: `.env.example` khai báo
+**26 khóa**, nhưng **0 khóa** trong số 13 cờ lever của T3/T4/T5/T7 (`ENABLE_DECOUPLED_REFUSAL`,
+`ENABLE_EVIDENCE_SELECTION`, `ENABLE_ANSWER_GUARD`, `ENABLE_RERANKER`, `RERANKER_KEEP_CANDIDATES`,
+`ENABLE_CONTEXTUAL_HEADER`, `OLLAMA_MODEL`, `LOCAL_SLM_MODEL`, khóa chính sách cache và các ngưỡng
+`DEC_*`/`EV_*`/`RESCUE_*`). Người clone repo **không thể bật/tắt lever một cách có ý thức** — họ chỉ tình
+cờ biết qua README.
+
+Mặt tốt đã kiểm: 5 khóa đang bật trong `.env.example` (`GENERATION_CACHE`, `QWEN_FALLBACK`,
+`ENABLE_HYBRID_SEARCH`, `ENABLE_QUERY_EXPANSION`, `OCR_ENABLED`) đều là chức năng **có trước vòng lặp**;
+`env_example_not_off = {}` ⇒ không lever nào bị bật ngầm.
+
+**Đề xuất:** thêm khối chú thích "LOOP LEVERS — mặc định TẮT" vào `.env.example`, mỗi cờ một dòng dạng
+`ENABLE_RERANKER=0` kèm chú giải 1 dòng + ghi nguồn task; giữ nguyên giá trị 0 để không đổi hành vi.
+Test đã có răng chờ sẵn (`test_final_env_flag_defaults.py::test_dotenv_example_khong_bat_cua_lever_nao`
+sẽ vẫn xanh vì chỉ kiểm "không bật"; phần "phải khai báo" cần thêm assertion khi anh duyệt).
+**Không tự làm** vì `.env.example` là file cấu hình dùng chung, dễ xung đột với env cá nhân của anh.
+
+## PA-31 — 89 dòng dữ liệu nhân thân trên 8 file chưa mask (nghiệm thu cuối, 25-10 18:5x)
+
+**Vấn đề (đo được).** `tools/diag/secret_scan.py` → `tmp/secret_scan.json`: **0 secret**, **0 đường dẫn
+theo tên user**, nhưng **89 dòng `DU_CAO_NHAN_HOC`** trên 8 file: `data/loop/diag/referee_labeling_r5.jsonl`
+28, `referee_labeling_r5.md` 28, `b_gemini_top6/rows.jsonl` 11, `a_oracle_qwen/rows.jsonl` 6,
+`c_gold_window_qwen/rows.jsonl` 6, `outputs/ab_results_without_classifier.json` 4,
+`outputs/ab_results_with_classifier.json` 3, `data/loop/diag/corpus_diagnostics/manual_20_segments.txt` 3.
+Chiếu theo pattern: 65 số điện thoại VN, 24 email. Đây là dữ liệu trích từ tài liệu nội bộ nhà trường;
+**tất cả 8 file đang untracked** nên chưa từng rời máy.
+
+**Rủi ro:** PA-26 (freeze) sẽ kéo theo các file này vào commit ⇒ thông tin liên hệ của sinh viên/giảng
+viên vào git history (không xoá được sạch sau khi push).
+
+**Đề xuất (chọn một):** (a) thêm chế độ `--redact-out <dir>` vào `tools/diag/secret_scan.py` (script đã có
+hàm `redact()` ở dòng 100 nhưng hiện chỉ dùng che mẫu tin in ra, **chưa** có CLI nào ghi file đã mask),
+xuất bản redact của 8 file sang thư mục mới rồi commit bản redact đó, giữ artifact gốc trong `tmp/`;
+(b) commit **trích chọn** — chỉ `round_summary_*.json`,
+`gate_*.json`, `attribution_*.json` (không chứa câu hỏi thô) theo PA-26 phương án (ii); (c) chấp nhận
+rủi ro nội bộ nếu repo chỉ chạy trên máy nội bộ — cần anh quyết, em không tự chọn.
+**Không tự làm** vì redact làm đổi nội dung artifact đã công bố (golden `referee_labeling_r5` được test
+T6 đếm theo dòng).
+
+## PA-32 — 3 id dữ liệu train trùng tên giữa train/val/benchmark (nghiệm thu cuối, 25-10 18:5x)
+
+**Vấn đề (đo được).** `tools/diag/train_data_audit.py` → `tmp/train_data_audit.json`: `tong_roi_le_thuc = 0`
+nhưng `tong_id_trung_ten = 3`: `code_tests-00049` (train↔val), `refusal-00380` và `router_config-00237`
+(train↔benchmark seed). Phân tích nội dung cho thấy **cùng id, khác câu hỏi/nội dung**
+(`roi_le_theo_cau_hoi = []`, `roi_le_theo_text_classifier = []`) ⇒ không phải leak, nhưng định danh không
+độc nhất giữa các split.
+
+**Hệ quả thực tế:** bất kỳ công cụ nào khớp theo id (dọn dữ liệu, suy attribution, báo cáo theo id) sẽ
+gán nhầm bản ghi giữa split; nếu sau này đổi cách sinh id thì 3 va chạm thành leak thật.
+
+**Đề xuất:** thêm kiểm "id độc nhất trong toàn bộ manifest" vào `tools/validate_training_data.py` (thành
+bất biến #8) + đánh số lại 3 dòng bằng script chỉ-đọc xuất diff, hoặc giữ nguyên và ghi chú "id chỉ độc
+nhất trong từng split" trong `data/training/README.md`. **Không tự làm** vì đổi id = đổi dữ liệu train đã
+được dùng để train classifier đang deploy.
+
+## PA-33 — `.gitignore` không loại các thư mục artifact ⇒ `git add -A` sẽ stage 1.980 đường dẫn, gồm 321 MB `models/` (nghiệm thu cuối, 25-10 18:5x)
+
+**Vấn đề (đo được).** `git ls-files --others --exclude-standard` = **1.980** đường dẫn không bị loại:
+`tmp/` 1.483 (119 MB) · `data/` 343 (trong đó `data/loop/rounds/` 98 MB, `data/training/` 13 MB) ·
+`models/` 58 (321 MB) · `.ocr_cache_vie/` 13 · `chroma_db_vie/` 5 · `chroma_db_headers_old/` 5 · cùng 47
+file nguồn/công cụ/test của PA-26. `.gitignore` hiện chỉ có `chroma_db/`, `.ocr_cache/`, `.generation_cache/`,
+`logs/*`, caches Python — **không** có các tên hậu tố `_vie`, `_old`, `models/`, `tmp/`, `data/loop/rounds/`.
+
+**Rủi ro:** một lần `git add -A` (rất hay xảy ra khi freeze theo PA-26) làm phồng repo ~500 MB, và không
+gột lại được sạch sau push; ngược lại nếu chỉ `git add` từng file thì dễ bỏ sót chính 47 file PA-26 cần commit.
+
+**Đề xuất (chọn):** (a) thêm vào `.gitignore`: `tmp/`, `models/`, `data/loop/rounds/`, `data/training/`,
+`chroma_db_vie/`, `chroma_db_headers_old/`, `.ocr_cache_vie/` **rồi** commit 47 file nguồn/test theo
+PA-26 (đề xuất này); (b) giữ nguyên `.gitignore` và đóng gói artifact sang LFS/ngoài repo; (c) freeze full
+kèm artifact theo PA-26 (i). Kèm theo đó nên có `scripts/freeze_for_repro.ps1` liệt kê đích danh file được
+stage để không ai phải dùng `git add -A`.
+**Không tự làm** vì `.gitignore` quyết định nội dung commit của PA-26 — hai quyết định này dính nhau.
+

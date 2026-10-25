@@ -1,0 +1,170 @@
+"""Nghiệm thu cuối, mục 5 — quét secret / đường dẫn cá nhân / PII trên file đã track.
+
+Hai lời hứa, tách rõ:
+
+* `TestCoCuaMayQuet` — chứng minh máy quét **có răng**: gieo credential thật, đường dẫn cá nhân
+  thật vào cây giả trong `tmp_path` và buộc nó phải phân loại đúng `SECRET_COTHAT` /
+  `DUONG_DAN_CA_NHAN`; đồng thời gieo placeholder (`your_gemini_api_key_here`) và fixture test
+  (`api_key="test-key-…"`) và buộc nó **không** báo nhầm thành secret. Nếu ai đó làm mềm máy
+  quét (bỏ pattern, nuốt mọi thứ vào BI_MAU), các test này đỏ.
+* `TestHienTrangRepo` — ghi lại **số thật** của cây hiện tại để báo cáo: 0 credential, 0 đường
+  dẫn cá nhân, nhưng còn PII nghiệp vụ trong artifact đã commit và `git add -A` vẫn quét vào
+  `tmp/` + `models/` + `data/loop/rounds/`. Những dòng này cố ý ghim hiện trạng: khi PA-30
+  (bổ sung `.gitignore`) hoặc PA-31 (che PII) được áp, test sẽ đỏ và buộc người thực hiện
+  cập nhật có chủ đích thay vì âm thầm đổi kết luận.
+
+Máy quét chỉ đọc; test không ghi gì ngoài `tmp_path`.
+"""
+
+from __future__ import annotations
+
+import importlib.util
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+MODPATH = ROOT / "tools" / "diag" / "secret_scan.py"
+
+
+def _nap_chui():
+    spec = importlib.util.spec_from_file_location("secret_scan_under_test", MODPATH)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["secret_scan_under_test"] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+# ---------------------------------------------------------------- 1. máy quét có răng
+class TestCoCuaMayQuet:
+    @pytest.fixture()
+    def cay_gia(self, tmp_path, monkeypatch):
+        mod = _nap_chui()
+        (tmp_path / "data").mkdir()
+        monkeypatch.setattr(mod, "ROOT", tmp_path)
+        return mod, tmp_path
+
+    def _quet(self, mod, tmp_path, ten_file: str, noi_dung: str):
+        (tmp_path / ten_file).write_text(noi_dung, encoding="utf-8")
+        return mod.scan([ten_file])
+
+    def test_bat_duoc_google_key_that(self, cay_gia):
+        """Đột biến M1: `AIza…` 39 ký tự trong file track ⇒ SECRET_COTHAT."""
+        mod, tmp = cay_gia
+        r = self._quet(mod, tmp, "config.py", 'KEY = "AIzaSyD-abcdefghij0123456789KLMNOPQRSTU"\n')
+        assert r["by_loai"].get("SECRET_COTHAT") == 1, r["by_loai"]
+
+    def test_bat_duoc_private_key_block(self, cay_gia):
+        """Đột biến M2: khối PEM ⇒ SECRET_COTHAT."""
+        mod, tmp = cay_gia
+        r = self._quet(mod, tmp, "id.pem.txt", "-----BEGIN RSA PRIVATE KEY-----\nAAAA\n")
+        assert r["by_loai"].get("SECRET_COTHAT") == 1, r["by_loai"]
+
+    def test_bat_duoc_private_key_khong_co_duoi_txt(self, cay_gia):
+        """Không có đuôi trong TEXT_EXT thì file bị bỏ qua — ghi lại thành RÀNG BUỘC của máy quét."""
+        mod, tmp = cay_gia
+        r = self._quet(mod, tmp, "id.pem", "-----BEGIN RSA PRIVATE KEY-----\nAAAA\n")
+        assert r["files_scanned"] == 0, "máy quét âm thầm đọc cả file nhị phân? sửa tài liệu"
+
+    def test_bat_duoc_duong_dan_ca_nhan(self, cay_gia):
+        """Đột biến M3: `C:\\Users\\alice` và `/home/bob` ⇒ DUONG_DAN_CA_NHAN."""
+        mod, tmp = cay_gia
+        r = self._quet(mod, tmp, "a.md",
+                       "Xem C:\\Users\\alice\\repo\\x.py và /home/bob/work/y.py\n")
+        assert r["by_loai"].get("DUONG_DAN_CA_NHAN") == 2, r["by_loai"]
+
+    def test_placeholder_khong_bi_bao_nham_la_secret(self, cay_gia):
+        """.env.example dùng `your_gemini_api_key_here` ⇒ chỉ BI_MAU."""
+        mod, tmp = cay_gia
+        r = self._quet(mod, tmp, ".env.example", "GEMINI_API_KEY=your_gemini_api_key_here\n")
+        assert r["by_loai"].get("SECRET_COTHAT") is None, r["by_loai"]
+        assert r["by_loai"].get("BI_MAU", 0) >= 1
+
+    def test_fixture_test_khong_bi_bao_nham_la_secret(self, cay_gia):
+        """`api_key="test-key-t4-contract"` trong unit test ⇒ BI_MAU, không phải credential."""
+        mod, tmp = cay_gia
+        r = self._quet(mod, tmp, "t.py", 'g = GeminiGenerator(api_key="test-key-t4-contract")\n')
+        assert r["by_loai"].get("SECRET_COTHAT") is None, r["by_loai"]
+        assert any("fixture" in h["pattern"] for h in r["hits"]), r["hits"]
+
+    def test_email_va_dien_thoai_dinh_dang_bi_liet_ke(self, cay_gia):
+        """PII nghiệp vụ: email + số điện thoại phải được đếm (không bị coi là vô hại)."""
+        mod, tmp = cay_gia
+        r = self._quet(mod, tmp, "d.md",
+                       "Liên hệ: qtho@tdtu.edu.vn — hotline 0918607123 — MSSV 2021607123\n")
+        assert r["by_loai"].get("DU_CAO_NHAN_HOC", 0) >= 3, r["by_loai"]
+
+    def test_khong_in_nguyen_van_mau_bip_mat(self, cay_gia):
+        """Báo cáo phải redact: không rò rỉ nguyên chuỗi key trong JSON kết quả."""
+        mod, tmp = cay_gia
+        key = "AIzaSyD-abcdefghij0123456789KLMNOPQRSTU"
+        r = self._quet(mod, tmp, "c.py", f'KEY = "{key}"\n')
+        blob = json.dumps(r, ensure_ascii=False)
+        assert key not in blob
+        assert "ký tự" in blob
+
+
+# ---------------------------------------------------------------- 2. hiện trạng repo
+@pytest.fixture(scope="module")
+def ket_qua():
+    mod = _nap_chui()
+    files = mod.tracked_files("tracked")
+    return mod, files, mod.scan(files)
+
+
+class TestHienTrangRepo:
+
+    def test_khong_co_credential_that_trong_file_track(self, ket_qua):
+        mod, files, r = ket_qua
+        assert r["secret_hits"] == [], r["secret_hits"][:5]
+        assert r["by_loai"].get("SECRET_COTHAT") in (None, 0)
+
+    def test_khong_co_duong_dan_ca_nhan_trong_file_track(self, ket_qua):
+        mod, files, r = ket_qua
+        assert r["duongdan_hits"] == [], r["duongdan_hits"][:5]
+
+    def test_file_env_that_khong_bien_trong_git(self, ket_qua):
+        """.env (chứa key thật) không được git theo dõi; .env.example thì có."""
+        mod, files, r = ket_qua
+        assert ".env" not in files
+        assert ".env.example" in files
+        kiem = subprocess.run(["git", "check-ignore", "-q", ".env"], cwd=str(ROOT),
+                              capture_output=True)
+        assert kiem.returncode == 0, ".env phải nằm trong ignore"
+
+    def test_ghim_hien_trang_pii_trong_artifact(self, ket_qua):
+        """Số thật tại 25-10: PII nghiệp vụ còn trong artifact đã commit — chờ duyệt PA-31.
+
+        ghim = 89 dòng / 8 file. Nếu số tăng (thêm artifact mới chứa email/điện thoại) test đỏ.
+        Nếu PA-31 được duyệt và che hết, test cũng đỏ — đó là chủ đích: phải sửa kỳ vọng có
+        chủ đích, không được âm thầm đổi kết luận.
+        """
+        mod, files, r = ket_qua
+        assert r["by_loai"].get("DU_CAO_NHAN_HOC") == 89, r["by_loai"]
+        assert len(r["pii_by_file"]) == 8, sorted(r["pii_by_file"])
+        # mọi file chứa PII đều là artifact dữ liệu, không phải code
+        for f in r["pii_by_file"]:
+            assert f.startswith(("data/", "outputs/", "logs/")), f
+
+    def test_ghim_hien_trang_gitignore_chua_loai_tru_tmp_models_rounds(self, ket_qua):
+        """`git add -A` trên cây hiện tại vẫn gom artifact lớn (PA-30 chưa được duyệt).
+
+        Số 1972 là kết quả `git add --dry-run -A` (không đổi chỉ mục). Test chỉ yêu cầu
+        `>= 1000` để không nhạy với từng file lẻ, nhưng RED nếu ai đó thêm ignore rule đúng
+        cách (PA-30 áp dụng) — khi đó cập nhật kỳ vọng có chủ đích.
+        """
+        dry = subprocess.run(["git", "add", "--dry-run", "-A"], cwd=str(ROOT),
+                             capture_output=True, text=True,
+                             encoding="utf-8", errors="replace")
+        dong = [l for l in dry.stdout.splitlines() if l.strip()]
+        gom = {l.split("'")[1].split("/")[0] for l in dong if "'" in l}
+        assert len(dong) >= 1000, f"hiện trạng đã đổi: chỉ {len(dong)} mục — cập nhật PA-30"
+        assert {"tmp", "models"} <= gom, sorted(gom)[:8]
+
+    def test_ket_quat_quet_du_file_van_ban(self, ket_qua):
+        mod, files, r = ket_qua
+        assert r["files_scanned"] >= 200, r["files_scanned"]
+        assert r["files_scanned"] < len(files), "phải loại file nhị phân/cache"

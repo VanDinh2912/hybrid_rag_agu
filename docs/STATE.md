@@ -281,7 +281,7 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 ## XONG (25-10 02:15 — khởi động lại: đóng sổ r13 / T5b trên corpus cũ)
 
 - r13 (index `chroma_db_headers_old`, retrieval-only, 811/811, 0 lỗi, xong 00:07) **đã chấm**:
-  gold@6 0,7400 → 0,7371, delta ghép cặp **−0,0028 CI [−0,0129; +0,0071]**, McNemar 8 mất/6 được
+  gold@6 0,7400 → 0,7371, delta ghép cặp **−0,0029 CI [−0,0129; +0,0071]**, McNemar 8 mất/6 được
   **p = 0,79**; EXACT 0,2115→0,2308 (+1 item); HUMAN 0,8144 không đổi; gate retrieval 6/6 ĐẠT
   (= không lùi, KHÔNG phải cải thiện). ⇒ **5b âm trên corpus cũ**, `ENABLE_CONTEXTUAL_HEADER` giữ TẮT.
   Nguồn: `data/loop/diag/header_paired_r11_r13.json`, `data/loop/rounds/r13/gate_vs_r11_retrieval.json`;
@@ -302,7 +302,7 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Đề bài T5/T6 được giao lại. T6 (6a–6d) **đã có đủ artifact từ 24-10**; phiên này bổ sung:
   CI cho chỉ số **truy xuất** vào bảng 5.1 báo cáo đánh giá + khối ĐÍNH CHÍNH 25-10 + **PA-23**
   (bốn dòng tự chấm đã cũ; điểm KHÔNG tự đổi). Commit `875a313`.
-- 5b đã chấm xong ở commit `c0b23f2` (r13: delta −0,0028 CI chứa 0, p = 0,79 ⇒ không tín hiệu).
+- 5b đã chấm xong ở commit `c0b23f2` (r13: delta −0,0029 CI chứa 0, p = 0,79 ⇒ không tín hiệu).
   Phiên này chạy thêm `attribute.py` r11 và r13 (trước/sau): FAIL_RETRIEVAL 182→184,
   `filter_blocked_wrong_topic` 68→67, `filter_blocked_wrong_table` 20→20, `ranking_no_filter`
   57→59, `ranking_despite_filter` 37→38 (ghi vào `data/loop/rounds/r11/r13/attribution_retrieval.json`).
@@ -552,3 +552,58 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - **PA-29 mới**: 5 script README không có argparse; `ingest.py` `shutil.rmtree(./chroma_db)` không dry-run
   ⇒ rủi ro onboarding thật. `gate.py` + trọng tài **không đổi một byte**, chữ ký vẫn `9f1179ccab74`,
   **0 lượt Gemini**, `data/loop/rounds/` và `outputs/` **không bị ghi**.
+
+## XONG (25-10 18:5x — TỔNG KIỂM TRA CUỐI: 6 mục nghiệm thu + 3 câu hỏi hội đồng, 111 test mới)
+
+- **Bộ test chốt**: `pytest tests -q` = **1.338 passed, 5 skipped, 3 warnings (60,25 s)**;
+  `T4_RUN_SLOW=1 pytest tests/test_t4_gpu_slow.py -q` = **2 passed (82,32 s)**; chữ ký trọng tài
+  `9f1179ccab74`; **0 test đỏ**. 5 skip = 2 slow T4 (có cổng), 2 symlink của `test_t7_tmp_cleanup`
+  (Windows từ chối), 1 cờ `RERANKER_KEEP_CANDIDATES` không có accessor đơn (vẫn kiểm tĩnh).
+- **Mục 1–2 (tái lập số)**: `tools/diag/final_number_audit.py` → **55 dòng, 55 khớp**
+  (`tmp/final_number_audit.json`, bảng `tmp/final_number_audit_table.md`). **3 đính chính** vào
+  `docs/reports/test_final.md`: "79/79" → **126/126** (D-33), −0,0028 → **−0,0029** (D-31),
+  "17/17" → **16/16**.
+- **Mục 3 (cờ env)**: `tools/diag/env_flag_audit.py` + 41 test — **13/13 lever mặc định TẮT** ở 5 lớp
+  (khai báo, code default, `setdefault`, chain, `.env.example`) **và golden chạy thật**: `t3_golden_dump`
+  trên cây hiện tại cho khối `core` trùng **từng byte** (sha256 `344d55cd35ec…`) với
+  `tests/golden/t3_off_30items_head_f492f05.json`.
+- **Mục 4 (bí mật/đường dẫn)**: `tools/diag/secret_scan.py` + 14 test — 269 file phạm vi, 237 đã quét,
+  296 dòng khớp = **207 chỉ điểm** (placeholder) + **89 cảnh báo nhân thân trên 8 file**;
+  **0 secret**, **0 đường dẫn theo tên user**. → **PA-31** (mask trước khi freeze).
+- **Mục 5 (bất biến #7 + train-leak)**: `tools/diag/train_data_audit.py` + 13 test — 12 file,
+  **10.619 dòng**, khớp manifest 12/12; **0 leak nội dung**, **3 id trùng tên** (khác nội dung) → **PA-32**;
+  code-QA 1.635 dòng tự chứa đáp án (`ok = True`); artifact SFT vòng lặp chỉ ĐỎ ở check độ dài (>768 token).
+- **Mục 6 (3 câu hỏi hội đồng)**: `tools/diag/council_kit.py` + `council_check_{fabrication,referee,gold6}.py`
+  — cả ba **exit 0, 0 dòng LỆCH**, bài in lưu `tmp/council_*.txt`. Số chốt: bịa **7/1.000 dòng = 1 item**
+  nhưng **36/43 ca nặng mù với thước**; trọng tài **1.000/1.000 chấm lại khớp**, env-độc lập, cổng từ chối
+  bản khác, **n_filled = 0** ⇒ chưa có đồng thuận người; gold@6 **0,5186 = 363/700**, **mù 111 item**,
+  trần pool-12 **0,8214**, **125 item trượt recall**, không so được giữa hai index (mất neo 0,4881 ĐỎ).
+- **Răng của máy kiểm**: 43 test `tests/test_final_council_scripts.py` (9 đột biến nội tiến trình) +
+  harness **18/18** `tmp/mutation_check_final_council.log` (lượt đầu 17/18, K-M1 lọt do `answer_chars = 0`
+  ⇒ siết test biên, **không hạ kỳ vọng** — D-33).
+- **Đề xuất mới, chưa tự làm**: **PA-30** (`.env.example` không khai báo 13 cờ lever), **PA-31** (89 dòng
+  PII/8 file), **PA-32** (3 id trùng), **PA-33** (`.gitignore` không loại `tmp/`, `models/`,
+  `data/loop/rounds/`… ⇒ `git add -A` sẽ stage **1.980** đường dẫn, 321 MB `models/`).
+- **Trạng thái git**: 47 file nguồn/công cụ/test **chưa tracked** (3 `src` + 25 `tools` + 19 `tests`, PA-26);
+  11 file tracked đang sửa (6 file PA-8 **không stage** + 5 docs). `data/loop/rounds/`, `outputs/` không bị ghi.
+
+## VIỆC KẾ TIẾP (khi anh duyệt)
+
+1. PA-26 + PA-33 + PA-31 quyết định "fresh clone chạy được 1.338 test" — làm trước, theo thứ tự đó.
+2. PA-17 re-anchor rồi mới chấm lại round trên index mới (T2 mục 9 vẫn ĐỎ 48,81%).
+3. PA-11/PA-12 để đóng T4 mục 5 (trần 1.024 token trên GPU 4 GB).
+4. Nhãn tay 60 mẫu (`referee_labeling_r5`) để có kappa/P–R — T6 6b.
+5. Câu hỏi thật vào `tools/eval/real_questions.jsonl` — T6 6c (0 câu).
+
+## LỆNH TÁI LẬP (bản rút gọn; đầy đủ ở `docs/reports/test_final.md` §13)
+
+```bash
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests -q
+T4_RUN_SLOW=1 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/test_t4_gpu_slow.py -q
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -c "from tools.loop import verify; print(verify.referee_fingerprint())"
+for s in fabrication referee gold6; do PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/council_check_$s.py --json tmp/council_$s.json; done
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/env_flag_audit.py --json tmp/env_flag_audit.json
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/secret_scan.py --json tmp/secret_scan.json
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/train_data_audit.py --json tmp/train_data_audit.json
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/final_number_audit.py --json tmp/final_number_audit.json
+```

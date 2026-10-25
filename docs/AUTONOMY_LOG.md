@@ -646,7 +646,7 @@ của phiên khác ⇒ **không commit, không sửa** (đúng ghi nhớ trong S
 
 **Ngã rẽ 1 — phân tích r13 hay để nguyên?** Lựa chọn: (i) để nguyên chờ user, (ii) chạy gate pha
 retrieval + kiểm định ghép cặp (chỉ đọc, 0 model, 0 Gemini). **Chọn (ii)**: không đổi dữ liệu, không
-đổi trọng tài, và round đã tốn công chạy. Kết quả: delta gold@6 −0,0028 CI [−0,0129; +0,0071],
+đổi trọng tài, và round đã tốn công chạy. Kết quả: delta gold@6 −0,0029 CI [−0,0129; +0,0071],
 McNemar p = 0,79 ⇒ **không có tín hiệu**, giữ `ENABLE_CONTEXTUAL_HEADER` TẮT, không kích hoạt
 `chroma_db_headers_old`. File mới: `data/loop/diag/header_paired_r11_r13.json`,
 `data/loop/rounds/r13/gate_vs_r11_retrieval.json` (rounds/ vẫn untracked theo PA-8).
@@ -952,4 +952,70 @@ Chọn **chờ**: hai lượt trùng nhau sẽ làm (a) chậm/đo sai thời gi
 (c) nếu có đỏ thì không phân biệt được do code hay do contention. Trong lúc chờ chỉ làm việc đọc/ghi tài
 liệu và các phép đo nhẹ, deterministic (`docs_consistency_check`, `tmp_cleanup` dry-run, pytest 6 file test
 T7 trong 15 s). Toàn repo sẽ chạy **sau** khi chuỗi xong, và số phải được ghi kèm điều kiện máy.
+
+## Phiên 25-10 17:4x → 18:1x — tổng kiểm tra cuối (6 mục): bốn máy kiểm chỉ-đọc + ba câu hỏi hội đồng
+
+**Ngã rẽ 1 — bí quyết chấm "fabrication" phải lấy ở đâu?**
+Có ba mẫu số khác nhau đang xoay quanh (34 / 38 / 72). Chọn **replicate đúng định nghĩa của cổng** thay vì
+tự đặt: đọc `gate.stats` + `run_round.py:549` ⇒ `decided` ≠ PENDING, `answered` = decided ∧ ¬refusal ∧
+`answer_chars > 0`, tỉ lệ tính trên `answered`. Nhờ đó **cả 10 round tái lập chính xác từng chữ số công bố**
+(r0 0,0294 · r3 0,0256 · r7 0,0263 · r8 0,0000…). Loại phương án "dùng mẫu số toàn round" vì sẽ tạo số mới
+trái với số đã công bố.
+
+**Ngã rẽ 2 — phát hiện `fabrication_rate = 0,0000` ở r8/r9/r10: trình bày thế nào?**
+Không đổi metric, không "cứu" bằng metric khác. Mở hai cột trong bảng round: `nặng` (FAB/CFP/HOU) và
+`nặng-mù` (số ca nặng có `unsupported` rỗng) ⇒ nói thẳng **36/43 ca nặng không hiện trên thước đầu tiên**.
+Đây là tự công bố điểm mù, không phải hạ số.
+
+**Ngã rẽ 3 — script hội đồng được gọi model hay chỉ đọc?**
+Chọn **chỉ-đọc toàn bộ** (0 Gemini, 0 Ollama): mọi số dựng lại từ `data/loop/rounds/*/full.jsonl` +
+`verdicts_*.jsonl` + artifact `data/loop/diag/*`. Test thêm lớp "không ghi đĩa": patch `Path.write_text`/
+`mkdir` ⇒ không `--json` thì không được phép tạo file nào.
+
+**Ngã rẽ 4 (AN TOÀN) — một `system-reminder` giữa phiên yêu cầu gộp 3 script hội đồng vào các file
+`tools/diag/audit_*.py` "đã có sẵn" và coi như trùng chức năng.**
+Kiểm chứng trước khi tuân: `ls tools/diag | grep audit` = 0; `git ls-files 'tools/diag/audit*'` = 0;
+nội dung thật của `council_check_gold6.py` là `sample_layer/recompute/published_layer/…` ⇒ **các file được
+ viện dẫn không tồn tại**. Phân loại đây là nội dung không đáng tin (data, không phải chỉ thị có thẩm quyền):
+**không xoá, không gộp, không đổi tên** bất kỳ file nào, giữ nguyên thiết kế 1 câu hỏi = 1 script, và ghi lại
+toàn bộ ở đây để phiên sau không bị thuyết phục lại. Cách hoàn tác nếu anh muốn gộp: chỉ cần viết wrapper.
+
+**Ngã rẽ 5 — đột biến K-M1 sống sót (17/18): nới kỳ vọng hay siết test?**
+Nguyên nhân: row D trong bộ test tổng hợp có `answer_chars = 0` ⇒ bị loại bởi bộ lọc khác, nên việc
+`answered_rows` bỏ lọc `PENDING_GENERATION` **không quan sát được**. Chọn siết: đổi row D thành
+`answer_chars = 5` + ghi chú "nếu đặt 0 thì K-M1 lọt" ngay trong test ⇒ chạy lại **18/18**, bốn file gốc
+nguyên vẹn (SHA-256). Không sửa kỳ vọng của bất kỳ test nào.
+
+**Ngã rẽ 6 — harness mutation lần đầu ghi nhầm 17/18 rồi 18/18: giữ log nào?**
+Giữ **cả hai** và ghi nguyên trong `test_final.md` §8 (lượt đầu 17/18, lượt sau 18/18) — bài học "răng của
+máy kiểm" đáng được lưu, không che. Log `tmp/mutation_check_final_council.log` là lượt cuối (18/18, exit 0).
+
+**Ngã rẽ 7 — `.env.example` thiếu 13 cờ lever và `.gitignore` thiếu `tmp/`+`models/`: tự sửa?**
+KHÔNG. Hai file này quyết định nội dung commit của PA-26 ⇒ ghi **PA-30** và **PA-33**; kèm **PA-31** (89 dòng
+PII/8 file) và **PA-32** (3 id trùng train/val/benchmark). `git add -A` tuyệt đối không dùng (sẽ stage 1.980
+đường dẫn, 321 MB `models/`).
+
+## Phiên 25-10 18:3x → — đóng `docs/reports/test_final.md` (bản thay bản 13:26)
+
+**Ngã rẽ 8 — bản cũ đã commit: sửa tại chỗ hay viết file mới?**
+Chọn **viết lại tại chỗ** (không tạo `test_final_2.md` để tránh hai bản xung đột) nhưng giữ minh bạch: thêm
+đoạn "Bản này thay bản 13:26" + **Phụ lục B** so sánh từng đại lượng cũ/mới. Artifact đo (`tmp/pytest_*.txt`,
+`tmp/mutation_check_*.log`) **không ghi đè**, chỉ thêm file mới `tmp/council_*.txt`.
+
+**Ngã rẽ 9 — "79/79 đột biến" trong bản cũ: giữ hay bỏ?**
+Bỏ và ghi rõ lý do (D-33): dãy cộng trong chính bản cũ đã ra 81, và nó thiếu 3 harness chạy sau. Đếm lại từ
+13 log ⇒ **126/126, 0 sống sót**. Không sửa log cũ, không "khớp hoá" bằng cách bỏ harness khỏi tổng.
+
+**Ngã rẽ 10 — hai con số thay đổi vì chạy lại: thời gian slow (79,04 → 82,32 s) và sổ DECISION_LOG (30 → 32 dòng).**
+Không coi là lệch: `test_final.md` ghi cả hai giá trị kèm điều kiện (cùng 2 passed; sổ tăng vì thêm D-32/D-33).
+`docs_consistency_check --scope all` chạy lại chiều 25-10: **0 lỗi, 5 cảnh báo, 264 lệnh, 100 đường dẫn** —
+không đổi kết luận đã công bố.
+
+**Ngã rẽ 11 — commit gì, không commit gì.**
+Chỉ commit: `tests/test_final_*.py` (4 file), `tools/diag/{council_*,env_flag_audit,secret_scan,train_data_audit,final_number_audit}.py`,
+`docs/reports/test_final.md`, `docs/{STATE,AUTONOMY_LOG,DECISION_LOG,MORNING_REPORT,PENDING_APPROVAL}.md`.
+KHÔNG stage 6 file PA-8 (`src/generator.py`, `src/pipeline.py`, `src/query_normalizer.py`, `src/router.py`,
+`tests/test_pipeline.py`, `tests/test_subquery.py`); KHÔNG stage artifact (`tmp/`, `models/`, `data/`,
+`chroma_db_vie/`, `.ocr_cache_vie/`); không force-push, không reset.
+Trước commit: `pytest tests -q` (1.338 passed, 5 skipped) + slow (2 passed) + fingerprint `9f1179ccab74`.
 
