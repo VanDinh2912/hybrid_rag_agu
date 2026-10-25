@@ -37,12 +37,12 @@ Nguyên tắc bất biến đứng trên mọi dòng: **ngưỡng đã đăng k�
 | D-15 | 24-10 | Cổng `refusal_rate_bounded` dùng trần tuyệt đối 0,35 đang veto oan | Đề xuất cổng **tương đối** (candidate ≤ baseline + 0,05); 0,35 thành **cảnh báo không phủ quyết**; 8 test trên bản tạm | `tools/diag/gate_refusal_relative_proposal.py`, `tests/test_gate_refusal_relative_proposal.py`, `docs/PENDING_APPROVAL.md` PA-13 | **CHỜ DUYỆT** — `tools/loop/gate.py` **không** đổi |
 | D-16 | 24-10 | Tổng điểm trọng số trong báo cáo đánh giá đang sai số học | 0,20·9,2+0,15·8,2+0,20·7,0+0,20·8,5+0,25·4,0 = **7,17 → 7,2** (bản cũ ghi 7,4) | `docs/bao_cao/danh_gia_tong_quan_2026-10-23.md`, `data/loop/diag/metric_ci_r5_full.json`, `data/loop/diag/metric_ci_r7_full.json` | GIỮ 7,2; điểm thành phần = **CHỜ DUYỆT** (PA-23) |
 | D-17 | 23→25-10 | Có thể sửa trọng tài/gate giữa chuỗi round mà không phải chấm lại | Chữ ký trọng tài **`9f1179ccab74`** ở mọi round r0…r13 ⇒ không round nào phải chấm lại | `tools/loop/verify.py`, `data/loop/rounds/r10/round_summary_full.json` (`settings`), `data/loop/README.md` mục "Bảy bất biến" | GIỮ (bất biến) |
-| D-18 | 23→25-10 | Số test "563 xanh" là mốc chuẩn để so | Sau T2/T3/T5/header: **967 passed** (62,53 s, 25-10 04:1x); sau T7 (`run_chain` + `cache_policy`): **1.004 passed** | `tmp/pytest_t5_final.txt`, `tests/`, `docs/STATE.md` | GIỮ 967 là mốc lịch sử; **1.004** là mốc hiện tại (D-21/D-22) |
+| D-18 | 23→25-10 | Số test "563 xanh" là mốc chuẩn để so | Sau T2/T3/T5/header: **967 passed** (62,53 s, 25-10 04:1x); sau T7 (`run_chain` + `cache_policy`): **1.004 passed**; sau test biên T6a: **1.005 passed** | `tmp/pytest_t5_final.txt`, `tmp/pytest_t4t6_final.txt`, `tests/`, `docs/STATE.md` | GIỮ 967 là mốc lịch sử; **1.005** là mốc hiện tại (D-21/D-22) |
 | D-19 | 25-10 | Reranker chỉ khả thi nếu chạy trên GPU, mà không được phá `venv/`/`venv_train/` | `venv_gpu/` riêng (torch 2.14.1+cu126): pytest **967 passed**, VRAM 3.594/4.096 MiB, rerank 2,05 s/item | `data/loop/diag/reranker_cost_gpu.json`, `docs/AUTONOMY_LOG.md` 25-10 02:20 | GIỮ (môi trường tách biệt) |
 | D-20 | 25-10 | Ngoại suy chi phí round = chi phí riêng tầng rerank | **Sai**: r12 thật **≈66 phút** (4,74 s/item) = 2,0 s rerank **+ 2,78 s truy xuất nền** ⇒ vượt ngưỡng tự đặt 60 phút | `data/loop/rounds/r12/round_summary_retrieval.json`, `tmp/vram_r12_run.log`, `docs/reports/T5.md` §2.6 | **BÁC** phương pháp; thay bằng `rerank + baseline` |
 | D-21 | 25-10 | Cache sinh chỉ băm `{model, temperature, prompt_version, prompt}` ⇒ đổi ngưỡng cứu/từ chối vẫn trúng câu trả lời của thể chế cũ | Thêm `policy` **chỉ khi** thể chế lệch mốc `DEFAULT_CACHE_TOKEN` (**d0b4c6a65f83**); thể chế mặc định giữ khóa cũ từng byte. 26 test mới, mutation **10/10** bắt | `src/cache_policy.py`, `src/generator.py` (2 hàm `_cache_key`), `tests/test_cache_policy.py`, `tmp/mutation_check_cache_policy.py` | GIỮ trong working tree; **CHỜ DUYỆT commit** (PA-26) |
 | D-22 | 25-10 | Driver `.sh` viết tay trong `tmp/` là đủ để tái lập một round | Không: thiếu log là mất danh sách env; thay bằng spec JSON + manifest tất định. Chuỗi demo 2×20 item chạy end-to-end (gate ĐẠT + attribute); 11 test, mutation **6/6** bắt | `tools/loop/run_chain.py`, `tools/loop/chains/t5a_reranker.json`, `tests/test_run_chain.py`, `tmp/mutation_check_t7.log` | GIỮ — **đã commit** `79a02e5` |
-| D-23 | 25-10 | HEAD `79a02e5` tái lập được cây đã test 1.004 test | **Sai**: còn 35 file nguồn/công cụ/test chưa tracked (gồm `src/answer_guard.py`, `src/cache_policy.py`) + 6 file sửa dở; bản `src/generator.py` trong HEAD không có `effective_prompt_version` | `docs/PENDING_APPROVAL.md` PA-26, `docs/STATE.md` | **MỞ** — chờ chọn phương án commit freeze |
+| D-23 | 25-10 | HEAD `79a02e5` tái lập được cây đã test 1.005 test | **Sai**: còn 35 file nguồn/công cụ/test chưa tracked (gồm `src/answer_guard.py`, `src/cache_policy.py`) + 6 file sửa dở; bản `src/generator.py` trong HEAD không có `effective_prompt_version` | `docs/PENDING_APPROVAL.md` PA-26, `docs/STATE.md` | **MỞ** — chờ chọn phương án commit freeze |
 
 ---
 
@@ -139,7 +139,7 @@ dừng khi cổng không tạo được báo cáo. Không sửa dụng cụ đo:
 không import nổi (`src/cache_policy.py` → `src/answer_guard.py` chưa tracked). Vì luật tự trị cấm commit
 file `src/` dirty của phiên khác, việc đóng khoảng trống này là **PA-26** với ba phương án; đề xuất (ii)
 commit mã + tổng hợp round, không commit `models/` (321 MB), `chroma_*`, `full.jsonl`. Khi được duyệt,
-kiểm chứng bằng fresh clone + `pytest tests -q` kỳ vọng **1.004 passed**.
+kiểm chứng bằng fresh clone + `pytest tests -q` kỳ vọng **1.005 passed**.
 
 ## Cách kiểm sổ này
 

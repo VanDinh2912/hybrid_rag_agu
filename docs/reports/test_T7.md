@@ -78,6 +78,10 @@ Mốc trước T7 là **967 passed** (HEAD `456f35c`): 967 + 11 + 26 = **1.004**
 7 test cũ từng đỏ khi thiết kế "luôn thêm policy" đã được cứu bằng thiết kế "chỉ thêm khi lệch", không
 phải bằng sửa test.
 
+> Cập nhật 25-10 11:4x (sau báo cáo T4/T6): thêm **1 test biên** cho luật refusal tương đối (T6a) ⇒
+> toàn repo hiện **1.005 passed** (`tmp/pytest_t4t6_final.txt`). Con số 1.004 ở trên là ảnh chụp đúng
+> tại thời điểm T7.
+
 ### 2.2 Từng mục của đề bài T7
 
 | Mục | Trạng thái | Bằng chứng |

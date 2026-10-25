@@ -361,14 +361,30 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   `rounds/...` được sửa thành `data/loop/rounds/...`).
 - **README:** thêm mục **5.10** (cách chạy một round / cả chuỗi / dry-run / manifest / ngữ nghĩa cổng /
   cache policy) và **8.1 "Giới hạn thật lòng"** (10 mục, mỗi mục có nguồn); cập nhật số test
-  **1.004**. **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
-- **pytest toàn repo: 1.004 passed** (967 + 11 run_chain + 26 cache_policy). Chữ ký trọng tài
+  **1.005** (1.004 tại thời điểm T7, +1 test biên T6a). **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
+- **pytest toàn repo: 1.005 passed** (967 + 11 run_chain + 26 cache_policy + 1 test biên T6a). Chữ ký trọng tài
   `9f1179ccab74` (không đụng `verify.py`).
 - **CHƯA COMMIT được phần mã T7:** `src/generator.py` là file tracked dirty của phiên T3–T5 (310 dòng
   của phiên đó + 2 hunk T7); `src/cache_policy.py` phụ thuộc `src/answer_guard.py` chưa tracked.
   ⇒ **PA-26** (commit freeze, 3 phương án; đề xuất (ii): commit mã + tổng hợp round, bỏ `models/`,
-  `chroma_*`, `full.jsonl`). Toàn bộ 41 file chưa tracked + 6 file sửa dở được liệt kê trong PA-26.
+  `chroma_*`, `full.jsonl`). Sau `79a02e5` còn **35 file chưa tracked + 6 file sửa dở** (đo 41 file tại
+  `456f35c`; 6 file `run_chain` đã được commit), liệt kê trong PA-26.
 - Gemini đêm nay: **0/14 lượt**. PA-24 (tmp/) vẫn chờ duyệt — **chưa xoá gì**.
 - **KẾ TIẾP (đều cần user):** PA-26 (commit freeze) ⇒ PA-25 (bỏ fold + r14 ≈66 phút) ⇒ PA-1 (kích hoạt
-  `chroma_db_vie`) ⇒ PA-13/PA-23 ⇒ T1(b) 5 id còn lại (cửa sổ PerDay ~14:30 25-10) ⇒ đề bài kiểm thử
-  T0–T7 (file test theo từng nhiệm vụ + `docs/reports/test_final.md`).
+  `chroma_db_vie`) ⇒ PA-13/PA-23 ⇒ T1(b) 5 id còn lại (cửa sổ PerDay ~14:30 25-10).
+
+## XONG (25-10 11:5x — đủ báo cáo kiểm thử T0–T7, chốt 64/64 mutation)
+
+- **`docs/reports/test_T4.md`** (21 test: 11 cờ model + 10 SFT; mutation **7/7**), **`test_T6.md`**
+  (15 test: 9 cổng refusal tương đối + 6 khung câu hỏi thật; mutation **10/10**),
+  **`test_final.md`** (bảng 8 nhiệm vụ, §2 kiểm chứng cuối, §3 khoảng trống, Phụ lục A).
+- **Tổng mutation 64/64 bị bắt**; mọi lần hoàn nguyên byte-identical. Hai lỗ test được đóng bằng
+  **thêm test mới**, không sửa kỳ vọng cũ: T4a ghim "một biến" (`LocalSLM(model=override)`), T6a ghim
+  đúng biên `candidate = baseline + delta` (0,3500 ĐẠT; 0,3501 KHÔNG).
+- **pytest toàn repo: 1.005 passed** (28,27 s) — nguồn `tmp/pytest_t4t6_final.txt`; trọng tài
+  `9f1179ccab74`. Số 1.004 trong báo cáo T7 giữ nguyên lịch sử + ghi chú ngày.
+- **Commit docs-only** các báo cáo + chỉnh đồng bộ số test/HEAD; `tests/test_gate_refusal_relative_proposal.py`
+  (thêm 1 test) và phần mã T7 vẫn chờ PA-26 theo luật không commit `src/` dirty của phiên khác.
+- PA-24: ba báo cáo mới dẫn trực tiếp `tmp/mutation_check_t{4,6}.*` + `tmp/pytest_t4t6_final.txt`
+  ⇒ đã bổ sung vào nhóm GIỮ. Gemini đêm nay **0/14**.
+

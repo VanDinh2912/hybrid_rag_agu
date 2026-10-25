@@ -4,8 +4,8 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.004 passed** (26,3 s, 25-10 11:3x; 967 + 11 `test_run_chain` +
-26 `test_cache_policy`).
+`pytest tests -q` mới nhất: **1.005 passed** (28,3 s, 25-10 11:4x; 967 + 11 `test_run_chain` +
+26 `test_cache_policy` + 1 test biên T6a).
 
 ## CẬP NHẬT 25-10 11:3x — T7 XONG trong working tree (đọc mục này trước mục 04:1x)
 
@@ -24,11 +24,16 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
   mỗi mục có nguồn). **ROADMAP** thêm P5.21/P5.22/P5.23.
 - **CHƯA COMMIT phần mã T7** — đây là việc cần anh quyết: `src/generator.py` là file tracked dirty của
   phiên T3–T5 (310 dòng của phiên đó + 2 hunk T7), `src/cache_policy.py` phụ thuộc
-  `src/answer_guard.py` chưa tracked. **PA-26** (mở rộng PA-8) liệt kê đúng 41 file chưa tracked +
-  6 file sửa dở và ba phương án commit freeze; đề xuất (ii) commit mã + tổng hợp round, bỏ `models/`,
-  `chroma_*`, `full.jsonl`. Cho tới khi duyệt, "fresh clone" **không** tái lập được 1.004 test dù cây
+  `src/answer_guard.py` chưa tracked. **PA-26** (mở rộng PA-8) liệt kê đúng 35 file chưa tracked +
+  6 file sửa dở (đo 41 file tại `456f35c`; `79a02e5` đã tracked 6 file `run_chain`) và ba phương án commit freeze; đề xuất (ii) commit mã + tổng hợp round, bỏ `models/`,
+  `chroma_*`, `full.jsonl`. Cho tới khi duyệt, "fresh clone" **không** tái lập được 1.005 test dù cây
   hiện tại xanh.
-- PA-24 (`tmp/`) vẫn **chưa xoá gì**; Gemini đêm nay **0/14**.
+- **Đề bài kiểm thử T0–T7 đã đủ báo cáo:** thêm `docs/reports/test_T4.md` (21 test, mutation **7/7**),
+  `test_T6.md` (15 test, mutation **10/10** — có thêm 1 test biên mới cho ngưỡng tương đối) và
+  `test_final.md` (bảng đối chiếu 8 nhiệm vụ, **64/64 đột biến bị bắt**, §2 kiểm chứng cuối). Hai lỗ
+  test thật đã đóng mà không sửa kỳ vọng cũ: T4a "một biến" và T6a "đúng biên". Không lượt Gemini nào.
+- PA-24 (`tmp/`) vẫn **chưa xoá gì**; Gemini đêm nay **0/14**. Ba báo cáo mới dẫn trực tiếp
+  `tmp/mutation_check_t{4,6}.{py,log}` + `tmp/pytest_t4t6_final.txt` ⇒ đã ghi vào nhóm GIỮ của PA-24.
 
 ## CẬP NHẬT 25-10 04:1x — r12 CHẤM XONG: kết quả âm, nguyên nhân là quy ước fold (đọc mục này trước)
 
