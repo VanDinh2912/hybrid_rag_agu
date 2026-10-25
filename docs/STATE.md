@@ -524,3 +524,31 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Nghiệm thu: chạy `pytest tests -q` + slow trên GPU, bảng tái lập số Phụ lục A, quét bí mật/đường dẫn
   cá nhân, bất biến #7 + chặn rò rỉ dữ liệu train, 3 câu hỏi hội đồng.
 - `gate.py`/trọng tài vẫn **không sửa**; chỉ đề xuất ở PA-13.
+
+## XONG (25-10 17:2x — T7 đợt 2: 106 test cho 6 mục đề bài + nghiệm thu tái lập r0)
+
+- **4 file test mới** (106 test, `tmp/pytest_t7_dot2_tests.txt`): `tests/test_t7_chain_env_manifest.py`
+  (19 — mục 1+2: dry-run 0 subprocess, `require` cấp bước bắt trước bước đầu, manifest so **bytes**,
+  từ chối thư mục round đã có), `tests/test_t7_cache_reuse_e2e.py` (18 — mục 3: stub **đếm số lần gọi**,
+  6 cặp ngưỡng ⇒ entry mới, trả env cũ ⇒ trúng entry cũ), `tests/test_t7_tmp_cleanup.py` (33 — mục 4:
+  mặc định liệt kê, `--yes` mới xoá, 3 lớp chặn symlink/junction/vùng bảo vệ **tách riêng bằng junction
+  thật `mklink /J`**), `tests/test_t7_docs_consistency.py` (36 — mục 5+6: sổ 6 cột + nguồn phải có trên
+  đĩa + file README nhắc phải tồn tại + lệnh phải `--help`/dry-run được, kèm 5 test chỉ-đọc trên repo thật).
+- **Mutation đợt 2: 20/20 bắt được, 0 lọt** (`tmp/mutation_check_t7_dot2.py` → `.log`, chạy trên **bản sao**
+  `tmp/mut7_tree/`, baseline 108 passed/2 skipped/7 deselected). Lượt đầu **18/20** (M12+M14 lọt vì 3 lớp
+  chặn dư thừa) ⇒ thêm 2 test cô lập từng lớp, **không nới checker**, không sửa test cũ.
+- **Số công cụ**: `docs_consistency_check --scope all --run-help` = **29 dòng sổ / 0 lỗi / 100 đường dẫn /
+  264 lệnh / 4 script `--help` rc=0 / 5 cảnh báo**; `tmp_cleanup` mặc định = 164 mục, **95 GIỮ vì được trích
+  dẫn**, 69 đề xuất xoá (26,4 MB), `deleted=[]`, `applied=false` ⇒ **chưa xoá gì** (PA-24).
+- **Nghiệm thu "người ngoài chạy lại r0"**: gold@6 tính lại từ artifact = **0,5186** (n=811, 700 item vàng)
+  = đúng số đã công bố; và **một lệnh** `run_chain --chain tools/loop/chains/t7_repro_r0.json` chạy lại
+  811 item retrieval-only vào `tmp/rounds_t7_repro/` (0 Gemini, env ghim theo manifest r0) — so sánh 3 tầng
+  (gold@k / verdict từng item / top-6 chunk ids) bằng `tmp/compare_r0_repro.py`, kết quả ghi ở
+  `docs/reports/test_T7.md` §8.4.
+- **Hai sự cố bằng chứng đã ghi nguyên** (§8.5 + AUTONOMY_LOG Ngã rẽ 1 + DECISION_LOG D-27): harness 20 đột
+  biến ban đầu trùng tên làm mất log 6/6 của đợt 1 ⇒ khôi phục từ transcript (`unified_diff` = 0), **chạy lại
+  được 6/6**, đổi tên harness đợt 2; snapshot `tmp/cleanup_report_t7.json` bị ghi đè (104→164 mục).
+  Đính chính **1 lỗi số đã công bố**: "17/17 đột biến" → tổng đúng là **6 + 10 = 16** (D-28).
+- **PA-29 mới**: 5 script README không có argparse; `ingest.py` `shutil.rmtree(./chroma_db)` không dry-run
+  ⇒ rủi ro onboarding thật. `gate.py` + trọng tài **không đổi một byte**, chữ ký vẫn `9f1179ccab74`,
+  **0 lượt Gemini**, `data/loop/rounds/` và `outputs/` **không bị ghi**.

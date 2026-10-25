@@ -921,3 +921,57 @@ thái 2/N hiện hành + ca chứng minh bộ kiểm báo ĐỎ cho nó), mutati
 **Hoàn tác:** xoá 3 tệp mới (`tools/diag/check_sft_invariants.py`,
 `tests/test_t4_sft_invariants.py`, `tests/test_t4_generator_contract.py`) hoặc `git revert <sha>`
 commit test T4; **không có dữ liệu/`src/` nào bị đổi**.
+
+---
+
+## PA-29 — 5 script README nhắc **không có argparse**; `ingest.py` xoá index sản xuất mà không có dry-run lẫn xác nhận (đợt kiểm thử T7, 25-10 16:5x)
+
+**Vấn đề (đo được, không suy đoán).** Đề bài T7 mục 6 đòi "mọi lệnh trong README chạy được ở chế độ
+`--help` hoặc dry-run". Bộ kiểm `tools/diag/docs_consistency_check.py` phân loại 264 lệnh trong
+README/ROADMAP/docs và phát hiện **9 script repo** được nhắc; trong đó **5 script không chứa
+`ArgumentParser(`** ⇒ không thể tự động kiểm `--help`/dry-run, chỉ ghi nhận được ở mức **CẢNH BÁO**:
+
+| Script | Bao nhiêu dòng | Hành vi thật khi chạy theo README |
+|---|---|---|
+| `ingest.py` | 88 | `shutil.rmtree(persist_dir)` với `persist_dir = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")` (dòng 22–26) ⇒ **xoá index hiện có ngay tại chỗ**, rồi OCR + nhúng lại toàn bộ corpus; không hỏi lại, không dry-run |
+| `learn.py` | 139 | `from ingest import run_ingestion` ⇒ cùng hệ quả xoá index khi đi vào nhánh rebuild |
+| `src/analyze_ab.py` | 463 | đọc `outputs/` và ghi phân tích + biểu đồ; không cờ nào để chạy thử |
+| `demo_streamlit.py` | 1217 | app Streamlit (giữ cổng) — không có `--help` |
+| `ui/app.py` | 1014 | GUI Tkinter, mở cửa sổ và **không tự thoát** ⇒ checker cố chạy nó sẽ treo tới timeout |
+
+Riêng **`ingest.py` là rủi ro thật với người mới**: README §5.1 (dòng 338) và §5.4 (dòng 420) bảo
+"chạy `python ingest.py`"; `chroma_db/` đang gitignore nên bản clone mới **buộc** phải chạy lệnh này
+trước khi tái lập r0 — và chỉ một lần chạy nhầm khi `CHROMA_PERSIST_DIR` trỏ về `./chroma_db` là mất
+index sản xuất (361 chunk, tái tạo = hàng giờ OCR + nhúng).
+
+Bằng chứng: `tmp/docs_check_t7_dot2.json` (`command_warnings` = 5 dòng trên, `help_checked` = 4 script
+còn lại đều rc=0), `README.md:338`, `README.md:420`, `ingest.py:22–26`.
+
+**Vì sao KHÔNG tự sửa.** `ingest.py`/`learn.py` thuộc nhóm file nguồn production chưa được commit
+(PA-26) và là đường onboarding chính của repo; đổi CLI của chúng — dù "thêm argparse" là không đổi
+hành vi mặc định — vẫn là thay đổi công cụ mà người dùng cuối chạy theo trí nhớ, cần anh duyệt.
+`ui/app.py`/`demo_streamlit.py` thuộc phần frontend, ngoài phạm vi code của anh theo thoả thuận.
+
+**Đề xuất (chọn một hoặc kết hợp):**
+- (a) **Tối thiểu, an toàn nhất**: `ingest.py` thêm `--dry-run` (in: corpus sẽ đọc, `persist_dir` sẽ ghi,
+  collection hiện có bao nhiêu chunk, có bị `rmtree` hay không — **không** đụng đĩa) + `--yes` để cho
+  phép xoá, mặc định là **dừng và hỏi**; README §5.1 ghi lại hai lệnh đó.
+- (b) **Cho phép tái lập trên bản clone mới** (đúng tiêu chí nghiệm thu T7): thêm `--out <dir>` để
+  người mới build index vào `chroma_db_repro/` mà không đụng index đang dùng; `run_chain`/spec nhận
+  thêm env `CHROMA_PERSIST_DIR` (đã có cơ chế `requires` + manifest).
+- (c) `src/analyze_ab.py` + `learn.py`: thêm argparse cùng kiểu `tools/diag/*` (chế độ chỉ-đọc trước).
+- (d) `ui/app.py`, `demo_streamlit.py`: **không** thêm `--help` cũng được, nhưng README phải ghi rõ
+  "GUI, không có chế độ dry-run" ⇒ để checker khỏi báo cảnh báo lặp (thêm whitelist có đăng ký).
+- (e) Kèm theo (dù chọn a–d nào): `run_help()` trong `tools/diag/docs_consistency_check.py` đang chạy
+  `--help` với **env kế thừa**; đề nghị truyền env đã gỡ `GEMINI_API_KEY`/`GOOGLE_API_KEY`/`HF_TOKEN`
+  để việc "kiểm tra CLI" không bao giờ đưa bí mật vào process của script được kiểm.
+
+**Đã làm trong phiên này (không sửa script nào):** checker phân loại rõ LỖI (script repo không tồn tại)
+vs CẢNH BÁO (script tồn tại nhưng không argparse) — nghĩa là 5 script trên **không được tính là đã đạt**
+mục 6; mutation **M20** ("mọi script đều được coi là có `--help` ⇒ mất cảnh báo onboarding") bị bắt,
+kèm test ghim đúng danh sách 5 cảnh báo của repo thật
+(`TestRepoThatChiDoc.test_script_khong_argparse_chi_dung_o_muc_canh_bao`).
+
+**Hoàn tác:** không có thay đổi nào ở script production để hoàn tác; nếu anh từ chối PA-29 thì chỉ cần
+xoá mục này — cảnh báo vẫn còn trong `tmp/docs_check_t7_dot2.json` và bộ test không đổi kết luận.
+

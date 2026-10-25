@@ -4,9 +4,37 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.124 passed, 2 skipped** (26,92 s, 25-10 16:0x; mốc trước 1.064,
-thêm 60 test kiểm thử T6 đợt 2; 2 skipped là hai test T4 **slow**, chạy riêng bằng
-`T4_RUN_SLOW=1`).
+`pytest tests -q` mới nhất: **1.228 passed, 4 skipped** (36,68 s, 25-10 17:2x; mốc trước 1.124,
+thêm 106 test kiểm thử T7 đợt 2; 4 skipped = 2 test T4 **slow** (chạy riêng bằng `T4_RUN_SLOW=1`)
++ 2 test symlink thường trên Windows — 2 test **junction** vẫn chạy và là bằng chứng M12/M14).
+
+## CẬP NHẬT 25-10 17:2x — KIỂM THỬ T7 (đợt 2): 106 test phủ mục 1–7, mutation 20/20, **tái lập thật r0 bằng một lệnh**
+
+- **106 test mới** — `test_t7_chain_env_manifest.py` 19, `test_t7_cache_reuse_e2e.py` 18,
+  `test_t7_tmp_cleanup.py` 33, `test_t7_docs_consistency.py` 36; cộng 37 test đợt 1 ⇒ **143 test T7**
+  (141 passed + 2 skipped, 15,25 s, `tmp/pytest_t7_dot2_tests.txt`). Chi tiết
+  [`docs/reports/test_T7.md`](reports/test_T7.md) §8 + Phụ lục A2.
+- **Tiêu chí "người ngoài tái lập r0 với cùng số gold@6" ĐẠT ở mức chạy thật**, không chỉ tính lại
+  artifact: `tools/loop/chains/t7_repro_r0.json` sinh round 811 item vào `tmp/rounds_t7_repro/` —
+  **gold@6 0,5186 = 0,5186**, **811/811 verdict trùng, 0 đổi chiều**, **811/811 top-6 giống hệt theo
+  thứ tự**, 37,5 phút, **0 lượt Gemini**; manifest của `--dry-run` **byte-identical** với manifest lượt
+  chạy (`295413c196de…`). Xem D-30.
+- **Đính chính số đã công bố** (không che): §2.3/§3 đợt 1 ghi "17/17 đột biến" nhưng tổng thật là
+  6 + 10 = **16/16**; median r0 dẫn ở §8.4 là **2,76 s/item** (số 2,78 đã ghi là của **r11**).
+- **Mutation đợt 2 20/20** chạy trên **bản sao** `tmp/mut7_tree/` (baseline 108 passed); lượt đầu chỉ
+  **18/20** vì `check_target()` có **3 lớp chặn dư thừa** ⇒ thêm 2 test `mklink /J` cô lập từng lớp,
+  **không nới checker** (D-28). `gate.py` và trọng tài **không đổi một byte**, chữ ký `9f1179ccab74`.
+- **Sự cố ghi đè bằng chứng lần thứ hai** (D-27): harness mới trùng tên `tmp/mutation_check_t7.py` làm
+  mất log 6/6 mà D-22 dẫn ⇒ khôi phục từ transcript (`unified_diff` = 0) + **chạy lại đạt 6/6**
+  (`tmp/mutation_check_t7_rerun_dot2.log`), harness mới đổi hậu tố `_dot2`. Quy ước mới: artifact đã
+  được trích dẫn thì **không tái sử dụng tên**.
+- **Việc cần duyệt mới: PA-29** — 5 script README nhắc **không có argparse** (không kiểm `--help` được),
+  nghiêm trọng nhất `ingest.py:22–26` làm `shutil.rmtree(./chroma_db)` ⇒ lệnh README §5.1 **xoá index sản
+  xuất**, không dry-run, không xác nhận. Checker chỉ báo **CẢNH BÁO**, không làm giả ĐẠT.
+- **Rủi ro còn mở cho nghiệm thu cuối:** mức "fresh clone" vẫn chưa đạt vì PA-26 (`gate.py`, `src/cache_policy.py`,
+  `data/loop/rounds/`… chưa được git theo dõi) + PA-29; `tmp_cleanup` **chưa xoá gì** (`applied=false`);
+  checker chỉ xác nhận số **tồn tại + nguồn có thật**, việc **chéo lại từng số** là của `test_final.md`.
+
 
 ## CẬP NHẬT 25-10 16:0x — KIỂM THỬ T6 (đợt 2): 60 test phủ 10 mục, mutation 10/10, `gate.py` không đổi
 

@@ -892,3 +892,64 @@ Chọn **chặt**: nhãn sai định dạng ném `LabelError` **kể cả** khi 
 ở chế độ không `--strict`), `weighted_score()` assert tổng trọng số = 1,0 và khớp bộ khoá, câu hỏi trùng
 id/trùng nội dung bị **loại** còn câu trùng với `testset_v1` thì **giữ nhưng gắn cờ** `leak_testset_v1`
 để người đọc tự quyết. Không có ngoại lệ "tự sửa nhãn cho khớp".
+
+## Phiên 25-10 16:0x → 17:2x — kiểm thử T7 đợt 2: 106 test cho 6 mục đề bài, 0 Gemini, và **lặp lại đúng một sự cố đã học ở T6**
+
+**Ngã rẽ 1 — sự cố lặp: harness 20 đột biến mang tên trùng bằng chứng đã công bố.**
+Đặt harness mới vào `tmp/mutation_check_t7.py` + log `tmp/mutation_check_t7.log` ⇒ **ghi đè** bằng chứng
+6/6 mà D-22 và §2.3 của báo cáo T7 đang dẫn. Đây là lần **thứ hai** cùng một lỗi (T6 đợt 2 đã dính, đã
+ghi ở mục trên). Không có `git checkout` nào cứu được vì `tmp/` không tracked. Chọn **khôi phục trước,
+đổi tên sau** (đúng thủ tục đã dùng ở T6): (1) trích `content` của lệnh `Write` lượt #1413 trong
+transcript phiên và đối chiếu với **snapshot `Read`** lượt #1578 ⇒ `unified_diff` = 0 khác biệt (chỉ
+khác newline cuối) nên bản khôi phục là **đúng byte**, không phải bản dựng lại phỏng đoán;
+(2) ghi nguyên 8 dòng log (baseline `11 passed in 0,22s` + M1–M6 `BẮT ĐƯỢC` + tổng kết 6/6) từ output
+đã lưu ở lượt #2134; (3) đổi harness đợt 2 sang `tmp/mutation_check_t7_dot2.py`/`.log`;
+(4) **kiểm bằng chứng còn áp dụng cho code hiện tại**: SHA-256 của `tools/loop/run_chain.py`
+(`bf13918a…`), `src/cache_policy.py` (`652477e3…`), `src/generator.py` (`d3791b44…`) **trùng** với ba giá
+trị đợt 1 đã ghi ⇒ log 6/6 mô tả đúng file đang có trên đĩa. Hệ quả còn lại (không khôi phục được):
+`tmp/cleanup_report_t7.json` bị lượt kiểm kê đợt 2 ghi đè (104 mục/92,1 MB → 164 mục/26,4 MB). Vì `tmp/`
+lớn lên giữa phiên nên con số khác là **đúng bản chất**, và PA-24 đã ghi số đợt 1 như ảnh chụp có ngày
+giờ; không có mất mát số liệu đã công bố. **Quy tắc tự áp từ giờ:** trước khi ghi đè một tên đã tồn tại
+trong `tmp/`, kiểm tên đó có được tài liệu dẫn hay không — nếu có, thêm hậu tố đợt (`_dot2`) chứ không
+ghi đè.
+
+**Ngã rẽ 2 — đột biến làm hỏng lớp chặn nào: nới checker hay thêm test?**
+Lượt đầu của harness 20 đột biến cho **M12 và M14 lọt**. Nguyên nhân không phải checker lỏng mà là
+`check_target()` chặn bằng **ba lớp dư thừa** (symlink/junction → realpath phải trong `tmp/` → tiền tố
+vùng bảo vệ): bỏ một lớp thì lớp khác vẫn chặn, nên test hiện có không phân biệt được lớp nào đang làm
+việc. Ba lựa chọn: (a) chấp nhận "20 trừ 2" và giải thích; (b) bỏ bớt lớp dư để mỗi lớp có test riêng —
+rủi ro giảm phòng vệ; (c) **thêm hai test cô lập từng lớp** bằng junction thật (`mklink /J`, không cần
+quyền admin, `is_symlink()` trả `False`). Chọn (c): thêm
+`test_junction_trong_tmp_dan_den_muc_khac_trong_tmp_van_bi_chan` (nối lớp a) và
+`test_tmp_chinh_no_la_junction_ra_vung_bao_ve_bi_chan` (nối lớp c) ⇒ 20/20. Không bỏ lớp phòng vệ nào,
+không sửa test cũ cho xanh.
+
+**Ngã rẽ 3 — mục 6 của đề bài: script thiếu `--help` là LỖI hay CẢNH BÁO?**
+`ingest.py`, `learn.py`, `src/analyze_ab.py`, `demo_streamlit.py`, `ui/app.py` không có argparse ⇒ không
+thể chứng minh "chạy được ở chế độ `--help`/dry-run". Chọn **phân loại trung thực** thay vì làm giả kết
+quả: script repo **không tồn tại** = LỖI (rc=1); script tồn tại nhưng **thiếu argparse** = CẢNH BÁO (rc=0)
+— vì kết luận đúng là "không kiểm được", không phải "đạt". Hai đường dẫn README nhắc mà do GUI tự sinh
+lúc chạy (`data/normalization_pairs.json`, `data/corpus/ghi_chu_hoc_them.txt`) được đưa vào allowlist
+**có đăng ký** + in ghi chú "bỏ qua (file tự sinh lúc chạy)"; một file `data/` **khác** không có thật vẫn
+bị bắt (test ghim cả hai nửa). `ui/app.py` là Tkinter mở cửa sổ không tự thoát ⇒ **không** chạy, chỉ phân
+loại. Rủi ro thật tìm được khi đọc `ingest.py`: `shutil.rmtree(persist_dir)` với mặc định `./chroma_db`
+⇒ lệnh README §5.1 xoá index sản xuất, không dry-run, không xác nhận ⇒ **PA-29**, không tự sửa.
+
+**Ngã rẽ 4 — tái lập r0 để nghiệm thu "người ngoài chạy được": đo ở mức nào?**
+Ba lựa chọn: (i) chỉ tính lại gold@6 từ artifact đã đóng; (ii) chạy lại một round retrieval **thật** nhưng
+ghi vào `data/loop/rounds/` — **loại** vì cấm ghi đè round đã đóng; (iii) chạy lại 811 item retrieval-only
+bằng **một lệnh `run_chain`**, `out_root=tmp/rounds_t7_repro`, env ghim theo manifest r0
+(`ENABLE_CLASSIFIER=1 ROUTER_SOFT_FILTER=0 ROUTER_FILTER_RANK_BONUS=3 ROUTER_SOURCE_QUOTA=0
+ENABLE_ANSWER_RESCUE=0 RESCUE_MIN_SCORE=0.8 NORMALIZE_SANITY_GUARD=0 ENABLE_RERANKER=0 …`),
+generator `offline_qwen` ⇒ **0 Gemini**, không đụng round cũ. Chọn (iii) + (i). Lưu ý kỹ thuật: số
+gold@6 **phải** tính bằng `gate.metrics` (mẫu số `has_gold_chunk`), không dùng
+`run_round.gold_in_context_flags()` — hàm đó ép `True` cho item không có chunk vàng nên cho số khác.
+Chưa tính được độ lệch từng item tới khi chuỗi xong (~36 phút); khi có số, ghi nguyên cả trường hợp
+lệch (đã thấy 1 item `T269724694329437` flipped ở lượt smoke 20 item).
+
+**Ngã rẽ 5 — chạy `pytest tests -q` trong lúc chuỗi 811 item đang chạy?**
+Chọn **chờ**: hai lượt trùng nhau sẽ làm (a) chậm/đo sai thời gian đã công bố, (b) tranh VRAM với Ollama,
+(c) nếu có đỏ thì không phân biệt được do code hay do contention. Trong lúc chờ chỉ làm việc đọc/ghi tài
+liệu và các phép đo nhẹ, deterministic (`docs_consistency_check`, `tmp_cleanup` dry-run, pytest 6 file test
+T7 trong 15 s). Toàn repo sẽ chạy **sau** khi chuỗi xong, và số phải được ghi kèm điều kiện máy.
+

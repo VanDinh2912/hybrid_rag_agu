@@ -1,0 +1,32 @@
+{
+  "name": "t7_repro_r0",
+  "description": "T7 nghiệm thu: tái lập round retrieval-only r0 bằng MỘT lệnh, ghi vào tmp/ (không đụng data/loop/rounds đã đóng). Thể chế lấy đúng từ settings của `data/loop/rounds/r0/round_summary_retrieval.json` (split all, top_k 6, classifier 1, guard 1, soft filter 0, bonus 3, mọi lever mới TẮT). Ước lượng thời gian: r0 cũ mất 37,6 phút cho 811 item (mean 2,78 s/item).",
+  "requires": [],
+  "out_root": "tmp/rounds_t7_repro",
+  "defaults": {
+    "ENABLE_CLASSIFIER": "1",
+    "ENABLE_ANSWER_GUARD": "1",
+    "ROUTER_SOFT_FILTER": "0",
+    "ROUTER_FILTER_RANK_BONUS": "3",
+    "ROUTER_SOURCE_QUOTA": "0",
+    "ENABLE_ANSWER_RESCUE": "0",
+    "RESCUE_MIN_SCORE": "0.8",
+    "NORMALIZE_SANITY_GUARD": "0",
+    "ENABLE_DECOUPLED_REFUSAL": "0",
+    "ENABLE_EVIDENCE_SELECTION": "0",
+    "ENABLE_CONTEXTUAL_HEADER": "0",
+    "ENABLE_RERANKER": "0",
+    "GATE_ALLOW_CONFIG_MISMATCH": "0"
+  },
+  "rounds": [
+    {
+      "round": "r0_repro",
+      "phase": "retrieval",
+      "testset": "data/loop/testset_v1.jsonl",
+      "split": "all",
+      "top_k": 6,
+      "generator": "offline_qwen",
+      "strategy": "stratified"
+    }
+  ]
+}
