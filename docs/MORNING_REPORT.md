@@ -6,7 +6,7 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
 `pytest tests -q` mới nhất: **967 passed** (66,70 s, 25-10 02:1x; 962 + 5 test build header).
 
-## CẬP NHẬT 25-10 03:10 — T5/T6 giao lại: 5a đo được trên GPU, r12 đang chạy
+## CẬP NHẬT 25-10 04:1x — r12 CHẤM XONG: kết quả âm, nguyên nhân là quy ước fold (đọc mục này trước)
 
 - **T6 (6a–6d) đã có đủ artifact từ 24-10**, phiên này chỉ bổ sung phần còn thiếu so với tiêu chí
   "mọi bảng chính có CI và nguồn file": thêm **CI cho chỉ số truy xuất** (gold@6 r11/r13, delta ghép
@@ -19,15 +19,25 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 - **5a đã gỡ được nút chi phí:** dựng `venv_gpu/` riêng (torch cu126 + đúng `requirements-lock.txt`,
   không sửa `venv/` và `venv_train/`; pytest trên đó 967 passed) rồi đo lại probe **giữ nguyên thiết
   kế** (model, `max_length=512`, pool 20, batch 4), chỉ đổi thiết bị sang GPU: median **2,046 s/item**
-  (tầng random) và **2,217 s** (tầng hard), ngoại suy 811 item = **27,3 / 29,6 phút** ⇒ **dưới luật
-  60 phút**, nên r12 được chạy mà không phải hạ `max_length` hay đổi model. VRAM **3.594/4.096 MiB**
+  (tầng random) và **2,217 s** (tầng hard) — **chỉ riêng tầng rerank**; cộng truy xuất nền 2,78 s/item
+  thì toàn round ≈ 4,8 s/item ⇒ r12 chạy thật **≈66 phút (vượt ngưỡng 60 phút**, đã đính chính; xem
+  `docs/reports/T5.md` §2.6), nên r12 được chạy mà không phải hạ `max_length` hay đổi model. VRAM
+  **3.594/4.096 MiB**
   khi nạp reranker; RAM trống sau nạp 2.967 MiB. Nguồn: `data/loop/diag/reranker_cost_gpu.json`,
   `tmp/r12_gpu_probe.log`, `tmp/vram_r12_probe.log`; báo cáo `docs/reports/T5.md` §2.6.
-- **r12 đang chạy** (r11 + `ENABLE_RERANKER=1 RERANKER_KEEP_CANDIDATES=1`, retrieval-only 811 item,
-  log `tmp/r12_run.log`): 170/811 lúc 03:07, **0 lỗi**, median 4,66 s/item (≈2 s rerank + ≈2,7 s
-  truy xuất/classifier như r11) ⇒ ETA ~03:58, tổng ~63 phút. Nhãn classifier **trùng r11 ở 74/74**
-  item đã kiểm ⇒ tranh chấp VRAM với Ollama không làm lệch confound. Chấm xong sẽ có: gate r12-vs-r11,
-  `attribute.py`, kiểm định ghép cặp, `gold_rank_ceiling` pool 20 (§2.7).
+- **r12 ĐÃ CHẠY XONG và là kết quả ÂM RÕ RÀNG** (r11 + `ENABLE_RERANKER=1 RERANKER_KEEP_CANDIDATES=1`,
+  retrieval-only 811/811, **0 lỗi**, 25-10 02:53→03:58, chữ ký trọng tài `9f1179ccab74`):
+  gold@6 **0,7400 → 0,6686**, delta ghép cặp **−0,0714, CI [−0,1014; −0,0414]**, McNemar **83 mất /
+  33 được, p = 3,9e−06**; `FAIL_RETRIEVAL` 182 → 232; EXACT 0,2115 → 0,0385; TRAP → 0; neo HUMAN
+  0,8144 → 0,7010; gate **6/8 kiểm tra vi phạm**. **Nguyên nhân đã kiểm bằng probe** (không phải suy
+  đoán): `src/reranker.py:score_pairs` chấm `fold(query)` (mất dấu) với passage còn dấu ⇒ 0/30 item
+  lấy lại gold bằng query fold, **28/30** bằng query nguyên văn. Cờ **giữ TẮT**; sửa + r14 (~66 phút,
+  0 Gemini) nằm trong **PA-25**. Trần oracle pool 20 = **0,8871** (EXACT 0,6154) ⇒ hướng đi còn cửa.
+  Chi phí thật: median 4,74 s/item, **≈66 phút** (đã đính chính con số "45 phút/4,66 s" cũ — xem
+  `docs/reports/T5.md` §2.6), VRAM 3.594/4.096 MiB dùng chung Ollama, nhãn classifier trùng r11 74/74.
+- Ghi chú vận hành: ngoại suy chi phí trước khi chạy đã **thiếu hạng tử truy xuất nền** (2,0 s rerank
+  + 2,78 s baseline ≈ 4,8 s/item); round vì thế vượt ngưỡng tự đặt 60 phút. Round vẫn hợp lệ để kết
+  luận, nhưng lý do cho phép chạy lúc đó sai — ghi ở `AUTONOMY_LOG.md` 25-10 04:0x.
 - **5b đã đóng (r13, §2.5):** delta gold@6 −0,0028 CI [−0,0129; +0,0071], p = 0,79 ⇒ không tín hiệu,
   cờ giữ TẮT. Quy lỗi r11→r13: nhóm `ranking_*` 94 → 97 (+3), nhóm filter đi ngang.
 - Gemini: **0 lượt** (T1(b) còn 5 id, chờ cửa sổ ~14:30).

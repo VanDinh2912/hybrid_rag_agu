@@ -439,6 +439,13 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
 
 ## PA-19 — T5a: chi phí reranker vượt ngưỡng 60 phút, r12 CHƯA chạy (24-10 23:20)
 
+> **ĐÃ GIẢI QUYẾT 25-10 03:0x — kèm ĐÍNH CHÍNH 04:1x (không cần duyệt nữa):** đo lại trên **GPU**
+> bằng `venv_gpu/` riêng, giữ nguyên model/`max_length=512`/pool/batch đã đăng ký ⇒ median **2,05 s/item
+> riêng tầng rerank**. Lúc cho phép chạy, ngoại suy "27–30 phút < 60" đã **bỏ sót truy xuất nền**
+> (2,78 s/item); đo thật r12 = **≈66 phút**, tức **VƯỢT** ngưỡng 60 phút (xem `docs/reports/T5.md`
+> §2.6 đính chính). r12 vẫn **đã chạy và chấm xong** (811/811, 0 lỗi) ⇒ dùng được để kết luận âm.
+> Các phương án (a)/(b)/(c)/(d) dưới đây **hết hiệu lực**; vấn đề còn lại của 5a là **PA-25**.
+
 **Số đo (nguồn `data/loop/diag/reranker_cost_only.json`, đo bổ sung ngoài thiết kế):**
 nạp riêng reranker 17,0 s; chấm 20 cặp/item median 18,47 s, mean 18,44 s, p95 20,10 s trên
 30 item r11 (max_length 512, batch 4, CPU). Ngoại suy 811 item = **249,3 phút (4,15 giờ)**,
@@ -594,3 +601,112 @@ nhưng **điểm thành phần KHÔNG tự đổi** vì đó là phán chấm đ
 cho tới khi PA-1 kích hoạt `chroma_db_vie`, vì hệ thống đang chạy thật vẫn đọc corpus 18,6% dấu.
 Nếu đổi điểm, phải tính lại tổng có trọng số (công thức ở dòng cuối §5) và sửa lại cả câu
 "đính chính 7,4 → 7,2".
+
+## PA-24 — T7: danh sách `tmp/` đề xuất XOÁ (chưa xoá gì; cần anh duyệt) (25-10 03:25)
+
+Kiểm kê bằng script chỉ-đọc: một file được coi là "dẫn chứng" nếu đường dẫn `tmp/<tên>` xuất hiện
+trong `docs/**/*.md`, `ROADMAP.md`, `README.md` hoặc `data/loop/README.md`. Tổng `tmp/` = **92,1 MB**
+(104 mục). **Không xoá gì khi chưa có duyệt.**
+
+**A. GIỮ — 45 mục được dẫn trong báo cáo** (không đề xuất xoá), gồm:
+`loop_gen_cache{,_r3,_r5,_r5b,_r6,_r7,_r8,_r9,_r10}` (cache lạnh của từng round, dẫn trong ROADMAP +
+`data/loop/README.md`), `mutation_check*.py` + `mutation_check_t5.log`, `probe_*` được ROADMAP dẫn
+(`probe_bonus_regressions.py`, `probe_guard_scope.py`, `probe_overrefusal.py`, `probe_prefix_cache.py`
++ `probe_prefix_cache_result.json`, `probe_prompt_window.py`, `probe_r6_attribution.py`,
+`probe_round_attribution.py`, `probe_t3_table.py`), `pytest_t{2,3,5}_*.txt`, `pytest_tt0_tt3_final.txt`,
+`r{8,9,10}_run.log`, `r{5b,6,7}_driver.sh`, `t2_*.log`, `t2_p_1054_1.png`, `t3_baseline_head/`,
+`t5_cost_probe_20261024.log`, `t5b_r13_header.log`, `vram_r12_probe.log`, `r12_gpu_probe.log`, `r12_run.log`.
+
+**B. GIỮ thêm (script KHÔNG bắt được vì dẫn gián tiếp / đang dùng của phiên này):**
+`r11_run.log` + `r11_resume.log` (log của round nền r11, r11 được dẫn khắp nơi),
+`t1_b_resume_2410_0925.log` (log resume T1(b) 12→25 id, số chốt nằm ở
+`data/loop/diag/b_gemini_top6/summary_dedup_25.json`), `venv_gpu_install.log`, `vram_r12_run.log`
+(đang ghi), `repair_ids.py` + `backup_repair/` (liên quan sửa id round — xem nhóm C),
+`t3_golden_head.json` / `t3_golden_now.json` (ảnh chụp golden dùng bởi mutation check T3).
+
+**C. CẦN ANH QUYẾT (nhạy cảm, không tự xếp vào nhóm xoá):**
+
+| mục | cỡ | vì sao ngập ngừng |
+|---|---:|---|
+| `backup_repair/` + `repair_ids.py` | ~? MB | bản sao lưu trước khi sửa id round; xoá = mất đường lùi của lần sửa đó |
+| `t2_p_1054_2.png` | 1,47 MB | ảnh trang 2 của T2; bản `_1.png` được dẫn, bản này thì không |
+| `diag_a_run.log`, `diag_b_run.log`, `diag_c_run.log` | 52 KB | log thô của T1(a)/(b)/(c); số chốt đã nằm trong `data/loop/diag/*/summary*.json` |
+| `prompt_ab.json`, `probe_prompt_ab.py`, `probe2.{py,json}` | 39 KB | probe so sánh prompt cũ; kết luận đã vào ROADMAP |
+| `guard_audit.json`, `probe_guard_off.{py,json}` | 33 KB | audit guard; kết luận đã vào ROADMAP/báo cáo |
+
+**D. ĐỀ XUẤT XOÁ — 45 mục, ~33 MB, không được dẫn ở đâu và không đang dùng:**
+`_pipprobe/`, `_pipprobe2/`, `envcheck.log`, `envcheck_rounds/`, `gate_demo.log`, `gate_demo_rounds/`,
+`gate_r8_vs_r5.txt`, `gate_r9_vs_r5.txt`, `gate_r9_vs_r8.txt` (bản chính thức nằm trong
+`data/loop/rounds/r8|r9/gate_vs_*.json`), `dl_reranker_v2m3.log`, `ingest_vie.log`, `reocr_vie.log`,
+`loop_cache/`, `loop_gen_cache_smoke/`, `loop_smoke/`, `loop_smoke_cache/`, `ollama_ps_3b.txt`,
+`p520_section.md` (đã nằm trong ROADMAP P5.20), `p5_driver.sh`, `p5_rest.sh`, `p5_rest.log`,
+`probe_anchor.{py,json}`, `probe_r8_attribution.py`, `probe_rescue_regex.py`, `probe_rescue_smoke.py`,
+`probe_t4_gpu.py`, `qa_baseline_pytest.txt`, `r0_driver.sh`, `r1_driver.sh`, `r5_driver.sh`,
+`reranker_probe.log`, `smoke_r8.log`, `t1b_resume_20261024.log`, `t1b_resume2_20261024.log`,
+`t1b_resume3_20261024.log` (ba file 0 byte), `warm3b.err`, `warm3b.json`, `warm3b.txt`.
+
+**Lệnh khi được duyệt (chỉ chạy sau khi anh gạch tên mục muốn giữ):**
+```
+cd D:/DoAn/hybrid_rag_agu && rm -rf tmp/_pipprobe tmp/_pipprobe2 tmp/envcheck_rounds tmp/gate_demo_rounds \
+  tmp/loop_cache tmp/loop_gen_cache_smoke tmp/loop_smoke tmp/loop_smoke_cache \
+  tmp/{envcheck,gate_demo,dl_reranker_v2m3,ingest_vie,reocr_vie,p5_rest,reranker_probe,smoke_r8}.log \
+  tmp/gate_r{8_vs_r5,9_vs_r5,9_vs_r8}.txt tmp/ollama_ps_3b.txt tmp/p520_section.md \
+  tmp/p5_driver.sh tmp/p5_rest.sh tmp/r{0,1,5}_driver.sh \
+  tmp/probe_anchor.{py,json} tmp/probe_r8_attribution.py tmp/probe_rescue_{regex,smoke}.py \
+  tmp/probe_t4_gpu.py tmp/qa_baseline_pytest.txt tmp/t1b_resume*_20261024.log tmp/warm3b.{err,json,txt}
+```
+Hoàn tác: `tmp/` không nằm trong git (`.gitignore` có `tmp/`? — kiểm: **không**, nhưng chưa từng
+được commit), nên **xoá là mất hẳn**; đó là lý do phải duyệt trước. Nếu muốn an toàn hơn: chuyển
+sang `tmp/_trash_20261025/` rồi xoá sau 7 ngày.
+
+## PA-25 — 5a: `score_pairs` fold query MẤT DẤU rồi chấm với passage CÒN DẤU ⇒ r12 sụp; đề xuất bỏ fold + chạy r14 (25-10 03:45)
+
+**Vấn đề (đã kiểm, không suy đoán).** `src/reranker.py:242` chấm `fold(query)` (mất dấu thanh) với
+`page_content` **nguyên văn còn dấu**. `bge-reranker-v2-m3` là model đa ngôn ngữ nhạy dấu thanh, nên
+cặp lệch-dấu cho điểm gần như nhiễu. Probe `tmp/probe_r12_fold.py` trên **30 item mà r11 xếp chunk
+vàng TRONG cửa sổ nhưng r12 đẩy ra ngoài**:
+
+| cách chấm query | chunk vàng vào top-6 | median s/item |
+|---|---:|---:|
+| RRF gốc (không rerank) | 27/30 | — |
+| `fold(query)` (r12 đang dùng) | **0/30** (`rank_folded=None` = rơi khỏi cả 20 hạng) | 2,13 |
+| query **nguyên văn** (đề xuất) | **28/30**, đa số **hạng 1** | 2,08 |
+
+Nguồn: `tmp/probe_r12_fold.json`. Hệ quả trên round thật (§2.7): gold@6 0,7400 → 0,6686
+(delta −0,0714 CI [−0,1014; −0,0414], McNemar 83 mất/33 được p = 3,9e−06), EXACT 0,2115 → 0,0385,
+TRAP → 0, neo HUMAN 0,8144 → 0,7010, gate **6/8 kiểm tra VI PHẠM**.
+
+**Vì sao fold từng được chọn (ghi trong docstring `src/reranker.py:35`):** nhánh Chroma hay trả về
+chunk sai nguồn khi query có dấu gặp corpus Tầng 1 mất dấu (OCR). Nhưng **reranker khác nhánh Chroma**:
+nó chấm query × passage, và passage giữ nguyên văn (Tầng 2 `.docx` CÓ dấu). Fold query một phía ⇒ với
+chính những passage còn dấu (Tầng 2, và 80,29% corpus mới `chroma_db_vie`) thì tín hiệu bị phá.
+
+**Diff đề xuất (`src/reranker.py`) — KHÔNG tự áp dụng vì đây là quy ước đã đăng ký trước khi chạy round:**
+
+```diff
+ def score_pairs(model: Any, query: str, passages: Sequence[str]) -> list[float]:
+     """Điểm relevance cho từng cặp (query, passage) — API của CrossEncoder."""
+-    folded = fold(query)
+-    pairs = [(folded, p or "") for p in passages]
++    # PA-25: chấm query NGUYÊN VĂN với passage nguyên văn. fold(query) từng làm r12 sụp
++    # (gold@6 0,74->0,6686, EXACT 0,2115->0,0385) vì cặp lệch dấu thanh với model đa ngôn ngữ.
++    # Bằng chứng: tmp/probe_r12_fold.json (0/30 -> 28/30 chunk vàng vào top-6).
++    q = (query or "").strip()
++    pairs = [(q, p or "") for p in passages]
+     raw = model.predict(pairs, batch_size=reranker_batch_size(), convert_to_numpy=True)
+     return [float(x) for x in raw]
+```
+
+Kèm: (1) sửa docstring "Qui ước chấm điểm" + `query_convention` trong `last_call`/manifest cho khớp;
+(2) thêm test `tests/test_reranker_flag.py`: `score_pairs` truyền query nguyên văn (fake model ghi lại
+cặp nhận được); (3) **chạy r14 = r11 + `ENABLE_RERANKER=1` (query nguyên văn)**, gate r14-vs-r11,
+`bonus_paired --baseline r11 --candidate r14`, attribute trước/sau, `gold_rank_ceiling` pool 20.
+Ước lượng chi phí r14: **~66 phút** (đo thật r12, không phải 45), 0 Gemini, VRAM 3,6/4,0 GB dùng chung Ollama.
+
+**Không tự chạy r14 vì:** đổi `fold→nguyên văn` là **đổi quy ước đã đăng ký trước** (README mục T5 +
+docstring), luật tự trị buộc ghi diff chờ duyệt; và r12 đã cho **kết luận âm rõ ràng** = thỏa tiêu chí
+"xong" của T5 theo nhánh âm. Nếu anh duyệt, em áp diff + chạy r14 trong một bước.
+
+**Trần để kỳ vọng đúng:** oracle pool 20 = **0,8871** (EXACT 0,6154; SOURCE_LOOKUP/CLOZE 1,000).
+Nếu reranker query-nguyên văn kéo được dù chỉ nửa khoảng cách 0,7400→0,8871 thì EXACT mới có cửa +10 điểm;
+probe 28/30 (hạng 1) là tín hiệu mạnh nhưng **probe 30 item chọn thiên lệch, không thay round 811 item**.

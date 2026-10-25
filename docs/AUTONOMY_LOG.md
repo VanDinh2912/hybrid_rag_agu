@@ -686,3 +686,22 @@ bge-m3 bị ghim `device='cpu'` trong `src/vector_db.py:60` ⇒ nhánh truy xu�
 
 **Hoàn tác:** xóa thư mục `venv_gpu/` + dòng `venv_gpu/` trong `.git/info/exclude`; round mới (r12) nằm
 riêng trong `data/loop/rounds/r12/`.
+
+## Phiên 25-10 04:0x — đính chính chi phí r12 (số thật ngược kết luận cho phép chạy)
+
+**Phát hiện khi đối chiếu số trước khi ghi sổ round:** T5.md ghi r12 "45 phút, median 4,66 s/item".
+Đối chiếu đĩa: `rounds/r12/retrieval.jsonl` mtime **03:58:33**, `vram_r12_run.log` bắt đầu **02:54:07**,
+tổng `latency_seconds` 811 dòng = **3.855,5 s = 64,3 phút**, median **4,74 s** (p95 5,09, từ
+`round_summary_retrieval.json`). ⇒ r12 chạy **≈66 phút**, **vượt ngưỡng tự đặt 60 phút**, và con số
+4,66 là gõ sai (không có file nào sinh ra nó).
+
+**Ngã rẽ:** (i) giữ nguyên số cũ cho đẹp — **không**, đó là bịa số; (ii) xóa/hạ round — **không**,
+dữ liệu hợp lệ và round đã tốn 66 phút; (iii) **giữ nguyên round, đính chính ba chỗ trong T5.md
+(§2.6 ngoại suy, §2.7 chi phí, §3 kết luận 2–3) + ghi vào sổ round**, và ghi rõ *lý do cho phép chạy
+lúc đó là sai*.
+**Chọn (iii)** — bảo thủ nhất, không phá dữ liệu, không sửa dụng cụ đo.
+
+**Bài học (đã ghi vào T5.md §2.6):** ngoại suy chi phí round phải là `probe_rerank + median round nền`,
+không phải `probe_rerank` một mình; 2,0 s + 2,78 s ≈ 4,8 s/item khớp đúng số đo 4,74 s.
+
+**Hoàn tác:** `git checkout -- docs/reports/T5.md` (đính chính chỉ là chữ, không đụng dữ liệu/round).

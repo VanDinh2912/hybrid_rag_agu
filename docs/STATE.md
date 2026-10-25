@@ -315,3 +315,27 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   VRAM quan sát được khi nạp reranker: **3.594/4.096 MiB, util 100%** (Ollama chưa nạp lúc đó).
 - **Luật giữ nguyên:** probe ngoại suy > 60 phút cho 811 item ⇒ DỪNG, không chạy r12, báo PA-19.
 - Gemini: **0 lượt**.
+
+## XONG (25-10 04:1x — r12 chấm xong + ĐÍNH CHÍNH chi phí; mục "ĐANG LÀM 02:55" ở trên đã kết thúc)
+
+- **r12 chạy 02:53 → 03:58, 811/811, 0 lỗi, chữ ký `9f1179ccab74`.** gold@6 **0,7400 → 0,6686**,
+  delta ghép cặp **−0,0714, CI [−0,1014; −0,0414]**, McNemar **83 mất / 33 được, p = 3,9e−06**;
+  `FAIL_RETRIEVAL` 182 → 232; EXACT 0,2115 → 0,0385; TRAP → 0; NUMERIC 0,4375 → **0,4821**;
+  neo HUMAN 0,8144 → 0,7010; gate **6/8 kiểm tra vi phạm**. Trần oracle pool 20 = **0,8871**
+  (EXACT 0,6154). Nguyên nhân kiểm được: `src/reranker.py:score_pairs` chấm `fold(query)` với
+  passage còn dấu (probe 30 item: 0/30 vs 28/30 khi bỏ fold, chi phí như nhau).
+  Cờ `ENABLE_RERANKER` **giữ TẮT**; sửa + r14 = **PA-25** (chờ duyệt, 0 Gemini).
+- **Đính chính đã ghi (không sửa số liệu, chỉ sửa chữ):** chi phí r12 là **≈66 phút / median
+  4,74 s/item** (tổng `latency_seconds` 3.855,5 s; `retrieval.jsonl` mtime 03:58:33), **không phải**
+  "45 phút / 4,66 s"; ngoại suy cho phép chạy trước đó **bỏ sót truy xuất nền** (2,0 + 2,78 ≈ 4,8
+  s/item) ⇒ thực tế **vượt ngưỡng tự đặt 60 phút**. Ghi ở `docs/reports/T5.md` §2.6 (blockquote
+  ĐÍNH CHÍNH), §2.7, §3.2–3.3, §5; `docs/MORNING_REPORT.md`; `docs/PENDING_APPROVAL.md` (PA-19,
+  PA-25); `docs/AUTONOMY_LOG.md` 25-10 04:0x. Số đo hiệu quả **không đổi** vì đính chính chỉ ở
+  chi phí. Cũng đã sửa "5/7 vi phạm" → **6/8 kiểm tra** (đếm lại từ `gate_vs_r11_retrieval.json`).
+- **Sổ round `data/loop/README.md` "Số đo đã có":** thêm 4 khối **r10, r11 (nền), r12, r13** kèm
+  nguồn file cụ thể — trước đó sổ dừng ở r9 dù r10–r13 đã chạy.
+- Gemini đêm nay: **0/14 lượt**. T1(b) vẫn 25/30 id, chờ cửa sổ PerDay ~14:30 25-10.
+- **KẾ TIẾP:** T7 (đang làm) — PA-24 đã có kiểm kê tmp/ (chờ duyệt, chưa xoá); còn
+  `docs/DECISION_LOG.md`, `tools/loop/run_chain`, policy key trong cache key tầng sinh
+  (`src/generator.py` đang dirty của phiên khác ⇒ phải làm cực cẩn thận, xem PA-8), rồi pytest +
+  README/ROADMAP + "Giới hạn thật lòng".
