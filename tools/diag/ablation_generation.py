@@ -207,6 +207,20 @@ def run_config(config: str, limit: Optional[int], dry_run: bool,
     done = {r["id"] for r in all_rows if not r.get("error")}
 
     base_rows = load_base_rows()
+    # Cùng tập item (ca #2): full.jsonl là nguồn thứ tự chạy, verdicts_full.jsonl là tập
+    # đã chấm của r5. Thêm/bớt một id ở full.jsonl => lệch tập đo giữa (a)/(b)/(c) và r5
+    # => từ chối kèm tên id, không chạy tiếp trên một tập khác.
+    verdicts_path = ROUNDS_DIR / BASE_ROUND / "verdicts_full.jsonl"
+    if verdicts_path.exists():
+        verdict_ids = {r["id"] for r in load_jsonl(verdicts_path)}
+        base_ids = {r["id"] for r in base_rows}
+        extra = sorted(base_ids - verdict_ids)
+        missing = sorted(verdict_ids - base_ids)
+        if extra or missing:
+            raise SystemExit(
+                f"[ids] tập item KHÔNG khớp {BASE_ROUND}/verdicts_full.jsonl: "
+                f"thừa={extra[:5]} thiếu={missing[:5]}"
+            )
     if ids_file is not None:
         # (b) theo điều đăng ký trước: chỉ chạy đúng danh sách id đã chốt TRƯỚC khi gọi.
         allow = set(json.loads(ids_file.read_text(encoding="utf-8"))["ids"])

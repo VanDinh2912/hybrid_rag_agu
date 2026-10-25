@@ -361,8 +361,8 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   `rounds/...` được sửa thành `data/loop/rounds/...`).
 - **README:** thêm mục **5.10** (cách chạy một round / cả chuỗi / dry-run / manifest / ngữ nghĩa cổng /
   cache policy) và **8.1 "Giới hạn thật lòng"** (10 mục, mỗi mục có nguồn); cập nhật số test
-  **1.006** (1.004 tại thời điểm T7, +1 test biên T6a, +1 test T0). **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
-- **pytest toàn repo: 1.006 passed** (967 + 11 run_chain + 26 cache_policy + 1 test biên T6a + 1 test T0). Chữ ký trọng tài
+  **1.011** (1.004 tại thời điểm T7, +1 test biên T6a, +1 test T0, +5 test T1). **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
+- **pytest toàn repo: 1.011 passed** (967 + 11 run_chain + 26 cache_policy + 1 T6a + 1 T0 + 5 T1). Chữ ký trọng tài
   `9f1179ccab74` (không đụng `verify.py`).
 - **CHƯA COMMIT được phần mã T7:** `src/generator.py` là file tracked dirty của phiên T3–T5 (310 dòng
   của phiên đó + 2 hunk T7); `src/cache_policy.py` phụ thuộc `src/answer_guard.py` chưa tracked.
@@ -385,8 +385,13 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   thêm `test_ci_chua_uoc_luong_diem_giai_tich_khong_chi_trung_binh_bootstrap` so với **hiệu tỉ lệ tính
   từ dữ liệu** (0,15) và `rate_ci` từng round chứa tỉ lệ thô (0,40/0,55). 22 test, mutation **5/5** bắt
   (`tmp/mutation_check_t0.log`).
-- **pytest toàn repo: 1.006 passed** (32,54 s) — nguồn `tmp/pytest_t0_final.txt`; trọng tài
-  `9f1179ccab74`. Số 1.004/1.005 trong các báo cáo T0/T7 giữ nguyên lịch sử + ghi chú ngày.
+- **`tests/test_ablation_generation.py` được siết thêm 5 ca (T1):** chạy trọn `run_config` rồi so
+  **byte** `src/*.py`; guard tập item so `r5/full.jsonl` với `r5/verdicts_full.jsonl` (thêm **hoặc**
+  bớt 1 id → `SystemExit` nêu id); bắt docs thật stub nhận ở (a) (chỉ chunk vàng, dù row có chunk
+  khác); biên band 0,169/0,171 và 0,319/0,321. 29 test, mutation **4/4** bắt
+  (`tmp/mutation_check_t1.log`).
+- **pytest toàn repo: 1.011 passed** (29,79 s) — nguồn `tmp/pytest_t1_final.txt`; trọng tài
+  `9f1179ccab74`. Số 1.004/1.005/1.006 trong các báo cáo T0/T7 giữ nguyên lịch sử + ghi chú ngày.
 - **Commit docs-only** các báo cáo + chỉnh đồng bộ số test/HEAD; `tests/test_gate_refusal_relative_proposal.py`
   (thêm 1 test) và phần mã T7 vẫn chờ PA-26 theo luật không commit `src/` dirty của phiên khác.
 - PA-24: ba báo cáo mới dẫn trực tiếp `tmp/mutation_check_t{4,6}.*` + `tmp/pytest_t4t6_final.txt`

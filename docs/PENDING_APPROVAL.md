@@ -628,7 +628,8 @@ trong `docs/**/*.md`, `ROADMAP.md`, `README.md` hoặc `data/loop/README.md`. T�
 `mutation_check_t4.py` + `mutation_check_t4.log`, `mutation_check_t6.py` + `mutation_check_t6.log`,
 `pytest_t4t6_final.txt` — ba báo cáo mới dẫn trực tiếp các file này, tức chúng thuộc diện "dẫn chứng"
 của nhóm A; không đưa vào danh sách xoá. Bổ sung 11:51: GIỮ `mutation_check_t0.log` + `pytest_t0_final.txt`
-(sau khi siết test T0 lên 22; `test_T0.md`/`test_final.md` dẫn trực tiếp).
+(sau khi siết test T0 lên 22; `test_T0.md`/`test_final.md` dẫn trực tiếp). Bổ sung 11:55: GIỮ
+`mutation_check_t1.log` + `pytest_t1_final.txt` (sau khi siết T1 lên 29; `test_T1.md`/`test_final.md` dẫn).
 
 **C. CẦN ANH QUYẾT (nhạy cảm, không tự xếp vào nhóm xoá):**
 
@@ -729,7 +730,7 @@ probe 28/30 (hạng 1) là tín hiệu mạnh nhưng **probe 30 item chọn thi�
 **Vấn đề (đo được, không suy đoán).** `git status --short` tại HEAD `456f35c` cho thấy **một fresh
 clone sẽ không chạy nổi test**: `src/cache_policy.py` (mới) import `src/answer_guard.py` — file **chưa
 tracked**; `src/generator.py` trong working tree có `effective_prompt_version()`/`answer_rescue_enabled()`
-mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.006 test xanh hiện tại thuộc về
+mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.011 test xanh hiện tại thuộc về
 **working tree**, không thuộc về commit nào. Đây là lỗ tái lập, không phải lỗi chức năng.
 
 > Cập nhật sau commit `79a02e5` (T7 docs + `run_chain`): 6 trong 41 file đã được tracked
@@ -776,7 +777,7 @@ mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.006
 **Lệnh kiểm chứng sau khi duyệt (em sẽ chạy, không cần anh gõ):**
 ```
 git clone D:/DoAn/hybrid_rag_agu tmp/_fresh_clone && cd tmp/_fresh_clone \
-  && python -m pytest tests -q          # kỳ vọng: 1006 passed
+  && python -m pytest tests -q          # kỳ vọng: 1011 passed
 python -m pytest tests -q               # trong cây chính, sau commit
 git status --short                      # kỳ vọng: chỉ còn artifact trong .gitignore
 ```

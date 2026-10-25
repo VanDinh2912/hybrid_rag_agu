@@ -6,6 +6,16 @@
 > **Không sửa trọng tài**: `tools/loop/verify.py` / `src/answer_guard.py` / `src/text_utils.py`
 > giữ nguyên (`git diff` rỗng, chữ ký `9f1179ccab74` vẫn khớp).
 
+> **Cập nhật 25-10 11:55 — đóng 5 lỗ còn hở so với đề bài:** thêm (i) chạy **trọn
+> `run_config`** rồi so **byte** từng file `src/*.py` (trước chỉ so mtime của helper);
+> (ii)+(iii) guard **tập item**: `r5/full.jsonl` phải khớp đúng id của
+> `r5/verdicts_full.jsonl`, thêm **hoặc bớt** một id đều `SystemExit` nêu id thừa/thiếu;
+> (iv) bắt **docs thật mà stub nhận** ở cấu hình (a) — row có sẵn chunk khác trong `contexts`
+> nhưng prompt chỉ còn chunk vàng; (v) biên band quyết định (0,169→"không kết luận được",
+> 0,171→T3; 0,319→"không kết luận được", 0,321→T4). Kết quả: **29 test**, `pytest tests -q`
+> **1.011 passed** (`tmp/pytest_t1_final.txt`), mutation **4/4 bắt** (`tmp/mutation_check_t1.log`).
+> Các số **24 test / 736 passed / 3-3 mutation** ở dưới là **mốc lịch sử phiên 24-10**, giữ nguyên.
+
 ## 1. Số kiểm thử thêm / xanh / đỏ
 
 | Hạng mục | Số |

@@ -4,8 +4,8 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.006 passed** (32,5 s, 25-10 11:51; 967 + 11 `test_run_chain` +
-26 `test_cache_policy` + 1 test biên T6a + 1 test T0).
+`pytest tests -q` mới nhất: **1.011 passed** (29,8 s, 25-10 11:55; 967 + 11 `test_run_chain` +
+26 `test_cache_policy` + 1 test biên T6a + 1 test T0 + 5 test T1).
 
 ## CẬP NHẬT 25-10 11:3x — T7 XONG trong working tree (đọc mục này trước mục 04:1x)
 
@@ -26,7 +26,7 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
   phiên T3–T5 (310 dòng của phiên đó + 2 hunk T7), `src/cache_policy.py` phụ thuộc
   `src/answer_guard.py` chưa tracked. **PA-26** (mở rộng PA-8) liệt kê đúng 35 file chưa tracked +
   6 file sửa dở (đo 41 file tại `456f35c`; `79a02e5` đã tracked 6 file `run_chain`) và ba phương án commit freeze; đề xuất (ii) commit mã + tổng hợp round, bỏ `models/`,
-  `chroma_*`, `full.jsonl`. Cho tới khi duyệt, "fresh clone" **không** tái lập được 1.006 test dù cây
+  `chroma_*`, `full.jsonl`. Cho tới khi duyệt, "fresh clone" **không** tái lập được 1.011 test dù cây
   hiện tại xanh.
 - **Đề bài kiểm thử T0–T7 đã đủ báo cáo:** thêm `docs/reports/test_T4.md` (21 test, mutation **7/7**),
   `test_T6.md` (15 test, mutation **10/10** — có thêm 1 test biên mới cho ngưỡng tương đối) và
@@ -35,6 +35,10 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 - **T0 siết đúng chữ "CI chứa ước lượng điểm":** thêm 1 test so CI với **hiệu tỉ lệ giải tích** (0,15),
   không chỉ trung bình bootstrap; `rate_ci` từng round phải chứa tỉ lệ thô (0,40/0,55). 22 test,
   mutation **5/5** bắt (gồm đúng 2 đột biến bắt buộc `<`→`<=` và tổng→trung bình).
+- **T1 siết 5 ca:** chạy trọn `run_config` rồi so **byte** `src/*.py`; guard tập item so
+  `r5/full.jsonl` với `r5/verdicts_full.jsonl` (thêm **hoặc** bớt 1 id → từ chối nêu id); bắt docs
+  thật stub nhận ở (a); biên band 0,169/0,171 và 0,319/0,321. 29 test, mutation **4/4** bắt (đúng
+  "lấy nhầm chunk" + "bỏ ràng buộc cùng item id").
 - PA-24 (`tmp/`) vẫn **chưa xoá gì**; Gemini đêm nay **0/14**. Ba báo cáo mới dẫn trực tiếp
   `tmp/mutation_check_t{4,6}.{py,log}` + `tmp/pytest_t4t6_final.txt` ⇒ đã ghi vào nhóm GIỮ của PA-24.
 

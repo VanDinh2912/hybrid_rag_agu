@@ -86,6 +86,9 @@ phải bằng sửa test.
 > bình bootstrap) ⇒ toàn repo **1.006 passed** (`tmp/pytest_t0_final.txt`). 1.005 ở trên là ảnh chụp
 > đúng tại thời điểm viết báo cáo T4/T6.
 
+> Cập nhật 25-10 11:55: thêm **5 test T1** (cô lập byte `src/`, guard tập item thêm/bớt id, docs thật
+> stub nhận ở (a), biên band quyết định) ⇒ toàn repo **1.011 passed** (`tmp/pytest_t1_final.txt`).
+
 ### 2.2 Từng mục của đề bài T7
 
 | Mục | Trạng thái | Bằng chứng |

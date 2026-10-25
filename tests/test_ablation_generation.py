@@ -108,6 +108,17 @@ class TestIsolation:
         after = sorted((str(p), p.stat().st_mtime_ns) for p in src_dir.rglob("*.py"))
         assert before == after
 
+    def test_chay_ca_run_config_khong_ghi_src_byte_nao(self, tmp_path, monkeypatch, stubbed):
+        # Ca #1 bản đầy đủ: chạy TRỌN run_config (có sinh generator stub + chấm trọng tài)
+        # trên đường dẫn tmp, rồi so NỘI DUNG từng file src/*.py (không chỉ mtime).
+        _point_paths(abl, tmp_path, ["A1"])
+        monkeypatch.setattr(abl, "load_chunks", lambda: {})
+        src_dir = REPO_ROOT / "src"
+        before = {p: p.read_bytes() for p in src_dir.rglob("*.py")}
+        abl.run_config("a_oracle_qwen", 1, False)
+        after = {p: p.read_bytes() for p in src_dir.rglob("*.py")}
+        assert before == after  # byte-identical: script chỉ đọc src/, không import-thay-đổi hay ghi
+
 
 # ============================================================================ #2 cùng tập item
 class TestSameItemSet:
@@ -134,6 +145,28 @@ class TestSameItemSet:
         settings = json.loads((abl.DIAG_DIR / "b_gemini_top6" / "settings.json").read_text(encoding="utf-8"))
         assert settings["n_base_items"] == 2  # đúng subset đã chốt, không phải 3
 
+    def test_them_mot_id_so_voi_verdicts_r5_bi_tu_choi(self, tmp_path, monkeypatch, stubbed):
+        # full.jsonl có thêm 1 id ngoài tập đã chấm của r5 => từ chối, nêu id thừa.
+        _point_paths(abl, tmp_path, ["A1", "A2", "ZZZ"])
+        _write_jsonl(abl.ROUNDS_DIR / abl.BASE_ROUND / "verdicts_full.jsonl",
+                     [{"id": "A1"}, {"id": "A2"}])
+        monkeypatch.setattr(abl, "load_chunks", lambda: {})
+        with pytest.raises(SystemExit) as ei:
+            abl.run_config("a_oracle_qwen", None, True)
+        msg = str(ei.value)
+        assert "KHÔNG khớp" in msg and "ZZZ" in msg and "thừa" in msg
+
+    def test_bot_mot_id_so_voi_verdicts_r5_bi_tu_choi(self, tmp_path, monkeypatch, stubbed):
+        # full.jsonl thiếu 1 id so với verdicts_full.jsonl => từ chối, nêu id thiếu.
+        _point_paths(abl, tmp_path, ["A1"])
+        _write_jsonl(abl.ROUNDS_DIR / abl.BASE_ROUND / "verdicts_full.jsonl",
+                     [{"id": "A1"}, {"id": "A2"}])
+        monkeypatch.setattr(abl, "load_chunks", lambda: {})
+        with pytest.raises(SystemExit) as ei:
+            abl.run_config("c_gold_window_qwen", None, True)
+        msg = str(ei.value)
+        assert "KHÔNG khớp" in msg and "A2" in msg and "thiếu" in msg
+
 
 # ============================================================================ #3 ngữ cảnh theo config
 class TestDocsForContext:
@@ -152,6 +185,31 @@ class TestDocsForContext:
     def test_a_khong_co_gold_chunk_bi_loai(self):
         docs, reason = abl.docs_for("a_oracle_qwen", {}, {}, {5: {"chunk_id": 5, "text": "x", "source": "S", "tier": "T"}})
         assert docs is None and reason == "no_gold_chunk"
+
+    def test_a_prompt_gui_stub_chi_chua_chunk_vang(self, tmp_path, monkeypatch, stubbed):
+        # Ca #3 bản tích hợp: chạy trọn (a) rồi BẮT docs mà stub nhận. Row cố tình có
+        # sẵn chunk khác trong `contexts` — (a) phải bỏ qua, chỉ gửi đúng chunk vàng.
+        _point_paths(abl, tmp_path, ["A1"])
+        _write_jsonl(
+            abl.ROUNDS_DIR / abl.BASE_ROUND / "full.jsonl",
+            [{"id": "A1", "contexts": ["NOI DUNG CHUNK KHAC"],
+              "sources": [{"source": "S6", "tier": "T2", "chunk_id": 6}],
+              "normalized_query": "cau A1", "labels": {}}],
+        )
+        _write_jsonl(
+            abl.TESTSET,
+            [{"id": "A1", "raw_query": "cau A1", "family": "EXACT", "gold_chunk_id": 5}],
+        )
+        chunks = {
+            5: {"chunk_id": 5, "text": "NOI DUNG VANG", "source": "S5", "tier": "T1", "body": "x"},
+            6: {"chunk_id": 6, "text": "NOI DUNG CHUNK KHAC", "source": "S6", "tier": "T2", "body": "y"},
+        }
+        monkeypatch.setattr(abl, "load_chunks", lambda: chunks)
+        abl.run_config("a_oracle_qwen", 1, False)
+        docs = stubbed.instances[0].calls[0]["docs"]
+        assert len(docs) == 1
+        assert docs[0]["content"] == "NOI DUNG VANG"
+        assert all("CHUNK KHAC" not in d["content"] for d in docs)
 
     # MỖI câu trong các fixture dưới đây PHẢI dài >= 25 ký tự: `sentence_split` của
     # script LOẠI phần ngắn hơn (`len(p.strip()) >= 25`); nếu câu vàng bị loại thì
@@ -337,6 +395,14 @@ class TestDecisionTable:
 
     def test_b_sat_nguong_khong_ket_luan_duoc(self):
         assert abl.interpret_decision(0.05, 0.30)["label"] == "không kết luận được"
+
+    def test_bien_band_chi_lech_mot_chut(self):
+        # BAND = 0,02: (a) 0,169 còn trong band -> không kết luận; 0,171 đã ra ngoài -> T3.
+        # (b) 0,319 còn trong band; 0,321 ra ngoài -> T4.
+        assert abl.interpret_decision(0.169, None)["label"] == "không kết luận được"
+        assert abl.interpret_decision(0.171, None)["label"] == "T3"
+        assert abl.interpret_decision(0.05, 0.319)["label"] == "không kết luận được"
+        assert abl.interpret_decision(0.05, 0.321)["label"] == "T4"
 
     def test_a_thap_chua_co_b_cho_b(self):
         assert abl.interpret_decision(0.05, None)["label"] == "chờ (b)"
