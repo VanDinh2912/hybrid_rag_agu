@@ -4,8 +4,9 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.057 passed, 2 skipped** (22,58 s, 25-10 12:3x; mốc trước 1.016,
-thêm 62 test nhanh của T4; 2 skipped là hai test T4 **slow**, chạy riêng bằng `T4_RUN_SLOW=1`).
+`pytest tests -q` mới nhất: **1.064 passed, 2 skipped** (76,07 s, 25-10 15:1x; mốc trước 1.057,
+thêm 7 test cờ `RERANKER_FALLBACK` của T5; 2 skipped là hai test T4 **slow**, chạy riêng bằng
+`T4_RUN_SLOW=1`).
 
 ## CẬP NHẬT 25-10 12:3x — KIỂM THỬ T4: mục 1–4 xanh, mục 5 ĐỎ do DỮ LIỆU, số mục 8 đã ghi
 

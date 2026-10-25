@@ -11,10 +11,11 @@ Sáu mục của đề bài và cách kiểm:
   3. Hòa điểm: tie-break ổn định theo hạng cũ; cùng input hai lần cho cùng output.
   4. < 6 ứng viên hoặc rỗng: không crash, trả những gì có, không gọi model khi rỗng.
   5. Reranker lỗi/timeout: ĐỀ BÀI YÊU CẦU lùi về thứ tự RRF + cảnh báo. Thiết kế đã
-     ĐĂNG KÝ TRƯỚC (`data/loop/README.md` mục T5) và code hiện tại chọn ngược lại:
-     `RerankerUnavailable` được NÉM THẲNG, không lùi. Test dưới đây GHIM hành vi đã
-     đăng ký (và ghi rõ đây là điểm KHÔNG đạt nếu chấm theo câu chữ của mục 5); đề
-     xuất PA-18 giữ nguyên hành vi mặc định và thêm cờ lùi tường minh nếu user muốn.
+     ĐĂNG KÝ TRƯỚC (`data/loop/README.md` mục T5) chọn dừng loudly, nên hành vi lùi nằm
+     sau cờ TƯỜNG MINH `RERANKER_FALLBACK=1` (PA-18a). Test ghim CẢ HAI nửa: mặc định
+     vẫn ném `RerankerUnavailable`; khi bật cờ thì trả đúng danh sách RRF trước rerank,
+     in cảnh báo, ghi `fallback_used=true`, không rơi về `similarity_search` và không
+     làm hỏng câu trả lời của `pipeline.run`.
   6. Bonus lọc mềm + lọc nguồn: rerank chạy SAU bonus/quota, ứng viên được bonus vào
      cross-encoder đúng thứ tự đã cộng hạng; lọc CỨNG vẫn cắt trước reranker.
 
@@ -59,6 +60,7 @@ RERANKER_ENVS = (
     "RERANKER_KEEP_CANDIDATES",
     "RERANKER_MAX_LENGTH",
     "RERANKER_BATCH_SIZE",
+    "RERANKER_FALLBACK",
     # Các lever khác phải TẮT để mỗi test chỉ đo một thứ.
     "ENABLE_DECOUPLED_REFUSAL",
     "ENABLE_EVIDENCE_SELECTION",
@@ -432,6 +434,109 @@ class TestNamLoiTimeout:
         assert status["keep_candidates"] is False
 
 
+# ================================================== 5b. LÙI RRF TƯỜNG MINH (PA-18a)
+class StubAnswerGenerator:
+    """Generator giả để chứng minh lỗi reranker không làm hỏng câu trả lời."""
+
+    def __init__(self):
+        self.calls = 0
+        self.received: list[Document] = []
+
+    def generate_answer(self, query, retrieved_docs, **kwargs):
+        self.calls += 1
+        self.received = list(retrieved_docs)
+        return "Câu trả lời từ thứ tự RRF."
+
+
+class TestNamBLuiRrfTuongMinh:
+    """Mục 5 đề bài: lỗi/timeout -> lùi RRF + cảnh báo, không hỏng câu trả lời.
+
+    Lùi chỉ xảy ra khi bật `RERANKER_FALLBACK=1` (PA-18a); mặc định vẫn dừng loudly và
+    test ở `TestNamLoiTimeout` ghim nguyên trạng đó. Hai nửa cùng tồn tại có chủ đích.
+    """
+
+    def _on(self, monkeypatch, fake):
+        monkeypatch.setenv("ENABLE_RERANKER", "1")
+        monkeypatch.setenv("RERANKER_FALLBACK", "1")
+        monkeypatch.setattr(reranker_module, "get_reranker", lambda **kw: fake)
+
+    def test_bat_co_lui_tra_dung_thu_tu_rrf_va_canh_bao(self, monkeypatch, capsys):
+        fake = FakeCrossEncoder(error=TimeoutError("quá 30 giây"))
+        self._on(monkeypatch, fake)
+        pipeline, _, vector_db = make_pipeline(DOCS)
+        out = pipeline.retrieve(QUERY, k=6)
+
+        assert ids(out) == [1, 2, 3, 4, 5, 6]
+        assert all(out[i] is DOCS[i] for i in range(6)), "phải trả ĐÚNG object theo thứ tự trước rerank"
+        captured = capsys.readouterr().out
+        assert "[Reranker] Cảnh báo" in captured
+        assert "RERANKER_FALLBACK=1" in captured
+        assert "quá 30 giây" in captured  # nguyên văn lỗi, không nuốt
+        assert pipeline.last_rerank_call["fallback_used"] is True
+        assert "quá 30 giây" in pipeline.last_rerank_call["error"]
+        assert vector_db.received == [], "lùi RRF, KHÔNG rơi xuống similarity_search"
+
+    def test_bat_co_lui_khong_lam_hong_cau_tra_loi(self, monkeypatch, capsys):
+        fake = FakeCrossEncoder(error=RuntimeError("model hỏng"))
+        self._on(monkeypatch, fake)
+        gen = StubAnswerGenerator()
+        pipeline = HybridRAGPipeline(
+            vector_db=FakeVectorDB(),
+            local_slm=FakeLocalSLM(),
+            generator=gen,
+            retriever=FakeEnsemble(DOCS),
+        )
+        result = pipeline.run(QUERY, top_k=6)
+
+        assert gen.calls == 1
+        assert ids(gen.received)[:6] == [1, 2, 3, 4, 5, 6], "generator nhận đúng thứ tự RRF"
+        assert result["answer"] == "Câu trả lời từ thứ tự RRF."
+        assert len(result["contexts"]) == 6
+        # `sources` phủ TOÀN BỘ retrieve_k = top_k * oversample (6 * 2 = 12) để đo Hit@k;
+        # `contexts` chỉ là cửa sổ 6. Sáu nguồn đầu phải đúng thứ tự RRF trước rerank.
+        assert len(result["sources"]) == 12
+        assert [s["chunk_id"] for s in result["sources"][:6]] == [1, 2, 3, 4, 5, 6]
+        assert [s["rank"] for s in result["sources"]] == list(range(1, 13))
+        assert "[Reranker] Cảnh báo" in capsys.readouterr().out
+
+    def test_bat_co_lui_khi_khong_tai_duoc_model(self, monkeypatch, capsys):
+        monkeypatch.setenv("ENABLE_RERANKER", "1")
+        monkeypatch.setenv("RERANKER_FALLBACK", "1")
+
+        def explode(**kwargs):
+            raise RerankerUnavailable("không tải được model")
+
+        monkeypatch.setattr(reranker_module, "get_reranker", explode)
+        pipeline, _, vector_db = make_pipeline(DOCS)
+        assert ids(pipeline.retrieve(QUERY, k=6)) == [1, 2, 3, 4, 5, 6]
+        assert "không tải được model" in capsys.readouterr().out
+        assert pipeline.last_rerank_call["fallback_used"] is True
+        assert vector_db.received == []
+
+    def test_bat_co_lui_voi_bon_ung_vien_tra_du_bon(self, monkeypatch, capsys):
+        fake = FakeCrossEncoder(error=TimeoutError("chậm"))
+        self._on(monkeypatch, fake)
+        pipeline, _, _ = make_pipeline(DOCS[:4])
+        assert ids(pipeline.retrieve(QUERY, k=6)) == [1, 2, 3, 4]
+        assert "[Reranker] Cảnh báo" in capsys.readouterr().out
+
+    def test_mac_dinh_tat_van_nem_loi_va_khong_canh_bao(self, monkeypatch, capsys):
+        fake = FakeCrossEncoder(error=TimeoutError("timeout"))
+        monkeypatch.setenv("ENABLE_RERANKER", "1")
+        monkeypatch.delenv("RERANKER_FALLBACK", raising=False)
+        monkeypatch.setattr(reranker_module, "get_reranker", lambda **kw: fake)
+        pipeline, _, _ = make_pipeline(DOCS)
+        with pytest.raises(RerankerUnavailable):
+            pipeline.retrieve(QUERY, k=6)
+        assert "[Reranker] Cảnh báo" not in capsys.readouterr().out
+        assert pipeline.last_rerank_call is None
+
+    def test_status_ghi_co_lui(self, monkeypatch):
+        assert reranker_status()["fallback"] is False
+        monkeypatch.setenv("RERANKER_FALLBACK", "1")
+        assert reranker_status()["fallback"] is True
+
+
 # ================================================================ 6. BONUS + LỌC NGUỒN
 class TestSauBonusVaNguon:
     def _soft_pipeline(self, monkeypatch, bonus: int = 3):
@@ -484,3 +589,12 @@ class TestSauBonusVaNguon:
         pipeline.retrieve(QUERY, k=6, config=config)
         assert pipeline.last_rerank_call["n_candidates"] == len(docs) == 12
         assert pipeline.last_rerank_call["n_scored"] == 12
+
+    def test_bonus_12_giu_nguyen_thu_tu_va_tap_ung_vien_truoc_rerank(self, monkeypatch):
+        """Mục 6: mức bonus đang chạy (12) không bị reranker làm mất ứng viên nào."""
+        pipeline, _, fake, docs, config = self._soft_pipeline(monkeypatch, bonus=12)
+        pipeline.retrieve(QUERY, k=6, config=config)
+        expected = rescore_with_source_preference(docs, ["a.pdf"], rank_bonus=12)
+        scored = [passage for _q, passage in fake.pairs]
+        assert scored == [d.page_content for d in expected], "thứ tự vào reranker = thứ tự sau bonus"
+        assert set(scored) == {d.page_content for d in docs}, "không ứng viên nào bị bonus/rerank nuốt"

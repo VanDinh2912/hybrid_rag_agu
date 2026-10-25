@@ -469,3 +469,31 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Tài liệu: `docs/reports/test_T4.md` §10; `docs/reports/test_final.md` cập nhật **76/76** mutation;
   `docs/PENDING_APPROVAL.md` PA-28; quyết định `docs/DECISION_LOG.md` D-25.
 
+
+## XONG (25-10 14:3x — T5 kiểm thử: mục 5 bằng cờ tuỳ chọn, tái lập OFF/ON + hiệu ứng tách family)
+
+- **Mục 5 đề bài T5 xanh bằng cờ tuỳ chọn `RERANKER_FALLBACK` (mặc định TẮT):** bật → cảnh báo +
+  lùi đúng thứ tự RRF trước rerank, không gọi `similarity_search`, câu trả lời không hỏng; mặc định
+  vẫn dừng loudly theo thiết kế đã đăng ký (PA-18a). 7 test mới; hai file T5 **75 passed**.
+- **Tái lập OFF (r14_repro_off vs r11):** verdict/gold/`sources` top-6/`contexts` **811/811**;
+  `sources` toàn bộ **809/811** (2 item lệch hạng 8/10 do tie-break); gold@6 **0,7400**, FAIL **182**
+  — đúng số đã công bố.
+- **Tái lập ON (r15_repro_on vs r12):** verdict/gold/top-6/contexts **811/811**, `sources` toàn bộ
+  802/811; gold@6 **0,6686**, FAIL **232** — đúng r12. Ghép cặp OFF→ON: gold **−0,0714**
+  CI [−0,1014; −0,0429], p=3,87×10⁻⁶; FAIL **+0,0617** [+0,0358; +0,0875]; 83 mất / 33 được.
+  Family: SOURCE_LOOKUP **−0,2157** (p=2,7×10⁻⁵), EXACT **−0,1731** (p=0,0117), CLOZE **−0,0980**
+  (p=0,0135); NUMERIC +0,0446 (p=0,36). Cờ giữ TẮT, không chỉnh ngưỡng.
+- **Sửa lỗi dụng cụ đo trước khi công bố:** `tools/diag/reranker_paired_family.py` bản đầu đọc
+  `sources`/`contexts` từ file verdict (không chứa hai trường này) nên báo "811/811" vô nghĩa; nay
+  hợp nhất `retrieval.jsonl` + `verdicts_retrieval.jsonl` và tách `sources_top_k`/`sources_full`.
+  Ghi chú nợ điều tra: đuôi `sources` không deterministic tuyệt đối (2/811 OFF, 9/811 ON).
+- Nguồn: `data/loop/diag/reranker_paired_family.json`, `data/loop/rounds/r14_repro_off/`,
+  `data/loop/rounds/r15_repro_on/`, log `tmp/t5_repro_off.log`, `tmp/t5_repro_on.log`;
+  báo cáo `docs/reports/test_T5.md` §2.7/§2.8/§4.3/§4.6/§5.
+- Mutation T5 **13/13** bắt được, hoàn nguyên byte-identical (`tmp/mutation_check_t5.py`);
+  toàn repo **1.064 passed, 2 skipped**. **0 lượt Gemini.**
+
+## ĐANG LÀM (25-10 15:0x) — T6 kiểm thử
+
+- gate.py **KHÔNG sửa**; luật refusal tương đối test trên bản đề xuất
+  `tools/diag/gate_refusal_relative_proposal.py`. Đang viết test mục 1–10 + mutation + báo cáo.

@@ -1,0 +1,687 @@
+{
+  "task": "T5 (kiểm thử) — OFF vs ON reranker, pha truy xuất, ghép cặp + tách family",
+  "generated_from": {
+    "baseline": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\rounds\\r14_repro_off\\verdicts_retrieval.jsonl",
+    "candidate": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\rounds\\r15_repro_on\\verdicts_retrieval.jsonl",
+    "closed_baseline": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\rounds\\r11\\verdicts_retrieval.jsonl",
+    "closed_candidate": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\rounds\\r12\\verdicts_retrieval.jsonl"
+  },
+  "rounds": {
+    "baseline": "r14_repro_off",
+    "candidate": "r15_repro_on",
+    "closed_baseline": "r11",
+    "closed_candidate": "r12",
+    "summaries": {
+      "baseline": {
+        "n_items": 811,
+        "n_gold_items": 700,
+        "gold_in_top_k": 518,
+        "gold_at_6": 0.74,
+        "fail_retrieval": 182,
+        "fail_retrieval_rate": 0.2244,
+        "verdict_counts": {
+          "FAIL_RETRIEVAL": 182,
+          "PENDING_GENERATION": 629
+        }
+      },
+      "candidate": {
+        "n_items": 811,
+        "n_gold_items": 700,
+        "gold_in_top_k": 468,
+        "gold_at_6": 0.6686,
+        "fail_retrieval": 232,
+        "fail_retrieval_rate": 0.2861,
+        "verdict_counts": {
+          "FAIL_RETRIEVAL": 232,
+          "PENDING_GENERATION": 579
+        }
+      },
+      "closed_baseline": {
+        "n_items": 811,
+        "n_gold_items": 700,
+        "gold_in_top_k": 518,
+        "gold_at_6": 0.74,
+        "fail_retrieval": 182,
+        "fail_retrieval_rate": 0.2244,
+        "verdict_counts": {
+          "FAIL_RETRIEVAL": 182,
+          "PENDING_GENERATION": 629
+        }
+      },
+      "closed_candidate": {
+        "n_items": 811,
+        "n_gold_items": 700,
+        "gold_in_top_k": 468,
+        "gold_at_6": 0.6686,
+        "fail_retrieval": 232,
+        "fail_retrieval_rate": 0.2861,
+        "verdict_counts": {
+          "FAIL_RETRIEVAL": 232,
+          "PENDING_GENERATION": 579
+        }
+      }
+    }
+  },
+  "reproducibility": {
+    "off_vs_closed": {
+      "baseline": "r11",
+      "candidate": "r14_repro_off",
+      "n_common": 811,
+      "only_in_baseline": 0,
+      "only_in_candidate": 0,
+      "same_verdict": 811,
+      "same_gold_flag": 811,
+      "same_sources_top_k": 811,
+      "same_sources_full": 809,
+      "same_contexts": 811,
+      "per_item_exact": 0.997534,
+      "n_mismatched_items": 2,
+      "mismatched_items": [
+        {
+          "id": "O146386093628032",
+          "family": "CLOZE_OCR",
+          "verdict": [
+            "PENDING_GENERATION",
+            "PENDING_GENERATION"
+          ],
+          "gold_in_top_k": [
+            true,
+            true
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 8
+        },
+        {
+          "id": "S8445186527785",
+          "family": "SOURCE_LOOKUP",
+          "verdict": [
+            "PENDING_GENERATION",
+            "PENDING_GENERATION"
+          ],
+          "gold_in_top_k": [
+            true,
+            true
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 10
+        }
+      ],
+      "match_all_fields": false,
+      "match_scored_fields": true
+    },
+    "on_vs_closed": {
+      "baseline": "r12",
+      "candidate": "r15_repro_on",
+      "n_common": 811,
+      "only_in_baseline": 0,
+      "only_in_candidate": 0,
+      "same_verdict": 811,
+      "same_gold_flag": 811,
+      "same_sources_top_k": 811,
+      "same_sources_full": 802,
+      "same_contexts": 811,
+      "per_item_exact": 0.988903,
+      "n_mismatched_items": 9,
+      "mismatched_items": [
+        {
+          "id": "HQ17",
+          "family": "HUMAN",
+          "verdict": [
+            "PENDING_GENERATION",
+            "PENDING_GENERATION"
+          ],
+          "gold_in_top_k": [
+            false,
+            false
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 23
+        },
+        {
+          "id": "S51301742052946",
+          "family": "SOURCE_LOOKUP",
+          "verdict": [
+            "PENDING_GENERATION",
+            "PENDING_GENERATION"
+          ],
+          "gold_in_top_k": [
+            true,
+            true
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 11
+        },
+        {
+          "id": "S57437809340709",
+          "family": "SOURCE_LOOKUP",
+          "verdict": [
+            "PENDING_GENERATION",
+            "PENDING_GENERATION"
+          ],
+          "gold_in_top_k": [
+            true,
+            true
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 10
+        },
+        {
+          "id": "S82726918210943",
+          "family": "SOURCE_LOOKUP",
+          "verdict": [
+            "PENDING_GENERATION",
+            "PENDING_GENERATION"
+          ],
+          "gold_in_top_k": [
+            true,
+            true
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 8
+        },
+        {
+          "id": "T130276288816834",
+          "family": "EXACT",
+          "verdict": [
+            "FAIL_RETRIEVAL",
+            "FAIL_RETRIEVAL"
+          ],
+          "gold_in_top_k": [
+            false,
+            false
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 28
+        },
+        {
+          "id": "T83482150856955",
+          "family": "EXACT",
+          "verdict": [
+            "FAIL_RETRIEVAL",
+            "FAIL_RETRIEVAL"
+          ],
+          "gold_in_top_k": [
+            false,
+            false
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 22
+        },
+        {
+          "id": "T98060249660567",
+          "family": "TRAP",
+          "verdict": [
+            "FAIL_RETRIEVAL",
+            "FAIL_RETRIEVAL"
+          ],
+          "gold_in_top_k": [
+            false,
+            false
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 26
+        },
+        {
+          "id": "Y242514248015098",
+          "family": "YESNO_FACT",
+          "verdict": [
+            "PENDING_GENERATION",
+            "PENDING_GENERATION"
+          ],
+          "gold_in_top_k": [
+            true,
+            true
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 36
+        },
+        {
+          "id": "Y276949344929833",
+          "family": "YESNO_FACT",
+          "verdict": [
+            "PENDING_GENERATION",
+            "PENDING_GENERATION"
+          ],
+          "gold_in_top_k": [
+            true,
+            true
+          ],
+          "sources_equal": false,
+          "sources_top_k_equal": true,
+          "contexts_equal": true,
+          "first_source_diff_rank": 7
+        }
+      ],
+      "match_all_fields": false,
+      "match_scored_fields": true
+    }
+  },
+  "headline": {
+    "gold_at_6": {
+      "baseline_count": 518,
+      "candidate_count": 468,
+      "baseline_denominator": 700,
+      "candidate_denominator": 700,
+      "baseline_rate": 0.74,
+      "candidate_rate": 0.6686,
+      "diff_candidate_minus_baseline": -0.0714,
+      "mcnemar_exact": {
+        "n_discordant": 116,
+        "b": 33,
+        "c": 83,
+        "p_two_sided": 3.865427244352971e-06
+      },
+      "paired_bootstrap_diff": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.0715,
+        "ci95_percentile": [
+          -0.1014,
+          -0.0429
+        ]
+      },
+      "baseline_rate_ci95": {
+        "ci95": [
+          0.7071,
+          0.7729
+        ]
+      },
+      "candidate_rate_ci95": {
+        "ci95": [
+          0.6343,
+          0.7029
+        ]
+      }
+    },
+    "fail_retrieval": {
+      "baseline_count": 182,
+      "candidate_count": 232,
+      "baseline_denominator": 811,
+      "candidate_denominator": 811,
+      "baseline_rate": 0.2244,
+      "candidate_rate": 0.2861,
+      "diff_candidate_minus_baseline": 0.0617,
+      "mcnemar_exact": {
+        "n_discordant": 116,
+        "b": 83,
+        "c": 33,
+        "p_two_sided": 3.865427244352971e-06
+      },
+      "paired_bootstrap_diff": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": 0.0617,
+        "ci95_percentile": [
+          0.0358,
+          0.0875
+        ]
+      },
+      "baseline_rate_ci95": {
+        "ci95": [
+          0.1961,
+          0.2528
+        ]
+      },
+      "candidate_rate_ci95": {
+        "ci95": [
+          0.2552,
+          0.3169
+        ]
+      }
+    }
+  },
+  "by_family": {
+    "CLOZE": {
+      "n": 153,
+      "n_gold": 153,
+      "gold_at_6": {
+        "baseline": 0.9085,
+        "candidate": 0.8105,
+        "diff": -0.098,
+        "gained_b_candidate_only": 9,
+        "lost_b_baseline_only": 24,
+        "mcnemar_exact": {
+          "n_discordant": 33,
+          "b": 9,
+          "c": 24,
+          "p_two_sided": 0.013530986849218607
+        },
+        "mẫu_quá_nhỏ": false
+      },
+      "fail_retrieval": {
+        "baseline_count": 14,
+        "candidate_count": 29,
+        "baseline_rate": 0.0915,
+        "candidate_rate": 0.1895,
+        "diff": 0.098,
+        "mẫu_quá_nhỏ": false
+      }
+    },
+    "CLOZE_OCR": {
+      "n": 206,
+      "n_gold": 206,
+      "gold_at_6": {
+        "baseline": 0.9709,
+        "candidate": 0.9612,
+        "diff": -0.0097,
+        "gained_b_candidate_only": 5,
+        "lost_b_baseline_only": 7,
+        "mcnemar_exact": {
+          "n_discordant": 12,
+          "b": 5,
+          "c": 7,
+          "p_two_sided": 0.7744140625
+        },
+        "mẫu_quá_nhỏ": false
+      },
+      "fail_retrieval": {
+        "baseline_count": 6,
+        "candidate_count": 8,
+        "baseline_rate": 0.0291,
+        "candidate_rate": 0.0388,
+        "diff": 0.0097,
+        "mẫu_quá_nhỏ": false
+      }
+    },
+    "EXACT": {
+      "n": 52,
+      "n_gold": 52,
+      "gold_at_6": {
+        "baseline": 0.2115,
+        "candidate": 0.0385,
+        "diff": -0.1731,
+        "gained_b_candidate_only": 1,
+        "lost_b_baseline_only": 10,
+        "mcnemar_exact": {
+          "n_discordant": 11,
+          "b": 1,
+          "c": 10,
+          "p_two_sided": 0.01171875
+        },
+        "mẫu_quá_nhỏ": false
+      },
+      "fail_retrieval": {
+        "baseline_count": 41,
+        "candidate_count": 50,
+        "baseline_rate": 0.7885,
+        "candidate_rate": 0.9615,
+        "diff": 0.1731,
+        "mẫu_quá_nhỏ": false
+      }
+    },
+    "HUMAN": {
+      "n": 97,
+      "n_gold": 0,
+      "gold_at_6": {
+        "baseline": null,
+        "candidate": null,
+        "diff": null,
+        "gained_b_candidate_only": 0,
+        "lost_b_baseline_only": 0,
+        "mcnemar_exact": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        },
+        "mẫu_quá_nhỏ": true
+      },
+      "fail_retrieval": {
+        "baseline_count": 0,
+        "candidate_count": 0,
+        "baseline_rate": 0.0,
+        "candidate_rate": 0.0,
+        "diff": 0.0,
+        "mẫu_quá_nhỏ": false
+      }
+    },
+    "NUMERIC": {
+      "n": 112,
+      "n_gold": 112,
+      "gold_at_6": {
+        "baseline": 0.4375,
+        "candidate": 0.4821,
+        "diff": 0.0446,
+        "gained_b_candidate_only": 12,
+        "lost_b_baseline_only": 7,
+        "mcnemar_exact": {
+          "n_discordant": 19,
+          "b": 12,
+          "c": 7,
+          "p_two_sided": 0.359283447265625
+        },
+        "mẫu_quá_nhỏ": false
+      },
+      "fail_retrieval": {
+        "baseline_count": 63,
+        "candidate_count": 58,
+        "baseline_rate": 0.5625,
+        "candidate_rate": 0.5179,
+        "diff": -0.0446,
+        "mẫu_quá_nhỏ": false
+      }
+    },
+    "REFUSE_MISSING_DOC": {
+      "n": 6,
+      "n_gold": 0,
+      "gold_at_6": {
+        "baseline": null,
+        "candidate": null,
+        "diff": null,
+        "gained_b_candidate_only": 0,
+        "lost_b_baseline_only": 0,
+        "mcnemar_exact": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        },
+        "mẫu_quá_nhỏ": true
+      },
+      "fail_retrieval": {
+        "baseline_count": 0,
+        "candidate_count": 0,
+        "baseline_rate": 0.0,
+        "candidate_rate": 0.0,
+        "diff": 0.0,
+        "mẫu_quá_nhỏ": true
+      }
+    },
+    "REFUSE_OOD": {
+      "n": 8,
+      "n_gold": 0,
+      "gold_at_6": {
+        "baseline": null,
+        "candidate": null,
+        "diff": null,
+        "gained_b_candidate_only": 0,
+        "lost_b_baseline_only": 0,
+        "mcnemar_exact": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        },
+        "mẫu_quá_nhỏ": true
+      },
+      "fail_retrieval": {
+        "baseline_count": 0,
+        "candidate_count": 0,
+        "baseline_rate": 0.0,
+        "candidate_rate": 0.0,
+        "diff": 0.0,
+        "mẫu_quá_nhỏ": true
+      }
+    },
+    "REVERSE_LEGAL": {
+      "n": 3,
+      "n_gold": 3,
+      "gold_at_6": {
+        "baseline": 0.6667,
+        "candidate": 0.6667,
+        "diff": 0.0,
+        "gained_b_candidate_only": 0,
+        "lost_b_baseline_only": 0,
+        "mcnemar_exact": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        },
+        "mẫu_quá_nhỏ": true
+      },
+      "fail_retrieval": {
+        "baseline_count": 1,
+        "candidate_count": 1,
+        "baseline_rate": 0.3333,
+        "candidate_rate": 0.3333,
+        "diff": 0.0,
+        "mẫu_quá_nhỏ": true
+      }
+    },
+    "SOURCE_LOOKUP": {
+      "n": 102,
+      "n_gold": 102,
+      "gold_at_6": {
+        "baseline": 0.8529,
+        "candidate": 0.6373,
+        "diff": -0.2157,
+        "gained_b_candidate_only": 3,
+        "lost_b_baseline_only": 25,
+        "mcnemar_exact": {
+          "n_discordant": 28,
+          "b": 3,
+          "c": 25,
+          "p_two_sided": 2.744048833847046e-05
+        },
+        "mẫu_quá_nhỏ": false
+      },
+      "fail_retrieval": {
+        "baseline_count": 15,
+        "candidate_count": 37,
+        "baseline_rate": 0.1471,
+        "candidate_rate": 0.3627,
+        "diff": 0.2157,
+        "mẫu_quá_nhỏ": false
+      }
+    },
+    "TRAP": {
+      "n": 23,
+      "n_gold": 23,
+      "gold_at_6": {
+        "baseline": 0.1304,
+        "candidate": 0.0,
+        "diff": -0.1304,
+        "gained_b_candidate_only": 0,
+        "lost_b_baseline_only": 3,
+        "mcnemar_exact": {
+          "n_discordant": 3,
+          "b": 0,
+          "c": 3,
+          "p_two_sided": 0.25
+        },
+        "mẫu_quá_nhỏ": false
+      },
+      "fail_retrieval": {
+        "baseline_count": 20,
+        "candidate_count": 23,
+        "baseline_rate": 0.8696,
+        "candidate_rate": 1.0,
+        "diff": 0.1304,
+        "mẫu_quá_nhỏ": false
+      }
+    },
+    "TRAP_OCR": {
+      "n": 17,
+      "n_gold": 17,
+      "gold_at_6": {
+        "baseline": 0.4706,
+        "candidate": 0.4706,
+        "diff": 0.0,
+        "gained_b_candidate_only": 1,
+        "lost_b_baseline_only": 1,
+        "mcnemar_exact": {
+          "n_discordant": 2,
+          "b": 1,
+          "c": 1,
+          "p_two_sided": 1.0
+        },
+        "mẫu_quá_nhỏ": false
+      },
+      "fail_retrieval": {
+        "baseline_count": 9,
+        "candidate_count": 9,
+        "baseline_rate": 0.5294,
+        "candidate_rate": 0.5294,
+        "diff": 0.0,
+        "mẫu_quá_nhỏ": false
+      }
+    },
+    "YESNO_FACT": {
+      "n": 32,
+      "n_gold": 32,
+      "gold_at_6": {
+        "baseline": 0.5938,
+        "candidate": 0.4688,
+        "diff": -0.125,
+        "gained_b_candidate_only": 2,
+        "lost_b_baseline_only": 6,
+        "mcnemar_exact": {
+          "n_discordant": 8,
+          "b": 2,
+          "c": 6,
+          "p_two_sided": 0.2890625
+        },
+        "mẫu_quá_nhỏ": false
+      },
+      "fail_retrieval": {
+        "baseline_count": 13,
+        "candidate_count": 17,
+        "baseline_rate": 0.4062,
+        "candidate_rate": 0.5312,
+        "diff": 0.125,
+        "mẫu_quá_nhỏ": false
+      }
+    }
+  },
+  "transition_matrix_baseline_rows__candidate_columns": {
+    "FAIL_RETRIEVAL": {
+      "FAIL_RETRIEVAL": 149,
+      "PENDING_GENERATION": 33
+    },
+    "PENDING_GENERATION": {
+      "FAIL_RETRIEVAL": 83,
+      "PENDING_GENERATION": 546
+    }
+  },
+  "bootstrap": {
+    "reps": 10000,
+    "seed": 20261023,
+    "method": "paired item-resample, percentile CI"
+  },
+  "how_to_read": "Điều kiện diễn giải delta là `reproducibility.*.match_scored_fields` = true: verdict, gold_in_top_k, sources TOP-6 và contexts phải khớp từng item với round đã đóng. `match_all_fields` kiểm cả hạng sâu của `sources` (retrieve_k); hạng sâu có thể đổi thứ tự do tie-break mà không đổi cửa sổ/metric — ghi riêng, không tính là lỗi tái lập."
+}
