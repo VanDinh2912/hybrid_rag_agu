@@ -20,9 +20,11 @@ vào `docs/reports/test_final.md` và bảng "công bố | tính lại | khớp"
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
@@ -32,6 +34,95 @@ for _p in (str(ROOT), str(ROOT / "tools" / "loop"), str(ROOT / "tools" / "diag")
         sys.path.insert(0, _p)
 
 ROUNDS_DIR = ROOT / "data" / "loop" / "rounds"
+
+# --- Đăng ký phiên bản trọng tài (B2, PA-2+PA-20 25-10) -------------------------
+# verify.py và answer_guard.py đổi sau PA-2+PA-20 (chữ ký v1 `9f1179ccab74` -> v2
+# `2911c69f740d`). Round đã đóng được chấm bằng v1, nên "chấm lại cho khớp" PHẢI dùng
+# đúng bản đã chấm — không phải bản đang chạy. Bản v1 giữ byte-exact làm snapshot;
+# `rescore_snapshot_helper.py` nạp nó trong subprocess riêng (một process không nạp
+# hai bản `src.answer_guard` cùng lúc một cách đáng tin).
+REFEREE_SNAPSHOTS = {
+    "9f1179ccab74": ROOT / "tests" / "snapshots" / "referee_v1",
+}
+RESCORE_HELPER = ROOT / "tools" / "diag" / "rescore_snapshot_helper.py"
+
+
+def snapshot_fingerprint(snap_dir: Any) -> str:
+    """Chữ ký của một cây snapshot, tính y như `verify.referee_fingerprint()` bên trong nó.
+
+    REFEREE_FILES của verify là (verify.py, src/answer_guard.py, src/text_utils.py) với
+    ROOT = `__file__/../../..` — tức layout snapshot phải là bản sao của chính layout đó.
+    """
+    d = Path(snap_dir)
+    h = hashlib.sha256()
+    for p in (d / "tools" / "loop" / "verify.py",
+              d / "src" / "answer_guard.py",
+              d / "src" / "text_utils.py"):
+        h.update(p.read_bytes())
+    return h.hexdigest()[:12]
+
+
+def referee_version_registry(live_fingerprint: str) -> dict[str, str]:
+    """Chữ ký -> nguồn. Chữ ký đang chạy luôn được đăng ký; snapshot chỉ khi đọc được file."""
+    reg = {live_fingerprint: "tree hiện tại (tools/loop/verify.py đang chạy)"}
+    for snap_dir in REFEREE_SNAPSHOTS.values():
+        if all((snap_dir / p).exists() for p in ("tools/loop/verify.py",
+                                                 "src/answer_guard.py", "src/text_utils.py")):
+            reg[snapshot_fingerprint(snap_dir)] = rel(snap_dir)
+    return reg
+
+
+def rescore_round_via_snapshot(rnd: str, version: str, phase: str = "full") -> dict[str, Any]:
+    """Chấm lại trọn round bằng trọng tài snapshot, so từng trường với verdict đã công bố.
+
+    Trả dict cùng shape với nhánh in-process của `rescore_layer`: n/khop/lech (+ id round).
+    Ném RuntimeError nếu helper chết hoặc tự khai chữ ký khác chữ ký round đã ghi —
+    snapshot bị sửa là bằng chứng đứt chain, không được âm thầm coi là "không khớp".
+    """
+    snap_dir = REFEREE_SNAPSHOTS.get(version)
+    if snap_dir is None or not Path(snap_dir).exists():
+        raise RuntimeError(f"không có snapshot cho chữ ký {version}")
+    rows = read_jsonl(full_path(rnd))
+    pub = {r["id"]: r for r in load_round(rnd, phase)}
+    payload_rows = []
+    for rec in rows:
+        item = rec["item"]
+        payload_rows.append({
+            "id": item["id"],
+            "top_k": (rec.get("retrieval_config") or {}).get("top_k", 6),
+            "item": item,
+            "result": {k: rec.get(k)
+                       for k in ("answer", "contexts", "sources", "labels", "latency_seconds")},
+        })
+    payload = {
+        "expected_fingerprint": version,
+        "rows": payload_rows,
+        "pub": {i: {"verdict": p["verdict"], "gold_in_top_k": p.get("gold_in_top_k"),
+                    "unsupported": p.get("unsupported") or []} for i, p in pub.items()},
+    }
+    import time
+    t0 = time.time()
+    with tempfile.TemporaryDirectory(prefix="council_rescore_") as td:
+        inp = Path(td) / "input.json"
+        inp.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        proc = subprocess.run(
+            [sys.executable, str(RESCORE_HELPER), "--snapshot", str(snap_dir),
+             "--input", str(inp)],
+            cwd=str(ROOT), capture_output=True, text=True,
+            encoding="utf-8", errors="replace", stdin=subprocess.DEVNULL,
+        )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"helper snapshot chết (rc={proc.returncode}): {proc.stdout.strip()[:200]} "
+            f"{proc.stderr.strip()[:200]}"
+        )
+    out = json.loads(proc.stdout)
+    if out.get("fingerprint") != version:
+        raise RuntimeError(f"snapshot tự khai chữ ký {out.get('fingerprint')} != {version}")
+    for l in out.get("lech") or []:
+        l["round"] = rnd
+    out["giay"] = round(time.time() - t0, 2)
+    return out
 
 # Thứ tự round cố định (không phụ thuộc sorted() chữ số — "r10" xếp trước "r2").
 ROUND_ORDER = (

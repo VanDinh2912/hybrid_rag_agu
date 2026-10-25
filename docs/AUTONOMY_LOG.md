@@ -1158,3 +1158,46 @@ Số chốt của phiên (đo lại sau mọi thay đổi, không số nào đã
 check_output/call` trong `tools/` + `tests/` + `src/`, **9** đã có `stdin`, **8** còn thiếu ở **6 file** → PA-34.
 **0 lượt Gemini**; `gate.py`, `verify.py`, `answer_guard.py`, `text_utils.py` **không đổi một byte**; không ghi vào
 `data/loop/rounds/` hay `outputs/`; không xoá file nào.
+
+**Ngã rẽ 23 — B1: quy tắc chọn mẫu tự tay (đã đăng ký trước) hóa ra PHIẾU về cấu trúc; giữ nguyên, không đổi mẫu sau khi thấy số.**
+Quy tắc "khớp nguồn + fold(gold_sentence)" cho 57/80 item ánh xạ được (đủ n>=30 theo đề bài), nhưng kiểm
+trên đĩa cho thấy 54/57 chunk vàng hai index GIỐNG NHAU TỪNG BYTE — biến "dấu" có cỡ hiệu dụng bằng 0,
+vì quy tắc chỉ với tới chunk Tầng 2 (.docx, chưa từng mất dấu), còn chunk Tầng 1 OCR mất dấu đúng là loại
+mất neo (gold_sentence không khớp ở index nào đủ điều kiện). Lựa chọn: (a) nới quy tắc khớp (overlap/token)
+để lấy đủ 30 item "khác dấu" rồi đo tiếp -> **LOẠI**, vì đó là đổi tiêu chí chọn mẫu SAU KHI thấy kết quả —
+đúng điều luật đăng ký-trước cấm; (b) **CHỌN** — báo "KHÔNG KẾT LUẬN về hiệu ứng dấu" kèm cơ chế cấu trúc,
+giữ nguyên mọi số đã chạy, và ghi phép đo đúng nghĩa thành điều kiện tiền đề PA-17 (re-anchor) trong
+PENDING_APPROVAL; (c) âm thầm dùng lại rows (a) cũ làm nền ghép cặp -> **LOẠI**, vì cây 25-10 khác cây 23-10
+(10/57 dòng a′ drift证实 ở B1.md) — ghép cặp chỉ một biến khi cả hai nhánh cùng cây, nên dựng `a_prime`.
+Kèm phát hiện thao tác: `settings.json` của B1 ghi chữ ký trọng tài **lúc khởi động tiến trình** (v1
+9f1179ccab74) dù vá PA-2/PA-20 đã nằm trên đĩa giữa chừng — kiểm chứng bằng snapshot tái sinh
+`tmp/referee_v1_snapshot/` (đọc lại ra đúng 9f1179ccab74) để bảo đảm mọi dòng B1 chấm bằng cùng một code.
+**Ngã rẽ 24 — B2: nghiệm thu ghim v1 phải theo hai thời kỳ, không được nới răng.**
+PA-2+PA-20 (đã duyệt) đổi chữ ký trọng tài 9f1179ccab74 -> 2911c69f740d và làm 8 test ghim
+v1 đỏ. Bốn lựa chọn kỹ đã cân:
+(a) dual-import hai bản `src.answer_guard` trong một process bằng sys.modules trick ->
+**LOẠI**, vì một process nạp hai bản module cùng tên là nguồn nhiễm đo tiềm ẩn (kit đang
+chấm round thì `check_grounding` trỏ nhầm bản là hỏng cả bằng chứng); **CHỌN** snapshot
+vĩnh viễn tại `tests/snapshots/referee_v1/` (byte-exact, tự hash ra v1) + helper subprocess
+`tools/diag/rescore_snapshot_helper.py` — process con chỉ thấy một bản, và nó PHẢI tự khai
+đúng chữ ký round mới được chấm.
+(b) răng của M2-series (nuôi verdict giả để xem máy kiểm có đỏ): sau (a), monkeypatch
+`verify.score_item` không chạm đường snapshot nữa -> **LOẠI** phương án "bỏ test"; **CHỌN**
+móc `scorer=` tường minh trong `rescore_layer` (hợp đồng 3 trường vẫn bị đột biến cả 4 ca),
+và M3 định nghĩa lại thành "chữ ký hàm nói dối so với băm file tính lại độc lập" — ĐÚNG HƠN
+cả răng cũ (bắt được fingerprint() dối ngay cả khi mọi round vẫn khớp snapshot).
+(c) test strict-audit PA-20: dưới v2, luật hiện hành == luật strict nên "1 flip" của fixture
+cũ không còn tồn tại; sửa kỳ vọng thành 0 flip (đáp án trung thực) + thêm ca regression
+"ai đó nới PA-20 trong verify -> audit phải bắt flip trở lại", thay vì sửa tool để nó
+bịa flip cũ. **CHỌN.**
+(d) ghim sha trong `TestDinhNghiaCuaKit`: ghim một hằng duy nhất sẽ hoặc chặn sửa đúng,
+hoặc buộc nới tay khi trọng tài đổi hợp lệ -> **CHỌN** ghim hai thời kỳ (gate.py không đổi;
+verify/answer_guard đúng bản v2 đã duyệt; snapshot v1 byte-exact) — đổi bất kỳ bên nào đều đỏ.
+Số chốt B2 (không tô): chấm lại 1.000 dòng = 5 verdict đổi, CẢ 5 DO PA-20 (kiểm tay: "2"
+chỉ nằm trong "2026-2028" của tên tệp; "20" chỉ trong "2026"), PA-2 KHÔNG đổi verdict nào
+trên round đã đóng; baseline tuyệt đối r5 từ này đọc theo v2 là 13/100 — các kết luận tương
+đối giữa round không đổi chiều vì cùng một item bị hạ ở mọi round chứa nó. Toàn repo
+**1397 passed / 5 skipped**; đột biến B2 **6/6 bắt**, hoàn tác byte-identical;
+`council_check_referee.py` exit 0 với **1000/1000** câu khớp khi chấm bằng đúng v1.
+`data/loop/rounds/` không bị sửa byte nào; 0 lượt Gemini; không commit `src/` dirty của
+phiên khác (PA-26 giữ nguyên, commit chỉ docs/tests/tools + rounds_v2).

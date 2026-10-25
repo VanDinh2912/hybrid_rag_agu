@@ -11,11 +11,14 @@ CHƯA có : đồng thuận với nhãn người (60 mẫu chưa ai dán nhãn) 
 
 Không gọi mạng/Gemini/Ollama, không sửa file. Lưu bằng chứng: `--json tmp/council_referee.json`.
 
-Mã thoát: 0 nếu chữ ký khớp và tái lập 100%; 1 nếu có round lệch chữ ký hoặc lệch verdict.
+Mã thoát: 0 nếu chữ ký đang chạy khớp nội dung file, mọi round mang chữ ký đã đăng ký
+(sống trên cây hiện tại HOẶC có snapshot tại `kit.REFEREE_SNAPSHOTS`) và chấm lại khớp 100%;
+1 nếu chữ ký nói dối so với file, round mang chữ ký vô danh, hoặc có verdict lệch.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import sys
 import time
@@ -43,9 +46,34 @@ from tools.loop import gate, verify  # noqa: E402
 SEVERE = set(kit.SEVERE_VERDICTS)
 
 
+def recompute_live_fingerprint() -> str:
+    """Băm lại REFEREE_FILES từ nội dung file, ĐỘC LẬP với `verify.referee_fingerprint()`.
+
+    Đây là răng bắt lỗi "hàm ký tên nói dối": nếu ai đó patch `referee_fingerprint()`
+    trả chữ ký đẹp thì phép tính lại từ file vẫn ra chữ ký thật và hai vế lệch nhau.
+    """
+    h = hashlib.sha256()
+    seen = False
+    for p in verify.REFEREE_FILES:
+        try:
+            h.update(Path(p).read_bytes())
+            seen = True
+        except OSError:
+            continue
+    return h.hexdigest()[:12] if seen else ""
+
+
 def fingerprint_layer() -> dict[str, Any]:
-    """Chữ ký hiện tại của trọng tài + chữ ký ghi trong TỪNG round đã đóng."""
+    """Chữ ký hiện tại + chữ ký ghi trong TỪNG round đã đóng, đối chiếu đăng ký phiên bản.
+
+    Sau B2 (PA-2+PA-20) cây làm việc mang chữ ký v2 `2911c69f740d` trong khi mọi round
+    đã đóng ghi nhận v1 `9f1179ccab74`. "Lệch" theo nghĩa cũ (khác chữ ký đang chạy) là
+    chuyện bình thường có chủ đích; cái phải đỏ là round mang chữ ký KHÔNG đăng ký
+    (không bản nào chấm lại được) hoặc chữ ký đang chạy không khớp nội dung file.
+    """
     now = verify.referee_fingerprint()
+    recal = recompute_live_fingerprint()
+    registry = kit.referee_version_registry(now)
     per_round: dict[str, str] = {}
     for phase in ("full", "retrieval"):
         for rnd in kit.rounds_with(phase):
@@ -53,29 +81,67 @@ def fingerprint_layer() -> dict[str, Any]:
             ref = s.get("referee")
             if ref is not None:
                 per_round[f"{rnd}/{phase}"] = ref
-    khac = {k: v for k, v in per_round.items() if v != now}
+    khac = {k: v for k, v in per_round.items() if v not in registry}
     return {
         "dang_chay": now,
+        "tinh_lai_tu_file": recal,
+        "dang_chay_khop_file": recal == now,
+        "danh_bien": registry,
         "n_round_kiem": len(per_round),
         "n_chu_ky_khac_nhau": len(set(per_round.values())),
         "round_lech": khac,
         "nguồn": [kit.rel(ROOT / "tools" / "loop" / "verify.py"),
-                  kit.rel(ROOT / "data" / "loop" / "rounds") + "/<round>/round_summary_*.json"],
+                  kit.rel(ROOT / "data" / "loop" / "rounds") + "/<round>/round_summary_*.json",
+                  kit.rel(ROOT / "tests" / "snapshots" / "referee_v1")],
     }
 
 
-def rescore_layer(rnd: str) -> dict[str, Any]:
-    """Chấm lại một round từ `full.jsonl` và so từng trường với verdicts đã công bố."""
+def rescore_layer(rnd: str, scorer=None) -> dict[str, Any]:
+    """Chấm lại một round bằng ĐÚNG phiên bản trọng tài đã chấm nó, so từng trường với verdict đã công bố.
+
+    Ba đường chấm, chọn theo chữ ký ghi trong round (tường minh, in ra cột "cach"):
+      * `live`     — round mang chữ ký của cây đang chạy: chấm in-process bằng
+        `verify.score_item` (monkeypatch/đột biến tác động trực tiếp được).
+      * `snapshot` — round mang chữ ký có snapshot đã đăng ký (`kit.REFEREE_SNAPSHOTS`):
+        helper subprocess nạp đúng cây snapshot; chữ ký helper tự khai phải khớp,
+        snapshot bị sửa -> RuntimeError, không âm thầm "không khớp".
+      * `test-hook` — scorer do nghiệm thu răng nuôi vào; dùng để chứng minh bộ so khớp
+        bắt được từng loại sai (verdict / gold_in_top_k / số khẳng định trái ngữ cảnh).
+    """
     rows = kit.read_jsonl(kit.full_path(rnd))
     pub = {r["id"]: r for r in kit.load_round(rnd, "full")}
+    recorded = kit.settings_of(rnd, "full").get("referee")
+    live = verify.referee_fingerprint()
+    t0 = time.time()
+    sources = [kit.rel(kit.full_path(rnd)), kit.rel(kit.verdicts_path(rnd, "full"))]
+
+    if scorer is not None:
+        cach = "test-hook"
+    elif recorded == live:
+        cach = "live"
+    elif recorded in kit.REFEREE_SNAPSHOTS:
+        cach = "snapshot"
+    else:
+        cach = "khong-biet"
+
+    if cach == "snapshot":
+        out = kit.rescore_round_via_snapshot(rnd, recorded)
+        sources.append(kit.rel(kit.REFEREE_SNAPSHOTS[recorded]))
+        return {"round": rnd, "n": out["n"], "khop": out["khop"], "lech": out["lech"],
+                "giay": out["giay"], "referee": recorded, "cach": cach, "nguồn": sources}
+
     khop = 0
     lech: list[dict[str, Any]] = []
-    t0 = time.time()
     for rec in rows:
         item = rec["item"]
+        if cach == "khong-biet":
+            lech.append({"round": rnd, "id": item["id"],
+                         "loi": f"chữ_ký_trong_round_không_đăng_ký({recorded})"})
+            continue
         result = {k: rec.get(k) for k in ("answer", "contexts", "sources", "labels", "latency_seconds")}
         top_k = (rec.get("retrieval_config") or {}).get("top_k", 6)
-        v = verify.score_item(item, result, top_k=top_k)
+        v = scorer(item, result, top_k=top_k) if scorer is not None \
+            else verify.score_item(item, result, top_k=top_k)
         p = pub.get(item["id"])
         if p is None:
             lech.append({"round": rnd, "id": item["id"], "loi": "khong_co_row_cong_bo"})
@@ -90,8 +156,8 @@ def rescore_layer(rnd: str) -> dict[str, Any]:
                          "gold": (p.get("gold_in_top_k"), v.get("gold_in_top_k")),
                          "n_unsupported": (len(p.get("unsupported") or []), len(v["unsupported"]))})
     return {"round": rnd, "n": len(rows), "khop": khop, "lech": lech,
-            "giay": round(time.time() - t0, 2),
-            "nguồn": [kit.rel(kit.full_path(rnd)), kit.rel(kit.verdicts_path(rnd, "full"))]}
+            "giay": round(time.time() - t0, 2), "referee": recorded, "cach": cach,
+            "nguồn": sources}
 
 
 def env_independence_layer() -> dict[str, Any]:
@@ -239,9 +305,13 @@ def build() -> dict[str, Any]:
 
 def ket_luan(fp: dict, tong: dict, rescore: list[dict]) -> dict[str, list[str]]:
     da = [
-        f"Chữ ký dụng cụ đo `{fp['dang_chay']}` và {fp['n_round_kiem']} round đã đóng dùng chung "
-        f"{fp['n_chu_ky_khac_nhau']} chữ ký — không round nào được chấm bằng bản trọng tài khác.",
-        f"Chấm lại {tong['n_rows_rescored']} câu của {len(rescore)} round từ chính văn bản đã lưu: "
+        f"Chữ ký dụng cụ đo đang chạy `{fp['dang_chay']}` KHỚP đúng nội dung file tạo nên nó "
+        f"(tính lại độc lập: `{fp['tinh_lai_tu_file']}`); {fp['n_round_kiem']} round đã đóng dùng "
+        f"{fp['n_chu_ky_khac_nhau']} chữ ký và mọi chữ ký đều có trong đăng ký phiên bản — "
+        "không round nào được chấm bằng một bản trọng tài vô danh.",
+        f"Chấm lại {tong['n_rows_rescored']} câu của {len(rescore)} round từ chính văn bản đã lưu, "
+        "bằng ĐÚNG phiên bản trọng tài đã chấm từng round (round v1 chấm lại bằng snapshot v1 "
+        "trong subprocess riêng): "
         f"{tong['n_rows_khop']} câu cho cùng verdict + cùng gold_in_top_k + cùng số khẳng định "
         f"trái ngữ cảnh; toàn bộ bằng code, không gọi model ({tong['n_rows_lech']} câu lệch).",
         "Verdict không đổi khi env bị đổi (env_independence) — trọng tài không đọc env, "
@@ -266,16 +336,20 @@ def ket_luan(fp: dict, tong: dict, rescore: list[dict]) -> dict[str, list[str]]:
 def print_report(result: dict) -> None:
     kit.banner("CÂU HỎI 2 — TRỌNG TÀI CÓ ĐÁNG TIN KHÔNG?", result["cau_hoi"])
     fp = result["chu_ky"]
-    print("\n[1] Chữ ký dụng cụ đo:")
+    print("\n[1] Chữ ký dụng cụ đo (đối chiếu đăng ký phiên bản — B2):")
     kit.kv("verify.referee_fingerprint() hiện tại", f"`{fp['dang_chay']}`", "tools/loop/verify.py")
+    kit.kv("tính lại từ REFEREE_FILES (độc lập với hàm)", f"`{fp['tinh_lai_tu_file']}`")
+    kit.kv("chữ ký đang chạy khớp nội dung file", kit.dat(fp["dang_chay_khop_file"]))
+    kit.kv("đăng ký phiên bản (chữ ký -> nguồn)", fp["danh_bien"])
     kit.kv("round đã đóng có ghi chữ ký", fp["n_round_kiem"], "data/loop/rounds")
     kit.kv("số chữ ký KHÁC NHAU trong các round đó", fp["n_chu_ky_khac_nhau"])
-    kit.kv("round lệch chữ ký", fp["round_lech"] or "không có")
+    kit.kv("round mang chữ ký không đăng ký", fp["round_lech"] or "không có")
 
-    print("\n[2] Tính tất định: chấm lại toàn bộ round đã đóng từ văn bản đã lưu:")
+    print("\n[2] Tính tất định: chấm lại toàn bộ round đã đóng bằng ĐÚNG bản đã chấm chúng:")
     print(kit.md_table(
-        ["round", "câu", "khop verdict+gold+so-trai-ngu-canh", "lekh", "giay", "nguồn"],
-        [[r["round"], r["n"], r["khop"], len(r["lech"]), r["giay"], " + ".join(r["nguồn"])]
+        ["round", "trong-tai", "cach-cham", "câu", "khop verdict+gold+so-trai-ngu-canh", "lekh", "giay", "nguồn"],
+        [[r["round"], r["referee"], r["cach"], r["n"], r["khop"], len(r["lech"]), r["giay"],
+          " + ".join(r["nguồn"])]
          for r in result["theo_round"]]))
     t = result["tat_dinh"]
     print(f"     Tổng: {t['n_rows_khop']}/{t['n_rows_rescored']} khớp, {t['n_rows_lech']} lệch, "
@@ -337,7 +411,7 @@ def main(argv: list[str] | None = None) -> int:
     kit.emit(result, args)
     fp = result["chu_ky"]
     t = result["tat_dinh"]
-    ok = (fp["n_chu_ky_khac_nhau"] == 1
+    ok = (fp["dang_chay_khop_file"]
           and not fp["round_lech"]
           and t["n_rows_lech"] == 0
           and t["n_rows_khop"] == t["n_rows_rescored"])

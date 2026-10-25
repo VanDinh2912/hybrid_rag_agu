@@ -1,8 +1,16 @@
-"""Test cho audit read-only PA-20 (strict số ngắn). Không chạy model, không đọc round thật."""
+"""Test cho audit read-only PA-20 (strict số ngắn). Không chạy model, không đọc round thật.
+
+Hai thời kỳ (B2, 25-10): audit sinh ra ĐỂ đo khoảng cách v1-vs-strict. Sau khi PA-20
+đi vào trọng tài (v2), luật strict và luật hiện hành TRÙNG NHAU trên số 1–2 chữ số —
+"0 flip" giờ là đáp án ĐÚNG. Vì vậy răng của bộ đôi test là:
+  #1 fixture cũ dưới v2 phải cho 0 flip (không được bịa flip để "đẹp" báo cáo);
+  #2 nếu ai đó nới lỏng PA-20 trong verify (số ngắn khớp oan trở lại), audit PHẢI đỏ flip.
+"""
 from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -15,6 +23,7 @@ from tools.diag.referee_strict_number_audit import (  # noqa: E402
     covers_strict,
     strict_entity_in_answer,
 )
+from tools.loop import verify as verify_mod  # noqa: E402
 
 
 def test_strict_short_number_does_not_match_inside_code_or_year():
@@ -53,7 +62,7 @@ def _write_round(tmp_path: Path, rows: list[dict], verdicts: list[dict]) -> None
     )
 
 
-def test_audit_round_counts_flips_without_mutating_input(tmp_path):
+def _fixture_round(tmp_path: Path) -> Path:
     rows = [
         {
             "id": "A",
@@ -73,13 +82,42 @@ def test_audit_round_counts_flips_without_mutating_input(tmp_path):
         {"id": "C", "verdict": "FAIL_INCOMPLETE"},
     ]
     _write_round(tmp_path, rows, verdicts)
-    full_path = tmp_path / "rX" / "full.jsonl"
+    return tmp_path / "rX" / "full.jsonl"
+
+
+def test_audit_round_duoi_v2_khong_flip_va_khong_sua_input(tmp_path):
+    """Dưới v2 (PA-20 đã nằm trong trọng tài): "1" trong "B1"/"2021" không còn khớp oan.
+
+    Dòng A covers_now=False, dòng B covers_now=True => current==strict trên MỌI dòng,
+    0 flip là con số thật, không phải công cụ hỏng. Input không được đụng.
+    """
+    full_path = _fixture_round(tmp_path)
     before = hashlib.sha256(full_path.read_bytes()).hexdigest()
 
     summary = audit_round("rX", rounds_dir=tmp_path)
 
     assert summary["n_rows"] == 3
     assert summary["n_answered"] == 2
+    assert summary["n_covers_now"] == 1
+    assert summary["n_flips"] == 0
+    assert summary["n_flips_of_pass_correct"] == 0
+    assert hashlib.sha256(full_path.read_bytes()).hexdigest() == before
+
+
+def test_audit_bat_regression_neu_so_ngan_khop_oan_trong_lai(tmp_path, monkeypatch):
+    """Răng của audit: nếu ai đó THOÁT PA-20 khỏi verify (số ngắn lại khớp trong "B1"),
+    khoảng cách current-vs-strict hiện ra ngay: flip đúng 1 dòng (A, PASS_CORRECT)."""
+    def _loose_v1(entity: str, answer: str) -> bool:
+        if re.fullmatch(r"[\d.,\s]+đ?%", entity or "") or re.search(r"\d", entity or ""):
+            return verify_mod._number_in(answer, entity)
+        return verify_mod.fold(entity) in verify_mod.fold(answer)
+
+    full_path = _fixture_round(tmp_path)
+    before = hashlib.sha256(full_path.read_bytes()).hexdigest()
+
+    monkeypatch.setattr(verify_mod, "_entity_in_answer", _loose_v1, raising=True)
+    summary = audit_round("rX", rounds_dir=tmp_path)
+
     assert summary["n_flips"] == 1
     assert summary["n_flips_of_pass_correct"] == 1
     assert summary["flips"][0]["id"] == "A"

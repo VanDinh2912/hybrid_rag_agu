@@ -1,0 +1,3 @@
+# Byte-exact fixtures: snapshot trọng tài v1 (B2) — NGĂN chuyển đổi EOL của
+# core.autocrlf=true, vì chữ ký 9f1179ccab74 băm trên đúng từng byte của 3 file.
+tests/snapshots/** -text

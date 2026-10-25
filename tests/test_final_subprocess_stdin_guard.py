@@ -121,9 +121,14 @@ class TestGhimNguon:
         assert so_luong >= 8, f"chỉ thấy {so_luong} lời gọi — phạm vi hoặc tên hàm đã bị đổi?"
 
     def test_dinh_vi_dung_file(self):
-        """Mutation không lọt nhờ xoá cả lời gọi: số lời gọi mỗi file là con số đã ghim."""
+        """Mutation không lọt nhờ xoá cả lời gọi: số lời gọi mỗi file là con số đã ghim.
+
+        council_kit.py: 2 -> 3 từ B2 (25-10) — thêm lời gọi helper subprocess chấm lại
+        round trên cây snapshot v1; lời gọi mới cũng phải mang `stdin=DEVNULL` và đã
+        nằm trong vòng kiểm tra của `test_khong_co_loi_goi_subprocess_thieu_stdin`.
+        """
         dem = {r: len(_loi_goi_subprocess(r)) for r in PHAM_VI}
-        assert dem["tools/diag/council_kit.py"] == 2, dem
+        assert dem["tools/diag/council_kit.py"] == 3, dem
         assert dem["tools/diag/final_number_audit.py"] == 1, dem
         assert dem["tools/diag/secret_scan.py"] == 1, dem
         assert dem["tools/diag/docs_consistency_check.py"] == 1, dem

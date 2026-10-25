@@ -364,8 +364,12 @@ class TestMetrics:
         _point_paths(abl, tmp_path, [])
         self._seed_rows(tmp_path)
         summary = abl.summarize("a_oracle_qwen")
-        assert summary["referee"] == "9f1179ccab74"
-        assert verify.referee_fingerprint() == "9f1179ccab74"  # dùng trọng tài thật, không đổi chữ ký
+        # Ý của ghim: summarize trả lại ĐÚNG chữ ký đã ghi trong settings (không tự ý
+        # đổi dụng cụ đo giữa chừng). Giá trị tuyệt đối của chữ ký KHÔNG ở đây —
+        # nó đổi khi trọng tài đổi (v1 9f1179ccab74 -> v2 2911c69f740d, PA-2+PA-20)
+        # và được ghim ở tests/test_t8_referee_v2.py + test_final_council_scripts.
+        assert summary["referee"] == verify.referee_fingerprint()
+        assert verify.referee_fingerprint() == verify.referee_fingerprint()  # tất định
 
     def test_dong_error_khong_tinh_vao_overall(self, tmp_path, monkeypatch):
         _point_paths(abl, tmp_path, [])

@@ -117,22 +117,35 @@ class TestCau1ChepBia:
 
 
 # ---------------------------------------------------------------- 2. câu hỏi "trọng tài đáng tin"
+V1 = "9f1179ccab74"   # trọng tài đã chấm MỌI round đã đóng (snapshot tests/snapshots/referee_v1)
+V2 = "2911c69f740d"   # trọng tài hiện hành sau PA-2+PA-20 (cây làm việc 25-10)
+
+
 class TestCau2TrongTai:
     def test_chu_ky_va_so_round_khop(self, cau2):
+        """B2: hai thời kỳ dụng cụ đo. Round đã đóng mang v1; cây chạy mang v2;
+        ĐỒ NÀO CŨNG PHẢI THUỘC ĐĂNG KÝ PHIÊN BẢN — chữ ký vô danh mới là đỏ."""
         fp = cau2["chu_ky"]
-        assert fp["dang_chay"] == "9f1179ccab74"
+        assert fp["dang_chay"] == V2
         assert fp["dang_chay"] == verify.referee_fingerprint()
+        assert fp["tinh_lai_tu_file"] == V2
+        assert fp["dang_chay_khop_file"] is True, "chữ ký hàm phải khớp băm file (chống nói dối)"
+        assert V1 in fp["danh_bien"] and V2 in fp["danh_bien"]
         assert fp["n_round_kiem"] == 19
         assert fp["n_chu_ky_khac_nhau"] == 1
-        assert fp["round_lech"] == {}
+        assert fp["round_lech"] == {}, "mọi round phải mang chữ ký đã đăng ký"
 
     def test_cham_lai_1000_cau_khop_het(self, cau2):
+        """Round v1 phải được chấm lại bằng ĐÚNG v1 (subprocess snapshot), không phải v2 đang chạy."""
         t = cau2["tat_dinh"]
         assert t["n_rows_rescored"] == 1000
         assert t["n_rows_khop"] == 1000
         assert t["n_rows_lech"] == 0
         assert len(cau2["theo_round"]) == 10
         assert all(r["khop"] == r["n"] for r in cau2["theo_round"])
+        assert all(r["referee"] == V1 and r["cach"] == "snapshot" for r in cau2["theo_round"]), (
+            "chấm lại round đã đóng bằng bản khác bản đã chấm là vô nghĩa — phải in rõ cach=snapshot"
+        )
 
     def test_verdict_khong_doi_khi_env_bi_doi(self, cau2):
         e = cau2["doc_lap_env"]
@@ -252,61 +265,78 @@ class TestRengCuaMayKiem:
         assert r["khop"] is False
         assert fab.main([]) == 1
 
-    def test_M2a_trong_tai_sai_verdict_phai_lo(self, monkeypatch):
-        """Đột biến răng #1: score_item trả verdict SAI nhưng các trường khác vẫn đúng => vẫn phải bắt."""
-        pub = {r["id"]: r for r in kit.load_round("r7", "full")}
-
-        def gia_mao(item, result, top_k=6):
+    # M2 series: sau B2, round r7 (v1) được chấm lại bằng snapshot subprocess — monkeypatch
+    # `verify.score_item` không còn chạm tới đường đó nữa. Răng của bộ SO KHỚP được kiểm
+    # qua móc `scorer` (đúng hợp đồng 3 trường: verdict / gold_in_top_k / số khẳng định).
+    @staticmethod
+    def _gia_mao_scorer(pub, **sai):
+        def scorer(item, result, top_k=6):
             p = pub[item["id"]]
-            return {"verdict": "FAIL_FABRICATED" if p["verdict"] != "FAIL_FABRICATED" else "PASS_CORRECT",
-                    "gold_in_top_k": p["gold_in_top_k"], "unsupported": p["unsupported"]}
+            out = {"verdict": p["verdict"], "gold_in_top_k": p["gold_in_top_k"],
+                   "unsupported": list(p["unsupported"])}
+            out.update({k: (f(out) if callable(f) else f) for k, f in sai.items()})
+            return out
+        return scorer
 
-        monkeypatch.setattr(verify, "score_item", gia_mao, raising=True)
-        r = ref.rescore_layer("r7")
+    def test_M2a_trong_tai_sai_verdict_phai_lo(self):
+        """Đột biến răng #1: score trả verdict SAI nhưng các trường khác vẫn đúng => vẫn phải bắt."""
+        pub = {r["id"]: r for r in kit.load_round("r7", "full")}
+        scorer = self._gia_mao_scorer(
+            pub, verdict=lambda f: "FAIL_FABRICATED" if f["verdict"] != "FAIL_FABRICATED" else "PASS_CORRECT")
+        r = ref.rescore_layer("r7", scorer=scorer)
+        assert r["cach"] == "test-hook"
         assert r["khop"] == 0 and len(r["lech"]) == 100
 
-    def test_M2b_trong_tai_sai_cot_gold_phai_lo(self, monkeypatch):
+    def test_M2b_trong_tai_sai_cot_gold_phai_lo(self):
         """Đột biến răng #2: chỉ lật cột `gold_in_top_k` (verdict đúng) => vẫn phải đỏ."""
         pub = {r["id"]: r for r in kit.load_round("r7", "full")}
-
-        def gia_mao(item, result, top_k=6):
-            p = pub[item["id"]]
-            return {"verdict": p["verdict"], "gold_in_top_k": not p["gold_in_top_k"],
-                    "unsupported": p["unsupported"]}
-
-        monkeypatch.setattr(verify, "score_item", gia_mao, raising=True)
-        r = ref.rescore_layer("r7")
+        scorer = self._gia_mao_scorer(pub, gold_in_top_k=lambda f: not f["gold_in_top_k"])
+        r = ref.rescore_layer("r7", scorer=scorer)
         assert r["khop"] == 0 and len(r["lech"]) == 100
 
-    def test_M2c_trong_tai_sai_so_khang_dinh_phai_lo(self, monkeypatch):
-        """Đột biến răng #3: chỉ thêm/bớt một khẳng định trái ngữ cảnh => vẫn phải đỏ."""
+    def test_M2c_trong_tai_sai_so_khang_dinh_phai_lo(self):
+        """Đột biến răng #3: chỉ thêm một khẳng định trái ngữ cảnh => vẫn phải đỏ."""
         pub = {r["id"]: r for r in kit.load_round("r7", "full")}
-
-        def gia_mao(item, result, top_k=6):
-            p = pub[item["id"]]
-            them = [{"kind": "number", "text": "9"}]
-            return {"verdict": p["verdict"], "gold_in_top_k": p["gold_in_top_k"],
-                    "unsupported": list(p["unsupported"]) + them}
-
-        monkeypatch.setattr(verify, "score_item", gia_mao, raising=True)
-        r = ref.rescore_layer("r7")
+        scorer = self._gia_mao_scorer(
+            pub, unsupported=lambda f: list(f["unsupported"]) + [{"kind": "number", "text": "9"}])
+        r = ref.rescore_layer("r7", scorer=scorer)
         assert r["khop"] == 0 and len(r["lech"]) == 100
 
-    def test_M2d_trong_tai_cham_khac_hoan_toan_phai_lo(self, monkeypatch):
-        """Đột biến răng #4: verdict + mọi cột đều sai => cả 100 câu lệch, main() trả 1."""
-        gia_mao = {"verdict": "FAIL_FABRICATED", "gold_in_top_k": False,
-                   "unsupported": [{"kind": "number", "text": "1"}]}
-        monkeypatch.setattr(verify, "score_item",
-                            lambda item, result, top_k=6: dict(gia_mao), raising=True)
-        r = ref.rescore_layer("r7")
+    def test_M2d_trong_tai_cham_khac_hoan_toan_phai_lo_va_do_main(self, monkeypatch):
+        """Đột biến răng #4: verdict + mọi cột đều sai => cả 100 câu lệch VÀ main() trả 1."""
+        scorer = lambda item, result, top_k=6: {
+            "verdict": "FAIL_FABRICATED", "gold_in_top_k": False,
+            "unsupported": [{"kind": "number", "text": "1"}]}
+        r = ref.rescore_layer("r7", scorer=scorer)
         assert r["khop"] == 0 and len(r["lech"]) == 100
+
+        # Nối lệch -> đỏ cả script, trên ĐƯỜNG THẬT (snapshot): giả lập snapshot nhả
+        # 100 dòng lệch riêng round r7, các round khác chấm thật.
+        orig = kit.rescore_round_via_snapshot
+
+        def fake(rnd, version, phase="full"):
+            if rnd != "r7":
+                return orig(rnd, version, phase)
+            return {"n": 100, "khop": 0, "giay": 0.0,
+                    "lech": [{"round": rnd, "id": p["id"], "cong_bo": p["verdict"],
+                              "tinhsan": "FAIL_FABRICATED"}
+                             for p in kit.load_round(rnd, "full")]}
+
+        monkeypatch.setattr(kit, "rescore_round_via_snapshot", fake)
         assert ref.main([]) == 1
 
-    def test_M3_chu_ky_gia_phai_lo(self, monkeypatch):
+    def test_M3_chu_ky_noi_doi_phai_lo(self, monkeypatch):
+        """Đột biến: `referee_fingerprint()` nói dối so với nội dung file.
+
+        Trước B2, patch này làm mọi round "lệch chữ ký" và đỏ. Sau B2, round v1 đã có
+        snapshot đăng ký — cái phải đỏ là VẾ TỰ THÂN: chữ ký hàm đưa ra không khớp phép
+        băm file tính lại độc lập (`dang_chay_khop_file`), và main() phải trả 1.
+        """
         monkeypatch.setattr(verify, "referee_fingerprint", lambda: "deadbeefcafe", raising=True)
         fp = ref.fingerprint_layer()
         assert fp["dang_chay"] == "deadbeefcafe"
-        assert len(fp["round_lech"]) == 19, "mọi round phải bị đánh dấu lệch, không được im"
+        assert fp["dang_chay_khop_file"] is False, "băm lại từ file phải lộ chữ ký giả"
+        assert fp["tinh_lai_tu_file"] == V2
         assert ref.main([]) == 1
 
     def test_M4_regex_doc_chuoi_cong_bo_hong_khong_duoc_trong_ket_qua(self, monkeypatch):
@@ -402,11 +432,24 @@ class TestDinhNghiaCuaKit:
         assert kit.pct(363, 700) == "51,86%"
 
     def test_khong_duoc_phep_sua_dung_cu_do(self):
-        """Bất biến phạm vi: 3 file trọng tài + gate.py không đổi sha so với lúc viết script này."""
-        assert kit.sha256_of(ROOT / "tools" / "loop" / "verify.py")[:12] == "6cc636689a8e"
-        assert kit.sha256_of(ROOT / "src" / "answer_guard.py")[:12] == "40946176bc78"
+        """Bất biến phạm vi hai thời kỳ (B2, PA-2+PA-20 25-10).
+
+        Trước: ghim sha của đúng 4 file. Sau khi trọng tài đổi bản hợp lệ (đã duyệt),
+        ghim một con số duy nhất sẽ hoặc chặn sửa đúng, hoặc phải nới tay — cả hai đều
+        mất răng. Ở đây mỗi thứ có chỗ của nó: gate.py VẪN không đổi; verify/answer_guard
+        chốt đúng bản v2 đã duyệt; v1 lịch sử chỉ còn là snapshot byte-exact — sửa snapshot
+        là chữ ký round mất nguồn và máy kiểm phải đỏ.
+        """
         assert kit.sha256_of(ROOT / "tools" / "loop" / "gate.py")[:24] == "bf4bda89d8a360abbba25742"
-        assert verify.referee_fingerprint() == "9f1179ccab74"
+        assert kit.sha256_of(ROOT / "tools" / "loop" / "verify.py")[:12] == "137ee884af3c"
+        assert kit.sha256_of(ROOT / "src" / "answer_guard.py")[:12] == "ab4a8a73292f"
+        assert kit.sha256_of(ROOT / "src" / "text_utils.py")[:12] == "5f810aa52b6b"
+        assert verify.referee_fingerprint() == V2
+        snap = ROOT / "tests" / "snapshots" / "referee_v1"
+        assert kit.sha256_of(snap / "tools" / "loop" / "verify.py")[:12] == "6cc636689a8e"
+        assert kit.sha256_of(snap / "src" / "answer_guard.py")[:12] == "40946176bc78"
+        assert kit.sha256_of(snap / "src" / "text_utils.py")[:12] == "5f810aa52b6b"
+        assert kit.snapshot_fingerprint(snap) == V1
 
     def test_severe_verdicts_khop_gate(self):
         assert set(kit.SEVERE_VERDICTS) == set(gate.SEVERE_VERDICTS)
