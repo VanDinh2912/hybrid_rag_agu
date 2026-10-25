@@ -4,12 +4,74 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.372 passed, 5 skipped** (91,44 s, 25-10 20:1x; mốc trong ngày:
-1.228 → 1.338 (tổng kiểm tra cuối, +111 test) → 1.359 (D-35 stdin, +21) → 1.371 → 1.372 (D-36 console, +13);
+`pytest tests -q` mới nhất: **1.495 passed, 5 skipped** (94,54 s, 26-10 03:1x — kết phiên B; mốc trong ngày:
+1.228 → 1.338 (tổng kiểm tra cuối, +111 test) → 1.359 (D-35 stdin, +21) → 1.371 → 1.372 (D-36 console, +13)
+→ **1.495** (phiên B: 52 test `answerability_probe` + 28 `answer_token_logits_probe` + 24 `test_t8_referee_v2`
++ 13 `test_rescore_retrieval_v2` + `test_reranker_flag` 46→51);
 5 skipped = 2 test T4 **slow** (chạy riêng bằng `T4_RUN_SLOW=1`, đã chạy:
 **2 passed, 82,32 s**) + 2 test symlink thường trên Windows (2 test **junction** vẫn chạy, là bằng chứng
 M12/M14) + 1 cờ `RERANKER_KEEP_CANDIDATES` không có accessor đơn — vẫn bị kiểm tĩnh trong cùng module).
 
+## CẬP NHẬT 26-10 03:1x — PHIÊN B (B1→B5) KẾT THÚC: r16 là mức gold@6 cao nhất từng đo, ba lever vẫn chờ duyệt, 1.495 test xanh
+
+Đề bài phiên tự trị này (đã duyệt trước đó): **B1** ablation (c′) → **B2** áp PA-2+PA-20 và chấm lại offline mọi
+round đã đóng → **B3** áp PA-25, chạy r16 (= "r12′"), cổng + McNemar → **B4** đo answerability trên đĩa → **B5**
+probe logits-trên-token-đáp-án. **0 lượt Gemini, 0 lượt train, `gate.py` và trọng tài chỉ đổi ở đúng mục đã duyệt.**
+
+* **B1 — KHÔNG có kết luận (phép thử phiếu, không phải kết quả âm).** 57/80 item ánh xạ được sang
+  `chroma_db_vie`, nhưng **54/57 chunk vàng hai index giống nhau từng byte** và **0 item chỉ khác ở dấu** ⇒
+  57/57 câu trả lời a′/c′ byte-identical: PASS_CORRECT 5/57 = 5/57, refusal 0,8772 cả hai, McNemar p = 1,0.
+  Muốn đo hiệu ứng dấu phải trả PA-17 re-anchor trước. (`docs/reports/B1.md`, D-40)
+* **B2 — PA-2 + PA-20 đã áp; chữ ký `9f1179ccab74` → `2911c69f740d`.** Chấm lại OFFLINE 10 round × 100 câu vào
+  `data/loop/rounds_v2/` (`data/loop/rounds/` không đổi byte nào): **5/1000 verdict đổi, tất cả theo hướng chặt
+  hơn** (cùng một item `T111158251954171` ở r5/r6/r7/r10 + `C162319281103737` ở r10), **PASS_CORRECT 148 → 143**,
+  refusal/fabrication không đổi ở cả 10 round. Kiểm ngược: 1000/1000 câu khớp 100% khi chấm bằng đúng v1.
+  (`docs/reports/B2.md`, D-41)
+* **B3 — PA-25 biến lever rerank từ thảm hoạ (r12) thành số đo tốt nhất từng có (r16), cổng vẫn KHÔNG ĐẠT.**
+  gold@6 0,7400 → **0,8357** (ghép cặp 811: Δ **+0,0957** CI [0,0714; 0,1200], p = 2,4e−14), `FAIL_RETRIEVAL`
+  182 → **115**, EXACT 0,2115 → **0,4231** (Δ +0,2116, vượt ngưỡng **đăng ký trước** +0,10 ⇒ tiêu chí ĐẠT).
+  Cổng r16-vs-r11 đỏ vì **duy nhất** neo HUMAN 0,8144 → 0,7629 (−6,32%, ngưỡng −5%) mà thống kê của repo không
+  tách được khỏi nhiễu (8 mất/3 lấy, p = 0,2266, CI [−0,1237; +0,0103] chứa 0); cổng r16-vs-r12 **ĐẠT 6/6**.
+  `ENABLE_RERANKER` **giữ TẮT** theo chỉ thị ⇒ PA-35 (khuyến nghị: chạy pha sinh trên r16 rồi mới bật) +
+  PA-36 (sửa cổng, chỉ đề xuất). Đính chính đã ghi: 0,8214 là trần oracle **pool 12**, trần **pool 20** = 0,8871
+  ⇒ r16 chiếm 65% khoảng trống, không phải "vượt trần". (`docs/reports/B3.md`, D-37)
+* **B4 — mẫu ĐĂNG KÝ: `MAU_QUA_NHO`, giữ nguyên ngưỡng 30.** 59 cặp POS/NEG từ r5 ⇒ 19 cặp eval_clean (< 30) nên
+  AUC 0,8643 chỉ là hướng. Mẫu BỔ SUNG r11/r12 (518/468 cặp): `auc_ce_max` eval_clean 0,8039 / 0,8277 nhưng
+  eval_all **0,7441 / 0,7529** ⇒ kết luận phụ thuộc bộ lọc nhiễu nhãn (`still_answerable` 45,8–64,7%: "rút chunk
+  vàng" **không** đồng nghĩa "không trả lời được"). Vế "so với hạng truy xuất" **chưa trả lời** (`auc_rank_min`
+  = 0,5, degenerate theo construction sau bản sửa rò rỉ nhãn). Model chấm là `bge-reranker-v2-m3` 568M — câu
+  "model **nhỏ** có làm được không" vẫn TRỐNG. 0 lượt sinh, 1.523 s GPU. (`docs/reports/B4.md`, D-38, PA-37+38)
+* **B5 — tiêu chí đăng ký trước KHÔNG ĐẠT và cũng không BỊ BÁC; một kết luận cũ phải hạ cấp.** `answer_only` hạ
+  đỉnh **1.226–4.939 MiB**, quy về **1,764–1,894 MiB mỗi vị trí bị che** = 6,1–6,5× dự đoán fp16 thuần (ghi cả
+  hai, không chọn con có lợi), gradient checkpointing **tốn thêm** 8–18 MiB ở cả hai mode, loss hai mode khớp
+  1,5e−4. Nhưng `full` **không OOM** tới tận 3072 token (đỉnh 10.429,4 MiB trên card 4 GB) ⇒ kiểm chứng độc lập:
+  máy này **WDDM oversubscribe** — CUDA cấp và ghi đủ 8 GiB không lỗi, `nvidia-smi` khoá ở 3849 MiB, `fill_` chậm
+  đi x4,25 (33,6 → 7,9 GiB/s), RAM 16.088 MiB. ⇒ **"peak > tổng VRAM" một mình không còn là bằng chứng "hết chỗ"**; dòng
+  "13/13 dòng SFT extractive không train nổi" (T4b) phải đọc thành *"suy từ peak, chưa có artifact xác nhận"* —
+  project memory ghi một lượt train **thật** `--max-length 1024` OOM ở **step 24** (23-10) nhưng repo không còn
+  log của lượt đó ⇒ câu hỏi "train thật có chết giữa epoch không" vẫn **MỞ** (PA-39), không chốt được bằng probe. Ở tỷ lệ đáp án THẬT
+  0,0393, dòng 1707 token giảm 6238,3 → **3328,3 MiB** (152,3% → 81,3% card) ⇒ PA-11/PA-12 không còn là hai đường
+  duy nhất, nhưng cần lượt train thật để chốt (PA-39). **Không train** đúng đề bài. (`docs/reports/B5.md`, D-39)
+
+**Máy kiểm cuối phiên.** `pytest tests -q` → **1.495 passed, 5 skipped** (94,54 s; đầu phiên **1.372**). Phần tăng gồm bốn suite dựng trong phiên — `tests/test_answerability_probe.py` 52, `tests/test_answer_token_logits_probe.py` 28, `tests/test_t8_referee_v2.py` 24, `tests/test_rescore_retrieval_v2.py` 13 — và `tests/test_reranker_flag.py` **46 → 51**.
+`tools/diag/docs_consistency_check.py` **SẠCH LỖI**. `tools/diag/secret_scan.py` **SECRET_COTHAT = 0**, PII
+**89 dòng/8 file — đúng bằng trước phiên**. Harness đột biến B4+B5 **13/13 bị bắt**, sha256 hai dụng cụ đo khôi
+phục nguyên văn (`eb917182e196`, `a1d7d9a981f0`). **Riêng `tools/diag/final_number_audit.py` in 2/63 dòng
+LỆCH** (và **trả rc=0** — đo lại 26-10: script chỉ có `return 0`, không tự fail) (46→51 test; `9f1179ccab74`→`2911c69f740d`) — cả hai là *kỳ vọng của máy kiểm* bị công việc được duyệt làm
+cũ; **không tự sửa**, ghi D-42 + PA-41.
+
+**Cờ và code.** `ENABLE_RERANKER` mặc định `0` (r16 bật bằng biến môi trường của riêng tiến trình);
+`NORMALIZE_SANITY_GUARD`, `RERANKER_KEEP_CANDIDATES`, các cờ SFT không đổi; **không cờ nào bật ngầm**. `src/` chỉ
+đổi `src/reranker.py` (PA-25) và `src/answer_guard.py` (PA-2) — đều thuộc mục đã duyệt; **6 file PA-26 không bị
+stage**. `data/loop/rounds/` và mọi artifact đã công bố: không byte nào bị ghi đè.
+
+**Việc chờ anh (đọc `docs/PENDING_APPROVAL.md`).** PA-35 bật reranker? · PA-36 cổng neo HUMAN n=97/11 cặp bất
+đồng · PA-37 tải weights cross-encoder nhỏ · PA-38 đăng ký lại phép đo có mốc hạng · PA-39 lượt train thật với
+logits theo vị trí đáp án · PA-40 quy ước phát ngôn bộ nhớ + sample `nvidia-smi` · PA-41 hai kỳ vọng cũ của máy
+kiểm · (kế tục) PA-17 re-anchor, PA-26/PA-33/PA-31/PA-34, PA-11/PA-12.
+
+**Đọc trước khi quyết.** `docs/reports/B3.md` (số + hai cổng) · `docs/reports/B5.md` (đính chính bộ nhớ) ·
+`docs/reports/B4.md` (ba chỗ phải đọc thận trọng) · `docs/DECISION_LOG.md` D-37…D-42.
 ## CẬP NHẬT 25-10 20:1x — DỌN MÔI TRƯỜNG MÁY ĐO (D-35 stdin + D-36 console): 1.372 xanh, 34 test phòng thủ, 9/9 đột biến, 63/63 số tái lập
 
 Chi tiết: [`docs/reports/test_final.md`](reports/test_final.md) §14 (bản 18:5x vẫn đúng nội dung, chỉ số đã được

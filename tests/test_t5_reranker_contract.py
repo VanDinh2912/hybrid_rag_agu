@@ -293,14 +293,22 @@ class TestHaiBatPool20CuaSo6:
         assert call["top_score"] == 20.0 and call["bottom_score"] == 1.0
         assert call["model"] == DEFAULT_RERANKER_MODEL and call["device"] == "cpu"
 
-    def test_query_gui_model_da_fold_passage_nguyen_van(self, monkeypatch):
+    def test_query_gui_model_nguyen_van_passage_nguyen_van(self, monkeypatch):
+        """PA-25 (duyệt 25-10): query đi vào cross-encoder NGUYÊN VĂN.
+
+        Bản cũ fold query — mất dấu thanh — trong khi passage giữ dấu; với
+        bge-reranker-v2-m3 (model đa ngôn ngữ nhạy dấu) cặp lệch dấu gần như nhiễu:
+        r12 gold@6 0,7400→0,6686, probe 30 item 0/30 chunk vàng vào top-6 so với
+        28/30 khi bỏ fold (`tmp/probe_r12_fold.json`).
+        """
         fake = FakeCrossEncoder()
         self._on(monkeypatch, fake)
         pipeline, _, _ = make_pipeline(DOCS)
         pipeline.retrieve(QUERY, k=6)
         query = fake.pairs[0][0]
-        assert query == fold(QUERY)
-        assert "đ" not in query and "Đ" not in query
+        assert query == QUERY.strip() == QUERY
+        assert query != fold(QUERY)          # nếu ai đó thêm lại fold, test này đỏ
+        assert "viên" in query and "luyện" in query  # dấu thanh còn nguyên
         assert fake.pairs[0][1] == "nội dung 1"  # passage giữ dấu
 
 

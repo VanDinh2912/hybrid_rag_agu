@@ -4,6 +4,40 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
 
 ---
 
+## Trạng thái PHIÊN B (26-10 03:2x) — đọc mục này trước khi xuống các PA cũ
+
+**Đã duyệt VÀ đã áp dụng trong phiên B** (bằng chứng: `docs/DECISION_LOG.md` D-37, D-41; báo cáo
+`docs/reports/B2.md`, `docs/reports/B3.md`):
+
+- **PA-2 + PA-20** → trọng tài v1 `9f1179ccab74` **→** v2 `2911c69f740d`; chấm lại OFFLINE 10 round ×
+  100 câu vào `data/loop/rounds_v2/` (5/1000 verdict đổi, tất cả theo hướng chặt hơn; PASS_CORRECT
+  148 → 143). `data/loop/rounds/` và `gate.py` **không đổi một byte nào**.
+- **PA-25** → `src/reranker.py` chấm query **nguyên văn** (bỏ `fold()`); round mới **r16** = số đo
+  retrieval tốt nhất từng ghi trên bộ 811 item (gold@6 0,8357; EXACT 0,4231). **`ENABLE_RERANKER` vẫn
+  TẮT** — r16 chỉ bật bằng biến môi trường của riêng tiến trình đo.
+
+**Đã duyệt nhưng CHƯA áp trong phiên B** (không có mục nào trong đề bài B1–B5 yêu cầu, và cả hai đều
+đụng tới thước đo/index đang có số công bố):
+
+- **PA-13** (cổng refusal tương đối Δ 0,05 + trần 0,35 thành cảnh báo) — `tools/loop/gate.py` vẫn là
+  cổng cũ; xem ghi chú trong `docs/AUTONOMY_LOG.md` (Ngã rẽ 25, mục (d)).
+- **PA-7** (loại 2 tệp `ke-hoach` khỏi index mới) — chưa dựng index nào trong phiên B; nợ vẫn nằm ở
+  **PA-17** (re-anchor) vì `chroma_db_vie` đang ĐỎ mất neo 48,81%.
+
+**Chờ duyệt — mới trong phiên B:** PA-35 (bật reranker) · PA-36 (cổng neo HUMAN n=97/11 cặp bất đồng) ·
+PA-37 (weights cross-encoder nhỏ) · PA-38 (đăng ký lại phép đo có mốc hạng) · PA-39 (lượt train thật
+logits-theo-đáp-án) · PA-40 (quy ước phát ngôn bộ nhớ) · PA-41 (hai kỳ vọng cũ của `final_number_audit`).
+
+**Thứ tự đề xuất cho sáng mai:** PA-35 (hoặc chạy pha sinh trên r16 trước) → PA-17 → PA-26/PA-33/PA-31/
+PA-34 → PA-39 (+ PA-40) để đóng T4 mục 5, có thể rút PA-11/PA-12 nếu xanh → PA-41 để máy kiểm số xanh lại.
+
+**Máy kiểm đang đỏ CÓ CHỦ ĐÍCH:** `tools/diag/final_number_audit.py` in **2/63 dòng LỆCH** — không tự sửa,
+xem D-42 + PA-41. **Đính chính số đo:** máy kiểm **trả rc=0** chứ không phải 1 (nó chỉ in bảng, không có
+đường fail) ⇒ "đỏ" ở đây là **đỏ trong bảng**, không phải đỏ trong exit code; ai dựa vào rc sẽ không thấy gì.
+Phải chạy bằng `venv/Scripts/python.exe`: interpreter hệ thống thiếu `pypdfium2`/`streamlit` làm
+collect-only lỗi 4 file và thêm **1 LỆCH GIẢ** ("81 test corpus rebuild" = -1).
+
+---
 ## PA-1 — T2: kích hoạt index mới `chroma_db_vie/` và chấm lại r0–r5
 - Bối cảnh: OCR lại 13 PDF scan bằng EasyOCR `vi` nâng corpus từ 0,178 → (dự kiến ~0,7). Toàn bộ
   nằm ở BẢN SAO (`chroma_db_vie/`, `.ocr_cache_vie/`); pipeline sản xuất và `chroma_db/` gốc KHÔNG đổi.
@@ -1109,3 +1143,156 @@ khớp đúng tree sẽ commit.)
 **Hoàn tác:** `git revert` commit của đợt D-35 + D-36 là đủ — phạm vi chỉ gồm `stdin` ở 3 máy
 kiểm, khối in UTF-8 ở 7 máy kiểm, 1 bộ test mới (34 test) + 2 bộ test bổ sung, và tài liệu.
 Nếu anh từ chối PA-34 thì xoá mục này; các test đã siết vẫn xanh và không đòi hỏi thêm gì.
+
+
+## PA-35 — Kích hoạt `ENABLE_RERANKER` (lever T5a sau khi áp PA-25) làm mặc định? (B3, 26-10 02:0x)
+
+**Số đo được (cây trọng tài v2 `2911c69f740d`, cùng `rounds_v2`, `config_mismatches: []`).**
+r16 = r12 nhưng query chấm **nguyên văn** (PA-25), mọi khóa settings khác bất biến (đã diff manifest):
+
+| Chỉ số | r11 (reranker TẮT) | r12 (fold) | r16 (PA-25) | Ghép cặp 811 r11 -> r16 |
+|---|---|---|---|---|
+| gold@6 | 0,7400 | 0,6686 | **0,8357** | delta +0,0957, CI [0,0714; 0,1200], McNemar p=2,4e-14 |
+| EXACT gold@6 | 0,2115 | 0,0385 | **0,4231** | delta +0,2116, n=52, p=0,0034 |
+| `FAIL_RETRIEVAL` | 182 | 232 | **115** | -67 item |
+| neo toàn bộ | 0,8319 | 0,7553 | **0,8883** | +0,0564 |
+| neo HUMAN (n=97) | 0,8144 | 0,7010 | 0,7629 | **-0,0515, CI [-0,1237; +0,0103]** |
+| median / p95 latency | 2,78 / 3,87 s | 4,74 / 5,09 s | 4,73 / 5,09 s | +70% / +31% |
+
+Cổng r16-vs-r11: **KHÔNG ĐẠT** (5/6 ĐẠT, vi phạm duy nhất là neo HUMAN -6,32% so ngưỡng -5%).
+Cổng r16-vs-r12: **ĐẠT cả 6** (neo HUMAN +8,83%). Tiêu chí đăng ký trước của B3 (`EXACT delta >= +0,10`): **ĐẠT**.
+
+**Rủi ro nếu bật ngay.** (1) Đây là **pha truy xuất thuần** — chưa có lượt sinh trên r16, nên chưa biết
++0,0957 gold@6 có chuyển thành PASS_CORRECT hay bị lấp bởi over-refusal/tốc độ; (2) +1,95 s median là chi
+phí thực cho mọi câu hỏi sản xuất, và GPU 4 GB đang phải chia với Ollama; (3) hồi quy neo HUMAN tập trung
+vào 8 item HQ23/HQ35/HQ36/HQ39/HQ40/HQ43/HQ44/HQ58, trong đó `ke-hoach-ttck-kltn-dh24th-2026.pdf` là tệp
+PA-7 đã kết luận phải loại khỏi index mới — tín hiệu này lẫn với nợ corpus chưa trả.
+
+**Đề xuất (chọn (a)).** (a) **Chưa bật.** Chạy **pha sinh trên r16** (Ollama local, 0 lượt Gemini) để lấy
+PASS_CORRECT/refusal/fabrication thật, rồi chấm cổng full-phase r16-vs-r11; chỉ khi đạt mới đổi mặc định.
+(b) Bật `ENABLE_RERANKER=1` mặc định ngay theo bảng truy xuất. (c) Bật kèm `RERANKER_KEEP_CANDIDATES` —
+**không khuyến nghị**: chưa đo riêng, thêm biến số.
+**Không tự làm** vì đổi mặc định của một lever sản xuất nằm ngoài phạm vi đã duyệt, và cổng chính thức
+đang báo KHÔNG ĐẠT.
+
+
+## PA-36 — Cổng `human_anchor_source_not_degraded`: ngưỡng tương đối -5% đo trên 11 cặp bất đồng (B3, 26-10 02:1x)
+
+**Vấn đề (đo được).** Điều kiện này so sánh `expected_source_in_window` của riêng family HUMAN (n=97).
+Ở r16-vs-r11 nó đổi chiều từ ĐẠT sang VI PHẠM vì **8 item mất / 3 item lấy** — McNemar chính xác p=0,2266,
+bootstrap 10.000 lượt seed 20261023 cho CI [-0,1237; +0,0103] chứa 0. Nói cách khác cổng đang bật đỏ theo
+một hiệu ứng mà chính bộ đo thống kê của repo không phân biệt được với nhiễu, trong khi các cổng khác
+(gold@k) dùng mẫu 700 item. Toàn bộ 97 item HUMAN có `has_gold_chunk=False`, nên neo nguồn là thước
+*duy nhất* của family này.
+
+**Rủi ro:** hai loại lỗi đối xứng — một lever tốt bị chặn vì 5/97 item (chuyện vừa xảy ra với r16), và
+ngược lại một lever phá neo HUMAN thật sự vẫn lọt nếu tình cờ net <= 4 item.
+
+**Đề xuất (chọn (a), CHỈ ĐỀ XUẤT — `tools/loop/gate.py` là dụng cụ đo, không tự sửa).**
+(a) Giữ ngưỡng -5% nhưng thêm điều kiện *độ rộng mẫu*: chỉ tính VI PHẠM khi tổng số cặp bất đồng
+(lost+gained) >= `GATE_MIN_ANCHOR_DISCORDANT` (đăng ký trước, gợi ý 20) — dưới ngưỡng thì báo
+`KHONG_KET_LUAN_DU_MAU` và yêu cầu mẫu lớn hơn; (b) đổi sang kiểm định chính xác (McNemar p < 0,05) thay
+vì điểm tương đối; (c) giữ nguyên như hiện tại, coi đây là bộ lọc bảo thủ chủ động.
+Kèm theo: nếu chấp nhận (a) hoặc (b), phải **chấm lại toàn bộ các cổng đã công bố** bằng công cụ mới trong
+thư mục riêng (không ghi đè) và báo bảng cũ-vs-mới, như đã làm với trọng tài v2.
+**Không tự làm** vì đây là thay đổi thước đo đã đăng ký; mọi số lịch sử đang dựa vào thước cũ.
+
+
+## PA-37 — Cho phép tải weights cross-encoder NHỎ để trả lời đúng vế "model nhỏ" của B4? (B4, 26-10 02:1x)
+
+**Vấn đề (đo được).** Câu hỏi đề bài là "đo một cross-encoder **nhỏ**". `BAAI/bge-reranker-base` (278M)
+không có weights trên đĩa; `~/.cache` chỉ có `BAAI/bge-reranker-v2-m3` (568M) — đúng model của lever T5a —
+và `Qwen2.5-0.5B` (đã có cho B5). Ngã rẽ bảo thủ trong ca trực là **không tải 1,1 GB weights mới**, nên các
+AUC 0,80–0,83 là của model 568M. Vì vậy câu "một model nhỏ hơn có phân biệt được POS/NEG không" vẫn **TRỐNG**,
+và mọi kế hoạch answerability chạy trên máy không GPU (CPU-only) đang chưa có cơ sở.
+
+**Đề xuất.** (a) **Chưa tải gì** — ghi nhận khoảng trống, chỉ dùng 568M khi nào cần chất lượng, và chấp nhận
+rằng answerability chỉ chạy được ở nơi có GPU (khuyến nghị nếu mục tiêu chỉ là cổng trong loop);
+(b) cho phép tải `BAAI/bge-reranker-base` (~1,1 GB) rồi **chấm lại cùng ba labelset đã lưu** (dựng nhãn không
+phải chạy lại) để so AUC 278M vs 568M và cả tốc độ CPU; (c) một phương án nhẹ hơn — dùng đúng `Qwen2.5-0.5B`
+đã có trên đĩa làm scorer sinh nhãn có/không, 0 dung lượng tải thêm, nhưng phải đăng ký tiêu chí mới.
+**Không tự làm** vì tải weights ngoài là thay đổi môi trường đo và B4 đã chấm xong bằng thước đã ghi.
+
+
+## PA-38 — Đăng ký lại phép đo answerability có mốc "hạng truy xuất" hợp lệ (B4, 26-10 02:3x)
+
+**Vấn đề (đo được, không phải suy đoán).** Trong cả ba mẫu, `auc_rank_min` = **0,5** và `rank_min_phang` =
+**true**: cặp NEG được tạo bằng cách rút chunk vàng khỏi cửa sổ nên POS và NEG luôn bắt đầu ở hạng vị trí 1.
+Đây là hệ quả trực tiếp của bản sửa rò rỉ nhãn phát hiện khi viết test (Ngã rẽ 29) — giữ `rank` truy xuất gốc
+làm feature thì nhãn tự lộ. Kết cục trung thực: B4 trả lời được "cross-encoder phân biệt POS/NEG tới đâu",
+**không** trả lời "tốt HƠN hạng truy xuất bao nhiêu" — tức vế so sánh trong đề bài chưa có số.
+
+**Đề xuất (CHỈ ĐỀ XUẤT — nhãn hiển thị trong dụng cụ đo đã chạy không được sửa lại để vừa số).**
+(a) Đăng ký TRƯỚC một phép đo mới trên chính ba labelset đã lưu, dùng `neg_source_ranks` (đã ghi trong từng
+dòng) làm mốc, với thiết kế cặp không lộ nhãn: POS = hạng vàng trong cửa sổ, NEG = hạng cao nhất mà ô thay
+vào chiếm; chỉ tiêu So SÁNH là `auc_ce_max − auc_rank_max` (delta AUC), mẫu >= 100 cặp eval_clean;
+(b) bỏ hẳn vế "so với hạng truy xuất" khỏi câu hỏi B4 và coi lever chỉ còn giá trị làm bộ lọc tiên đoán
+"có đáp được không"; (c) dựng lại nhãn NEG theo kiểu khác (rút vàng + thay bằng ứng viên **khác tài liệu**)
+để giảm 60–65% `still_answerable` rồi mới đo mốc hạng. Kèm theo đề xuất nhỏ: đổi tên trường
+`dataset_path` thành `dataset_out_default`/`dataset_in` trong `tools/diag/answerability_probe.py` để artifact
+khỏi gây nhầm (trường này hiện trỏ về labelset r5 ở hai lượt bổ sung dù `pairs_source` và `n_pairs` đúng).
+**Không tự làm** vì đây là đổi thiết kế đo và đổi dụng cụ đo sau khi số đã công bố.
+
+
+## PA-39 — Thêm đường "logits theo vị trí đáp án" vào `models/train_sft_lora.py` rồi chạy MỘT lượt train thật (B5, 26-10 02:5x)
+
+**Số đo được (probe, 1 bước fwd+bwd, batch 1).** Ở tỷ lệ đáp án thật của đúng 13 dòng D-25 (median 0,0393):
+dòng 1707 token cần **6238,3 MiB** theo đường hiện tại (`full`) nhưng **3328,3 MiB** khi LM head chỉ tính ở
+vị trí có nhãn — từ 152,3% xuống 81,3% tổng card. Kiểm chứng độc lập cho thấy con số vượt card **không** còn
+là bằng chứng thất bại (CUDA oversubscribe tới 8 GiB, cái giá là tốc độ x4,25), nên câu hỏi thật sự giờ là
+"một epoch có chạy xong trong bao lâu", không phải "có chạy được không".
+
+**Rủi ro nếu tự làm.** Probe không có Adam state, không padding động, không dataloader; đổi `train_sft_lora.py`
+là đổi code train đang có phiên bản đã deploy (classifier v2 / LoRA 0,5B) và một lượt train thật chiếm GPU
+vài chục phút tới giờ — đúng loại việc ngoài phạm vi "Không train" của đề bài B5.
+
+**Đề xuất (chọn (a)).** (a) Thêm cờ `SFT_ANSWER_ONLY_LOGITS` (mặc định **TẮT**, đọc env như mọi cờ khác) áp
+dụng cơ chế đã được test + đột biến ở `tools/diag/answer_token_logits_probe.py`, chạy **một** lượt train 13 dòng
+ở `max_length=1768` với cờ BẬT, báo peak + `nvidia-smi` + thời gian/bước + loss cuối, so với lượt T4b đã công bố
+(artifact tên mới, không ghi đè); nếu lượt đó xanh thì PA-11 (4-bit) / PA-12 (đổi định dạng) có thể rút.
+(b) Chạy lượt train thật với đường **hiện tại** (không sửa gì) ở 1707 token để đo mức chậm do oversubscription —
+trả lời "có sống nổi không" mà không đụng code; (c) không train gì thêm, giữ PA-11/PA-12 là hai đường duy nhất
+(theo bảng đọc cũ của T4b — giờ đã biết là suy từ peak, không phải quan sát).
+**Không tự làm** vì đề bài B5 ghi rõ "Không train".
+
+
+## PA-40 — Quy ước phát ngôn về bộ nhớ: "peak > VRAM" không còn là bằng chứng "hết chỗ" (B5, 26-10 02:5x)
+
+**Bằng chứng.** `data/loop/diag/b5_wddm_oversubscription.json`: trên RTX 3050 4 GB (tổng 4095,5 MiB, RAM hệ
+thống 16088,1 MiB, pagefile 32176,1 MiB), `torch.empty` được cấp và **ghi đủ** 1/2/3/4/6/8 GiB mà không có
+ngoại lệ nào; `nvidia-smi` khoá ở 3849 MiB trong lúc tensor 8 GiB còn sống; thời gian `fill_` giảm từ
+33,6 GiB/s (3 GiB) xuống 7,9 GiB/s (8 GiB) — tức **x4,25**. Kết luận: driver ở máy này oversubscribe, cái giá
+là băng thông, không phải từ chối cấp.
+
+**Việc cần duyệt — ba lựa chọn.** (a) Sửa **cách đọc số trong báo cáo**: mọi phát ngôn "hết chỗ / không train
+nổi / cần 4-bit" phải kèm bằng chứng thất bại thật (ngoại lệ OOM, hoặc thời gian mỗi bước đo được), không chỉ
+`peak_allocated > tổng VRAM`; đính chính có kiểm-soát ở `docs/reports/T4.md` + `docs/STATE.md` (giữ nguyên số,
+chỉ đổi câu diễn giải và ghi rõ "chưa quan sát thất bại"); (b) thêm vào
+`tools/diag/answer_token_logits_probe.py` một lần sample `nvidia-smi` **trong lúc** tensor còn sống để tách
+"resides trên card" khỏi "đã spill" (sửa dụng cụ đo ⇒ chỉ đề xuất, và nếu chấp thuận thì chạy lại bằng artifact
+tên mới, không ghi đè ba lượt đã công bố); (c) giữ nguyên, chấp nhận rằng các con số peak trong T4b/D-25 chỉ có
+ý nghĩa tương đối giữa hai mode.
+**Không tự làm** vì cả ba đều đụng tới dụng cụ đo hoặc lời văn đã công bố.
+
+
+## PA-41 — Hai kỳ vọng cũ của `tools/diag/final_number_audit.py` đã bị công việc được duyệt làm lỗi thời (B-kết, 26-10 03:0x)
+
+**Số đo được (đã đính chính 26-10).** `venv/Scripts/python.exe tools/diag/final_number_audit.py` cho 61/63 KHỚP,
+2 dòng LỆCH và **rc = 0** — grep cả script chỉ thấy một `return 0` rồi `raise SystemExit(main())`, không có
+đường trả mã lỗi nào. Cách nói "máy kiểm fail" trong D-42/MORNING/STATE và dòng đầu của PA-41 là **suy diễn từ chính
+trạng thái đỏ**, chưa từng được đo; đã sửa cả năm chỗ. Hệ quả thật: không có gì chặn khi máy kiểm lệch.
+
+| Dòng kiểm | kỳ vọng trong máy kiểm | đĩa hiện tại | vì sao lệch |
+|---|---|---|---|
+| `T5 — 46 test cờ RERANKER_FALLBACK` | 46 | **51** (`--collect-only tests/test_reranker_flag.py`) | B3 thêm test khoá `query_convention` của PA-25 vào đúng file đó |
+| `Chung — chữ ký trọng tài 9f1179ccab74` | v1 | **`2911c69f740d`** | B2 áp PA-2 + PA-20 (đã được duyệt), phiên bản hoá trong `tests/test_t8_referee_v2.py` |
+
+**Rủi ro hai chiều.** Tự sửa cho xanh = xoá dấu vết của chính hai thay đổi được duyệt (máy kiểm sinh ra để bắt
+loại lệch này). Để đỏ = từ nay mọi lần chạy nghiệm thu đều phải giải thích "hai dòng LỆCH này là cố tình, không phải lệch thật", và một
+lệch thật sẽ lẫn vào hai lệch đã biết.
+
+**Đề xuất (chọn (a)).** (a) Cập nhật hai dòng trong `tools/diag/final_number_audit.py` thành `51` và
+`2911c69f740d`, **giữ lại chú thích nguồn** ("46/`9f1179ccab74` tới 25-10, đổi vì B2+B3 — xem D-41, D-42"), rồi
+chạy lại để xác nhận 63/63 KHỚP; (b) thêm cơ chế "kỳ vọng theo phiên bản" (máy kiểm chọn giá trị theo chữ ký
+trọng tài của round đang kiểm) — đắt hơn, nhưng đúng bài học B2; (c) giữ nguyên, chấp nhận đỏ có chủ đích và
+ghi chú ở README; (d) **hai điều kiện kỹ thuật mới phát hiện khi đính chính** — cho máy kiểm **trả mã lỗi khác 0 khi có dòng LỆCH** (hiện luôn trả 0, nên "đỏ" chỉ tồn tại trên văn bản in ra), và in rõ yêu cầu chạy bằng venv của repo (interpreter hệ thống thiếu `pypdfium2`/`streamlit` ⇒ 4 file collect-only lỗi ⇒ thêm 1 LỆCH GIẢ). **Không tự làm** vì đây là sửa máy kiểm, không phải sửa dữ liệu đo.

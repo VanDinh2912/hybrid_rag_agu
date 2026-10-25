@@ -640,6 +640,28 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   chỉ siết khi anh chấp nhận đo lại tái lập r0 (artifact đã công bố, D-30); (c) `tools/diag/env_probe.py` in
   interpreter + package + **bảng mã console**.
 
+## XONG (26-10 03:1x — PHIÊN B1→B5; mục "VIỆC KẾ TIẾP (khi anh duyệt)" bên dưới là của phiên trước)
+
+- **B1 xong (kết luận: không kết luận).** `docs/reports/B1.md`, D-40. 57/80 item ánh xạ, 54/57 chunk vàng
+  giống hệt nhau giữa hai index ⇒ a′ vs c′ 57/57 byte-identical, McNemar p=1,0. Phép thử phiếu; cần PA-17.
+- **B2 xong (đã áp + chấm lại).** PA-2 (`src/answer_guard.py`) + PA-20 (`tools/loop/verify.py`), chữ ký
+  `9f1179ccab74` → **`2911c69f740d`**; `data/loop/rounds_v2/` 10 round × 100 câu; **5/1000 flip, PC 148 → 143**;
+  `data/loop/rounds/` nguyên ven. `tests/test_t8_referee_v2.py` + `tests/snapshots/referee_v1/` (vĩnh viễn).
+- **B3 xong (cờ vẫn TẮT).** r16 chạy 811/811; cổng đỏ 1/6 (neo HUMAN −6,32%); tiêu chí ĐẠT (EXACT Δ +0,2116);
+  PA-35 + PA-36. Báo cáo `docs/reports/B3.md`, D-37. Artifact: `data/loop/rounds_v2/r16/`,
+  `data/loop/diag/reranker_paired_r11_r16.json`, `..._r12_r16.json`.
+- **B4 xong (mẫu chính MAU_QUA_NHO).** `tools/diag/answerability_probe.py` + 52 test + 7/7 đột biến; ba labelset
+  + ba artifact `answerability_probe_*.json`; `auc_ce_max` 0,80–0,86 nhưng 46–65% cặp `still_answerable`; mốc
+  hạng degenerate (0,5) ⇒ vế "so với hạng" chưa trả lời. `docs/reports/B4.md`, D-38, PA-37 + PA-38.
+- **B5 xong (không train).** `tools/diag/answer_token_logits_probe.py` + 6 test + 6/6 đột biến; ba lượt đo
+  (768–1500 đăng ký / 2048–3072 tìm trần / 1024–1707 theo fraction thật 0,0393) +
+  `data/loop/diag/b5_wddm_oversubscription.json`. Tiêu chí Luật 1 không đạt; ĐÍNH CHÍNH "peak > VRAM **một mình** ≠ hết chỗ" — có giới hạn: memory ghi một lượt train thật `--max-length 1024` OOM ở step 24 (23-10) mà repo không còn artifact ⇒ "train thật có chết không" vẫn MỞ (PA-39).
+  `docs/reports/B5.md`, D-39, PA-39 + PA-40.
+- **Máy kiểm cuối phiên.** pytest **1.495 passed / 5 skipped** (94,54 s; suite mới trong phiên: 52 answerability + 28 logits-probe + 24 trọng tài v2 + 13 chấm-lại-retrieval, reranker-flag 46→51); `docs_consistency_check` SẠCH LỖI;
+  `secret_scan` SECRET_COTHAT = 0, PII 89 dòng (không đổi); mutation B4+B5 13/13. `final_number_audit` **2/63 dòng LỆCH, rc=0** (kỳ vọng cũ 46 test và chữ ký v1) → D-42 + PA-41, **không tự sửa**.
+- **Việc kế tiếp theo thứ tự (phiên B).** (1) PA-35/PA-36: bật reranker hay chạy pha sinh trên r16 trước;
+  (2) PA-17 re-anchor rồi mới đụng lại T2/corpus; (3) PA-39 (+PA-40) để đóng T4 mục 5 thay cho PA-11/PA-12;
+  (4) PA-37/PA-38 nếu muốn biến answerability thành cổng; (5) PA-41 để máy kiểm số xanh lại.
 ## VIỆC KẾ TIẾP (khi anh duyệt)
 
 1. PA-26 + PA-33 + PA-31 + **PA-34** quyết định "fresh clone chạy được **1.372** test" — làm trước,
