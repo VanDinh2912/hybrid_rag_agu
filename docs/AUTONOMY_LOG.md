@@ -1019,3 +1019,19 @@ KHÔNG stage 6 file PA-8 (`src/generator.py`, `src/pipeline.py`, `src/query_norm
 `chroma_db_vie/`, `.ocr_cache_vie/`); không force-push, không reset.
 Trước commit: `pytest tests -q` (1.338 passed, 5 skipped) + slow (2 passed) + fingerprint `9f1179ccab74`.
 
+**Ngã rẽ 12 — sau commit `a170e92`, 3 test đỏ vì máy quét secret bắt mẫu gieo trong chính file test: đi hướng nào?**
+Ba đường: (i) nới `tools/diag/secret_scan.py` (whitelist file test) → **LOẠI**, vì đó là sửa dụng cụ đo để
+số đẹp; (ii) hạ assertion của `TestHienTrangRepo` (89 → 93, 0 → 4 "secret") → **LOẠI**, vì biến credential
+giả thành kết luận "repo có secret"; (iii) **sửa mẫu gieo**: helper `_ghep()` dựng chuỗi tại runtime,
+literal không còn nằm trong source đã commit, assertion giữ nguyên 100%. Chọn (iii) — `pytest
+tests/test_final_secret_scan.py -q` = **14 passed**, quét lại = **0 secret / 0 đường dẫn / 89 PII / 8 file**
+đúng số đã công bố; khác biệt trước/sau commit ghi nguyên trong `test_final.md` §5 + DECISION_LOG **D-34**.
+Quy trình mới rút ra: máy kiểm lấy phạm vi từ `git ls-files` thì **sau mỗi commit phải chạy lại
+`--scope tracked`**, vì file test vừa commit sẽ trở thành đối tượng bị quét.
+
+**Ngã rẽ 13 — hai lần Edit làm hỏng `docs/DECISION_LOG.md` (mất dòng D-31, rồi mất đầu dòng D-33).**
+Không che: phát hiện bằng `grep -c "^| D-"` + liệt kê số thứ tự (thấy nhảy D-30 → D-32), khôi phục D-31
+**đúng nguyên văn** từ bản đã đọc trước đó và khôi phục đầu dòng D-33; kiểm lại = 34 dòng D-01…D-34 liên
+tục, `docs_consistency_check --scope all` vẫn **0 lỗi / 5 cảnh báo**. Bài học: chèn dòng vào bảng bằng Edit
+thì `new_string` phải **bao gồm cả dòng neo**, không chỉ dòng mới.
+

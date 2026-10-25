@@ -39,7 +39,8 @@ Ghi chú cộng dồn: không cộng tuyến tính số test của 8 đợt (m�
 
 | Đại lượng | Lệnh | Kết quả đo được |
 |---|---|---|
-| Toàn bộ test | `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests -q` | **1338 passed, 5 skipped, 3 warnings — 60,25 s** (lượt thứ hai sau khi sửa docs: **75,32 s**, vẫn 1338/5) |
+| Toàn bộ test | `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests -q` | **1338 passed, 5 skipped, 3 warnings — 60,25 s** (lượt 2 sau khi sửa docs: 75,32 s; lượt 3 sau khi sửa fixture secret-scan: 90,71 s — **cùng 1338/5**;
+thời gian tăng dần vì ngày càng nhiều test phải chạy `git ls-files` trên cây đã track) |
 | Test chậm (GPU/Ollama) | `T4_RUN_SLOW=1 … pytest tests/test_t4_gpu_slow.py -q` | **2 passed — 82,32 s** |
 | Chữ ký trọng tài | `python -c "from tools.loop import verify; print(verify.referee_fingerprint())"` | **`9f1179ccab74`** |
 | 4 file nghiệm thu cuối | `pytest tests/test_final_*.py -q` | 110 passed, 1 skipped — 24,98 s |
@@ -167,6 +168,30 @@ Máy quét: `tools/diag/secret_scan.py` → `tmp/secret_scan.json`; test `tests/
 `data/loop/diag/corpus_diagnostics/manual_20_segments.txt` 3. Toàn bộ là **dữ liệu kiểm thử trích từ tài
 liệu nội bộ của trường**, đang untracked nên chưa từng được push. Đề xuất PA-31: mask trước khi đưa vào
 commit theo PA-26.
+
+**Quét lại sau commit `a170e92`** (`tmp/secret_scan_post_commit.json`): số phình đúng phần file mới vào
+track, **hai con số nghiệp vụ không đổi**.
+
+| Chỉ số | Trước commit (`tmp/secret_scan.json`) | Sau commit |
+|---|---|---|
+| File ứng viên / đã đọc | 269 / 237 | 281 / 249 |
+| Tổng dòng khớp | 296 | 339 |
+| `BI_MAU` | 207 | 250 |
+| `DU_CAO_NHAN_HOC` | **89 dòng / 8 file** | **89 dòng / 8 file** (không đổi) |
+| `SECRET_COTHAT` / `DUONG_DAN_CA_NHAN` | **0 / 0** | **0 / 0** |
+
+**Sự cố đã gặp, xử lý bảo thủ, ghi nguyên**: ngay sau commit `a170e92`, **3 test của `TestHienTrangRepo`
+đỏ** — vì chính các **mẫu gieo để chứng minh răng** trong `tests/test_final_secret_scan.py` (chuỗi key dạng
+`AIza…`, khối PEM, đường dẫn `C:\Users\…` và `/home/…`, email/điện thoại/MSSV) biến thành file tracked nên
+rơi vào phạm vi `tracked_files()`: máy quét báo 4 dòng `SECRET_COTHAT` + 4 dòng `DUONG_DAN_CA_NHAN` và PII
+tăng 89 → 93. Đây **không phải repo có secret**, là **máy kiểm tự nhiễm phạm vi của chính nó**. Cách sửa:
+**không nới máy quét, không hạ kỳ vọng test** — dựng chuỗi mẫu **tại runtime** bằng helper `_ghep()` để
+literal không còn nằm trong source đã commit, trong khi máy quét vẫn buộc phải bắt được chuỗi hoàn chỉnh khi
+nó được ghi ra `tmp_path` (4 test răng M1/M2/M3 + test redact vẫn xanh). Sau sửa:
+`pytest tests/test_final_secret_scan.py -q` = **14 passed** và quét lại cho **0 secret / 0 đường dẫn /
+89 PII / 8 file** đúng như công bố. Bài học đăng ký: khi phạm vi quét lấy từ `git ls-files`, **file test của
+chính máy quét cũng phải "sạch hình dạng secret"** ⇒ phải chạy `--scope tracked` **sau** khi stage, không chỉ
+trước; và test ghim hiện trạng (pinned current-state) là thứ phát hiện loại nhiễm này — nó đã làm đúng việc.
 
 ## 6. Mục nghiệm thu 5 — bất biến #7 + train-leak trên dữ liệu train cuối
 
@@ -302,11 +327,11 @@ Răng theo 4 máy kiểm cuối (mỗi dòng = một hành vi sai cố ý gây r
 
 ## 10. Trạng thái git và điều kiện "người ngoài chạy lại được"
 
-| Loại | Số đo tại HEAD `b6c29d2` (trước commit nghiệm thu cuối) |
-|---|---|
-| File tracked đang sửa | **11** = 6 file PA-8 (`src/generator.py`, `src/pipeline.py`, `src/query_normalizer.py`, `src/router.py`, `tests/test_pipeline.py`, `tests/test_subquery.py`) + 5 docs (`AUTONOMY_LOG`, `DECISION_LOG`, `MORNING_REPORT`, `STATE`, `reports/T5.md`) |
-| File nguồn/công cụ/test **chưa tracked** | **47** = 3 `src/` + 25 `tools/` + 19 `tests/` (PA-26; tăng từ 35 vì batch nghiệm thu cuối) |
-| Đường dẫn untracked không bị `.gitignore` loại | **1.980** (`tmp` 1.483 · `data` 343 · `models` 58 · `tools` 25 · `tests` 19 · `docs` 14 · `.ocr_cache_vie` 13 · `chroma_db_vie` 5 · `chroma_db_headers_old` 5 · `src` 3) ⇒ ai đó gõ `git add -A` sẽ stage toàn bộ, gồm cả 321 MB `models/` → PA-33 |
+| Loại | Số đo tại HEAD `b6c29d2` (trước commit nghiệm thu cuối) | Sau `a170e92` + commit tiếp theo (đo khi đang stage) |
+|---|---|---|
+| File tracked đang sửa | **11** = 6 file PA-8 (`src/generator.py`, `src/pipeline.py`, `src/query_normalizer.py`, `src/router.py`, `tests/test_pipeline.py`, `tests/test_subquery.py`) + 5 docs (`AUTONOMY_LOG`, `DECISION_LOG`, `MORNING_REPORT`, `STATE`, `reports/T5.md`) | **6** — đúng 6 file PA-8, docs đã vào git |
+| File nguồn/công cụ/test **chưa tracked** | **47** = 3 `src/` + 25 `tools/` + 19 `tests/` (PA-26; tăng từ 35 vì batch nghiệm thu cuối) | **35** = 3 `src/` + 17 `tools/` + 15 `tests/` — **12 file của batch này đã được commit** (8 `tools/diag/*` + 4 `tests/test_final_*`); PA-26 vẫn mở cho `verify.py`/`gate.py`/`run_round.py`/`answer_guard.py` |
+| Đường dẫn untracked không bị `.gitignore` loại | **1.980** (`tmp` 1.483 · `data` 343 · `models` 58 · `tools` 25 · `tests` 19 · `docs` 14 · `.ocr_cache_vie` 13 · `chroma_db_vie` 5 · `chroma_db_headers_old` 5 · `src` 3) ⇒ ai đó gõ `git add -A` sẽ stage toàn bộ, gồm cả 321 MB `models/` → PA-33 | **1.969** (trừ 12 file vừa track; `tmp/` + `models/` + `data/` vẫn còn nguyên) |
 | Artifact không commit | `models/` 321 MB · `tmp/` 119 MB · `data/loop/rounds/` 98 MB · `data/training/` 13 MB · `chroma_db_vie/` 6,0 MB · `.ocr_cache_vie/` 300 KB |
 
 Phán quyết: **fresh clone vẫn chưa tái lập được bộ test**, vì `tools/loop/verify.py`, `gate.py`,
@@ -325,6 +350,7 @@ Phán quyết: **fresh clone vẫn chưa tái lập được bộ test**, vì `t
 | T7 | Cache policy mới kiểm unit, chưa chứng minh cache-miss trên cache thật; `run_chain` chưa chạy chuỗi dài; `tmp/` chưa xoá gì; 5 script README thiếu argparse + `ingest.py` xoá index không dry-run | PA-24, PA-26, PA-29 |
 | Nghiệm thu cuối | `.env.example` không khai báo 13 cờ lever; 89 dòng PII trên 8 file chưa mask; 3 id dữ liệu train trùng tên | **PA-30, PA-31, PA-32** (mới) |
 | Nghiệm thu cuối | `.gitignore` không loại `tmp/`, `models/`, `data/loop/rounds/`, `data/training/`, `chroma_db_vie/`, `.ocr_cache_vie/` ⇒ `git add -A` stage 1.980 đường dẫn | **PA-33** (mới) |
+| Nghiệm thu cuối | **Máy kiểm tự nhiễm phạm vi**: mẫu gieo trong `test_final_secret_scan.py` thành file tracked sau commit ⇒ 3 test ghim hiện trạng đỏ, máy quét báo 4 "secret" giả. **Đã sửa trong phiên** (dựng mẫu tại runtime, không nới máy quét) — còn lại là **quy trình**: bắt buộc chạy `--scope tracked` sau khi stage | ĐÃ XỬ LÝ + nguyên tắc mới (§5) |
 | Chung | Trọng tài mù với "đúng căn cứ nhưng lạc đề" (36/43 ca nặng); 11 verdict đổi chiều khi siết luật so khớp số; chưa chứng minh định nghĩa "bịa" theo ý hội đồng | PA-20 |
 
 ## 12. Phán quyết tổng

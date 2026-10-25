@@ -45,6 +45,12 @@ Báo cáo đầy đủ: [`docs/reports/test_final.md`](reports/test_final.md) (b
 - **Bốn đề xuất mới, chưa tự làm:** **PA-30** `.env.example` không khai báo 13 cờ lever · **PA-31** mask 89
   dòng PII · **PA-32** id độc nhất giữa split · **PA-33** `.gitignore` thiếu `tmp/`, `models/`,
   `data/loop/rounds/`… ⇒ `git add -A` sẽ stage **1.980** đường dẫn (321 MB `models/`).
+- **Sự cố sau commit + cách sửa (DECISION_LOG D-34)**: 3 test `TestHienTrangRepo` đỏ vì **máy quét secret
+  bắt chính mẫu gieo trong `tests/test_final_secret_scan.py`** — file test vừa `git add` trở thành đối tượng
+  bị quét (4 `SECRET_COTHAT` + 4 `DUONG_DAN_CA_NHAN`, PII 89→93). **Không nới thước, không hạ kỳ vọng**:
+  dựng mẫu tại runtime bằng helper `_ghep()` ⇒ 14 passed, quét lại **0 secret / 0 đường dẫn / 89 PII / 8 file**
+  đúng số công bố (`tmp/secret_scan_post_commit.json`: 281 ứng viên · 249 đã đọc · 339 dòng khớp · 250 chỉ điểm).
+  Quy trình mới: `--scope tracked` phải chạy **sau** khi stage/commit.
 - **Nguyên trạng:** `gate.py`, `verify.py`, `answer_guard.py`, `text_utils.py` **không đổi một byte**
   (chữ ký `9f1179ccab74`); **0 lượt Gemini**; `data/loop/rounds/` và `outputs/` **không bị ghi**; 6 file
   PA-8 vẫn dirty, không stage.

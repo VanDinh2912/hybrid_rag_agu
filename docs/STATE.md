@@ -584,6 +584,11 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - **Đề xuất mới, chưa tự làm**: **PA-30** (`.env.example` không khai báo 13 cờ lever), **PA-31** (89 dòng
   PII/8 file), **PA-32** (3 id trùng), **PA-33** (`.gitignore` không loại `tmp/`, `models/`,
   `data/loop/rounds/`… ⇒ `git add -A` sẽ stage **1.980** đường dẫn, 321 MB `models/`).
+- **Sự cố sau commit `a170e92` (đã sửa, D-34)**: 3 test `TestHienTrangRepo` đỏ vì **máy quét secret bắt
+  chính mẫu gieo trong `tests/test_final_secret_scan.py`** (4 `SECRET_COTHAT` + 4 `DUONG_DAN_CA_NHAN`,
+  PII 89→93) — file test vừa commit trở thành đối tượng bị quét. Sửa **mẫu** (helper `_ghep()` dựng chuỗi
+  tại runtime), **không nới thước, không hạ kỳ vọng** ⇒ 14 passed, quét lại **0/0/89/8** đúng số công bố.
+  Quy trình mới: `--scope tracked` phải chạy **sau** khi stage/commit.
 - **Trạng thái git**: 47 file nguồn/công cụ/test **chưa tracked** (3 `src` + 25 `tools` + 19 `tests`, PA-26);
   11 file tracked đang sửa (6 file PA-8 **không stage** + 5 docs). `data/loop/rounds/`, `outputs/` không bị ghi.
 

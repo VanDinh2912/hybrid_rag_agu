@@ -38,6 +38,20 @@ def _nap_chui():
     return mod
 
 
+def _ghep(*phan: str) -> str:
+    """Dựng chuỗi mẫu **tại runtime** từ các mảnh.
+
+    Lý do (bài học thật của phiên này): khi file test này được `git add`, chính các mẫu
+    "credential thật" viết nguyên literal trong test rơi vào phạm vi quét của
+    `tracked_files()` ⇒ máy quét báo 4 dòng `SECRET_COTHAT` + 4 dòng `DUONG_DAN_CA_NHAN`
+    và `TestHienTrangRepo` đỏ 3 test (không phải vì repo có secret, mà vì test tự gieo
+    secret vào source). Ghép mảnh giữ nguyên răng — máy quét vẫn phải bắt được chuỗi hoàn
+    chỉnh khi nó được ghi ra `tmp_path` — mà không để lại literal hình credential/PII trong
+    file đã commit.
+    """
+    return "".join(phan)
+
+
 # ---------------------------------------------------------------- 1. máy quét có răng
 class TestCoCuaMayQuet:
     @pytest.fixture()
@@ -54,26 +68,29 @@ class TestCoCuaMayQuet:
     def test_bat_duoc_google_key_that(self, cay_gia):
         """Đột biến M1: `AIza…` 39 ký tự trong file track ⇒ SECRET_COTHAT."""
         mod, tmp = cay_gia
-        r = self._quet(mod, tmp, "config.py", 'KEY = "AIzaSyD-abcdefghij0123456789KLMNOPQRSTU"\n')
+        key = _ghep("AIza", "SyD-", "abcdefghij", "0123456789", "KLMNOPQRSTU")
+        r = self._quet(mod, tmp, "config.py", f'KEY = "{key}"\n')
         assert r["by_loai"].get("SECRET_COTHAT") == 1, r["by_loai"]
 
     def test_bat_duoc_private_key_block(self, cay_gia):
         """Đột biến M2: khối PEM ⇒ SECRET_COTHAT."""
         mod, tmp = cay_gia
-        r = self._quet(mod, tmp, "id.pem.txt", "-----BEGIN RSA PRIVATE KEY-----\nAAAA\n")
+        pem = _ghep("-----BEGIN ", "RSA PRIVATE KEY", "-----")
+        r = self._quet(mod, tmp, "id.pem.txt", f"{pem}\nAAAA\n")
         assert r["by_loai"].get("SECRET_COTHAT") == 1, r["by_loai"]
 
     def test_bat_duoc_private_key_khong_co_duoi_txt(self, cay_gia):
         """Không có đuôi trong TEXT_EXT thì file bị bỏ qua — ghi lại thành RÀNG BUỘC của máy quét."""
         mod, tmp = cay_gia
-        r = self._quet(mod, tmp, "id.pem", "-----BEGIN RSA PRIVATE KEY-----\nAAAA\n")
+        pem = _ghep("-----BEGIN ", "RSA PRIVATE KEY", "-----")
+        r = self._quet(mod, tmp, "id.pem", f"{pem}\nAAAA\n")
         assert r["files_scanned"] == 0, "máy quét âm thầm đọc cả file nhị phân? sửa tài liệu"
 
     def test_bat_duoc_duong_dan_ca_nhan(self, cay_gia):
-        """Đột biến M3: `C:\\Users\\alice` và `/home/bob` ⇒ DUONG_DAN_CA_NHAN."""
+        """Đột biến M3: `C:\\Users\\<ten>` và `/home/<ten>` ⇒ DUONG_DAN_CA_NHAN."""
         mod, tmp = cay_gia
-        r = self._quet(mod, tmp, "a.md",
-                       "Xem C:\\Users\\alice\\repo\\x.py và /home/bob/work/y.py\n")
+        duong_dan = _ghep("Xem C:\\", "Users\\", "alice\\repo\\x.py và /", "home", "/bob/work/y.py\n")
+        r = self._quet(mod, tmp, "a.md", duong_dan)
         assert r["by_loai"].get("DUONG_DAN_CA_NHAN") == 2, r["by_loai"]
 
     def test_placeholder_khong_bi_bao_nham_la_secret(self, cay_gia):
@@ -93,14 +110,15 @@ class TestCoCuaMayQuet:
     def test_email_va_dien_thoai_dinh_dang_bi_liet_ke(self, cay_gia):
         """PII nghiệp vụ: email + số điện thoại phải được đếm (không bị coi là vô hại)."""
         mod, tmp = cay_gia
-        r = self._quet(mod, tmp, "d.md",
-                       "Liên hệ: qtho@tdtu.edu.vn — hotline 0918607123 — MSSV 2021607123\n")
+        dong = _ghep("Liên hệ: q", "tho@tdtu", ".edu.vn — hotline 09", "18", "607", "123",
+                     " — MSSV 20", "2160", "7123\n")
+        r = self._quet(mod, tmp, "d.md", dong)
         assert r["by_loai"].get("DU_CAO_NHAN_HOC", 0) >= 3, r["by_loai"]
 
     def test_khong_in_nguyen_van_mau_bip_mat(self, cay_gia):
         """Báo cáo phải redact: không rò rỉ nguyên chuỗi key trong JSON kết quả."""
         mod, tmp = cay_gia
-        key = "AIzaSyD-abcdefghij0123456789KLMNOPQRSTU"
+        key = _ghep("AIza", "SyD-", "abcdefghij", "0123456789", "KLMNOPQRSTU")
         r = self._quet(mod, tmp, "c.py", f'KEY = "{key}"\n')
         blob = json.dumps(r, ensure_ascii=False)
         assert key not in blob
