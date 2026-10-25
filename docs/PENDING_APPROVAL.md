@@ -718,7 +718,7 @@ docstring), luật tự trị buộc ghi diff chờ duyệt; và r12 đã cho **
 Nếu reranker query-nguyên văn kéo được dù chỉ nửa khoảng cách 0,7400→0,8871 thì EXACT mới có cửa +10 điểm;
 probe 28/30 (hạng 1) là tín hiệu mạnh nhưng **probe 30 item chọn thiên lệch, không thay round 811 item**.
 
-## PA-26 — HEAD KHÔNG tái lập được cây đã test: 41 file nguồn/test chưa được commit + 6 file đang sửa dở (mở rộng PA-8; 25-10 11:3x)
+## PA-26 — HEAD KHÔNG tái lập được cây đã test: 35 file nguồn/test chưa được commit + 6 file đang sửa dở (mở rộng PA-8; 25-10 11:3x, cập nhật sau `79a02e5`)
 
 **Vấn đề (đo được, không suy đoán).** `git status --short` tại HEAD `456f35c` cho thấy **một fresh
 clone sẽ không chạy nổi test**: `src/cache_policy.py` (mới) import `src/answer_guard.py` — file **chưa
@@ -726,17 +726,25 @@ tracked**; `src/generator.py` trong working tree có `effective_prompt_version()
 mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.004 test xanh hiện tại thuộc về
 **working tree**, không thuộc về commit nào. Đây là lỗ tái lập, không phải lỗi chức năng.
 
-**Danh sách chính xác** (`git ls-files --others --exclude-standard src tools tests | grep -v __pycache__`):
+> Cập nhật sau commit `79a02e5` (T7 docs + `run_chain`): 6 trong 41 file đã được tracked
+> (`run_chain.py`, `run_chain.ps1`, `run_chain.sh`, `chains/t5a_reranker.json`,
+> `chains/demo_dryrun.json`, `tests/test_run_chain.py`) ⇒ **còn 35 = 3 nguồn + 17 công cụ + 15 test**
+> + 6 file tracked đang sửa. Lỗ tái lập **vẫn còn** vì `src/cache_policy.py`, `src/answer_guard.py`
+> và các hunk `_cache_key` trong `src/generator.py` chưa được commit.
+
+**Danh sách chính xác** (đo tại `456f35c` bằng `git ls-files --others --exclude-standard src tools tests | grep -v __pycache__`; trừ 6 file đã tracked ở `79a02e5`):
 
 - Nguồn chưa tracked (3): `src/answer_guard.py`, `src/reranker.py`, `src/cache_policy.py`
-- Công cụ chưa tracked (22): toàn bộ `tools/loop/` (`run_round.py`, `gate.py`, `attribute.py`, `verify.py`,
-  `testset.py`, `triage.py`, `audit_guard.py`, `calibrate_guard.py`, `noise_floor.py`, `run_chain.py`,
-  `run_chain.ps1`, `run_chain.sh`, `chains/t5a_reranker.json`, `chains/demo_dryrun.json`), `tools/build_sft_from_round.py`,
-  `tools/build_training_data.py`, `tools/validate_training_data.py`, `tools/diag/{bonus_paired,one_variable_check,qlora_memory_probe,reranker_cost_probe,t4_stats}.py`
-- Test chưa tracked (16): `test_answer_guard.py`, `test_answer_rescue.py`, `test_build_sft_from_round.py`,
-  `test_cache_policy.py`, `test_loop_{attribute,gate,generator_model_flag,round,testset,triage,verify}.py`,
-  `test_noise_floor.py`, `test_query_normalizer_guard.py`, `test_reranker_flag.py`, `test_router_soft_filter.py`,
-  `test_run_chain.py`
+- Công cụ chưa tracked (17 sau commit): phần còn lại của `tools/loop/` (`run_round.py`, `gate.py`, `attribute.py`,
+  `verify.py`, `testset.py`, `triage.py`, `audit_guard.py`, `calibrate_guard.py`, `noise_floor.py`),
+  `tools/build_sft_from_round.py`, `tools/build_training_data.py`, `tools/validate_training_data.py`,
+  `tools/diag/{bonus_paired,one_variable_check,qlora_memory_probe,reranker_cost_probe,t4_stats}.py`
+  (đã tracked ở `79a02e5`: `run_chain.{py,ps1,sh}`, `chains/{t5a_reranker,demo_dryrun}.json` — 5 file)
+- Test chưa tracked (15 sau commit): `test_answer_guard.py`, `test_answer_rescue.py`,
+  `test_build_sft_from_round.py`, `test_cache_policy.py`,
+  `test_loop_{attribute,gate,generator_model_flag,round,testset,triage,verify}.py`,
+  `test_noise_floor.py`, `test_query_normalizer_guard.py`, `test_reranker_flag.py`, `test_router_soft_filter.py`
+  (đã tracked ở `79a02e5`: `test_run_chain.py` — 1 file)
 - File tracked đang sửa (6): `src/generator.py` (+369/−…), `src/pipeline.py` (+235), `src/query_normalizer.py` (+161),
   `src/router.py` (+105), `tests/test_pipeline.py` (+96), `tests/test_subquery.py` (+1/−1)
 - Artifact **KHÔNG nên commit**: `models/` 321 MB, `data/loop/rounds/` 78 MB, `chroma_db_vie/` 6,0 MB,
@@ -746,16 +754,16 @@ mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.004
 đang sửa thuộc công việc T3–T5 của phiên trước, và `src/generator.py` chứa lẫn 310 dòng của phiên đó với
 đúng 2 hunk T7 của em. Commit cả file sẽ gán sai tác giả/thời điểm cho thay đổi chưa được phiên này kiểm.
 
-**Phần T7 của em đã xong trong working tree, chờ đúng một lần commit này:**
+**Phần T7 của em:** `tools/loop/run_chain.{py,ps1,sh}` + `chains/*.json` + `tests/test_run_chain.py`
+(11 test, mutation **6/6** bị bắt) **đã commit** trong `79a02e5`; phần còn lại chờ đúng một lần commit:
 `src/cache_policy.py` + 2 hunk `_cache_key` trong `src/generator.py` + `tests/test_cache_policy.py`
-(26 test, mutation **10/10 bị bắt** — bảng ở `tmp/mutation_check_cache_policy.py`), cùng
-`tools/loop/run_chain.{py,ps1,sh}` + `chains/*.json` + `tests/test_run_chain.py` (11 test, mutation 6/6).
+(26 test, mutation **10/10 bị bắt** — log `tmp/mutation_check_cache_policy.log`).
 
 **Ba phương án cần anh chọn:**
 
 | | Nội dung | Ưu | Nhược |
 |---|---|---|---|
-| (i) | **Freeze đầy đủ**: commit 3 nguồn + 22 công cụ + 16 test + 6 file sửa + `data/loop/rounds/` | tái lập 100%, round là bằng chứng đi kèm | repo +80 MB; không xoá được round cũ dễ dàng |
+| (i) | **Freeze đầy đủ**: commit 3 nguồn + 17 công cụ + 15 test + 6 file sửa + `data/loop/rounds/` | tái lập 100%, round là bằng chứng đi kèm | repo +80 MB; không xoá được round cũ dễ dàng |
 | (ii) | **Freeze mã + bằng chứng gọn** (đề xuất): commit nguồn/công cụ/test/6 file sửa + chỉ `data/loop/rounds/**/{round_summary_*.json,gate_*.json,attribution_*.json,*_tally.txt}`, thêm `models/`, `chroma_*`, `data/loop/rounds/**/full.jsonl` vào `.gitignore` | tái lập test + số liệu, repo nhỏ | muốn xem lại từng câu phải chạy round (hoặc xin file) |
 | (iii) | Giữ nguyên hiện trạng, chỉ commit docs | không rủi ro | **không bao giờ tái lập được**; "người ngoài chạy lại từ README" thất bại |
 

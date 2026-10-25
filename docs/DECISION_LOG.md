@@ -41,8 +41,8 @@ Nguyên tắc bất biến đứng trên mọi dòng: **ngưỡng đã đăng k�
 | D-19 | 25-10 | Reranker chỉ khả thi nếu chạy trên GPU, mà không được phá `venv/`/`venv_train/` | `venv_gpu/` riêng (torch 2.14.1+cu126): pytest **967 passed**, VRAM 3.594/4.096 MiB, rerank 2,05 s/item | `data/loop/diag/reranker_cost_gpu.json`, `docs/AUTONOMY_LOG.md` 25-10 02:20 | GIỮ (môi trường tách biệt) |
 | D-20 | 25-10 | Ngoại suy chi phí round = chi phí riêng tầng rerank | **Sai**: r12 thật **≈66 phút** (4,74 s/item) = 2,0 s rerank **+ 2,78 s truy xuất nền** ⇒ vượt ngưỡng tự đặt 60 phút | `data/loop/rounds/r12/round_summary_retrieval.json`, `tmp/vram_r12_run.log`, `docs/reports/T5.md` §2.6 | **BÁC** phương pháp; thay bằng `rerank + baseline` |
 | D-21 | 25-10 | Cache sinh chỉ băm `{model, temperature, prompt_version, prompt}` ⇒ đổi ngưỡng cứu/từ chối vẫn trúng câu trả lời của thể chế cũ | Thêm `policy` **chỉ khi** thể chế lệch mốc `DEFAULT_CACHE_TOKEN` (**d0b4c6a65f83**); thể chế mặc định giữ khóa cũ từng byte. 26 test mới, mutation **10/10** bắt | `src/cache_policy.py`, `src/generator.py` (2 hàm `_cache_key`), `tests/test_cache_policy.py`, `tmp/mutation_check_cache_policy.py` | GIỮ trong working tree; **CHỜ DUYỆT commit** (PA-26) |
-| D-22 | 25-10 | Driver `.sh` viết tay trong `tmp/` là đủ để tái lập một round | Không: thiếu log là mất danh sách env; thay bằng spec JSON + manifest tất định. Chuỗi demo 2×20 item chạy end-to-end (gate ĐẠT + attribute); 11 test, mutation **6/6** bắt | `tools/loop/run_chain.py`, `tools/loop/chains/t5a_reranker.json`, `tests/test_run_chain.py`, `tmp/mutation_check_t7.py` | GIỮ trong working tree; **CHỜ DUYỆT commit** (PA-26) |
-| D-23 | 25-10 | HEAD `456f35c` tái lập được cây đã test 1.004 test | **Sai**: 41 file nguồn/công cụ/test chưa tracked (gồm `src/answer_guard.py`) + 6 file sửa dở; bản `src/generator.py` trong HEAD không có `effective_prompt_version` | `docs/PENDING_APPROVAL.md` PA-26, `docs/STATE.md` | **MỞ** — chờ chọn phương án commit freeze |
+| D-22 | 25-10 | Driver `.sh` viết tay trong `tmp/` là đủ để tái lập một round | Không: thiếu log là mất danh sách env; thay bằng spec JSON + manifest tất định. Chuỗi demo 2×20 item chạy end-to-end (gate ĐẠT + attribute); 11 test, mutation **6/6** bắt | `tools/loop/run_chain.py`, `tools/loop/chains/t5a_reranker.json`, `tests/test_run_chain.py`, `tmp/mutation_check_t7.log` | GIỮ — **đã commit** `79a02e5` |
+| D-23 | 25-10 | HEAD `79a02e5` tái lập được cây đã test 1.004 test | **Sai**: còn 35 file nguồn/công cụ/test chưa tracked (gồm `src/answer_guard.py`, `src/cache_policy.py`) + 6 file sửa dở; bản `src/generator.py` trong HEAD không có `effective_prompt_version` | `docs/PENDING_APPROVAL.md` PA-26, `docs/STATE.md` | **MỞ** — chờ chọn phương án commit freeze |
 
 ---
 
@@ -122,7 +122,9 @@ Khóa cache chỉ thêm `policy` khi token khác mốc `DEFAULT_CACHE_TOKEN`; nh
 Hai lưu ý trung thực: (1) đổi ngưỡng hậu xử lý **buộc sinh lại** — đánh đổi có chủ đích, thà tốn lượt
 hơn trộn thể chế; (2) `DEFAULT_CACHE_TOKEN` là mốc đăng ký, test
 `test_policy_cache_token_default_matches_cleared_env` tính lại dưới env rỗng nên đổi default của module
-sẽ làm test đỏ (phải đăng ký lại, không được sửa test cho xanh).### D-22 — `run_chain`: một lệnh cho cả chuỗi round, có manifest tất định (25-10)
+sẽ làm test đỏ (phải đăng ký lại, không được sửa test cho xanh).
+
+### D-22 — `run_chain`: một lệnh cho cả chuỗi round, có manifest tất định (25-10)
 
 Điều được bảo đảm và đã kiểm bằng test (11 test, mutation 6/6): dry-run **không gọi subprocess**; manifest
 cùng spec ⇒ cùng bytes, đường dẫn tương đối, `spec_sha256`; thiếu env bắt buộc dừng **trước** bước đầu;
@@ -132,7 +134,8 @@ dừng khi cổng không tạo được báo cáo. Không sửa dụng cụ đo:
 
 ### D-23 — Khoảng trống giữa HEAD và cây đã test (25-10)
 
-`HEAD = 456f35c` thiếu 41 file nguồn/công cụ/test và 6 file tracked đang sửa dở; hệ quả là fresh clone
+`HEAD = 79a02e5` còn thiếu 35 file nguồn/công cụ/test và 6 file tracked đang sửa dở (đo 41 file tại
+`456f35c`; commit `79a02e5` đã tracked 6 file `run_chain` + test); hệ quả là fresh clone
 không import nổi (`src/cache_policy.py` → `src/answer_guard.py` chưa tracked). Vì luật tự trị cấm commit
 file `src/` dirty của phiên khác, việc đóng khoảng trống này là **PA-26** với ba phương án; đề xuất (ii)
 commit mã + tổng hợp round, không commit `models/` (321 MB), `chroma_*`, `full.jsonl`. Khi được duyệt,
