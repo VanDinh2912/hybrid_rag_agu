@@ -512,6 +512,8 @@ Sự cố trong lúc dựng harness — `Path.write_text` đổi LF→CRLF làm 
 nội dung đúng — được xử bằng `_doc`/`_ghi` đọc-ghi **byte** (bài học đã ghi ở AUTONOMY_LOG, mục "đột biến
 phải so SHA trên byte, không trên text").
 
+**Tái chạy trên đúng cây đã commit** (`08a7f1a`, 20:2x): cần thiết vì K4 nhắm `tools/diag/final_number_audit.py` mà file này được **thêm bảng số lúc 19:53 — sau log 19:47**. Kết quả vẫn **9/9, 0 sống sót**, 5 file phạm vi SHA-256 khớp bản gốc. Log cũ **không xoá**, lưu ở `tmp/mutation_check_stdin_guard_1947_giu_lai.log`; `tmp/mutation_check_stdin_guard.log` hiện là lượt đo trên cây commit — đó là artifact mà `final_number_audit.py` đọc cho dòng "9/9 đột biến phòng thủ môi trường".
+
 ### 14.4 Số đo trước / sau và khoảng trống còn lại
 
 | Đại lượng | Trước siết | Sau D-35 | Sau D-36 | **Chốt batch 3** |
@@ -564,6 +566,7 @@ Hệ quả cho quy trình (đã ghi vào §5 và D-34): **mọi file docs sẽ c
 - **Không có cách tái hiện WinError 6 trong test tất định** (`os.close(0)` trong process con không gây lỗi — probe `tmp/probe_stdin_closed.py`). Răng vì thế nằm ở *ghim nguồn bằng AST* chứ không phải ở *tái hiện triệu chứng*. Ai đó thêm lời gọi subprocess mới **ngoài** 8 file phạm vi sẽ không bị chặn — đó là lý do PA-34 đề nghị siết nốt **8 lời gọi còn lại ở 6 file** (đếm bằng AST, `tmp/count_stdin_sites.py`) và thêm `tools/diag/env_probe.py`.
 - Guard UTF-8 chỉ chứng minh **chạy được** trên bảng mã không-UTF-8 cho 4 máy kiểm được chọn làm mẫu (`council_check_fabrication`, `council_check_gold6`, `council_check_referee`, `secret_scan`); 3 máy còn lại chỉ được ghim **tĩnh** (chuỗi guard + vị trí trước `def main(`).
 - `errors="replace"` đổi *cách* hiển thị chứ không đổi *phán quyết* — nhưng nếu một ngày nội dung in ra chính là số liệu thì ký tự bị thay sẽ làm người đọc hiểu sai. Chưa có test nào bắt trường hợp đó.
+- **Một lệnh nền của phiên bị dừng vì log phình** (`chuẩn hoá comment khối guard`, exit `killed`, file log nền trong `%TEMP%` vượt 5 GB). Đã đối chiếu ngay sau đó: `git diff --stat` và SHA các file phạm vi **không đổi**, `tools/diag/` không còn file nào dirty, toàn bộ `pytest tests -q` vẫn **1372 passed / 5 skipped** — tức không có thay đổi ẩn nào lọt vào repo. Ghi ở đây để người đọc sau không hiểu nhầm một tiến trình nền thành "code đã bị sửa mà không ai báo".
 
 ## Phụ lục A — đầu ra chính của ba máy kiểm hội đồng (nguyên số)
 

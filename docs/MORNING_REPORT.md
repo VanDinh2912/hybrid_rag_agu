@@ -32,6 +32,7 @@ máy spawn process*.
   (lỗi spawn **không được** thành `tracked-sach`), 3 ghim hiện trạng dụng cụ đo, 13 console (2 điều khiển âm
   chứng minh cp1252 **và** cp1258 không in nổi `ĐẠT — 0,5186`; 4 chạy process con thật bị nén bảng mã, kỳ vọng
   `rc=0`). Harness đột biến **9/9** (`tmp/mutation_check_stdin_guard.log`); sổ cái **135/135**.
+- **Commit**: `08a7f1a` (17 file). Sau commit, `git status --short` chỉ còn 6 file PA-8 dirty như đã thoả thuận; cần tái lập: `venv\Scripts\python.exe -m pytest tests -q`.
 - **Số sau siết** (mọi số đã công bố giữ nguyên): `pytest tests -q` **1372 passed / 5 skipped — 91,44 s**; bộ 5 file
   nghiệm thu cuối **144/1** trên **cả hai** interpreter; kiểm toán **63 dòng / 0 LỆCH**; secret scan
   **0 secret / 0 đường dẫn / 89 PII / 8 file**; docs checker **36 mục / 0 lỗi**; chữ ký **`9f1179ccab74`**.

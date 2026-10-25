@@ -632,6 +632,7 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   **9** đã có `stdin`) — AUTONOMY_LOG Ngã rẽ 22; (2) "interpreter venv 3.11" → **cả hai interpreter đều 3.14.8**,
   khác nhau ở **tập package** (`pypdfium2`/`streamlit` chỉ có trong venv ⇒ python hệ thống lỗi collection
   4 file test).
+- **Trạng thái git sau batch 3**: commit `08a7f1a` (17 file: 8 máy kiểm `tools/diag`, 3 bộ test `tests/test_final_*`, 6 file docs). `git status --short` chỉ còn **6 file PA-8** dirty (`src/generator.py`, `src/pipeline.py`, `src/query_normalizer.py`, `src/router.py`, `tests/test_pipeline.py`, `tests/test_subquery.py`) — **không stage**, đúng thoả thuận. Harness đột biến được **chạy lại trên cây commit**: vẫn **9/9**, log cũ giữ ở `tmp/mutation_check_stdin_guard_1947_giu_lai.log`.
 - **Chưa làm, chờ anh (PA-34)**: (a) README ghi lệnh chuẩn `venv\Scripts\python.exe -m pytest tests -q` + điều
   kiện interpreter/bảng mã; (b) siết nốt `stdin` cho **8** lời gọi còn lại (`tools/loop/run_chain.py:284/289`,
   `tools/diag/t4_latency_probe.py:65`, `tests/test_t7_tmp_cleanup.py:181/225`, `tests/test_t4_gpu_slow.py:41`,
