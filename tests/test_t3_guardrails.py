@@ -301,6 +301,69 @@ class TestOffGolden:
         assert gen.calls == 1
 
 
+# ============================================ A1' — bất biến TẮT khi env còn giá trị lever TẮT
+class TestOffInvariantWhenDisabledLeversConfigured:
+    """A1 ("cờ TẮT ⇒ đầu ra byte-identical + cache key không đổi") mới được chứng minh trong
+    **môi trường env rỗng**: fixture autouse xoá sạch `DEC_*`/`EV_*`/`ANSWER_GUARD_*` cho mọi
+    test. Nhưng vòng lặp P5 cấu hình bằng env — một round TẮT cờ vẫn có thể thừa hưởng
+    `DEC_MIN_RRF_NORM`/`EV_MAX_SENTENCES` của round trước. Câu hỏi chưa ai kiểm: khi đó cờ TẮT
+    có trả lại đúng hành vi cũ?
+
+    Đo được HAI kết quả khác nhau (25-10):
+      - ĐẦU RA (answer, contexts, prompt, số lượt gọi, docs generator nhận) **không đổi** —
+        đúng bất biến, vì `pipeline` chỉ đọc ngưỡng khi cờ BẬT.
+      - KHÓA CACHE **đổi** — `src/cache_policy.policy_cache_token()` gồm mọi ngưỡng bất kể
+        `enabled`, nên khóa TẮT không còn là khóa legacy `v1.3` khi env có `DEC_*`/`EV_*`.
+
+    Test thứ hai là **ĐẶC TẢ HIỆN TRẠNG** (đề xuất PA-27): nó ghim điều đang xảy ra, không
+    phải điều mong muốn. Khi sửa `cache_policy.py` (chỉ đưa ngưỡng của lever đang BẬT vào
+    token), test đó sẽ đỏ và phải thay bằng "khóa TẮT = legacy bất kể env" — cố ý để không
+    ai sửa lặng lẽ.
+    """
+
+    ENV_DISABLED_LEVERS = {
+        "DEC_MIN_RRF_NORM": "0.5",          # lever T3 đang TẮT
+        "EV_MAX_SENTENCES": "3",            # lever T3 đang TẮT
+        "ANSWER_GUARD_MIN_SCORE": "0.75",   # guard đang TẮT
+    }
+
+    def _set(self):
+        for k, v in self.ENV_DISABLED_LEVERS.items():
+            os.environ[k] = v
+
+    def _core(self):
+        harness = load_harness()
+        return [harness.run_item(item)["core"] for item in harness.build_items()]
+
+    def test_dau_ra_van_trung_golden_khi_env_con_nguong_cua_lever_tat(self):
+        golden = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))["core"]
+        self._set()
+        core = self._core()
+        no_key = lambda rows: [  # noqa: E731 — so mọi mặt TRỪ khóa cache (kiểm riêng bên dưới)
+            {k: v for k, v in row.items() if k != "qwen_cache_key"} for row in rows
+        ]
+        assert no_key(core) == no_key(golden)  # câu trả lời/ngữ cảnh/prompt/lượt gọi y nguyên
+        assert [r["qwen_prompt_sha1"] for r in core] == [g["qwen_prompt_sha1"] for g in golden]
+        assert all(r["gen_calls"] == 1 for r in core)
+        # ... nhưng KHÓA CACHE thì đã tách khỏi golden:
+        assert [r["qwen_cache_key"] for r in core] != [g["qwen_cache_key"] for g in golden]
+
+    def test_DAC_TA_HIEN_TRANG_khoa_cache_TAT_tach_khi_env_co_nguong_lever_tat(self):
+        from src.cache_policy import cache_policy_deviation
+
+        assert cache_policy_deviation() is None, "env rỗng phải là thể chế mặc định đã đăng ký"
+        seen = {}
+        for k, v in self.ENV_DISABLED_LEVERS.items():
+            os.environ[k] = v
+            token = cache_policy_deviation()
+            assert token is not None, f"{k} (lever đang TẮT) phải làm token lệch theo hiện trạng"
+            seen[k] = token
+            os.environ.pop(k)
+        # mỗi ngưỡng tạo một không gian cache riêng, và bỏ hết thì quay lại mặc định
+        assert len(set(seen.values())) == len(seen)
+        assert cache_policy_deviation() is None
+
+
 # ================================================================ B2. prompt không còn lời mời từ chối
 REFUSAL_AFFORDANCE_RES = [
     re.compile(r"không\s+đủ\s+thông\s+tin", re.IGNORECASE),

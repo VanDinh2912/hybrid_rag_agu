@@ -13,7 +13,8 @@ Phạm vi: **chỉ thêm test + golden + script mutation**, không sửa `src/`,
    Tại `f492f05`, `src/pipeline.py` **không có dòng T3 nào** (`meta.pipeline_has_t3_fields=false`
    trong golden), nên đây là "trước khi sửa" thật, không phải golden tự sinh vòng tròn.
    Golden lưu tại [`tests/golden/t3_off_30items_head_f492f05.json`](../../tests/golden/t3_off_30items_head_f492f05.json).
-2. **Bộ test** [`tests/test_t3_guardrails.py`](../../tests/test_t3_guardrails.py): **75 test**,
+2. **Bộ test** [`tests/test_t3_guardrails.py`](../../tests/test_t3_guardrails.py): **75 test**
+   (25-10: **77**, xem §9),
    phủ đủ A/B/C/D của đề bài; mọi tầng dưới là fake/stub (`StubGenerator` trả chuỗi cố định,
    `FakeOllama` cho QwenGenerator, `sentence_transformers` bị chặn bằng module giả nên
    **không tải model hàng GB**).
@@ -97,6 +98,9 @@ test đó thật sự bắt lỗi.
 
 ## 3. Mutation check — 7/7 BẮT ĐƯỢC, 7/7 hoàn nguyên byte-identical
 
+> Bản 24-10 dưới đây giữ nguyên làm mốc lịch sử. Bản đo lại 25-10 sau T7: **9/9** (thêm M7/M8),
+> M2 đỏ **11** test thay vì 6 — xem §9.2.
+
 Chạy: `PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tmp/mutation_check_t3.py`
 (baseline xanh 75 passed trước khi đột biến).
 
@@ -157,6 +161,9 @@ chặn ở pre). Đây là lý do phải có cả test tổng hợp chứ không
 
 ## 6. Tiêu chí xong
 
+> Bảng 24-10 (75 test, 854 toàn suite). Số hiện tại 25-10: **77 test / 1.016 toàn suite / 9-9 đột
+> biến** — xem §9.3.
+
 | Tiêu chí | Kết quả | Bằng chứng |
 |---|---|---|
 | A xanh tuyệt đối | **ĐẠT** — 30/30 item byte-identical, cache key trùng | 6 test `TestOffGolden`, golden sha `e59b9ebb…`, core sha `344d55cd…` |
@@ -197,3 +204,69 @@ cd tmp/t3_baseline_head && PYTHONIOENCODING=utf-8 ../../venv/Scripts/python.exe 
 - **PA-15:** xử lý `DEC_MAX_UNSUPPORTED` đang là dead code — chọn (a) sửa luật 4 dùng đúng trần
   đã đăng ký, hay (b) đăng ký lại trần hiệu dụng = 0; cả hai đều cần duyệt vì chạm ngưỡng đã
   công bố.
+
+## 9. Cập nhật 25-10 — đo lại sau khi T7 (`cache_policy`) vào cây
+
+Bối cảnh: báo cáo 24-10 ở trên đúng với cây lúc đó (75 test, chưa có T7). T7 thêm `src/cache_policy.py`
+và trường `policy` vào `_cache_key` của generator. Vì vậy đường TẮT của T3 **không còn** là "khóa
+legacy thuần" khi env có ngưỡng — cần đo lại thay vì tin báo cáo cũ.
+
+### 9.1 Test: 75 → **77** (thêm 2, không sửa test cũ)
+
+Golden **không** dựng lại: SHA-256 `tests/golden/t3_off_30items_head_f492f05.json` vẫn
+`e59b9ebb6b12c2d6844356f5861cc98d418c11b26f83a49fdae1f8f2ea1728b5`, khối `core` vẫn
+`344d55cd35ec64b876d1f7580724eb968f158a21fbf42c64a28b54d3c8784b11`; 30/30 byte-identical.
+
+Lớp mới `TestOffInvariantWhenDisabledLeversConfigured` đóng khoảng trống: fixture autouse xoá sạch
+`DEC_*`/`EV_*`/`ANSWER_GUARD_*`, nên A1 trước đây **chỉ** được chứng minh trong env rỗng. Hai test:
+
+| Test | Ghim điều gì | Kết quả đo |
+|---|---|---|
+| `test_dau_ra_van_trung_golden_khi_env_con_nguong_cua_lever_tat` | ĐẦU RA bất biến khi `DEC_MIN_RRF_NORM=0.5`, `EV_MAX_SENTENCES=3`, `ANSWER_GUARD_MIN_SCORE=0.75` (cả hai cờ TẮT) | **XANH** — mọi mặt trừ `qwen_cache_key` trùng golden, `gen_calls=1` |
+| `test_DAC_TA_HIEN_TRANG_khoa_cache_TAT_tach_khi_env_co_nguong_lever_tat` | KHÓA CACHE hiện tách theo env của lever TẮT | **XANH như đặc tả hiện trạng** — `None` → `e95e6efa2617` / `1670eb7035ac` / `94515a7efa5d` |
+
+Test thứ hai **không** phải điều mong muốn: nó là bằng chứng cho PA-27 và sẽ phải thay bằng "khóa
+TẮT = legacy bất kể env" khi `cache_policy.py` được sửa (cố ý để không ai sửa lặng lẽ). Hệ quả phát
+biểu: câu "cache key không đổi" của A1 **chỉ đúng trong env rỗng** — đầu ra thì đúng ở mọi env đã thử.
+
+### 9.2 Mutation: 7/7 → **9/9** (log `tmp/t3_mutation_recheck_9.log`, baseline 77 passed)
+
+| # | Đột biến | Test đỏ | Khôi phục |
+|---|---|---|---|
+| M1 | cache ghi `REFUSAL_TEXT` (đảo guard/cache) | 1 | byte-identical |
+| M1b | bỏ guard sau sinh | 7 | byte-identical |
+| M2 | 4 ngưỡng → 0 | **11** (24-10: 6) | byte-identical |
+| M3 | bỏ nhánh từ chối | 23 | byte-identical |
+| M4 | đảo mạch đọc trong chunk | 1 | byte-identical |
+| M5 | đảo chiều tie-break | 1 | byte-identical |
+| M6 | `effective_prompt_version()` luôn trả `PROMPT_VERSION` | 1 | byte-identical |
+| **M7** | `cache_policy_deviation()` luôn `None` | 2 (đúng 2 test lớp mới) | byte-identical |
+| **M8** | `decoupled = True` (chạy luật dù cờ TẮT) | 7 (4 `TestOffGolden` + A1' + 2 test OFF) | byte-identical |
+
+M2 đỏ 11 thay vì 6 vì đổi ngưỡng giờ đổi **khóa cache**, kéo theo 4 test golden và 2 test cache-key
+— không phải vì logic từ chối yếu đi. Đây chính là triệu chứng của PA-27, đã ghi đề xuất thay vì
+nới test.
+
+### 9.3 Tiêu chí xong (bản hiện tại)
+
+| Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|
+| A xanh tuyệt đối | **ĐẠT** — 30/30 byte-identical, golden/core SHA không đổi; thêm: đầu ra bất biến cả khi env còn ngưỡng lever TẮT | 6 + 1 test, §9.1 |
+| D không đỏ | **ĐẠT** — 10/10 từ chối, 0/10 gọi generator; đo lại: **cả 10 ca** `overlap=0.0`, `relevant=False`, ca 6 `coverage=0.0` (đều bị luật 2 chặn ở pre) | `TestRefusesAllUnanswerable` |
+| Mutation bắt buộc (guard/cache, ngưỡng→0, bỏ nhánh từ chối) | **ĐẠT** — M1/M2/M3 đỏ; tổng **9/9** | §9.2 |
+| Toàn suite xanh | **ĐẠT** — **1.016 passed**, 3 warnings (29,29 s) | `tmp/pytest_t3_final_1016.txt` |
+| Trọng tài không đổi | **ĐẠT** — `9f1179ccab74`; không sửa `verify.py`/`answer_guard.py`/`text_utils.py`/`gate.py` | mục 7(c) |
+
+### 9.4 Điều KHÔNG làm (và vì sao)
+
+- **Không sửa `cache_policy.py`** dù biết cách sửa: chạm khóa cache của T7 ⇒ cần duyệt (PA-27).
+- **Không thêm bộ D thứ hai** (10 ca bịa "sau guard"): 5 dạng bịa + ca gốc ở `TestOuterRefusal` đã
+  đo guard sau sinh, M1b chứng minh chúng có răng ⇒ thêm nữa là trùng lặp, không tăng độ phủ.
+- **Không chỉnh ngưỡng** nào để làm D "khó hơn": ngưỡng đã đăng ký trước (bất biến #6).
+
+Lệnh đo lại:
+```
+venv/Scripts/python.exe -m pytest tests/test_t3_guardrails.py -q -p no:cacheprovider
+venv/Scripts/python.exe tmp/mutation_check_t3.py          # 9/9, log tmp/t3_mutation_recheck_9.log
+venv/Scripts/python.exe -m pytest tests -q                # 1.016 passed
+```

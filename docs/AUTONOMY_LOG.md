@@ -771,3 +771,42 @@ liệu chứ không đổi `verify.py`/`answer_guard.py`/`text_utils.py`; chữ 
 **Hoàn tác:** `git checkout -- tests/test_corpus_rebuild.py docs/` rồi xoá
 `tmp/t2_provenance_segments.py`, `data/loop/diag/corpus_check/manual_20_segments_provenance.txt`,
 `tmp/t2_mutation_6.log`, `tmp/pytest_t2_final_1014.txt`. Không đụng index/corpus/round/testset.
+
+## Phiên 25-10 11:58 → 12:1x — T3 đo lại sau T7: thêm 2 test, phát hiện PA-27, KHÔNG sửa cache_policy
+
+**Bối cảnh:** T3 được kiểm 24-10 (75 test, mutation 7/7) **trước** khi T7 thêm `src/cache_policy.py`.
+T7 đổi `_cache_key` của generator, nên kết luận "A1: cache key không đổi" của báo cáo cũ không còn
+đương nhiên đúng. Chạy lại thay vì tin báo cáo: 75 test xanh, golden SHA `e59b9ebb…` trùng, nhưng M2
+đỏ **11** test thay vì 6 như đêm 24-10.
+
+**Ngã rẽ 1 — coi M2 đỏ 11 là "test hỏng" hay là tín hiệu?** Đọc log: 4 test `TestOffGolden` +
+2 test cache-key đỏ vì **khóa cache** đổi khi ngưỡng đổi, không phải vì logic từ chối. Đo trực tiếp
+trong env sạch với **cả hai cờ T3 TẮT**: `cache_policy_deviation()` = `None`; đặt `DEC_MIN_RRF_NORM=0.5`
+→ `e95e6efa2617`, `EV_MAX_SENTENCES=3` → `1670eb7035ac`, `ANSWER_GUARD_MIN_SCORE=0.75` → `94515a7efa5d`
+— trong khi 30 item golden **byte-identical** trên mọi mặt trừ khóa. ⇒ tín hiệu thật, không phải test hỏng.
+
+**Ngã rẽ 2 — sửa `cache_policy.py` ngay hay chỉ ghi đề xuất?** Sửa (chỉ đưa ngưỡng vào token khi lever
+BẬT) là hợp lý nhưng chạm khóa cache của T7 và buộc đổi 3 test đã có
+(`test_policy_cache_token_ignores_decoupled_flag_but_not_its_thresholds`,
+`test_cache_policy_deviation_none_at_default_token_when_threshold_changes`,
+`DEFAULT_CACHE_TOKEN`). Theo luật "đổi dụng cụ đo/khóa ⇒ cần duyệt" ⇒ **không sửa**, ghi **PA-27**
+kèm diff + danh sách test phải đổi + rủi ro và cách chặn.
+
+**Ngã rẽ 3 — A1 có còn ĐẠT không?** Có, nhưng phạm vi phát biểu phải hẹp lại: trước đây A1 chỉ được
+chứng minh trong **env rỗng** (fixture autouse xoá sạch `DEC_*`/`EV_*`/`ANSWER_GUARD_*`). Thêm
+`TestOffInvariantWhenDisabledLeversConfigured` (2 test): (a) đầu ra bất biến khi env còn ngưỡng lever
+TẮT — XANH; (b) khóa tách theo hiện trạng — XANH như **đặc tả hiện trạng**, sẽ phải thay khi PA-27
+được duyệt. Cố ý để test đỏ khi ai sửa lặng lẽ.
+
+**Ngã rẽ 4 — có thêm bộ D thứ hai (10 ca bịa sau guard) không?** Đo lại: cả 10 ca D bị **luật 2** chặn
+ở pre (`overlap=0.0`, `relevant=False`, ca 6 `coverage=0.0`) nên D không chứng minh guard sau sinh.
+Nhưng `TestOuterRefusal` (5 dạng bịa + ca gốc) đã làm việc đó và M1b chứng minh nó có răng ⇒ thêm bộ
+nữa là trùng lặp. **Không thêm**, ghi rõ hạn chế (đã có từ 24-10, nay đo lại).
+
+**Bằng chứng:** T3 **77/77** (`tmp/pytest_t3_final_1016.txt` chỉ dòng tổng toàn repo); toàn repo
+**1.016 passed** (29,29 s); mutation T3 **9/9** (`tmp/t3_mutation_recheck_9.log`, thêm M7 deviation
+luôn `None` → đỏ đúng 2 test mới; M8 `decoupled=True` → đỏ 7), tất cả hoàn nguyên byte-identical;
+golden SHA `e59b9ebb…` và `core` `344d55cd…` không đổi; trọng tài `9f1179ccab74`.
+
+**Hoàn tác:** `git checkout -- tests/test_t3_guardrails.py docs/` rồi xoá `tmp/t3_mutation_recheck_9.log`,
+`tmp/pytest_t3_final_1016.txt`. Không đụng `src/` (kể cả `cache_policy.py`), golden, index, round.

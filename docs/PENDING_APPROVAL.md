@@ -777,9 +777,90 @@ mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.014
 **Lệnh kiểm chứng sau khi duyệt (em sẽ chạy, không cần anh gõ):**
 ```
 git clone D:/DoAn/hybrid_rag_agu tmp/_fresh_clone && cd tmp/_fresh_clone \
-  && python -m pytest tests -q          # kỳ vọng: 1014 passed
+  && python -m pytest tests -q          # kỳ vọng: 1016 passed
 python -m pytest tests -q               # trong cây chính, sau commit
 git status --short                      # kỳ vọng: chỉ còn artifact trong .gitignore
 ```
 Hoàn tác: commit freeze là commit thường (không force-push) ⇒ `git revert <sha>` nếu sai; không đụng
 `data/loop/rounds` trên đĩa khi chọn (ii).
+
+## PA-27 — Chế độ T3 TẮT vẫn TÁCH khóa cache theo env của lever đang TẮT (25-10 12:1x)
+
+**Vấn đề (đo được).** Với **cả hai cờ T3 TẮT** và env sạch, `cache_policy_deviation()` = `None`
+(khóa legacy `v1.3`, đúng như golden). Nhưng chỉ cần env còn giá trị của một lever **đang TẮT**,
+khóa cache lập tức tách:
+
+| Env đặt thêm (cả hai cờ T3 vẫn TẮT) | `cache_policy_deviation()` |
+|---|---|
+| — (sạch) | `None` |
+| `DEC_MIN_RRF_NORM=0.5` | `e95e6efa2617` |
+| `EV_MAX_SENTENCES=3` | `1670eb7035ac` |
+| `ANSWER_GUARD_MIN_SCORE=0.75` (guard TẮT) | `94515a7efa5d` |
+
+Trong khi **đầu ra không đổi**: 30 item golden vẫn byte-identical trên mọi mặt trừ
+`qwen_cache_key` (test mới `TestOffInvariantWhenDisabledLeversConfigured`, 25-10). Nguyên nhân:
+`policy_cache_token()` (src/cache_policy.py:106) đưa **mọi** ngưỡng vào token bất kể `enabled`,
+nên `DEFAULT_CACHE_TOKEN` chỉ khớp đúng ảnh chụp env rỗng.
+
+**Đây không phải lỗi trả lời sai, mà là lỗi phát biểu + phí lượt.** Câu "cache key không đổi" của
+A1 (T3) chỉ đúng trong env rỗng; một round TẮT cờ thừa hưởng `DEC_*`/`EV_*` từ round trước sẽ sinh
+lại toàn bộ dù hành vi y hệt. Đồng thời nó làm nhiễu mutation: M2 (bốn ngưỡng → 0) giờ đỏ **11**
+test T3, trong đó 4 test `TestOffGolden`, vì đổi ngưỡng đổi **khóa** chứ không đổi logic từ chối
+(24-10 M2 chỉ đỏ 6 test).
+
+**Phương án (a) — đề xuất, hẹp:** chỉ đưa ngưỡng vào token khi **lever của nó BẬT**, và chỉ áp cho
+hai lever đã có bằng chứng "ngưỡng trơ khi TẮT" (30 item byte-identical): `decoupled_refusal` +
+`evidence_selection`. `rescue`/`guard`/`normalize_sanity` **giữ nguyên** cho tới khi mỗi lever có
+một phép đo A1'-kiểu riêng (phương án (b)).
+
+```python
+# src/cache_policy.py — policy_cache_token()
+    dec = snap["decoupled_refusal"]
+    ev = snap["evidence_selection"]
+    # Ngưỡng chỉ vào khóa khi lever BẬT: lever TẮT ⇒ runtime không đọc ngưỡng
+    # (đã chứng minh 30 item byte-identical), nên đổi ngưỡng không được tách cache.
+    dec_payload = None if not dec["enabled"] else {
+        "min_entity_coverage": dec["min_entity_coverage"],
+        "min_token_overlap": dec["min_token_overlap"],
+        "min_rrf_norm": dec["min_rrf_norm"],
+        "min_grounding": dec["min_grounding"],
+        "max_unsupported": dec["max_unsupported"],
+    }
+    ev_payload = ev if ev["enabled"] else None
+    return _hash12({...
+        "decoupled_refusal": dec_payload,
+        "evidence_selection": ev_payload, ...})
+```
+
+Kèm: bump `CACHE_TOKEN_VERSION` → `cache-policy-v2` (payload đổi cấu trúc) và **đăng ký lại**
+`DEFAULT_CACHE_TOKEN` bằng lệnh trong docstring `test_policy_cache_token_default_matches_cleared_env`.
+Khóa legacy vẫn dùng được vì env mặc định ⇒ deviation `None` ⇒ **không** thêm trường `policy`.
+
+**Test buộc phải đổi (đo, không đoán):**
+
+| Test | Hiện tại | Sau (a) |
+|---|---|---|
+| `tests/test_cache_policy.py::test_policy_cache_token_ignores_decoupled_flag_but_not_its_thresholds` (dòng 348) | ngưỡng DEC đổi token **khi cờ TẮT** | ngược lại: TẮT ⇒ token không đổi; BẬT ⇒ đổi |
+| `tests/test_cache_policy.py::test_policy_cache_token_default_matches_cleared_env` (dòng 335) | so với hằng | giữ nguyên test; chỉ đăng ký lại hằng |
+| `tests/test_t3_guardrails.py::TestOffInvariantWhenDisabledLeversConfigured::test_DAC_TA_HIEN_TRANG_...` (dòng 351) | ghim hiện trạng "TẮT vẫn tách" | thay bằng "khóa TẮT = legacy bất kể `DEC_*`/`EV_*`"; `ANSWER_GUARD_MIN_SCORE` vẫn tách (chờ (b)) |
+
+Không đổi: các test dùng `RESCUE_MIN_SCORE`/`ANSWER_GUARD_MAX_UNSUPPORTED` (giữ bảo thủ ở (a)).
+
+**Rủi ro của (a) và cách chặn:** nếu có đường runtime đọc `DEC_*`/`EV_*` **khi cờ TẮT**, hai cấu
+hình khác ngưỡng sẽ dùng chung entry ⇒ trả lời cũ. Bằng chứng ngược: 30 item byte-identical + M8
+(ép `decoupled=True` mới đổi đầu ra ⇒ cờ chính là cổng). Bổ sung sau khi duyệt: một test grep/AST
+khẳng định `thresholds()`/`sentence_budget()` chỉ được gọi trong nhánh `if ...enabled`.
+
+**Phương án (b):** gate cả 5 nhóm — cần thêm 4 phép đo A1' cho `rescue`/`guard`/`normalize_sanity`
+(rẻ, cùng harness). **Phương án (c):** không sửa code, chỉ ghi rõ trong `docs/reports/test_T3.md`
+rằng "khóa TẮT không đổi" chỉ đúng với env rỗng — chấp nhận phân mảnh cache.
+
+**Lệnh kiểm chứng sau khi duyệt (em chạy):**
+```
+venv/Scripts/python.exe -m pytest tests/test_cache_policy.py tests/test_t3_guardrails.py -q
+venv/Scripts/python.exe -m pytest tests -q          # kỳ vọng: 1016 passed (± test mới)
+venv/Scripts/python.exe tmp/mutation_check_t3.py    # kỳ vọng 9/9, M2 không còn đỏ test golden
+# golden 30 item phải byte-identical CẢ qwen_cache_key trong env rỗng
+```
+Hoàn tác: `git checkout -- src/cache_policy.py tests/test_cache_policy.py tests/test_t3_guardrails.py`
+(hoặc `git revert <sha>`) — không đụng dữ liệu, không đụng trọng tài.

@@ -4,8 +4,25 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.014 passed** (30,8 s, 25-10 12:00; 967 + 11 `test_run_chain` +
-26 `test_cache_policy` + 1 test biên T6a + 1 test T0 + 5 test T1 + 3 test T2).
+`pytest tests -q` mới nhất: **1.016 passed** (29,3 s, 25-10 12:1x; 967 + 11 `test_run_chain` +
+26 `test_cache_policy` + 1 test biên T6a + 1 test T0 + 5 test T1 + 3 test T2 + 2 test T3 A1').
+
+## CẬP NHẬT 25-10 12:1x — T3 đo lại sau T7: A xanh, D không đỏ, nhưng lộ PA-27
+
+- **Test T3: 75 → 77**; golden **không** dựng lại (SHA `e59b9ebb…`, `core` `344d55cd…` trùng),
+  30/30 item vẫn byte-identical. Thêm `TestOffInvariantWhenDisabledLeversConfigured`: đầu ra T3-TẮT
+  **bất biến** khi env còn ngưỡng của lever TẮT (`DEC_MIN_RRF_NORM=0.5`, `EV_MAX_SENTENCES=3`,
+  `ANSWER_GUARD_MIN_SCORE=0.75`) — điều A1 trước đây chỉ chứng minh trong env rỗng.
+- **Phát hiện mới (PA-27):** đúng trong env đó, **khóa cache TẮT tách** khỏi legacy
+  (`None` → `e95e6efa2617` / `1670eb7035ac` / `94515a7efa5d`) dù đầu ra y hệt. Không sai câu trả lời,
+  nhưng "cache key không đổi" của A1 **chỉ đúng với env rỗng** và một round TẮT thừa hưởng env sẽ
+  sinh lại vô ích. Đề xuất hẹp (chỉ gate ngưỡng theo `enabled` cho 2 lever T3 trước) — **chưa sửa**.
+- **Mutation T3: 7/7 → 9/9** (`tmp/t3_mutation_recheck_9.log`; M7 deviation luôn `None` → đỏ đúng 2
+  test mới; M8 `decoupled=True` → đỏ 7). M2 giờ đỏ 11 test (trước 6) vì đổi ngưỡng đổi **khóa**, đúng
+  triệu chứng PA-27 — không nới test.
+- **D đo lại:** 10/10 ca bị chặn ở pre (`overlap=0.0`, `relevant=False`) ⇒ D không đỏ nhưng một mình
+  không chứng minh guard sau sinh; phần đó do `TestOuterRefusal` + M1b. Không thêm bộ D thứ hai.
+- **Toàn repo: 1.016 passed** (29,29 s, `tmp/pytest_t3_final_1016.txt`); trọng tài `9f1179ccab74`.
 
 ## CẬP NHẬT 25-10 12:00 — T2 siết lại: nghiệm thu vẫn KHÔNG ĐẠT (mục 9 ĐỎ)
 

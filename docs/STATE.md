@@ -373,6 +373,25 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - **KẾ TIẾP (đều cần user):** PA-26 (commit freeze) ⇒ PA-25 (bỏ fold + r14 ≈66 phút) ⇒ PA-1 (kích hoạt
   `chroma_db_vie`) ⇒ PA-13/PA-23 ⇒ T1(b) 5 id còn lại (cửa sổ PerDay ~14:30 25-10).
 
+## ĐANG LÀM (25-10 12:1x) — T3 đo lại sau T7: A xanh, D không đỏ, 9/9 mutation, lộ PA-27
+
+- **T3 75 → 77 test** (`tests/test_t3_guardrails.py`): thêm lớp
+  `TestOffInvariantWhenDisabledLeversConfigured`. Golden **không** dựng lại — SHA-256
+  `e59b9ebb…` và khối `core` `344d55cd…` vẫn trùng; 30/30 item byte-identical.
+- **Kết quả mới:** đầu ra T3-TẮT **bất biến** cả khi env còn `DEC_MIN_RRF_NORM=0.5`,
+  `EV_MAX_SENTENCES=3`, `ANSWER_GUARD_MIN_SCORE=0.75`; nhưng **khóa cache tách**
+  (`None` → `e95e6efa2617` / `1670eb7035ac` / `94515a7efa5d`) ⇒ câu "cache key không đổi" của A1
+  chỉ đúng trong **env rỗng** ⇒ **PA-27** (đề xuất sửa hẹp: chỉ đưa ngưỡng vào token khi lever BẬT,
+  áp cho 2 lever T3 trước; chờ duyệt, **không** sửa `cache_policy.py`).
+- **Mutation T3 7/7 → 9/9** (`tmp/t3_mutation_recheck_9.log`): thêm M7 (deviation luôn `None`, đỏ
+  đúng 2 test mới) và M8 (`decoupled=True`, đỏ 7 test). M2 giờ đỏ **11** test (24-10: 6) vì đổi
+  ngưỡng đổi khóa cache — triệu chứng PA-27, không phải logic từ chối yếu đi.
+- **D đo lại:** 10/10 ca bị luật 2 chặn ở pre (`overlap=0.0`, `relevant=False`, ca 6 `coverage=0.0`)
+  ⇒ D **không đỏ**, nhưng một mình không chứng minh guard sau sinh; phần đó do `TestOuterRefusal` +
+  M1b đảm nhiệm. Không thêm bộ D thứ hai (trùng lặp).
+- **Toàn repo 1.016 passed** (29,29 s, `tmp/pytest_t3_final_1016.txt`); trọng tài `9f1179ccab74`.
+  Commit chỉ `tests/test_t3_guardrails.py` + docs (không commit `src/` dirty của phiên khác — PA-26).
+
 ## ĐANG LÀM (25-10 12:00) — T2 siết lại: nghiệm thu vẫn KHÔNG ĐẠT
 
 - **Test T2 78 → 81** (`tests/test_corpus_rebuild.py`, thêm `TestVerbatimPreservation` 3 test):
