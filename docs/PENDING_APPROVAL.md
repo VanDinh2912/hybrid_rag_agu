@@ -730,7 +730,7 @@ probe 28/30 (hạng 1) là tín hiệu mạnh nhưng **probe 30 item chọn thi�
 **Vấn đề (đo được, không suy đoán).** `git status --short` tại HEAD `456f35c` cho thấy **một fresh
 clone sẽ không chạy nổi test**: `src/cache_policy.py` (mới) import `src/answer_guard.py` — file **chưa
 tracked**; `src/generator.py` trong working tree có `effective_prompt_version()`/`answer_rescue_enabled()`
-mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.011 test xanh hiện tại thuộc về
+mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.014 test xanh hiện tại thuộc về
 **working tree**, không thuộc về commit nào. Đây là lỗ tái lập, không phải lỗi chức năng.
 
 > Cập nhật sau commit `79a02e5` (T7 docs + `run_chain`): 6 trong 41 file đã được tracked
@@ -777,7 +777,7 @@ mà `git show HEAD:src/generator.py` **không có** (grep = 0). Nghĩa là 1.011
 **Lệnh kiểm chứng sau khi duyệt (em sẽ chạy, không cần anh gõ):**
 ```
 git clone D:/DoAn/hybrid_rag_agu tmp/_fresh_clone && cd tmp/_fresh_clone \
-  && python -m pytest tests -q          # kỳ vọng: 1011 passed
+  && python -m pytest tests -q          # kỳ vọng: 1014 passed
 python -m pytest tests -q               # trong cây chính, sau commit
 git status --short                      # kỳ vọng: chỉ còn artifact trong .gitignore
 ```

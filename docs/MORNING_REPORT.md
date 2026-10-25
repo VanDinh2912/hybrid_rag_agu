@@ -4,8 +4,36 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.011 passed** (29,8 s, 25-10 11:55; 967 + 11 `test_run_chain` +
-26 `test_cache_policy` + 1 test biên T6a + 1 test T0 + 5 test T1).
+`pytest tests -q` mới nhất: **1.014 passed** (30,8 s, 25-10 12:00; 967 + 11 `test_run_chain` +
+26 `test_cache_policy` + 1 test biên T6a + 1 test T0 + 5 test T1 + 3 test T2).
+
+## CẬP NHẬT 25-10 12:00 — T2 siết lại: nghiệm thu vẫn KHÔNG ĐẠT (mục 9 ĐỎ)
+
+- **Test T2: 78 → 81** (`tests/test_corpus_rebuild.py`). Thêm `TestVerbatimPreservation` (3 test)
+  khoá tính chất mà 78 test cũ **không** khoá: `build_chunks` chỉ được THÊM tiền tố
+  `[tệp] - [Điều N.]`, không được fold/bỏ dấu/đổi ký tự (đếm ký tự nguồn ⊂ bản đã cắt;
+  `Điều 12`/`Khoản 3`/`chính sách` còn nguyên, `Dieu 12` không được xuất hiện;
+  `compare_entities(nguồn, chunk nối)` phải `preserved=True`).
+- **Mutation T2: 5/5 → 6/6** (`tmp/t2_mutation_6.log`). M6 = `fold(text)` trong `build_chunks`:
+  chạy với bộ 78 test cũ cho **78 passed, rc=0** (đột biến lọt sạch) → đây là khoảng trống thật,
+  không phải thêm test hình thức; thêm 3 test thì M6 bị bắt (3 failed). Cả 6 lần hoàn nguyên
+  byte-identical.
+- **Toàn repo: 1.014 passed** (30,77 s, `tmp/pytest_t2_final_1014.txt`); trọng tài vẫn
+  `9f1179ccab74` (không đụng REFEREE_FILES).
+- **Nghiệm thu T2 vẫn KHÔNG ĐẠT**, không đổi: **mục 9 ĐỎ — mất neo vàng 389/797 = 48,81%** so với
+  ngưỡng đăng ký trước 2% (nguồn `data/loop/diag/corpus_check/corpus_check.json`). Không chỉnh
+  ngưỡng, không re-anchor (PA-17 chờ duyệt), không đổi testset.
+- **Mục 10 không như đề bài mô tả:** chữ ký **trọng tài KHÔNG đổi** và không nên đổi — T2 đổi DỮ
+  LIỆU (re-OCR + index mới), không đổi ba tệp tạo chữ ký. Cái đã đổi là chữ ký dữ liệu index:
+  `8031beea81da(361)` → `6aa8c0fd9162(342)`; 14 round cần chấm lại nếu kích hoạt index (PA-1).
+- **Mục 8 — thêm tệp nguồn gốc** `data/loop/diag/corpus_check/manual_20_segments_provenance.txt`
+  (script `tmp/t2_provenance_segments.py`, chỉ đọc): 20 dòng "chunk | tệp - Điều | độ dài | đầu
+  đoạn", đối chiếu **20/20 khớp tuyệt đối** với tệp 20 đoạn đang chờ duyệt. Lý do: chỉ **7/20**
+  đoạn còn dòng tiêu đề trong chính nội dung, nên người duyệt không biết tra bản gốc ở đâu.
+- **Cần anh để ý khi duyệt 20 đoạn** (quan sát, script không phán): `[1]` (367-QĐ-ĐU, Phần mở đầu)
+  văn bản bị chen cột chức danh vào giữa câu; `[6]` và `[13]` (2 tệp kế hoạch/PDF dạng bảng) là
+  chuỗi ký tự rời `5 7 Y 2 ; 0 8 ỉ…` / `phí công công công…`; `[20]` "quả sáng quả Sáng". Đây là
+  loại lỗi nội dung không làm đỏ test nào, chỉ người đọc bắt được.
 
 ## CẬP NHẬT 25-10 11:3x — T7 XONG trong working tree (đọc mục này trước mục 04:1x)
 
@@ -26,7 +54,7 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
   phiên T3–T5 (310 dòng của phiên đó + 2 hunk T7), `src/cache_policy.py` phụ thuộc
   `src/answer_guard.py` chưa tracked. **PA-26** (mở rộng PA-8) liệt kê đúng 35 file chưa tracked +
   6 file sửa dở (đo 41 file tại `456f35c`; `79a02e5` đã tracked 6 file `run_chain`) và ba phương án commit freeze; đề xuất (ii) commit mã + tổng hợp round, bỏ `models/`,
-  `chroma_*`, `full.jsonl`. Cho tới khi duyệt, "fresh clone" **không** tái lập được 1.011 test dù cây
+  `chroma_*`, `full.jsonl`. Cho tới khi duyệt, "fresh clone" **không** tái lập được 1.014 test dù cây
   hiện tại xanh.
 - **Đề bài kiểm thử T0–T7 đã đủ báo cáo:** thêm `docs/reports/test_T4.md` (21 test, mutation **7/7**),
   `test_T6.md` (15 test, mutation **10/10** — có thêm 1 test biên mới cho ngưỡng tương đối) và

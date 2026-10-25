@@ -1,30 +1,60 @@
 # Kiểm thử T2 — kiểm định corpus rebuild (`chroma_db_vie/`)
 
-Ngày: 24-10 (ca tối). Người chạy: agent kiểm thử (chế độ tự trị).
+Ngày: 24-10 (ca tối), **siết lại 25-10**. Người chạy: agent kiểm thử (chế độ tự trị).
 Phạm vi: **chỉ thêm test + script chẩn đoán + mutation check**; KHÔNG sửa `src/` sản xuất,
 KHÔNG sửa trọng tài (`tools/loop/verify.py`, `src/answer_guard.py`, `src/text_utils.py`,
 `tools/loop/gate.py`), KHÔNG build/ghi index, KHÔNG chấm lại round.
 
+> **Bổ sung 25-10 (đọc kèm):** +3 test `TestVerbatimPreservation` (đường `build_chunks` không được
+> fold/bỏ dấu/thêm-bớt ký tự) ⇒ **81 test**, mutation thêm **M6** ⇒ **6/6 bắt**, toàn repo
+> **1.014 passed** (`tmp/pytest_t2_final_1014.txt`, `tmp/t2_mutation_6.log`). Kết luận nghiệm thu
+> **KHÔNG đổi**: mục 9 vẫn ĐỎ 48,81%, mục 8 vẫn chờ người duyệt. Lý do phải thêm: 78 test cũ chỉ so
+> lần chạy này với lần chạy kia nên đột biến `fold(text)` trong `build_chunks` vẫn "xác định" và lọt
+> sạch. Mục 8 được bổ sung tệp **nguồn gốc** `manual_20_segments_provenance.txt` (xem §0.2).
+
 ## 0. Kết luận trước (đọc mục này là đủ)
 
-- **Test xanh: 78/78** (`tests/test_corpus_rebuild.py`); toàn repo **889 passed**
-  (`tmp/pytest_t2_final.txt`).
+- **Test xanh: 81/81** (`tests/test_corpus_rebuild.py`; 78 bản 24-10 + 3 bản 25-10); toàn repo
+  **1.014 passed** (`tmp/pytest_t2_final_1014.txt`; bản 24-10 là 889 ở `tmp/pytest_t2_final.txt`).
 - **Tiêu chí nghiệm thu của đề bài KHÔNG ĐẠT**, vì **mục 9 ĐỎ**: mất neo vàng **48,81%**
   (389/797 item) so với ngưỡng đăng ký trước **2%**. Đây là số thật, không phải lỗi test — chi
   tiết và cách đọc ở §3.1.
 - **Mục 8 chờ người dùng duyệt:** 20 đoạn ngẫu nhiên (seed `20261024`) đã xuất ra
-  `data/loop/diag/corpus_check/manual_20_segments_new_index.txt`.
+  `data/loop/diag/corpus_check/manual_20_segments_new_index.txt`; bảng nguồn gốc (tệp + Điều +
+  độ dài) ở `manual_20_segments_provenance.txt` (§0.2).
 - **Phát hiện mới cần duyệt:** cổng an toàn `plan_index_write` (mục 5) **chưa được nối** vào
   đường build thật `ingest.py` — `ingest.py` vẫn `shutil.rmtree` thư mục đích (PA-16); và việc
   sửa neo `gold_sentence` của 292 item bị regression là thay đổi dữ liệu cần duyệt (PA-17).
 - Chữ ký trọng tài **KHÔNG đổi**: `9f1179ccab74`. Chữ ký DỮ LIỆU index đổi
   `8031beea81da(361)` → `6aa8c0fd9162(342)` — đúng như dự kiến khi rebuild.
+  Đề bài mục 10 kỳ vọng "chữ ký trọng tài ĐÃ ĐỔI": **không xảy ra và không nên xảy ra** — T2 đổi
+  DỮ LIỆU (re-OCR + index mới), không đổi ba tệp tạo nên chữ ký trọng tài. Cái đã đổi là chữ ký
+  dữ liệu index (dòng trên). Nếu chữ ký trọng tài đổi thì đó mới là lỗi.
+
+### 0.2. Mục 8 — bổ sung nguồn gốc (25-10) + điều người duyệt nên soi trước
+
+`manual_20_segments_new_index.txt` ghi nhãn `chunkNNN` (vị trí trong index), nhưng chỉ **7/20**
+đoạn còn dòng tiêu đề `[tệp] - [Điều N.]` trong chính nội dung (14 đoạn là đoạn thứ 2+ của chunk).
+Muốn đối chiếu bản gốc thì phải biết đoạn thuộc tệp nào, nên đã sinh thêm (chỉ ĐỌC, không sửa
+dụng cụ đo, không ghi đè tệp 20 đoạn):
+
+- `data/loop/diag/corpus_check/manual_20_segments_provenance.txt` — 20 dòng: `chunkNNN | tệp - Điều
+  (hoặc "fallback") | số ký tự | đầu đoạn`.
+- Script sinh: `tmp/t2_provenance_segments.py`; nó tái lập mẫu bằng đúng `pick_segments` + seed
+  `20261024` và **dừng nếu một đoạn không khớp tuyệt đối** với tệp đang chờ duyệt ⇒ 20/20 khớp.
+- 20 đoạn đến từ **13/26 tệp**; một chunk (`chunk326`) góp 2 đoạn khác nhau (2 đoạn văn riêng —
+  `pick_segments` lấy mẫu không hoàn lại trên đoạn văn, không phải lỗi trùng).
+- Quan sát **không phải phán quyết** (script không tự phán): các đoạn `[1]`, `[6]`, `[13]`, `[20]`
+  có dấu hiệu văn bản bị đảo cột / lặp token khi đọc (`[1]` chen cột chức danh vào giữa câu;
+  `[6]` là dãy `5 7 Y 2 ; 0 8 ỉ…`; `[13]` "phí công công công…"; `[20]` "quả sáng quả Sáng").
+  Đây đúng là loại lỗi mà mục 8 cần người đọc xác nhận, và **không** làm đỏ bất kỳ test nào vì
+  chúng là nội dung (không phải cấu trúc) — xem §3.3 mục 4.
 
 ## 1. Đã làm gì
 
 1. **Unit test 6 ca đầu** — [`tests/test_corpus_rebuild.py`](../../tests/test_corpus_rebuild.py)
-   (394 dòng, 78 test). Mọi test dùng dữ liệu ngắn tự dựng; **không** đọc `chroma_db*` thật,
-   **không** gọi model, **không** ghi tệp corpus:
+   (78 test bản 24-10; **81 test** sau bổ sung 25-10). Mọi test dùng dữ liệu ngắn tự dựng;
+   **không** đọc `chroma_db*` thật, **không** gọi model, **không** ghi tệp corpus:
 
    | Nhóm (đề bài) | Class | Số test |
    |---|---|---:|
@@ -36,7 +66,16 @@ KHÔNG sửa trọng tài (`tools/loop/verify.py`, `src/answer_guard.py`, `src/t
    | #5 an toàn dữ liệu | `TestDataSafety` | 8 |
    | #6 tính xác định | `TestDeterminism` | 6 |
    | #9 gold coverage + hygiene (hàm thuần) | `TestGoldCoverageAndHygiene` | 7 |
-   | **Tổng** | | **78** |
+   | **#1/#2 nguyên văn qua `build_chunks`** (thêm 25-10) | `TestVerbatimPreservation` | 3 |
+   | **Tổng** | | **81** |
+
+   `TestVerbatimPreservation` khoá tính chất mà 78 test cũ **không** khoá được: cắt chunk chỉ được
+   THÊM tiền tố `[tệp] - [Điều N.]`, **không** được fold/bỏ dấu/đổi ký tự. Ba test: (a) đếm ký tự
+   không-whitespace của nguồn phải là **tập con** của bản đã cắt (không mất một ký tự nào);
+   (b) các chuỗi có dấu (`Điều 12`, `Khoản 3`, `chính sách`, …) còn nguyên và dạng bỏ dấu
+   (`Dieu 12`) **không** được xuất hiện; (c) `compare_entities(nguồn, các chunk nối lại)` phải
+   `preserved=True`, `missing={}`. Vì sao cần: mọi test cũ đều so lần chạy này với lần chạy kia —
+   một `fold(text)` trong `build_chunks` vẫn "xác định" nên lọt sạch (đã kiểm bằng M6, §2.3).
 
 2. **Kiểm dữ liệu thật (mục 7–10)** —
    [`tools/diag/check_corpus.py`](../../tools/diag/check_corpus.py) (629 dòng, chỉ ĐỌC). Lần chạy
@@ -88,9 +127,9 @@ Ba tệp bị cổng gắn "khoảng trống" nhưng vẫn có chunk trong index
 - Đây là **chẩn đoán**, không có ngưỡng đăng ký trước: 19 ký tự không làm test đỏ và cũng không
   được dùng để tuyên bố corpus "sạch".
 
-### 2.3. Mutation check — 5/5 bắt được, hoàn nguyên byte-identical
+### 2.3. Mutation check — 6/6 bắt được, hoàn nguyên byte-identical
 
-Nguồn: `tmp/t2_mutation.log`.
+Nguồn: `tmp/t2_mutation.log` (M1–M5, 24-10) và `tmp/t2_mutation_6.log` (chạy lại đủ M1–M6, 25-10).
 
 | Đột biến | Kỳ vọng phá | Test đỏ (số lượng) | Khôi phục |
 |---|---|---|---:|
@@ -99,6 +138,11 @@ Nguồn: `tmp/t2_mutation.log`.
 | M3 `file_status` luôn `"tốt"` | cổng chất lượng vô hiệu | 4 (dưới ngưỡng, vocab, không đo được, partition) | byte-identical |
 | M4 bỏ guard "đích đã tồn tại" | build đè lên thư mục có dữ liệu | 1 (`test_plan_index_write_tu_choi...`) | byte-identical |
 | M5 ký tự lạ luôn hợp lệ | 7c câm | 13 | byte-identical |
+| **M6** `build_chunks` fold văn bản | index mất dấu thanh mà vẫn "xác định" | **3** (chỉ `TestVerbatimPreservation` bắt được — chứng minh khoảng trống của 78 test cũ) | byte-identical |
+
+M6 là lý do tồn tại của 3 test mới: chạy M6 với bộ 78 test cũ
+(`-k "not VerbatimPreservation"`) cho **78 passed, 3 deselected, rc=0** — tức đột biến bỏ dấu
+toàn bộ văn bản lọt sạch; thêm 3 test thì M6 bị bắt (3 failed).
 
 ## 3. Kết luận chỉ từ số + điều KHÔNG kết luận được
 
@@ -136,7 +180,8 @@ chấp nhận so sánh không theo cặp item.
    vocab proxy, hygiene, neo; chưa chạy round nào trên index mới (PA-1).
 2. **KHÔNG kết luận T2 "an toàn để kích hoạt".** Mục 9 ĐỎ + 3 tệp khoảng trống vẫn trong index.
 3. **KHÔNG kết luận 20 đoạn ở mục 8 đúng/sai** — script không tự phán; cần người đối chiếu bản
-   gốc (`manual_20_segments_new_index.txt`).
+   gốc (`manual_20_segments_new_index.txt`, tra tệp/Điều ở `manual_20_segments_provenance.txt`).
+   Một đoạn hiển thị méo (đảo cột/lặp token) là **quan sát**, không phải kết luận về cả tệp.
 4. **KHÔNG kết luận "đã tìm hết ký tự lạ".** 7c là whitelist: nó bắt ký tự ngoài ASCII + chữ
    Việt + dấu câu hợp lệ; nó **không** bắt được chữ Việt hợp lệ nhưng sai dấu (ví dụ "hòa" vs
    "hỏa"). Loại lỗi đó chỉ lộ qua tỉ lệ dấu / neo / người đọc.
@@ -152,9 +197,9 @@ chấp nhận so sánh không theo cặp item.
 
 | Tiêu chí | Trạng thái | Bằng chứng |
 |---|---|---|
-| Các test xanh | **ĐẠT** | 78/78 (`tmp/pytest_t2_final.txt`: 889 passed toàn repo) |
+| Các test xanh | **ĐẠT** | 81/81 (`tmp/pytest_t2_final_1014.txt`: 1.014 passed toàn repo) |
 | Mục 9 không đỏ | **KHÔNG ĐẠT** | 48,81% > 2% (`corpus_check.json:gold_coverage.red=true`) |
-| Người dùng duyệt mục 8 (20 đoạn) | **CHỜ DUYỆT** | `manual_20_segments_new_index.txt` |
+| Người dùng duyệt mục 8 (20 đoạn) | **CHỜ DUYỆT** | `manual_20_segments_new_index.txt` + `manual_20_segments_provenance.txt` |
 
 ⇒ **Toàn bộ tiêu chí nghiệm thu T2: CHƯA ĐẠT** (2/3 mục đã có kết quả, 1 mục chờ người).
 
@@ -176,24 +221,37 @@ chấp nhận so sánh không theo cặp item.
 - Không test mạng/model; không có test `@pytest.mark.slow` trong nhiệm vụ này.
 - `_load_index_texts` (đọc ChromaDB thật) chỉ được chạy qua script thật, không có unit test
   (cố ý: unit test không phụ thuộc dữ liệu 342 chunk trên đĩa).
-- Chất lượng nội dung 20 đoạn mục 8: cần người đọc — ngoài khả năng của script.
+- Chất lượng nội dung 20 đoạn mục 8: cần người đọc — ngoài khả năng của script. Tệp provenance
+  25-10 chỉ nói **đoạn thuộc tệp nào**, không nói đúng/sai.
+- **Không chứng minh được** rằng 3 test mới phủ hết mọi đường làm hỏng văn bản: chúng khoá
+  `build_chunks` (bước duy nhất của checker chạm văn bản trước khi ghi index). Nếu sau này thêm
+  bước tiền xử lý khác trong `ingest.py`, phải có test riêng cho bước đó — unit test ở đây
+  **không** đi qua `ingest.py`.
+- Không chạy lại `tools/diag/check_corpus.py` trong lần siết 25-10: số liệu mục 7–10 giữ nguyên
+  bản đo 24-10 (đúng nguyên tắc "không chỉnh dụng cụ đo sau khi đo"); chỉ thêm tệp phụ provenance
+  đọc lại index mới.
 
 ## 7. Lệnh tái lập
 
 ```bash
-# unit test T2 (78 test, ~0,5 s)
+# unit test T2 (81 test, ~0,5 s)
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests/test_corpus_rebuild.py -q
 
 # kiểm dữ liệu thật (chỉ đọc; cập nhật JSON + 20 đoạn)
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/check_corpus.py
 
-# mutation check (5 đột biến, tự khôi phục)
+# bảng nguồn gốc của 20 đoạn đang chờ duyệt (chỉ đọc; đối chiếu 20/20 rồi mới ghi)
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tmp/t2_provenance_segments.py
+
+# mutation check (6 đột biến, tự khôi phục byte-identical)
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tmp/mutation_check_t2.py
 
 # toàn repo
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests -q
 ```
 
-Log bằng chứng: `tmp/t2_check_corpus_7c.log`, `tmp/t2_mutation.log`, `tmp/pytest_t2_final.txt`;
+Log bằng chứng: `tmp/t2_check_corpus_7c.log`, `tmp/t2_mutation.log`, `tmp/t2_mutation_6.log`,
+`tmp/pytest_t2_final.txt` (889, 24-10), `tmp/pytest_t2_final_1014.txt` (1.014, 25-10);
 JSON: `data/loop/diag/corpus_check/corpus_check.json`; đoạn đối chiếu:
-`data/loop/diag/corpus_check/manual_20_segments_new_index.txt`.
+`data/loop/diag/corpus_check/manual_20_segments_new_index.txt` +
+`data/loop/diag/corpus_check/manual_20_segments_provenance.txt`.

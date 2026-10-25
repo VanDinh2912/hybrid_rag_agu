@@ -732,3 +732,42 @@ này trong working tree. Đây là lỗ tái lập đã biết từ trước, kh
 
 **Hoàn tác:** `git checkout -- src/generator.py` rồi xóa `src/cache_policy.py` + `tests/test_cache_policy.py`
 (sẽ mất phần T7; PA-26 vẫn còn mô tả). Không đụng dữ liệu/round/cache trên đĩa.
+
+## Phiên 25-10 11:55 → 12:00 — T2: siết test nguyên văn, KHÔNG đụng ngưỡng/dữ liệu
+
+**Ngã rẽ 1 — có nhận T2 là "xong theo đề bài" không?** Đề bài đòi "test xanh + mục 9 không đỏ + user
+duyệt mục 8". Mục 9 đang **ĐỎ 48,81%** (389/797, ngưỡng đăng ký trước 2%). Ba lựa chọn:
+(i) re-anchor `gold_sentence` 292 item để mục 9 xanh — **là thay đổi dữ liệu, PA-17 chưa duyệt**;
+(ii) hạ/nới ngưỡng 2% — **cấm** (nguyên tắc "không chỉnh tiêu chí đăng ký trước");
+(iii) giữ nguyên số thật, chỉ siết test ở chỗ có khoảng trống thật và báo ĐỎ.
+**Chọn (iii).** Không đụng testset, không re-anchor, không đổi ngưỡng, không kích hoạt index.
+
+**Ngã rẽ 2 — có thêm test không, hay 78 test đã đủ?** Kiểm bằng đột biến thay vì đọc: M6 =
+`fold(c["text"])` trong `build_chunks`. Chạy M6 với 78 test cũ ⇒ **78 passed, rc=0** (lọt sạch): mọi
+test cũ chỉ so lần chạy này với lần chạy kia nên một phép bỏ dấu toàn bộ văn bản vẫn "xác định".
+**Chọn thêm 3 test** `TestVerbatimPreservation` (đếm ký tự nguồn ⊂ bản cắt; chuỗi có dấu còn nguyên
+và dạng bỏ dấu không xuất hiện; `compare_entities(nguồn, chunk)` `preserved=True`). 81 test, M6 bị bắt
+3 test đỏ. Không sửa kỳ vọng test cũ nào.
+
+**Ngã rẽ 3 — có chạy lại `tools/diag/check_corpus.py` không?** Nó chỉ đọc index nhưng **ghi đè**
+`corpus_check.json` + tệp 20 đoạn, và mở ChromaDB làm đổi byte-digest. Theo luật "không chỉnh dụng cụ
+đo sau khi đo" ⇒ **không chạy lại**; số liệu mục 7–10 giữ nguyên bản 24-10; mọi số dẫn trong báo cáo
+đều đọc từ JSON trên đĩa (đã đối chiếu lại từng trường).
+
+**Ngã rẽ 4 — mục 8 thiếu nguồn gốc (chỉ 7/20 đoạn có dòng `[tệp] - [Điều N.]`).** Lựa chọn:
+(i) sửa `pick_segments` để in kèm tệp — đổi dụng cụ đo, buộc chạy lại; (ii) không làm gì, người duyệt
+tự tra; (iii) **script phụ chỉ-đọc** tái lập đúng mẫu và ghi tệp provenance riêng.
+**Chọn (iii)**: `tmp/t2_provenance_segments.py` → `manual_20_segments_provenance.txt`, có chốt an toàn
+"20/20 đoạn phải khớp tuyệt đối tệp đang chờ duyệt, lệch một ký tự là dừng". Không ghi đè tệp 20 đoạn.
+
+**Bằng chứng:** 81/81 T2 (`tmp/pytest_t2_final_1014.txt` chỉ dòng tổng); toàn repo **1.014 passed**
+(30,77 s); mutation T2 **6/6** (`tmp/t2_mutation_6.log`) tất cả hoàn nguyên byte-identical; trọng tài
+`9f1179ccab74` không đổi; chữ ký dữ liệu index `8031beea81da(361)` → `6aa8c0fd9162(342)`.
+
+**Đính chính kỳ vọng của đề bài mục 10:** "chữ ký trọng tài ĐÃ ĐỔI" là **sai thiết kế** — T2 đổi dữ
+liệu chứ không đổi `verify.py`/`answer_guard.py`/`text_utils.py`; chữ ký trọng tài đổi mới là lỗi.
+Đã ghi rõ trong `test_T2.md §0`.
+
+**Hoàn tác:** `git checkout -- tests/test_corpus_rebuild.py docs/` rồi xoá
+`tmp/t2_provenance_segments.py`, `data/loop/diag/corpus_check/manual_20_segments_provenance.txt`,
+`tmp/t2_mutation_6.log`, `tmp/pytest_t2_final_1014.txt`. Không đụng index/corpus/round/testset.

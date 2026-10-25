@@ -14,16 +14,16 @@ trọng tài (`tools/loop/verify.py`, `src/answer_guard.py`, `src/text_utils.py`
 |---|---|---|---:|---:|---|
 | T0 | noise floor + bộ đếm `[AnswerRescue]` | `tests/test_noise_floor.py` | 22 | 5/5 | [`test_T0.md`](test_T0.md) |
 | T1 | `tools/diag/ablation_generation.py` | `tests/test_ablation_generation.py` | 29 | 4/4 | [`test_T1.md`](test_T1.md) |
-| T2 | corpus rebuild / chất lượng corpus | `tests/test_corpus_rebuild.py` | 78 | 5/5 | [`test_T2.md`](test_T2.md) |
+| T2 | corpus rebuild / chất lượng corpus | `tests/test_corpus_rebuild.py` | 81 | 6/6 | [`test_T2.md`](test_T2.md) |
 | T3 | guardrail từ chối + golden cờ TẮT | `tests/test_t3_guardrails.py` + golden | 75 | 7/7 | [`test_T3.md`](test_T3.md) |
 | T4 | cờ model 3B + pipeline SFT | `test_loop_generator_model_flag.py`, `test_build_sft_from_round.py` | 21 | 7/7 | [`test_T4.md`](test_T4.md) |
 | T5 | reranker + contextual header | `test_t5_reranker_contract.py`, `test_t5_contextual_header.py` | 68 | 10/10 | [`test_T5.md`](test_T5.md) |
 | T6 | cổng refusal tương đối + khung câu hỏi thật | `test_gate_refusal_relative_proposal.py`, `test_score_real_questions.py` | 15 | 10/10 | [`test_T6.md`](test_T6.md) |
 | T7 | `run_chain` + khóa chính sách cache | `test_run_chain.py`, `test_cache_policy.py` | 37 | 17/17 | [`test_T7.md`](test_T7.md) |
 
-Tổng mutation theo báo cáo: **65/65 bị bắt**, mỗi lần đều hoàn nguyên **byte-identical** (SHA-256).
+Tổng mutation theo báo cáo: **66/66 bị bắt**, mỗi lần đều hoàn nguyên **byte-identical** (SHA-256).
 Không cộng dồn số test thành một phép cộng tuyến tính: các mốc baseline của 8 đợt chồng lấn nhau
-(563 → 691 → 712 → 736 → 889 → 957 → 967 → 1.004 → 1.005 → 1.006 → 1.011). Con số chuẩn duy nhất là **toàn bộ `tests/`** ở §2.
+(563 → 691 → 712 → 736 → 889 → 957 → 967 → 1.004 → 1.005 → 1.006 → 1.011 → 1.014). Con số chuẩn duy nhất là **toàn bộ `tests/`** ở §2.
 
 ## 2. Kiểm chứng cuối
 
@@ -31,7 +31,7 @@ Không cộng dồn số test thành một phép cộng tuyến tính: các mố
 
 | Đại lượng | Giá trị | Nguồn |
 |---|---|---|
-| `pytest tests -q` | **1.011 passed**, 3 warnings (29,79 s) | `tmp/pytest_t1_final.txt` |
+| `pytest tests -q` | **1.014 passed**, 3 warnings (30,77 s) | `tmp/pytest_t2_final_1014.txt` |
 | Chữ ký trọng tài | **`9f1179ccab74`** | `tmp/pytest_t4t6_final.txt` dòng cuối; test T0/T1 không đụng trọng tài |
 | Golden T3 (cờ TẮT) SHA-256 | `e59b9ebb6b12c2d6844356f5861cc98d418c11b26f83a49fdae1f8f2ea1728b5` | `sha256sum tests/golden/t3_off_30items_head_f492f05.json` |
 | Mutation T7 (run_chain + cache) | 6/6 + 10/10 | `tmp/mutation_check_t7.log`, `tmp/mutation_check_cache_policy.log` |
@@ -39,6 +39,7 @@ Không cộng dồn số test thành một phép cộng tuyến tính: các mố
 | Mutation T6 | 10/10 | `tmp/mutation_check_t6.log` |
 | Mutation T0 (sau khi thêm test 22) | 5/5 | `tmp/mutation_check_t0.log` |
 | Mutation T1 (sau khi thêm guard tập item) | 4/4 | `tmp/mutation_check_t1.log` |
+| Mutation T2 (sau khi thêm `TestVerbatimPreservation`) | 6/6 | `tmp/t2_mutation_6.log` |
 
 Không có test nào đỏ. Không sửa test cũ để xanh; hai lần mutation sống sót (T4a-M2 bản đầu, T6a-M1)
 đã được xử lý bằng **đột biến mạnh hơn** và **một test biên mới**, không bằng hạ kỳ vọng.
@@ -64,11 +65,11 @@ Sau commit báo cáo này, working tree còn:
 | Artifact không commit | `models/` 321 MB, `data/loop/rounds/` 78 MB, `chroma_db_vie/`, `chroma_db_headers_old/`, `.ocr_cache_vie/`, caches, `tmp/` |
 
 Kỳ vọng sau commit: `git status --short` chỉ còn đúng các mục trên, **không** có file mới ngoài dự kiến.
-PA-26 là điều kiện để fresh clone chạy lại **1.011 test**; hiện tại HEAD **chưa** tái lập được.
+PA-26 là điều kiện để fresh clone chạy lại **1.014 test**; hiện tại HEAD **chưa** tái lập được.
 
 ## 3. Kết luận chỉ từ số
 
-- Bộ test hiện tại **1.011 xanh**, trọng tài bất biến; 65/65 đột biến bị bắt ⇒ test có hiệu lực trên
+- Bộ test hiện tại **1.014 xanh**, trọng tài bất biến; 66/66 đột biến bị bắt ⇒ test có hiệu lực trên
   các tính chất đã đăng ký (không chứng minh test phủ hết mọi lỗi có thể).
 - Các lever mới đều nằm sau cờ mặc định TẮT và có golden/byte-identical chứng minh "tắt = cũ":
   T3 (guardrail), T4a (model), T5 (reranker/header), T7 (policy cache).
@@ -81,7 +82,7 @@ PA-26 là điều kiện để fresh clone chạy lại **1.011 test**; hiện t
 
 | Task | Khoảng trống | Mức độ |
 |---|---|---|
-| T2 | Trên corpus thật, tỉ lệ chunk còn dấu thanh thấp (18,6%); pipeline convert PDF là nút thắt. Test chỉ chứng minh công cụ đo, không sửa được corpus | đã ghi, chờ PA-1 |
+| T2 | **Mục 9 ĐỎ: mất neo vàng 48,81% (389/797) > 2%** trên index mới; 3 tệp "khoảng trống" vẫn vào index (PA-7); 20 đoạn mục 8 chờ người duyệt. Unit test (81) khoá công cụ đo, không sửa được corpus | ĐỎ, chờ PA-17/PA-7/PA-1 |
 | T4 | Không train ⇒ không chứng minh 4b tốt hơn bằng `PASS_CORRECT`; test token thật skip nếu thiếu tokenizer | chờ PA-11/PA-12 |
 | T5 | Mục 5 đề bài ("lùi RRF") khác thiết kế đã đăng ký (ném lỗi); chưa build index header thật; chưa kiểm gold@6 811 item cho cấu hình TẮT trong đợt test | PA-18/PA-1 |
 | T6 | 6b `n_filled=0` ⇒ chưa có kappa/P-R; 6c 0 câu thật; `referee_agreement.py` + `metric_ci.py` chưa có unit test | chờ nhãn tay/câu thật |
@@ -89,7 +90,7 @@ PA-26 là điều kiện để fresh clone chạy lại **1.011 test**; hiện t
 
 ## 5. Phán quyết tổng
 
-- **Test xanh và có hiệu lực**: đạt (1.011 passed; 65/65 mutation; referee `9f1179ccab74`).
+- **Test xanh và có hiệu lực**: đạt (1.014 passed; 66/66 mutation; referee `9f1179ccab74`).
 - **Không sửa dụng cụ đo để qua cổng**: đạt (gate/verify/text_utils không đổi; các thay đổi gate chỉ
   là bản đề xuất tách rời).
 - **Tái lập từ repo**: **chưa đạt** — PA-26 (35 file untracked + 6 file dirty). Đây là việc cần duyệt
@@ -116,15 +117,15 @@ done
 
 | Số công bố | Cách tính lại | Kết quả | Khớp |
 |---|---|---|---|
-| 1.011 test xanh | `pytest tests -q` (25-10 11:55) | 1.011 passed, 29,79 s | có |
+| 1.014 test xanh | `pytest tests -q` (25-10, sau T2 +3 test) | 1.014 passed, 30,77 s | có |
 | Chữ ký `9f1179ccab74` | `verify.referee_fingerprint()` | trùng | có |
-| 65/65 mutation bị bắt | tổng 8 harness: 5+4+5+7+7+10+10+17 | 65 | có |
+| 66/66 mutation bị bắt | tổng 8 harness: 5+4+6+7+7+10+10+17 | 66 | có |
 | T7: 6/6 + 10/10 | `tmp/mutation_check_t7.log`, `tmp/mutation_check_cache_policy.log` | trùng | có |
 | T6: 10/10 | `tmp/mutation_check_t6.log` | trùng | có |
 | T4: 7/7 | `tmp/mutation_check_t4.log` | trùng | có |
 | T5: 10/10 | `tmp/mutation_check_t5.log` | trùng | có |
 | T3: 7/7 | `tmp/mutation_check_t3.py` + `docs/reports/test_T3.md` §3 | trùng | có |
-| T2: 5/5 | `tmp/t2_mutation.log` | trùng | có |
+| T2: 6/6 | `tmp/t2_mutation_6.log` (chạy lại đủ M1–M6) | trùng | có |
 | T1: 4/4 | `tmp/mutation_check_t1.py` + `docs/reports/test_T1.md` §2 | trùng | có |
 | T0: 5/5 | `tmp/mutation_check_t0.py` + `docs/reports/test_T0.md` §4 | trùng | có |
 | Golden T3 SHA-256 `e59b9ebb…` | `sha256sum tests/golden/…` | trùng | có |

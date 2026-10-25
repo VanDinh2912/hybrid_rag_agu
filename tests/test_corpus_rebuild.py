@@ -17,7 +17,9 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -392,3 +394,56 @@ class TestForeignGlyphs:
     def test_vi_du_ngan_duoc_chuan_hoa_khoang_trang(self):
         rep = cc.foreign_glyph_report(["a\n\n  😀\t\tb"], context_chars=6)
         assert rep["foreign"][0]["example"] == "a 😀 b"
+
+
+# ================================================================ #1/#2 bảo toàn nguyên văn qua cắt chunk
+DOC_VERBATIM = {
+    "title": "Quyết định 1054/QĐ-ĐHAG",
+    "tier": "Tầng 1",
+    "content": (
+        "Căn cứ Quyết định số 1054/QĐ-ĐHAG ngày 28/9/2020 của Hiệu trưởng "
+        "Trường Đại học An Giang.\n\n"
+        "Điều 12. Mức học phí là 1.500.000 đồng cho 12 tín chỉ, tăng 70 % so với "
+        "năm trước; áp dụng từ ngày 28 tháng 9 năm 2020 cho sinh viên đại học "
+        "chính quy.\n\n"
+        "Khoản 3. Sinh viên thuộc diện chính sách được giảm 50 % học phí theo "
+        "quy định hiện hành của Nhà trường."
+    ),
+}
+
+
+class TestVerbatimPreservation:
+    """Đề bài #1 ("đầu ra đúng 100% từng ký tự") + #2 (thực thể còn nguyên) áp lên
+    ĐƯỜNG THẬT của checker: `build_chunks` là bước duy nhất chạm vào văn bản trước khi
+    ghi index. Không có bộ remap bảng mã, nên tính chất cần khoá là: cắt chunk KHÔNG
+    được fold / bỏ dấu / sửa ký tự — chỉ được THÊM tiền tố `[tên văn bản] - [Điều N.]`.
+
+    Vì sao phải có: các test khác chỉ so lần chạy này với lần chạy kia (xác định) nên
+    một đột biến `fold(text)` trong `build_chunks` vẫn "xác định" và lọt toàn bộ 78 test.
+    """
+
+    def _texts(self, doc=None):
+        return [c["text"] for c in cc.build_chunks([doc or DOC_VERBATIM])]
+
+    def test_khong_bo_ky_tu_nao_cua_nguon_khi_cat_chunk(self):
+        # Đếm ký tự (bỏ whitespace: chunker được phép đổi cách xuống dòng/gộp đoạn).
+        need = Counter(re.sub(r"\s", "", DOC_VERBATIM["content"]))
+        got = Counter(re.sub(r"\s", "", "\n".join(self._texts())))
+        missing = need - got  # theo từng ký tự, kể cả dấu thanh
+        assert not missing, f"ký tự nguồn bị mất: {dict(list(missing.items())[:10])}"
+
+    def test_ky_tu_co_dau_con_nguyen_khong_bi_fold(self):
+        joined = "\n".join(self._texts())
+        for probe in ["Điều 12", "Khoản 3", "Trường Đại học An Giang",
+                      "chính sách", "giảm 50 %"]:
+            assert probe in joined, f"mất nguyên văn (có dấu): {probe!r}"
+        # dạng đã bỏ dấu KHÔNG được xuất hiện thay cho bản gốc
+        assert "Dieu 12" not in joined and "Truong Dai hoc" not in joined
+
+    def test_thuc_the_phap_ly_nguyen_van_sau_khi_cat_chunk(self):
+        joined = "\n".join(self._texts())
+        for probe in ["1054/QĐ-ĐHAG", "Điều 12", "1.500.000 đồng",
+                      "70 %", "12 tín chỉ", "28/9/2020"]:
+            assert probe in joined
+        r = cc.compare_entities(DOC_VERBATIM["content"], joined)
+        assert r["preserved"] is True and r["missing"] == {}

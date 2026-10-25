@@ -361,8 +361,8 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   `rounds/...` được sửa thành `data/loop/rounds/...`).
 - **README:** thêm mục **5.10** (cách chạy một round / cả chuỗi / dry-run / manifest / ngữ nghĩa cổng /
   cache policy) và **8.1 "Giới hạn thật lòng"** (10 mục, mỗi mục có nguồn); cập nhật số test
-  **1.011** (1.004 tại thời điểm T7, +1 test biên T6a, +1 test T0, +5 test T1). **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
-- **pytest toàn repo: 1.011 passed** (967 + 11 run_chain + 26 cache_policy + 1 T6a + 1 T0 + 5 T1). Chữ ký trọng tài
+  **1.014** (1.004 tại thời điểm T7, +1 test biên T6a, +1 test T0, +5 test T1, +3 test T2 ngày 25-10). **ROADMAP:** thêm P5.21 (r12), P5.22 (r13), P5.23 (T7) + ba mục chi tiết.
+- **pytest toàn repo: 1.014 passed** (967 + 11 run_chain + 26 cache_policy + 1 T6a + 1 T0 + 5 T1 + 3 T2). Chữ ký trọng tài
   `9f1179ccab74` (không đụng `verify.py`).
 - **CHƯA COMMIT được phần mã T7:** `src/generator.py` là file tracked dirty của phiên T3–T5 (310 dòng
   của phiên đó + 2 hunk T7); `src/cache_policy.py` phụ thuộc `src/answer_guard.py` chưa tracked.
@@ -372,6 +372,26 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Gemini đêm nay: **0/14 lượt**. PA-24 (tmp/) vẫn chờ duyệt — **chưa xoá gì**.
 - **KẾ TIẾP (đều cần user):** PA-26 (commit freeze) ⇒ PA-25 (bỏ fold + r14 ≈66 phút) ⇒ PA-1 (kích hoạt
   `chroma_db_vie`) ⇒ PA-13/PA-23 ⇒ T1(b) 5 id còn lại (cửa sổ PerDay ~14:30 25-10).
+
+## ĐANG LÀM (25-10 12:00) — T2 siết lại: nghiệm thu vẫn KHÔNG ĐẠT
+
+- **Test T2 78 → 81** (`tests/test_corpus_rebuild.py`, thêm `TestVerbatimPreservation` 3 test):
+  khoá "cắt chunk không được fold/bỏ dấu/đổi ký tự", đếm ký tự nguồn ⊂ bản cắt,
+  `compare_entities(nguồn, chunk nối)` phải `preserved=True`.
+- **Mutation T2 5/5 → 6/6** (`tmp/t2_mutation_6.log`): M6 = `fold(text)` trong `build_chunks` **lọt**
+  78 test cũ (78 passed, rc=0) ⇒ khoảng trống thật; có 3 test mới thì bị bắt. Hoàn nguyên byte-identical.
+- **Toàn repo 1.014 passed** (30,77 s, `tmp/pytest_t2_final_1014.txt`); trọng tài `9f1179ccab74`.
+- **Mục 9 vẫn ĐỎ 389/797 = 48,81%** (ngưỡng đăng ký 2%) — nguồn
+  `data/loop/diag/corpus_check/corpus_check.json`; không chỉnh ngưỡng, không re-anchor (PA-17),
+  không đổi testset ⇒ **tiêu chí nghiệm thu T2 CHƯA ĐẠT**.
+- **Mục 10**: chữ ký **trọng tài không đổi** (đúng thiết kế — T2 đổi dữ liệu, không đổi REFEREE_FILES);
+  chữ ký dữ liệu index `8031beea81da(361)` → `6aa8c0fd9162(342)`; 14 round cần chấm lại nếu kích hoạt
+  (PA-1).
+- **Mục 8**: thêm `data/loop/diag/corpus_check/manual_20_segments_provenance.txt`
+  (`tmp/t2_provenance_segments.py`, chỉ đọc, 20/20 khớp tệp chờ duyệt) — vì chỉ 7/20 đoạn có dòng
+  `[tệp] - [Điều]` trong nội dung nên người duyệt không biết tra bản gốc.
+- **Không chạy lại `tools/diag/check_corpus.py`** (sẽ ghi đè JSON + 20 đoạn); số liệu mục 7–10 giữ
+  nguyên bản đo 24-10. Quyết định + hoàn tác: `docs/AUTONOMY_LOG.md` 25-10 11:55.
 
 ## XONG (25-10 11:5x — đủ báo cáo kiểm thử T0–T7, chốt 64/64 mutation)
 
@@ -390,7 +410,7 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   bớt 1 id → `SystemExit` nêu id); bắt docs thật stub nhận ở (a) (chỉ chunk vàng, dù row có chunk
   khác); biên band 0,169/0,171 và 0,319/0,321. 29 test, mutation **4/4** bắt
   (`tmp/mutation_check_t1.log`).
-- **pytest toàn repo: 1.011 passed** (29,79 s) — nguồn `tmp/pytest_t1_final.txt`; trọng tài
+- **pytest toàn repo: 1.014 passed** (30,77 s) — nguồn `tmp/pytest_t2_final_1014.txt`; trọng tài
   `9f1179ccab74`. Số 1.004/1.005/1.006 trong các báo cáo T0/T7 giữ nguyên lịch sử + ghi chú ngày.
 - **Commit docs-only** các báo cáo + chỉnh đồng bộ số test/HEAD; `tests/test_gate_refusal_relative_proposal.py`
   (thêm 1 test) và phần mã T7 vẫn chờ PA-26 theo luật không commit `src/` dirty của phiên khác.
