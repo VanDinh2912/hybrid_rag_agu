@@ -640,6 +640,34 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
   chỉ siết khi anh chấp nhận đo lại tái lập r0 (artifact đã công bố, D-30); (c) `tools/diag/env_probe.py` in
   interpreter + package + **bảng mã console**.
 
+
+
+## COMMIT chốt phiên B (26-10 03:7x) — phạm vi đã ghi và phạm vi CỐ Ý KHÔNG ghi
+
+`18d81df` — B3+B4+B5: tài liệu phiên, ba dụng cụ mới, ba suite test mới, hai đính chính tự phát hiện.
+Mục này đi kèm **commit nối tiếp** (chỉ-docs) ghi lại chính số hash đó, theo đúng cách các phiên trước làm.
+
+**Đã staged (đúng luật "chỉ docs/tests/tools"):** `docs/AUTONOMY_LOG.md`, `docs/DECISION_LOG.md`,
+`docs/MORNING_REPORT.md`, `docs/PENDING_APPROVAL.md`, `docs/STATE.md`, `docs/reports/B3.md`, `B4.md`,
+`B5.md`; `tools/diag/answerability_probe.py`, `tools/diag/answer_token_logits_probe.py`,
+`tools/diag/rescore_retrieval_round_v2.py`; `tests/test_answerability_probe.py`,
+`tests/test_answer_token_logits_probe.py`, `tests/test_rescore_retrieval_v2.py`,
+`tests/test_reranker_flag.py`, `tests/test_t5_reranker_contract.py`.
+
+**KHÔNG staged — và vì sao:** (1) PA-26frozen sáu tệp (`src/generator.py`, `src/pipeline.py`,
+`src/query_normalizer.py`, `src/router.py`, `tests/test_pipeline.py`, `tests/test_subquery.py`) vẫn
+modified trên đĩa, **không đụng tới trong phiên B**; (2) `src/reranker.py` (PA-25) và `src/answer_guard.py`
+(PA-2) là tệp **chưa từng được commit** ở bất kỳ phiên nào — luật phiên này chỉ cho commit docs/tests/tools,
+nên hai thay đổi code đã duyệt vẫn nằm ngoài lịch sử, người duyệt cần biết khi read-out;
+(3) `tools/loop/*` giữ nguyên quy ước: harness không commit, chỉ **bản sao snapshot** trong
+`tests/snapshots/referee_v1/` (đã vào từ `a9d2326`); (4) `data/**` (kể cả `rounds_v2/`, `chroma_db_vie/`,
+`.ocr_cache_vie/`) và `tmp/` không vào — cùng quy ước mọi phiên trước.
+
+**Máy kiểm chạy lại TRƯỚC commit** (bằng `venv/Scripts/python.exe`): `pytest tests -q` **1.495 passed,
+5 skipped** — lan kiem lai 03:7x het **139,28 s** (lan cong bo luc 03:1x: 94,54 s), trung tuyen voi so da
+cong bo; `docs_consistency_check.py` SẠCH LỖI (42 dòng sổ quyết định); `final_number_audit.py`
+61/63 KHỚP — 2 LỆCH có chủ đích (D-42 + PA-41) và **rc=0** như đã đính chính; quét vệ sinh dòng kết thúc
+10 tệp doc: 0 CRCR, 0 loneCR; log lớn nhất trong `tmp/` = 0,06 MB (trần 200 MB mỗi tiến trình).
 ## XONG (26-10 03:1x — PHIÊN B1→B5; mục "VIỆC KẾ TIẾP (khi anh duyệt)" bên dưới là của phiên trước)
 
 - **B1 xong (kết luận: không kết luận).** `docs/reports/B1.md`, D-40. 57/80 item ánh xạ, 54/57 chunk vàng

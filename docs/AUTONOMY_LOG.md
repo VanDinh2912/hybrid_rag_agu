@@ -1558,3 +1558,38 @@ thấy mất 81.
 PA-41), mỗi đoạn assert khớp đúng 1 lần, ghi lại rồi đọc lại byte để kiểm round-trip, CRLF đơn, loneCR=0 và
 `crcrl=0`. Nội dung đính chính **nói cả hai chiều**: số đã công bố (2/63 LỆCH, 61 KHỚP) giữ nguyên; chỉ con số
 chưa từng đo (rc=1) bị hạ. `final_number_audit.py` **không đổi một dòng nào** — dụng cụ đo không tự sửa.
+
+
+## Ngã rẽ 35 — 26-10 03:7x: commit chốt phiên; phạm vi stage và hai phát hiện khi tự kiểm trước commit
+
+(a) **Phạm vi.** Commit `18d81df` gồm đúng 16 mặt hàng: năm quyển sổ (`AUTONOMY_LOG`, `DECISION_LOG`,
+`MORNING_REPORT`, `PENDING_APPROVAL`, `STATE`), ba báo cáo `docs/reports/B3.md`/`B4.md`/`B5.md`, ba dụng cụ
+`tools/diag/{answerability_probe,answer_token_logits_probe,rescore_retrieval_round_v2}.py`, và năm tệp test
+(`test_answerability_probe`, `test_answer_token_logits_probe`, `test_rescore_retrieval_v2`, `test_reranker_flag` —
+tất cả chưa từng được commit; `test_t5_reranker_contract` đã track, sửa theo PA-25). Kiểm trước khi commit:
+`git diff --cached --name-only` đối chiếu regex các tệp đóng băng PA-26 và `src/`, `data/rounds_v2`,
+`chroma_db_vie`, `.ocr_cache_vie` ⇒ **0 kết quả**.
+
+(b) **Ngã rẽ thật sự nằm ở `src/`.** Hai thay đổi code ĐÃ ĐƯỢC DUYỆT trong phiên — PA-2 (`src/answer_guard.py`)
+và PA-25 (`src/reranker.py`) — nằm trong các tệp **chưa từng được commit ở bất kỳ phiên nào**, mà luật phiên
+này chỉ cho phép commit docs/tests/tools. Chọn: **không mở rộng phạm vi**, thay vào đó ghi thẳng vào
+STATE.md + MORNING_REPORT.md mục "COMMIT chốt phiên B" rằng code đã duyệt đang nằm ngoài lịch sử và vì sao,
+kèm danh mục những gì cố ý không stage (6 tệp frozen vẫn modified trên đĩa, `tools/loop/*` theo quy ước snapshot
+trong `tests/snapshots/referee_v1/`, `data/**`, `tmp/`). Người đọc buổi sáng thấy chỗ thiếu ngay tại mục đầu
+tiên, không phải đoán.
+
+(c) **Trước commit phải đo lại, không lấy số cũ.** `pytest tests -q` (venv) chạy lại: **1.495 passed, 5
+skipped** trong **139,28 s** — trùng tuyển, khác thời gian (lần công bố 94,54 s); ghi cả hai con số để không
+ai đọc "nhanh/chậm" thành "khác bộ test". `docs_consistency_check` SẠCH LỖI (42 dòng sổ). `secret_scan`:
+SECRET_COTHAT=0, PII 89 dòng/8 file — đúng bằng trước phiên. Quét lại 10 tệp doc: 0 CRCR / 0 loneCR (B5.md đã
+chuẩn hoá ở ngã rẽ 33). Log lớn nhất `tmp/` = 0,06 MB, dưới trần 200 MB mỗi tiến trình.
+
+(d) **Máy kiểm phải chạy bằng venv.** Lần chạy đầu dùng `python` hệ thống: 4 tệp collect-only lỗi vì thiếu
+`pypdfium2`/`streamlit`, nên dòng "81 test corpus rebuild" nhận `-1` và bảng hiện **3** LỆCH. Với venv của repo
+quay về **2** LỆCH đúng như đã công bố. Không kết luận "mất test corpus": đã đếm `--collect-only` trong venv.
+Đây là cạm tái lập, ghi vào mục COMMIT và vào memory.
+
+(e) **Một muc tài liệu đặt sai chỗ — sửa có bằng chứng.** `tmp/append_commit_scope_note.py` nối muc COMMIT
+vào CUỐI `MORNING_REPORT.md`, trong khi qui ước của quyển này là mục mới nhất ở ĐẦU (16 heading gần nhất đều
+như vậy). `tmp/move_commit_scope_note_to_top.py` dời 26 dòng lên trước heading "## CẬP NHẬT 26-10 03:1x" kèm
+assert bảo toàn tập dòng (so `sorted(lines)` và số dòng) — nội dung không đổi một dòng nào, chỉ đổi vị trí.

@@ -12,6 +12,32 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 **2 passed, 82,32 s**) + 2 test symlink thường trên Windows (2 test **junction** vẫn chạy, là bằng chứng
 M12/M14) + 1 cờ `RERANKER_KEEP_CANDIDATES` không có accessor đơn — vẫn bị kiểm tĩnh trong cùng module).
 
+## COMMIT chốt phiên B (26-10 03:7x) — phạm vi đã ghi và phạm vi CỐ Ý KHÔNG ghi
+
+`18d81df` — B3+B4+B5: tài liệu phiên, ba dụng cụ mới, ba suite test mới, hai đính chính tự phát hiện.
+Mục này đi kèm **commit nối tiếp** (chỉ-docs) ghi lại chính số hash đó, theo đúng cách các phiên trước làm.
+
+**Đã staged (đúng luật "chỉ docs/tests/tools"):** `docs/AUTONOMY_LOG.md`, `docs/DECISION_LOG.md`,
+`docs/MORNING_REPORT.md`, `docs/PENDING_APPROVAL.md`, `docs/STATE.md`, `docs/reports/B3.md`, `B4.md`,
+`B5.md`; `tools/diag/answerability_probe.py`, `tools/diag/answer_token_logits_probe.py`,
+`tools/diag/rescore_retrieval_round_v2.py`; `tests/test_answerability_probe.py`,
+`tests/test_answer_token_logits_probe.py`, `tests/test_rescore_retrieval_v2.py`,
+`tests/test_reranker_flag.py`, `tests/test_t5_reranker_contract.py`.
+
+**KHÔNG staged — và vì sao:** (1) PA-26frozen sáu tệp (`src/generator.py`, `src/pipeline.py`,
+`src/query_normalizer.py`, `src/router.py`, `tests/test_pipeline.py`, `tests/test_subquery.py`) vẫn
+modified trên đĩa, **không đụng tới trong phiên B**; (2) `src/reranker.py` (PA-25) và `src/answer_guard.py`
+(PA-2) là tệp **chưa từng được commit** ở bất kỳ phiên nào — luật phiên này chỉ cho commit docs/tests/tools,
+nên hai thay đổi code đã duyệt vẫn nằm ngoài lịch sử, người duyệt cần biết khi read-out;
+(3) `tools/loop/*` giữ nguyên quy ước: harness không commit, chỉ **bản sao snapshot** trong
+`tests/snapshots/referee_v1/` (đã vào từ `a9d2326`); (4) `data/**` (kể cả `rounds_v2/`, `chroma_db_vie/`,
+`.ocr_cache_vie/`) và `tmp/` không vào — cùng quy ước mọi phiên trước.
+
+**Máy kiểm chạy lại TRƯỚC commit** (bằng `venv/Scripts/python.exe`): `pytest tests -q` **1.495 passed,
+5 skipped** — lan kiem lai 03:7x het **139,28 s** (lan cong bo luc 03:1x: 94,54 s), trung tuyen voi so da
+cong bo; `docs_consistency_check.py` SẠCH LỖI (42 dòng sổ quyết định); `final_number_audit.py`
+61/63 KHỚP — 2 LỆCH có chủ đích (D-42 + PA-41) và **rc=0** như đã đính chính; quét vệ sinh dòng kết thúc
+10 tệp doc: 0 CRCR, 0 loneCR; log lớn nhất trong `tmp/` = 0,06 MB (trần 200 MB mỗi tiến trình).
 ## CẬP NHẬT 26-10 03:1x — PHIÊN B (B1→B5) KẾT THÚC: r16 là mức gold@6 cao nhất từng đo, ba lever vẫn chờ duyệt, 1.495 test xanh
 
 Đề bài phiên tự trị này (đã duyệt trước đó): **B1** ablation (c′) → **B2** áp PA-2+PA-20 và chấm lại offline mọi
@@ -618,3 +644,5 @@ cùng 100 item r5, chấm bằng trọng tài hiện tại `9f1179ccab74`:
 - Test: `PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest tests -q` (563 xanh).
 - Dọn (chờ duyệt, em không tự xóa): `tmp/r5b_driver.sh`, `tmp/r6_driver.sh`,
   `tmp/probe_prefix_cache.py`, `tmp/*.png`.
+
+
