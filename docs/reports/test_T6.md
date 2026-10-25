@@ -1,6 +1,7 @@
 # Báo cáo kiểm thử — T6: làm kết luận đứng được trước hội đồng
 
-Ngày: 2026-10-25 (tổng hợp từ 24-10, bổ sung test biên 25-10) · Nhánh `auto/overnight`.
+Ngày: 2026-10-25 (đợt 1 tổng hợp từ 24-10; **đợt 2 = 60 test theo đề bài T6 mới**, xem §8).
+Nhánh `auto/overnight`.
 Phạm vi: **test cho các đơn vị T6** — 6a cổng refusal tương đối (bản đề xuất), 6c khung câu hỏi thật;
 đối chiếu số của 6b/6d. **KHÔNG sửa `tools/loop/gate.py`**, KHÔNG sửa trọng tài
 (`tools/loop/verify.py`, `src/answer_guard.py`, `src/text_utils.py`) — chữ ký vẫn
@@ -37,12 +38,14 @@ ghim:
 ### 1.3 6b/6d — chỉ có công cụ, chưa có unit test
 
 - **6b** `tools/diag/referee_agreement.py` (Cohen's kappa, precision/recall/F1, ma trận nhầm lẫn) và
-  `tools/diag/referee_sample.py`: **không có file test riêng**. Việc kiểm định trọng tài vẫn **chưa
-  thể kết luận** vì phiếu 60 mẫu có `n_filled=0`.
+  `tools/diag/referee_sample.py`: **không có file test riêng** ở đợt 24-10. Việc kiểm định trọng tài vẫn
+  **chưa thể kết luận** vì phiếu 60 mẫu có `n_filled=0`.
 - **6d** `tools/diag/metric_ci.py`: **không có file test riêng**; số CI được đối chiếu bằng đọc file JSON
   và `point_matches_gate=true` trong chính output.
 
-Đây là khoảng trống được ghi nhận, **không** che bằng cách sửa test cũ (§4.3).
+Đây là khoảng trống được ghi nhận, **không** che bằng cách sửa test cũ (§4.3). **Khoảng trống 6b đã được
+lấp ở đợt 2** (§8.4): `referee_agreement.py` + `referee_sample.py` giờ có 10 test; `metric_ci.py` vẫn
+chưa có test riêng (chỉ có test cho `tools/eval/report_metrics.py` — xem §8.5).
 
 ## 2. Kết quả số (nguồn: file trên đĩa)
 
@@ -164,6 +167,9 @@ CI trong 6d dùng seed `20261023`, 10.000 lượt (theo `noise_floor`); không c
   chưa có số.
 - 6a không sửa gate/trọng tài: **đạt** — chữ ký `9f1179ccab74`; PA-13 vẫn treo.
 - Toàn repo xanh: **1.005 passed** (`tmp/pytest_t4t6_final.txt`), không sửa test cũ để xanh.
+- **Đợt 2** — "xanh + mutation check (đổi dấu so sánh trong cổng, bỏ kiểm chữ ký) bị bắt": **đạt** —
+  60/60 test xanh, toàn repo **1.124 passed / 2 skipped** (`tmp/pytest_t6_final.txt`),
+  M1 (đổi dấu) và M3 (bỏ kiểm chữ ký) đều bị bắt trong 10/10 (`tmp/mutation_check_t6_tests.log`).
 
 ## 6. Lệnh tái lập
 
@@ -180,6 +186,20 @@ PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m tools.eval.score_real_question
 
 # 6d: tính lại CI cho r5/r7 (chỉ đọc round đã đóng, ghi vào data/loop/diag/)
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/metric_ci.py --round r7 --phase full
+
+# --- ĐỢT 2 (25-10) ---
+# 60 test mới (mục 1–10 đề bài)
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest \
+  tests/test_t6_gate_refusal_and_regression.py \
+  tests/test_t6_referee_validation.py \
+  tests/test_t6_real_questions_and_metrics.py -q
+
+# Mutation check đợt 2 (copy-tree, KHÔNG sửa gate.py thật; tự hoàn nguyên + kiểm SHA-256)
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tmp/mutation_check_t6_tests.py
+
+# Xác nhận gate.py và trọng tài vẫn nguyên (chữ ký không đổi)
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -c \
+  "from tools.loop import verify; print(verify.referee_fingerprint())"
 ```
 
 ## 7. Đề xuất cần duyệt
@@ -189,6 +209,138 @@ PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/metric_ci.py --round r
 - **PA-23**: chốt lại điểm thành phần trong báo cáo đánh giá (7,2 đã đúng số học; điểm từng mục chờ
   duyệt).
 - **PA-26**: commit freeze để báo cáo này tái lập được từ fresh clone.
+
+## 8. ĐỢT 2 (25-10) — 60 test theo đề bài T6 mới, chưa đụng `gate.py`
+
+Đề bài đợt này có 10 mục và một tiêu chí phụ: **xanh + mutation check (đổi dấu so sánh trong cổng, bỏ
+kiểm chữ ký) bị bắt**. Vì `gate.py` chỉ được sửa **sau khi user duyệt**, toàn bộ test được viết **chống
+vào bản đề xuất tách rời** (`tools/diag/gate_refusal_relative_proposal.py`) + hàm mô phỏng
+`apply_to_gate_result()` áp luật mới lên **kết quả cổng đã công bố**, nên khi diff PA-13 được duyệt thì
+chỉ cần trỏ lại, không viết test mới.
+
+| File test | Test | Mục đề bài |
+|---|---:|---|
+| `tests/test_t6_gate_refusal_and_regression.py` | **28** | 1, 2, 3, 4, 5, 6 |
+| `tests/test_t6_referee_validation.py` | **10** | 7 |
+| `tests/test_t6_real_questions_and_metrics.py` | **22** | 8, 9, 10 |
+| **Tổng đợt 2** | **60 passed** (0,72 s) | 1–10 |
+| Toàn repo sau đợt 2 | **1.124 passed**, 2 skipped (26,92 s) | `tmp/pytest_t6_final.txt` |
+
+Mốc baseline trước đợt 2 là 1.064 (`tmp/pytest_t5_final_2.txt`) ⇒ +60 = 1.124, **không sửa test cũ**.
+
+### 8.1 Mục 1–4 — luật refusal tương đối
+
+| Tình huống | Kỳ vọng đã ghim | Kết quả test |
+|---|---|---|
+| baseline 0,72 / candidate 0,69 | ĐẠT luật; **warning** "vượt trần tuyệt đối 0,35"; warning **không** nằm trong `checks` | xanh |
+| baseline 0,72 / candidate 0,80 | KHÔNG ĐẠT (delta +0,08 > 0,05) | xanh |
+| biên: +0,0499 / đúng +0,05 / +0,0501 | ĐẠT / ĐẠT (`<=`) / BỊ | xanh (parametrize 3 nhánh) |
+| baseline `None` hoặc mẫu rỗng (`gate.metrics([])` → `n=0`) | **CẤM mở cổng**, thông báo chứa "KHÔNG ĐO ĐƯỢC" | xanh |
+| `apply_to_gate_result()` với baseline `None` | cổng vẫn `passed=False` | xanh |
+
+Hàm mô phỏng gỡ **đúng hai** ô cũ (`refusal_rate_bounded`, `refusal_rate_not_increased`), thay bằng ô mới
+và bảng warning, tính lại `passed`, và **buộc** `passed=False` khi `config_mismatches` khác rỗng.
+
+### 8.2 Mục 5 — ghim 6 quy tắc còn lại + cổng thật trên file đã công bố
+
+Mỗi quy tắc có test biên riêng (đúng ngưỡng / vượt 0,0001) và test "thiếu chỉ số = CẤM":
+
+| Quy tắc | Ngưỡng đã ghim | Test biên |
+|---|---|---|
+| `fabrication_not_increased` | delta 0,0 | +0,001 → BỊ |
+| `no_new_hallucinated_refusal` | delta 0 | 2→2 ĐẠT, 2→3 BỊ |
+| `pass_rate_not_dropped` | −0,02 | 0,78 ĐẠT, 0,7799 BỊ |
+| `family_pass_rate` | −0,10, min n=8 | EXACT 0,80→0,70 ĐẠT, →0,6999 BỊ (key `family_pass_rate[EXACT]`); n=7 bị bỏ qua |
+| `human_anchor_*_not_degraded` | −5% tương đối | 0,7601 ĐẠT / 0,7599 BỊ; thiếu neo → CẤM |
+| `retrieval_not_degraded` | −0,02 | 0,78 ĐẠT / 0,7799 BỊ; thiếu gold@k → CẤM |
+
+Cổng thật chạy lại **trên file đã đóng** (chỉ đọc; ghi `--out` vào `tmp_path`) — số công bố | số tính lại:
+
+| Cổng | `passed` công bố | số liệu công bố | tính lại | khớp |
+|---|---|---|---|---|
+| r4 vs r2 (retrieval, 811 item) | **ĐẠT**, mismatch `[]` | gold 0,7400→0,7429; HUMAN anchor 0,8144/0,8144; refusal 0,0 | y nguyên, cùng 6 ô check | có |
+| r5 vs r3 (full, 100 item) | **KHÔNG ĐẠT** | fabrication 0,0256→0,0323 BỊ; refusal 0,61→0,69 BỊ; còn lại ĐẠT | y nguyên | có |
+| r5 vs r1 (full, 100 item) | **KHÔNG ĐẠT** | chỉ vướng refusal 0,72→0,69 | y nguyên | có |
+| r3 vs r1 (full, 100 item) | **KHÔNG ĐẠT** | hallucinated 2→3 BỊ; refusal 0,72→0,61 BỊ | y nguyên | có |
+
+**Đính chính đề bài (không hạ mức đỏ).** Đề bài ghi "chỉ pha sinh r5 đổi từ KHÔNG ĐẠT sang theo quy tắc
+mới". Kiểm trên file thật thì **r5-vs-r3 không lật**: delta refusal **+0,08 > 0,05** và
+fabrication vẫn tăng. Ca **duy nhất** lật sang ĐẠT là **r5-vs-r1** (0,69 vs 0,72 ⇒ ĐẠT luật mới + cảnh báo
+trần tuyệt đối) — đã ghim bằng test. r3-vs-r1: luật mới làm ô refusal ĐẠT nhưng cổng vẫn KHÔNG ĐẠT vì
+`no_new_hallucinated_refusal`. Các cổng retrieval phải y nguyên: **đúng**, r4-vs-r2 giữ ĐẠT và PA-13
+simulation không đổi danh sách ô check.
+
+### 8.3 Mục 6 — cổng từ chối mở khi chữ ký / cấu hình lệch
+
+Test gọi `gate.main()` (monkeypatch `sys.argv`, `--out` vào `tmp_path`): chữ ký trọng tài lệch → thông
+báo chứa "trọng tài", `passed=False`, rc 1; `generator` + `top_k` lệch → 2 problem; thiếu
+`round_summary` → 1 problem; `GATE_ALLOW_CONFIG_MISMATCH=1` → rc 0 **nhưng** `config_mismatches` vẫn được
+ghi (không xoá dấu vết).
+
+### 8.4 Mục 7 — kiểm định trọng tài (10 test)
+
+- `referee_sample.py` tách thành `build_label_rows()` / `build_manifest()` (hành vi không đổi). Test ghim:
+  mẫu **60 dòng** phân tầng đúng 14/15/15/16 với seed 20261024, **tất định** khi chạy 2 lần; phiếu chỉ có
+  8 cột `_huong_dan, sample_index, id, question, answer, evidence, nhan_tay, ghi_chu` — **không** có
+  `verdict`, `referee_verdict`, `gold_chunk_id`, `gold_sentence`, `required_entities`, `grounding_score`,
+  `severity`, `is_refusal`, `detail`; manifest riêng vẫn giữ verdict. Kiểm cả **file thật trên đĩa**
+  `data/loop/diag/referee_labeling_r5.jsonl` (60 dòng, `nhan_tay` rỗng toàn bộ).
+- `referee_agreement.py` tách thành `score_labels()` + `validate_labels()` (thuần, không IO). Trên phiếu
+  nhãn giả 8 dòng có đáp án biết trước: accuracy **0,625**; per-class precision/recall/F1 khớp tính tay
+  (dung 0,6667/0,5; sai 0,5/0,3333; tu_boi_dung 0,5/1,0; tu_boi_oan 1,0/1,0); ma trận nhầm lẫn
+  `matrix["sai"]["dung"]=1`, `matrix["dung"]["sai"]=1`, tổng 8; `khong_ro` bị **loại khỏi chấm nhưng vẫn
+  đếm**; dòng thiếu nhãn đếm ở `n_unfilled`.
+- Nhãn sai định dạng (`đúng`, `DUNG`, `sai_bet`, `co`) → `LabelError` **kể cả khi** `allow_missing=True`;
+  nhãn thiếu → lỗi khi `--strict`. Smoke thật `referee_agreement.py --round r5` chạy **trước** khi khôi
+  phục artifact: không lỗi, `n_scored=0`, `n_unfilled=60`.
+
+### 8.5 Mục 8–10 — benchmark thật, CI và điểm trọng số (22 test)
+
+- `score_real_questions.validate_questions()`: thiếu `id` / `question` / cột người chấm → loại kèm lý do;
+  **trùng id** và **trùng nội dung** (đã normalize khoảng trắng + hoa thường) → loại, ghi `trùng_nội_dung_với:
+  RQ-1`; câu hỏi **giống hệt** câu trong `testset_v1` → **giữ nhưng gắn cờ** `leak_testset_v1=True`.
+  Dry-run thật trên file hiện tại: `schema: nhận 2/5 dòng, loại 3` (3 dòng `RQ-EMPTY`), **0 câu thật**.
+- `tools/eval/report_metrics.py` (mới): Wilson và bootstrap khớp ví dụ tính tay —
+  7/10 → Wilson [0,3968; 0,8922]; 0/10 → [0; 0,2775]; 10/10 → [0,7225; 1]; bootstrap 0/10 → [0;0] và
+  10/10 → [1;1] (không CI nào vượt [0,1] với mọi k=0…10); `rate_with_ci`; input sai → `ValueError`.
+- `weighted_score()`: tổng trọng số **phải = 1,0** (assert); bộ 5 điểm cũ 9,0/8,0/7,0/8,5/4,0 → **7,10**
+  đúng như đề bài; bộ điểm hiện hành 9,2/8,2/7,0/8,5/4,0 → **7,17**; đổi một trọng số cho tổng 1,01 → lỗi;
+  thiếu khoá / lệch độ dài / lẫn dict-list → lỗi.
+
+### 8.6 Mutation check đợt 2 — 10/10 bị bắt, hoàn nguyên byte-identical
+
+Vì `gate.py` chưa được sửa, harness **copy cây tối thiểu** sang `tmp/mut6_tree/`
+(`tmp/mutation_check_t6_tests.py`), đột biến bản sao, chạy pytest trong đó, rồi đối chiếu SHA-256.
+
+| Đột biến | Phá gì | Bắt bởi |
+|---|---|---|
+| M1 `<=` → `<` (luật tương đối) | **đổi dấu so sánh trong cổng** (đúng yêu cầu đề bài) | test biên 0,77 |
+| M2 trần tuyệt đối 0,35 → 2,0 | mất cảnh báo | test warning |
+| M3 bỏ kiểm chữ ký trọng tài trong `compatibility()` | **bỏ kiểm chữ ký** (đúng yêu cầu đề bài) | §8.3 |
+| M4 bỏ kiểm cấu hình hai round | mở cổng khi cấu hình lệch | §8.3 |
+| M5 `fabrication` `<=` → `<` | nới luật 1 | test biên luật 1 |
+| M6 `pass_rate` `>=` → `>` | nới luật 3 | test biên luật 3 |
+| M7 `retrieval` `>=` → `>` | nới luật 6 | test biên luật 6 |
+| M8 bỏ kiểm nhãn sai định dạng | phiếu rác vẫn chấm | §8.4 |
+| M9 bỏ loại trùng id | hai bản cùng câu hỏi cùng lọt | §8.5 |
+| M10 bỏ assert tổng trọng số | điểm tổng sai vẫn in | §8.5 |
+
+Baseline (không đột biến) rc=0; mọi file hoàn nguyên `hoan_nguyen=True`.
+
+### 8.7 Sự cố đã tự sửa: log mutation cũ bị ghi đè
+
+Harness mới ban đầu đặt tên `tmp/mutation_check_t6.py` — **trùng** tên harness đợt 24-10, nên log
+`tmp/mutation_check_t6.log` (bằng chứng của §2.2) bị ghi đè. Đã khắc phục: (a) khôi phục nội dung harness
+cũ từ transcript vào `tmp/mutation_check_t6.py`, chạy lại → **10/10 bị bắt, rc=0**, log cũ tái lập;
+(b) đổi harness mới thành `tmp/mutation_check_t6_tests.py` + `tmp/mutation_check_t6_tests.log`.
+Artifact `data/loop/diag/referee_agreement_r5.json` bị lượt smoke làm đổi (chỉ timestamp + ba khoá rỗng
+mới) đã được **hoàn nguyên về bản đã công bố**.
+
+### 8.8 Giới hạn đợt 2
+
+`n_filled=0` ⇒ **chưa có** kappa/precision/recall thật của trọng tài; `real_questions.jsonl` chưa có câu
+thật ⇒ §8.5 chỉ là khung + CI; PA-13 vẫn **chưa áp dụng** vào `gate.py` (mọi test refusal chạy trên bản
+đề xuất); `tools/diag/metric_ci.py` vẫn chưa có unit test riêng.
 
 ## Phụ lục A — số công bố | số tính lại | khớp
 
@@ -203,3 +355,12 @@ PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/metric_ci.py --round r
 | 60 mẫu 6b, `n_filled=0` | manifest + worksheet | trùng | có |
 | 6c dry-run = 0 câu thật, 0 lượt model | chạy `--dry-run` | trùng | có |
 | Trọng tài `9f1179ccab74` | `verify.referee_fingerprint()` | trùng | có |
+| 60 test đợt 2 | `pytest tests/test_t6_*.py -q` | 28 + 10 + 22 = 60 passed | có |
+| 1.124 passed toàn repo | `pytest tests -q` → `tmp/pytest_t6_final.txt` | 1.124 passed, 2 skipped, 26,92 s | có |
+| 10/10 đột biến đợt 2 | `tmp/mutation_check_t6_tests.log` | 10/10, hoàn nguyên 10/10 | có |
+| r4-vs-r2 ĐẠT / r5-vs-r3 BỊ (2 ô) / r5-vs-r1 BỊ (1 ô) / r3-vs-r1 BỊ (2 ô) | đọc `gate_vs_*.json` + chạy `gate.main()` ra `tmp_path` | từng ô check trùng khớp | có |
+| r5-vs-r3 **không** lật dưới PA-13 | `apply_to_gate_result()` | `passed=False` (delta refusal +0,08) | có — **đính chính đề bài** |
+| accuracy phiếu giả 0,625 | `score_labels()` trên 8 dòng biết trước | 0,625 | có |
+| Wilson 7/10 = [0,3968; 0,8922] | `wilson_ci(7,10)` | trùng 4 chữ số | có |
+| Điểm trọng số 7,10 (bộ cũ) / 7,17 (bộ hiện hành) | `weighted_score()` | 7,1 / 7,17 | có |
+| `real_questions.jsonl` 0 câu thật | `--dry-run` | câu thật = 0, `schema: nhận 2/5 dòng, loại 3` | có |

@@ -35,6 +35,73 @@ IN_PATH = EVAL_DIR / "real_questions.jsonl"
 OUT_PATH = EVAL_DIR / "real_questions_scored.jsonl"
 
 HELP_SCORE = {"co": 1.0, "mot_phan": 0.5, "khong": 0.0}
+HUMAN_COL = "co_giup_duoc_khong"
+REQUIRED_FIELDS = ("id", "question", HUMAN_COL)
+TESTSET_PATH = ROOT / "data" / "loop" / "testset_v1.jsonl"
+
+
+def _norm_question(text: str) -> str:
+    """Chuẩn hóa để phát hiện trùng nội dung: gộp khoảng trắng, không phân biệt hoa/thường."""
+    return " ".join((text or "").split()).casefold()
+
+
+def validate_questions(rows: list[dict], testset_questions=()) -> tuple[list[dict], dict]:
+    """Kiểm schema + loại trùng + gắn cờ rò rỉ với testset.
+
+    * BẮT BUỘC `id`, `question`, cột người chấm `co_giup_duoc_khong` (được để trống giá trị);
+    * trùng `id` hoặc trùng nội dung câu (sau chuẩn hóa) => LOẠI dòng đến sau, ghi lý do;
+    * câu giống hệt một câu trong `testset_v1` => GIỮ nhưng gắn `leak_testset_v1=True`
+      (không tự xóa: người dùng cần biết mình đã dán câu từ benchmark vào).
+    """
+    accepted: list[dict] = []
+    dropped: list[dict] = []
+    flagged: list[str] = []
+    seen_ids: set[str] = set()
+    seen_questions: dict[str, str] = {}
+    testset_norm = {_norm_question(q) for q in testset_questions if (q or "").strip()}
+
+    for index, row in enumerate(rows):
+        rid = str(row.get("id") or "").strip()
+        question = str(row.get("question") or "").strip()
+        missing = [field for field in REQUIRED_FIELDS if field not in row]
+        if not rid:
+            missing.append("id(trống)")
+        if not question:
+            missing.append("question(trống)")
+        if missing:
+            dropped.append({"row_index": index, "id": rid, "reason": "thiếu_trường:" + ",".join(missing)})
+            continue
+        if rid in seen_ids:
+            dropped.append({"row_index": index, "id": rid, "reason": "trùng_id"})
+            continue
+        norm = _norm_question(question)
+        if norm in seen_questions:
+            dropped.append(
+                {"row_index": index, "id": rid, "reason": f"trùng_nội_dung_với:{seen_questions[norm]}"}
+            )
+            continue
+        seen_ids.add(rid)
+        seen_questions[norm] = rid
+        out = dict(row)
+        out["leak_testset_v1"] = norm in testset_norm
+        accepted.append(out)
+        if out["leak_testset_v1"]:
+            flagged.append(rid)
+
+    report = {
+        "n_in": len(rows),
+        "n_accepted": len(accepted),
+        "n_dropped": len(dropped),
+        "dropped": dropped,
+        "flagged_leak_testset_v1": flagged,
+    }
+    return accepted, report
+
+
+def load_testset_questions(path: Path = TESTSET_PATH) -> list[str]:
+    if not path.exists():
+        return []
+    return [str(row.get("raw_query") or "") for row in read_jsonl(path)]
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -141,13 +208,21 @@ def main() -> None:
     ap.add_argument("--generator", default="ollama", help="ollama | gemini (khai rõ trước khi tốn quota)")
     ap.add_argument("--include-examples", action="store_true")
     ap.add_argument("--dry-run", action="store_true", help="chỉ đếm số câu thật + số lượt gọi, KHÔNG chạy model")
+    ap.add_argument("--testset", default=str(TESTSET_PATH), help="testset_v1 để kiểm rò rỉ câu hỏi")
     args = ap.parse_args()
 
-    rows = read_jsonl(Path(args.in_path))
+    rows_all = read_jsonl(Path(args.in_path))
+    rows, validation = validate_questions(rows_all, load_testset_questions(Path(args.testset)))
     todo = real_questions(rows, args.include_examples)
     if args.limit:
         todo = todo[: args.limit]
 
+    print(f"[T6c] schema: nhận {validation['n_accepted']}/{validation['n_in']} dòng, "
+          f"loại {validation['n_dropped']}, gắn cờ rò rỉ {len(validation['flagged_leak_testset_v1'])}.")
+    for item in validation["dropped"]:
+        print(f"  [LOẠI] dòng {item['row_index']} id={item['id'] or '(trống)'} — {item['reason']}")
+    if validation["flagged_leak_testset_v1"]:
+        print(f"  [CỜ RÒ RỈ] câu trùng testset_v1: {', '.join(validation['flagged_leak_testset_v1'])}")
     print(f"[T6c] câu thật chờ chấm = {len(todo)} (đã loại dòng ví dụ/trống). "
           f"Số lượt pipeline dự kiến = {len(todo)} (generator={args.generator}).")
     if args.dry_run:

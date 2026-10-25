@@ -4,9 +4,33 @@ Chi nhánh: `auto/overnight` (HEAD hiện tại: xem `git log --oneline -1`), t�
 `main` không bị sửa. Các mục 0–6 dưới đây là **bản ghi đêm đầu (23-10 → 24-10)**; phần
 **"PHIÊN TIẾP 24-10"** ngay sau đây là trạng thái mới nhất, thay thế các kết luận đã cũ
 (đặc biệt mục "BỊ CHẶN" số 1 về T3/T5/TT0–TT3).
-`pytest tests -q` mới nhất: **1.064 passed, 2 skipped** (76,07 s, 25-10 15:1x; mốc trước 1.057,
-thêm 7 test cờ `RERANKER_FALLBACK` của T5; 2 skipped là hai test T4 **slow**, chạy riêng bằng
+`pytest tests -q` mới nhất: **1.124 passed, 2 skipped** (26,92 s, 25-10 16:0x; mốc trước 1.064,
+thêm 60 test kiểm thử T6 đợt 2; 2 skipped là hai test T4 **slow**, chạy riêng bằng
 `T4_RUN_SLOW=1`).
+
+## CẬP NHẬT 25-10 16:0x — KIỂM THỬ T6 (đợt 2): 60 test phủ 10 mục, mutation 10/10, `gate.py` không đổi
+
+- **60 test mới** (`test_t6_gate_refusal_and_regression.py` 28, `test_t6_referee_validation.py` 10,
+  `test_t6_real_questions_and_metrics.py` 22) — nguồn `tmp/pytest_t6_final.txt`; chi tiết
+  [`docs/reports/test_T6.md`](reports/test_T6.md) §8.
+- **Cổng refusal tương đối chỉ được test trên BẢN ĐỀ XUẤT** (`tools/diag/gate_refusal_relative_proposal.py`
+  + `apply_to_gate_result()`); `tools/loop/gate.py` **không sửa một byte**, chữ ký trọng tài
+  `9f1179ccab74`, **0 lượt Gemini**, không chấm lại round nào.
+- **Đính chính đề bài** (số thật, không hạ mức đỏ): đề bài nói "chỉ pha sinh r5 đổi sang ĐẠT theo quy tắc
+  mới" — kiểm trên file công bố thì **r5-vs-r3 vẫn KHÔNG ĐẠT** (refusal 0,61→0,69 = **+0,08 > 0,05**;
+  fabrication 0,0256→0,0323 tăng). Ca lật duy nhất: **r5-vs-r1** (0,69 vs 0,72 → ĐẠT + cảnh báo trần 0,35).
+  r3-vs-r1 vẫn đỏ vì hallucinated-on-unanswerable 2→3. r4-vs-r2 retrieval **y nguyên ĐẠT**
+  (811 item, gold 0,7400→0,7429, anchor HUMAN 0,8144/0,8144).
+- **Mutation 10/10 bị bắt**, gồm đúng hai đột biến đề bài yêu cầu: M1 đổi dấu `<=`→`<` trong luật refusal
+  và M3 bỏ kiểm chữ ký trọng tài trong `gate.compatibility()`. Harness chạy trên **bản sao**
+  `tmp/mut6_tree/` nên `gate.py` thật không bị chạm; mọi file hoàn nguyên byte-identical
+  (`tmp/mutation_check_t6_tests.log`).
+- **Rủi ro còn mở:** 6b vẫn `n_filled=0` ⇒ **chưa có** kappa/precision/recall của trọng tài; 6c vẫn
+  **0 câu hỏi thật**; `tools/diag/metric_ci.py` chưa có unit test riêng; PA-13 chưa được duyệt ⇒ mọi con
+  số cổng công bố vẫn theo trần tuyệt đối 0,35.
+- **Sự cố tự sửa (minh bạch):** log mutation cũ `tmp/mutation_check_t6.log` từng bị ghi đè do trùng tên
+  harness — đã khôi phục harness+log cũ (chạy lại 10/10, rc=0) và đổi tên harness mới;
+  `data/loop/diag/referee_agreement_r5.json` bị lượt smoke làm đổi đã được trả về **bản đã công bố**.
 
 ## CẬP NHẬT 25-10 12:3x — KIỂM THỬ T4: mục 1–4 xanh, mục 5 ĐỎ do DỮ LIỆU, số mục 8 đã ghi
 

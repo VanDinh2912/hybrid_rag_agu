@@ -493,7 +493,34 @@ Báo cáo `docs/reports/T6.md`. **Toàn bộ sửa gate/trọng tài chỉ là �
 - Mutation T5 **13/13** bắt được, hoàn nguyên byte-identical (`tmp/mutation_check_t5.py`);
   toàn repo **1.064 passed, 2 skipped**. **0 lượt Gemini.**
 
-## ĐANG LÀM (25-10 15:0x) — T6 kiểm thử
+## XONG (25-10 16:0x — T6 kiểm thử đợt 2: 60 test, mutation 10/10, `gate.py` KHÔNG sửa)
 
-- gate.py **KHÔNG sửa**; luật refusal tương đối test trên bản đề xuất
-  `tools/diag/gate_refusal_relative_proposal.py`. Đang viết test mục 1–10 + mutation + báo cáo.
+- **60 test mới** phủ đúng 10 mục đề bài: `tests/test_t6_gate_refusal_and_regression.py` (28 — mục 1–6),
+  `tests/test_t6_referee_validation.py` (10 — mục 7), `tests/test_t6_real_questions_and_metrics.py`
+  (22 — mục 8–10). Toàn repo **1.124 passed, 2 skipped** (26,92 s, `tmp/pytest_t6_final.txt`).
+- **`tools/loop/gate.py` không đổi một byte**; luật refusal tương đối test trên bản đề xuất
+  `tools/diag/gate_refusal_relative_proposal.py` + hàm mới `apply_to_gate_result()` (áp luật lên kết quả
+  cổng ĐÃ CÔNG BỐ). Chữ ký trọng tài vẫn `9f1179ccab74`. **0 lượt Gemini, 0 round chạy/chấm lại.**
+- **Đính chính đề bài:** "r5 đổi sang ĐẠT theo quy tắc mới" chỉ đúng với **r5-vs-r1**
+  (0,69 vs 0,72 ⇒ ĐẠT + cảnh báo trần 0,35). **r5-vs-r3 vẫn KHÔNG ĐẠT** vì delta refusal **+0,08 > 0,05**
+  và fabrication 0,0256→0,0323 tăng. r3-vs-r1: refusal hết bị nhưng `no_new_hallucinated_refusal` (2→3)
+  vẫn chặn. Cổng retrieval r4-vs-r2 **y nguyên ĐẠT** (811 item, gold 0,7400→0,7429).
+- **Dụng cụ đo được tách hàm để test được mà không đổi hành vi:** `referee_sample.build_label_rows/
+  build_manifest`, `referee_agreement.score_labels/validate_labels` (+ `--strict`),
+  `score_real_questions.validate_questions` (schema + trùng id/nội dung + cờ rò rỉ testset), module mới
+  `tools/eval/report_metrics.py` (Wilson, bootstrap, `weighted_score` có assert tổng trọng số = 1,0).
+- **Sự cố đã tự sửa:** harness mutation mới ban đầu trùng tên `tmp/mutation_check_t6.py` làm ghi đè log
+  cũ → đã khôi phục harness+log cũ (chạy lại: 10/10 bắt được, rc=0) và đổi harness mới sang
+  `tmp/mutation_check_t6_tests.py`/`.log`. Artifact `data/loop/diag/referee_agreement_r5.json` bị lượt
+  smoke làm đổi (timestamp + 3 khoá rỗng) → **đã `git checkout` về bản đã công bố**.
+- Báo cáo: `docs/reports/test_T6.md` §8 + Phụ lục A (11 dòng mới). Đề xuất PA-13 bổ sung "test đã sẵn".
+
+## ĐANG LÀM (25-10 16:1x) — T7 kiểm thử + nghiệm thu cuối T0–T7
+
+- T7: test thêm cho `run_chain` (env từng round, `require` cấp bước, manifest hai lượt), cache policy
+  e2e (đếm lượt gọi stub khi đổi ngưỡng), script dọn dẹp `tmp/` **mặc định dry-run** + `--yes` + allowlist
+  + chống symlink, checker `DECISION_LOG` (đủ trường + mọi đường dẫn nguồn tồn tại), checker tài liệu
+  (lệnh README chạy được `--help`/dry-run, file được nhắc tồn tại).
+- Nghiệm thu: chạy `pytest tests -q` + slow trên GPU, bảng tái lập số Phụ lục A, quét bí mật/đường dẫn
+  cá nhân, bất biến #7 + chặn rò rỉ dữ liệu train, 3 câu hỏi hội đồng.
+- `gate.py`/trọng tài vẫn **không sửa**; chỉ đề xuất ở PA-13.

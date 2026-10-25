@@ -163,6 +163,49 @@ def default_targets(n: int) -> dict[str, int]:
     return {"dung": dung, "tu_boi_dung": tbd, "tu_boi_oan": toa, "sai": sai}
 
 
+def build_label_rows(chosen: list[dict]) -> list[dict]:
+    """Dựng phiếu gán nhãn từ mẫu đã chọn — CHỈ trường hiển thị, KHÔNG verdict/tầng/vàng.
+
+    Hàm tách riêng để test kiểm được cột: danh sách khoá ở đây là hợp đồng "ẩn verdict".
+    """
+    return [
+        {
+            "_huong_dan": HUONG_DAN,
+            "sample_index": r["sample_index"],
+            "id": r["id"],
+            "question": r["question"],
+            "answer": r["answer"],
+            "evidence": r["evidence"],
+            "nhan_tay": "",
+            "ghi_chu": "",
+        }
+        for r in chosen
+    ]
+
+
+def build_manifest(chosen: list[dict], round_name: str, seed: int, targets: dict[str, int],
+                   available: dict[str, int]) -> dict:
+    """Manifest để CHẤM (giữ verdict + tầng). Tách khỏi phiếu để người đọc không bị neo."""
+    return {
+        "round": round_name,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "seed": seed,
+        "targets": targets,
+        "available_by_stratum": available,
+        "n_selected": len(chosen),
+        "selected_by_stratum": {s: sum(1 for r in chosen if r["stratum"] == s) for s in STRATA},
+        "samples": [
+            {
+                "sample_index": r["sample_index"],
+                "id": r["id"],
+                "stratum": r["stratum"],
+                "referee_verdict": r["referee_verdict"],
+            }
+            for r in chosen
+        ],
+    }
+
+
 def write_jsonl(path: Path, rows: list[dict]) -> None:
     path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
 
@@ -242,20 +285,7 @@ def main() -> None:
     DIAG.mkdir(parents=True, exist_ok=True)
 
     # PHIẾU GÁN NHÃN (ẩn verdict): chỉ trường hiển thị + nhan_tay trống.
-    label_rows = []
-    for r in chosen:
-        label_rows.append(
-            {
-                "_huong_dan": HUONG_DAN,
-                "sample_index": r["sample_index"],
-                "id": r["id"],
-                "question": r["question"],
-                "answer": r["answer"],
-                "evidence": r["evidence"],
-                "nhan_tay": "",
-                "ghi_chu": "",
-            }
-        )
+    label_rows = build_label_rows(chosen)
     jsonl_path = DIAG / f"referee_labeling_{args.round}.jsonl"
     write_jsonl(jsonl_path, label_rows)
 
@@ -263,24 +293,7 @@ def main() -> None:
     write_markdown(md_path, chosen, args.round, args.ctx_clip, args.answer_clip)
 
     # MANIFEST cho scoring (giữ verdict + tầng; người gán nhãn không cần đọc).
-    manifest = {
-        "round": args.round,
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "seed": args.seed,
-        "targets": targets,
-        "available_by_stratum": available,
-        "n_selected": len(chosen),
-        "selected_by_stratum": {s: sum(1 for r in chosen if r["stratum"] == s) for s in STRATA},
-        "samples": [
-            {
-                "sample_index": r["sample_index"],
-                "id": r["id"],
-                "stratum": r["stratum"],
-                "referee_verdict": r["referee_verdict"],
-            }
-            for r in chosen
-        ],
-    }
+    manifest = build_manifest(chosen, args.round, args.seed, targets, available)
     manifest_path = DIAG / "referee_sample_manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
 

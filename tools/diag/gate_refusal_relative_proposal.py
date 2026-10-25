@@ -88,3 +88,30 @@ def evaluate_refusal_rule(
         )
 
     return checks, warnings
+
+
+def apply_to_gate_result(
+    result: dict,
+    candidate_rate: Optional[float],
+    baseline_rate: Optional[float],
+    max_refusal: float = GATE_MAX_REFUSAL_RATE_DEFAULT,
+    max_refusal_delta: float = GATE_MAX_REFUSAL_RATE_DELTA_DEFAULT,
+) -> dict:
+    """MÔ PHỎNG kết quả `gate.compare()` NẾU PA-13 được duyệt.
+
+    Thay đúng một luật (`refusal_rate_bounded` tuyệt đối) bằng cặp
+    `refusal_rate_not_increased` + cảnh báo trần; giữ nguyên mọi check khác và
+    `config_mismatches`. Chỉ dùng để kiểm thử/đối chiếu — KHÔNG import hay sửa gate.py.
+    """
+    checks, warnings = evaluate_refusal_rule(
+        candidate_rate, baseline_rate, max_refusal=max_refusal, max_refusal_delta=max_refusal_delta
+    )
+    replaced = {"refusal_rate_bounded", "refusal_rate_not_increased"}
+    new = dict(result)
+    new["checks"] = [c for c in result.get("checks", []) if c.get("rule") not in replaced] + checks
+    new["warnings"] = list(result.get("warnings") or []) + warnings
+    new["passed"] = all(c.get("ok") for c in new["checks"])
+    if result.get("config_mismatches"):
+        # Giữ nguyên hành vi gate.main: cấu hình lệch thì cổng đóng, bất kể checks.
+        new["passed"] = False
+    return new

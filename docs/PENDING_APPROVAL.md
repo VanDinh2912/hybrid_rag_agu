@@ -282,6 +282,21 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
 - Việc cần duyệt: (1) chốt delta mặc định 0,05; (2) cho phép áp diff vào `gate.py`; (3) xác nhận
   việc đổi tên rule (nếu muốn giữ tên cũ `refusal_rate_bounded` thì báo trước để không tách nhánh
   báo cáo).
+- **Test đã viết sẵn, chạy ngay khi diff được duyệt (bổ sung 25-10, đợt kiểm thử T6):**
+  `tests/test_t6_gate_refusal_and_regression.py` (**28 test**, toàn repo **1.124 passed** —
+  `tmp/pytest_t6_final.txt`). Phủ mục 1–6 đề bài: 0,69/0,72 ĐẠT + cảnh báo trần không phủ quyết;
+  0,80/0,72 BỊ; ba điểm biên (+0,0499/+0,05/+0,0501); baseline rỗng hoặc `n=0` ⇒ CẤM với thông báo
+  "KHÔNG ĐO ĐƯỢC"; ghim 6 luật còn lại bằng test biên từng luật; cổng từ chối mở khi chữ ký trọng tài
+  hoặc cấu hình hai round lệch. Hàm `apply_to_gate_result()` trong
+  `tools/diag/gate_refusal_relative_proposal.py` áp luật mới lên **chính JSON cổng đã công bố**.
+- **Số thật khi áp luật mới (đính chính đề bài, không hạ mức đỏ):** r5-vs-r1 **lật sang ĐẠT**
+  (0,69 vs 0,72 ⇒ ĐẠT + cảnh báo vượt trần 0,35); **r5-vs-r3 vẫn KHÔNG ĐẠT** vì delta refusal
+  **+0,08 > 0,05** và fabrication 0,0256→0,0323 tăng; r3-vs-r1 vẫn đỏ vì
+  `no_new_hallucinated_refusal` (2→3). Cổng retrieval r4-vs-r2 giữ nguyên ĐẠT. Nói cách khác PA-13
+  **không** tự nó làm round âm gần nhất thành đạt.
+- Mutation chứng minh test có hiệu lực: M1 đổi dấu `<=`→`<` và M3 bỏ kiểm chữ ký trọng tài **đều bị bắt**
+  (10/10, `tmp/mutation_check_t6_tests.log`; chạy trên bản sao `tmp/mut6_tree/` nên `gate.py` thật
+  không bị chạm).
 
 
 ## PA-14 — T3: đường Gemini KHÔNG có nhánh `ENABLE_DECOUPLED_REFUSAL` (lever im lặng không chạy)

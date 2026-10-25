@@ -50,6 +50,77 @@ CLASS_LABEL = {
     "tu_boi_oan": "Từ chối oan",
 }
 
+ALLOWED_LABELS = CLASSES + ("khong_ro",)
+
+
+class LabelError(ValueError):
+    """Phiếu gán nhãn hỏng: thiếu nhãn (chế độ strict) hoặc nhãn sai định dạng."""
+
+    def __init__(self, problems: list[str]):
+        self.problems = problems
+        super().__init__("; ".join(problems))
+
+
+def validate_labels(rows: list[dict], allow_missing: bool = True) -> None:
+    """Kiểm phiếu TRƯỚC khi tính điểm.
+
+    * nhãn khác rỗng nhưng không nằm trong 4 lớp + `khong_ro` => LUÔN báo lỗi
+      (không im lặng bỏ dòng: một nhãn gõ sai sẽ làm precision/recall lệch mà không ai biết);
+    * nhãn rỗng => báo lỗi khi `allow_missing=False` (chế độ chấm chính thức, `--strict`).
+    """
+    problems: list[str] = []
+    for r in rows:
+        rid = r.get("id") or "(không id)"
+        label = (r.get("nhan_tay") or "").strip()
+        if not label:
+            if not allow_missing:
+                problems.append(f"{rid}: thiếu nhãn tay")
+            continue
+        if label not in ALLOWED_LABELS:
+            problems.append(f"{rid}: nhãn không hợp lệ {label!r} (chỉ nhận {', '.join(ALLOWED_LABELS)})")
+    if problems:
+        raise LabelError(problems)
+
+
+def score_labels(rows: list[dict], verdict_by_id: dict[str, str]) -> dict:
+    """Tính toàn bộ chỉ số từ phiếu đã điền + ánh xạ verdict -> tầng.
+
+    Hàm thuần (không đọc/ghi đĩa) để test được bằng phiếu giả có đáp án biết trước.
+    """
+    filled, unfilled, no_referee = [], [], []
+    for r in rows:
+        label = (r.get("nhan_tay") or "").strip()
+        rid = r["id"]
+        if not label:
+            unfilled.append(rid)
+            continue
+        ref_stratum = VERDICT_TO_STRATUM.get(verdict_by_id.get(rid, ""))
+        if ref_stratum is None:
+            no_referee.append(rid)
+            continue
+        filled.append((label, ref_stratum, rid, verdict_by_id.get(rid, "")))
+
+    scored = [(h, rf) for h, rf, _, _ in filled if h in CLASSES]
+    unclear = [(h, rf) for h, rf, _, _ in filled if h == "khong_ro"]
+    n = len(scored)
+    correct = sum(1 for h, rf in scored if h == rf)
+    return {
+        "n_worksheet_rows": len(rows),
+        "n_filled": len(filled),
+        "n_unfilled": len(unfilled),
+        "n_no_referee": len(no_referee),
+        "n_unclear_dropped": len(unclear),
+        "n_scored": n,
+        "overall_accuracy": round(correct / n, 4) if n else None,
+        "cohen_kappa": cohen_kappa(scored, list(CLASSES)),
+        "per_class": per_class_metrics(scored, list(CLASSES)),
+        "confusion_human_rows_x_referee_cols": confusion_matrix(scored, list(CLASSES)),
+        "referee_verdict_breakdown": dict(Counter(v for _, _, _, v in filled)),
+        "unfilled_ids": unfilled,
+        "no_referee_ids": no_referee,
+        "class_labels": CLASS_LABEL,
+    }
+
 
 def read_jsonl(path: Path) -> list[dict]:
     return [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -107,6 +178,11 @@ def main() -> None:
     ap.add_argument("--round", default="r5")
     ap.add_argument("--worksheet", default="")
     ap.add_argument("--manifest", default="")
+    ap.add_argument(
+        "--strict",
+        action="store_true",
+        help="báo lỗi nếu còn dòng thiếu nhãn tay (dùng khi chấm chính thức)",
+    )
     args = ap.parse_args()
 
     ws_path = Path(args.worksheet) if args.worksheet else DIAG / f"referee_labeling_{args.round}.jsonl"
@@ -120,52 +196,31 @@ def main() -> None:
     manifest = json.loads(man_path.read_text(encoding="utf-8"))
     verdict_by_id = {s["id"]: s["referee_verdict"] for s in manifest.get("samples", [])}
 
-    filled, unfilled, no_referee = [], [], []
-    for r in rows:
-        label = (r.get("nhan_tay") or "").strip()
-        rid = r["id"]
-        if not label:
-            unfilled.append(rid)
-            continue
-        ref_stratum = VERDICT_TO_STRATUM.get(verdict_by_id.get(rid, ""))
-        if ref_stratum is None:
-            no_referee.append(rid)
-            continue
-        filled.append((label, ref_stratum, rid, verdict_by_id.get(rid, "")))
+    try:
+        validate_labels(rows, allow_missing=not args.strict)
+    except LabelError as exc:
+        raise SystemExit(f"Phiếu gán nhãn KHÔNG hợp lệ ({len(exc.problems)} dòng):\n  - "
+                         + "\n  - ".join(exc.problems[:20])
+                         + ("\n  ..." if len(exc.problems) > 20 else ""))
 
-    pairs = [(h, rf) for h, rf, _, _ in filled]
-    scored = [(h, rf) for h, rf, _, _ in filled if h in CLASSES]
-    unclear = [(h, rf) for h, rf, _, _ in filled if h == "khong_ro"]
-
-    n = len(scored)
-    correct = sum(1 for h, rf in scored if h == rf)
-    acc = round(correct / n, 4) if n else None
-
+    stats = score_labels(rows, verdict_by_id)
+    n = stats["n_scored"]
+    unclear = stats["n_unclear_dropped"]
     result = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "round": args.round,
         "worksheet": str(ws_path),
-        "n_worksheet_rows": len(rows),
-        "n_filled": len(filled),
-        "n_unfilled": len(unfilled),
-        "n_no_referee": len(no_referee),
-        "n_unclear_dropped": len(unclear),
-        "n_scored": n,
-        "overall_accuracy": acc,
-        "cohen_kappa": cohen_kappa(scored, list(CLASSES)),
-        "per_class": per_class_metrics(scored, list(CLASSES)),
-        "confusion_human_rows_x_referee_cols": confusion_matrix(scored, list(CLASSES)),
-        "referee_verdict_breakdown": dict(Counter(v for _, _, _, v in filled)),
-        "class_labels": CLASS_LABEL,
+        **stats,
     }
 
     out_path = DIAG / f"referee_agreement_{args.round}.json"
     out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # Bảng tóm tắt ra console (ASCII, tránh lỗi cp1258 khi in tiếng Việt có dấu).
-    print(f"[T6b-agreement] round={args.round} n_scored={n} (dropped unclear={len(unclear)}, "
-          f"unfilled={len(unfilled)})")
-    print(f"[T6b-agreement] overall_accuracy={acc}  cohen_kappa={result['cohen_kappa']}")
+    print(f"[T6b-agreement] round={args.round} n_scored={n} (dropped unclear={unclear}, "
+          f"unfilled={stats['n_unfilled']})")
+    print(f"[T6b-agreement] overall_accuracy={stats['overall_accuracy']}  "
+          f"cohen_kappa={result['cohen_kappa']}")
     header = f"{'class':14}{'sup':>5}{'nP':>5}{'prec':>8}{'rec':>8}{'f1':>8}"
     print(header)
     for c in CLASSES:

@@ -848,3 +848,47 @@ Mục 9: đầu ra adapter khác base, nạp hỏng → `ValueError: Can't find 
 `tools/diag/t4_latency_probe.py`, `tests/test_t4_sft_invariants.py`, `tests/test_t4_generator_contract.py`,
 `tests/test_t4_gpu_slow.py`, bỏ khối `pytest_configure` trong `tests/conftest.py` (hoặc `git revert` commit
 tương ứng). Không đụng `src/`, dữ liệu, artifact công bố, `data/loop/rounds/`.
+
+## Phiên 25-10 15:0x → 16:0x — kiểm thử T6: test viết sẵn cho luật CHƯA được duyệt, không đụng `gate.py`
+
+**Bối cảnh.** Đề bài T6 có 10 mục + tiêu chí phụ "xanh + mutation check (đổi dấu so sánh trong cổng, bỏ
+kiểm chữ ký) bị bắt", kèm ràng buộc **`gate.py` chỉ được sửa sau khi user duyệt**. Nên toàn bộ test phải
+viết sao cho **chạy ngay được khi diff PA-13 được duyệt**, mà vẫn xanh **ngay bây giờ** khi `gate.py` chưa đổi.
+
+**Ngã rẽ 1 — test luật mới bằng cách nào khi `gate.py` chưa đổi?**
+Chọn **test bản đề xuất + hàm áp mô phỏng**: `evaluate_refusal_rule()` và `apply_to_gate_result()`
+(thêm mới trong `tools/diag/gate_refusal_relative_proposal.py`) gỡ đúng hai ô refusal cũ, thay ô mới,
+tính lại `passed`, và **buộc** `passed=False` khi `config_mismatches` khác rỗng. Alternative đã loại:
+(i) monkeypatch `gate.py` trong test → tạo hành vi ảo không file nào có thật; (ii) sửa `gate.py` luôn →
+vi phạm cổng duyệt. Cách chọn cho phép nghiệm thu thật: chạy `gate.main()` trên **file round đã đóng**
+(ghi `--out` vào `tmp_path`), rồi áp `apply_to_gate_result()` lên chính JSON đã công bố.
+Hoàn tác: bỏ hai hàm thêm, xoá `tests/test_t6_gate_refusal_and_regression.py`.
+
+**Ngã rẽ 2 — đề bài nói r5-vs-r3 sẽ lật sang ĐẠT, số thật nói không. Sửa kỳ vọng test cho khớp đề bài?**
+Chọn **ghim số thật và ĐÍNH CHÍNH đề bài**. r5-vs-r3 có delta refusal **+0,08 > 0,05** và fabrication tăng
+(0,0256→0,0323) ⇒ vẫn KHÔNG ĐẠT dưới luật mới; ca lật duy nhất là r5-vs-r1. Ngưỡng 0,05 đã đăng ký trước
+nên không được chỉnh để "cứu" kết luận. Test assert cả hai chiều (old=False, PA-13=False cho r5/r3;
+old=False, PA-13=True+w.warning cho r5/r1). Ghi ở `test_T6.md` §8.2 và `DECISION_LOG.md` D-26.
+
+**Ngã rẽ 3 — mutation check bắt `gate.py` mà không được sửa nó?**
+Chọn **copy-tree**: `tmp/mutation_check_t6_tests.py` chép cây tối thiểu (gate, proposal, referee,
+real-questions, metrics, `src/answer_guard.py`, `src/text_utils.py`, 3 file test) sang `tmp/mut6_tree/`,
+đột biến **bản sao**, chạy pytest trong đó, hoàn nguyên bằng `read_bytes`/`write_bytes` và đối chiếu
+SHA-256. Alternative đã loại: sửa `gate.py` rồi `git checkout` (rủi ro để lại đột biến nếu crash giữa
+chừng, và vi phạm "dụng cụ đo không đổi"). Kết quả 10/10 bắt được, rc baseline = 0.
+
+**Ngã rẽ 4 — sự cố: harness mới trùng tên làm ghi đè log mutation cũ.**
+`tmp/mutation_check_t6.py`/`.log` là bằng chứng đã công bố của §2.2 (15 test đợt 1) nhưng bị lượt mới ghi
+đè. Chọn **khôi phục trước, đổi tên sau**: dựng lại harness cũ từ transcript vào `tmp/mutation_check_t6.py`,
+chạy lại (rc=0, 10/10 bắt được, file gốc nguyên vẹn) để log cũ có lại nội dung tương đương, rồi đổi harness
+mới sang `tmp/mutation_check_t6_tests.py` + `.log`. Hệ quả còn lại: `referee_agreement.py --round r5`
+(lượt smoke) đã làm đổi `data/loop/diag/referee_agreement_r5.json` — khác biệt chỉ là timestamp và ba khoá
+rỗng mới (`unfilled_ids`, `no_referee_ids`, `class_labels`), mọi chỉ số vẫn `n_scored=0` ⇒ **`git checkout`
+trả file về bản đã công bố** thay vì commit bản mới. Bài học ghi lại: script smoke cũng là script đo, phải
+chạy với `--out` trỏ `tmp/` hoặc không chạy.
+
+**Ngã rẽ 5 — validator nhãn và schema câu hỏi: lỏng hay chặt?**
+Chọn **chặt**: nhãn sai định dạng ném `LabelError` **kể cả** khi `allow_missing=True` (chỉ cho phép thiếu
+ở chế độ không `--strict`), `weighted_score()` assert tổng trọng số = 1,0 và khớp bộ khoá, câu hỏi trùng
+id/trùng nội dung bị **loại** còn câu trùng với `testset_v1` thì **giữ nhưng gắn cờ** `leak_testset_v1`
+để người đọc tự quyết. Không có ngoại lệ "tự sửa nhãn cho khớp".
