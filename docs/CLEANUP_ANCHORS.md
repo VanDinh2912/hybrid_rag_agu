@@ -112,7 +112,7 @@ backup byte + ghi lý do, và **bỏ bước**.
 | mốc | fingerprint | pytest | r11 FAIL/PENDING | r11 gold@6 | golden (41 dòng) |
 |---|---|---|---|---|---|
 | B0 — trước dọn | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
-| sau B1–B7 | điền ở KẾT PHIÊN | | | | |
+| sau B1–B7 | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
 
 Ghi chú B2 (26-10 chiều): đã cắt **một bước con** của B2 — chuyển `learn.py` + `benchmark_chunking.py`
 vào `tools/` — vì làm đỏ bất biến #7 trên dữ liệu train (74 dòng `metadata.file` không còn tồn tại);

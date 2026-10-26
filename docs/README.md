@@ -11,6 +11,7 @@ lịch sử P5).
 | [REPRODUCE.md](REPRODUCE.md) | Lệnh tái lập: index, đánh giá, round, máy kiểm, số neo | Muốn chạy lại từ máy sạch |
 | [DECISION_LOG.md](DECISION_LOG.md) | Sổ quyết định 6 cột (D-01…D-42); mỗi nguồn phải tồn tại trên đĩa | Cần biết vì sao một lever bị bác/giữ |
 | [CLEANUP_ANCHORS.md](CLEANUP_ANCHORS.md) | Neo dọn repo 26-10: fingerprint, số test, round neo — **số đóng băng** | Kiểm "dọn cấu trúc không đổi số đo" |
+| [CLEANUP_REPORT.md](CLEANUP_REPORT.md) | Báo cáo KẾT PHIẾN đợt dọn B0–B7: việc đã làm, việc cắt, PA chờ duyệt, bảng neo trước/sau | Nghiệm thu đợt dọn cấu trúc |
 | [archive/](archive/) | Báo cáo T0–T7, test_T*, B1–B5, AUTONOMY_LOG, STATE, MORNING_REPORT, PENDING_APPROVAL — lưu nguyên trạng | Tra lịch sử; liên kết trong đây giữ đường dẫn trước khi dời |
 | [bao_cao/](bao_cao/) | Bản nháp chương báo cáo | Viết báo cáo |
 | [giang_day/](giang_day/) | Giáo trình/bài giảng 14 tệp | Dạy hoặc học lại pipeline |

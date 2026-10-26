@@ -1559,3 +1559,25 @@ audit phải sửa; không đụng runtime pipeline.
 (b)–(d) phải chạy lại `tools/loop/run_round.py` cho round tương ứng hoặc chứng minh round cũ replay được.
 
 **Hoàn tác:** chưa làm gì. Fingerprint hiện tại `2911c69f740d`.
+
+## PA-47 — `ARTIFACT_MANIFEST.json` ghim byte container Chroma ⇒ `--check` đỏ sau MỖI lượt pytest (KẾT PHIẾN đợt dọn, 26-10 tối)
+
+**Hiện tượng.** `tools/diag/artifact_manifest.py --check` báo **ĐỔI 6 tệp** dù tổng vẫn 158 tệp /
+390.961.924 B: `chroma_db/chroma.sqlite3`, `chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/{data_level0.bin,
+length.bin}` và bộ tương ứng của `chroma_db_vie/`. B3 ghi `--check` KHỚP tại thời điểm sinh manifest.
+
+**Nguyên nhân đo được.** `tests/test_t5_contextual_header.py::_real_chunk_texts` mở index thật bằng
+`chromadb.PersistentClient`; mỗi lần mở Chroma ghi lại container. Bằng chứng: chạy `pytest tests -q`
+hai lần liền, cả 6 sha256 đổi ở cả hai lần; mtime cả 6 tệp trùng giây kết thúc pytest. Không liên quan
+B7 (B7 chỉ dời tài liệu).
+
+**Nội dung truy xuất KHÔNG đổi** (`tmp/kf_chroma_query_probe.py`, JSON `tmp/kf_chroma_probe_before.json`
+và `..._after.json`): n = 361 / 342; sha256 ma trận embedding xếp theo id = `87f8f4d451f9` /
+`b688cd89dd05` trước = sau; 30 query mỗi DB lấy từ embedding đã lưu × top-6 ⇒ **0/30 đổi thứ tự id,
+0 cặp khoảng cách lệch**.
+
+**Đề xuất (chọn một).** (a) Bỏ 6 tệp container khỏi manifest, thay bằng "index digest" nội dung
+(sha ma trận embedding + tập id) do script chỉ-đọc mới sinh — khuyến nghị; (b) giữ manifest nhưng ghi
+rõ "chỉ đúng ngay sau khi sinh, pytest làm đỏ"; (c) chỉ sinh manifest ở hành động cuối phiên.
+
+**Hoàn tác:** chưa làm gì; manifest B3 giữ nguyên (không ghi đè artifact đã công bố).
