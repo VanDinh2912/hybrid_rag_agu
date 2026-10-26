@@ -130,3 +130,9 @@ chỉ-đọc `tmp/b4_golden_check.py` (xoá 41 tên chốt ở `tmp/b4_env_names
 Đối chiếu ngữ nghĩa parse cũ/mới: **276/276 KHỚP** (`tmp/b4_diff_env_semantics.py`). 45 site đọc
 env còn lại (generator/pipeline/normalizer/router = PA-26; evaluation = runner đo; answer_guard =
 trọng tài; reranker chưa track) KHÔNG chuyển — PA-44. Cả 4 cổng §6 khớp neo.
+
+Ghi chú B5 (26-10 chiều): B5 là **đề xuất**, không sửa mã. Kết luận: giữ cả 3 tệp trong `src/` —
+chuyển đi làm đỏ bất biến #7 (80 dòng `sft_train.jsonl` + 3 dòng `sft_val.jsonl` có `metadata.file`
+trùng tên 3 tệp), đúng cơ chế đã cắt PA-43; thêm nữa `evaluation.py` là thư viện được
+`benchmark_chunking.py`/`demo_streamlit.py` import. REFEREE_FILES 0/3 bị ảnh hưởng, fingerprint
+`2911c69f740d`. Đồ thị import đầy đủ + danh sách sửa nếu sau này duyệt: PA-45.

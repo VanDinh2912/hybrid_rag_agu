@@ -1395,3 +1395,79 @@ commit từ phiên trước — gom env vào lúc này sẽ trộn ba quyết đ
 trọng tài, dọn cấu trúc) vào một commit, trái mục tiêu "không đổi một con số đo nào".
 
 **Hoàn tác:** chưa làm gì. Đề xuất này chỉ để duyệt; hiện trạng sau B4 đã xanh cả 4 cổng.
+
+## PA-45 — Tách `evaluation.py` + `analyze_ab.py` + `evaluate_classifier.py` khỏi `src/` (B5, chỉ đề xuất — kết luận: CHẶN bởi bất biến #7, khuyến nghị GIỮ NGUYÊN)
+
+**Việc được giao (B5).** Lập đề xuất chuyển 3 tệp đánh giá ra khỏi `src/`, kèm đồ thị import và
+danh sách REFEREE_FILES bị ảnh hưởng. Mục này chỉ ghi kết quả điều tra; **không sửa một byte mã
+nguồn nào**.
+
+**Hiện trạng.**
+
+| tệp | dòng | byte | vai trò | importer (code) |
+|---|---|---|---|---|
+| `src/evaluation.py` | 1.184 | 63.208 | runner Hit@K/MRR/Citation/Faithfulness + chế độ A/B; **đồng thời là thư viện hàm chấm điểm** | `benchmark_chunking.py:74` (4 hàm), `demo_streamlit.py:53` (7 tên, có `REFUSAL_MARKER`), `tests/test_evaluation.py:3`, `tests/test_evaluation_ab.py:11–12` |
+| `src/analyze_ab.py` | 463 | 25.154 | đọc 2 JSON A/B → `outputs/ab_comparison.md` + 3 PNG | không có; chỉ nằm trong whitelist "script chưa argparse" của `tests/test_t7_docs_consistency.py:329` |
+| `src/evaluate_classifier.py` | 464 | 21.652 | đo accuracy classifier + baseline kNN → `logs/classifier/` | không có |
+
+**Đồ thị import (đo 26-10, chỉ-đọc).**
+- Chiều ra: `evaluation` → `src.generator` (9 tên, **có `_env_flag` private**), `src.local_slm`,
+  `src.pipeline`, `src.text_utils`, `src.vector_db`; gọi `load_dotenv()` ngay lúc import; ngoài
+  package: `dotenv`, `google.generativeai`. `analyze_ab` → chỉ stdlib + `matplotlib`; đọc
+  `data/evaluation/benchmark_100_questions_v3.json`, `outputs/ab_results_{with,without}_classifier.json`,
+  `logs/classifier/results.json`. `evaluate_classifier` → `src.classifier`, `src.text_utils`;
+  `numpy` + `src.vector_db` chỉ nạp lazy ở `--method embedding`.
+- Ba tệp **không import lẫn nhau** (analyze_ab chỉ đọc JSON do evaluation sinh ra).
+- Chiều vào ngoài 4 importer trên: `tools/build_training_data.py:1287–1291` nhúng 5 chuỗi lệnh
+  CLI vào dữ liệu huấn luyện (không import).
+
+**REFEREE_FILES — 0/3 tệp bị ảnh hưởng.** Bộ ba là `tools/loop/verify.py`, `src/answer_guard.py`,
+`src/text_utils.py`; không tệp nào trong 3 tệp B5 nằm trong bộ này, `verify.py` có **0** lần nhắc
+"evaluation" (grep), và `src/text_utils.py` chỉ được evaluation *import* chứ không bị sửa. Fingerprint
+đo lại hôm nay = **`2911c69f740d`** (khớp neo). ⇒ Bản thân việc move không đổi chữ ký trọng tài;
+nhưng `evaluation.py` là runner sinh số P4.2/benchmark v3 nên nếu move thì **cấm đổi logic**.
+
+**Blocker cứng: bất biến #7 của dữ liệu train.** `tests/test_final_train_data_audit.py::TestSoThatCuaRepo::test_bat_bien_7_tren_dong_train_code_qa`
+đọc `data/training/sft_train.jsonl` (1.635 dòng, 1.049 dòng có `metadata.file`) và assert
+`file_thieu == []`. Đếm `metadata.file` trùng tên 3 tệp: **evaluation 55 + evaluate_classifier 20 +
+analyze_ab 5 = 80 dòng** (thêm **3 dòng** ở `sft_val.jsonl`: 2 + 1 + 0). Move bất kỳ tệp nào ⇒
+`file_thieu` khác rỗng ⇒ test đỏ — đúng cơ chế đã buộc cắt bước PA-43 (74 dòng). **Không có "đợt 1
+rẻ"**: cả 3 tệp đều có mặt trong metadata train, nên tách riêng hai script CLI cũng đỏ 28 dòng.
+
+**Ba đường đi, không đường nào trung tính với dữ liệu đã công bố.**
+1. Sửa `metadata.file` của 80 dòng train (+3 val) → ghi đè artifact train đã công bố, phải rebuild
+   manifest/hash; vi phạm luật "không ghi đè artifact đã công bố".
+2. Sửa `tools/diag/train_data_audit.py` để dò đường dẫn cũ → sửa dụng cụ kiểm, phải duyệt riêng +
+   đột biến chứng minh nó vẫn bắt được file thiếu; bản chất là dạy checker bỏ qua chỗ hỏng.
+3. Giữ nguyên (khuyến nghị).
+
+**Nếu sau này duyệt move, danh sách sửa ĐẦY ĐỦ (khỏi dò lại):**
+- 3 tệp: base đường dẫn `Path(__file__).resolve().parent.parent` → `.parents[2]` ở
+  `src/evaluation.py:68`, `src/analyze_ab.py:28`, `src/evaluate_classifier.py:38`; cập nhật ví dụ
+  CLI trong docstring (evaluation dòng 36–52; analyze_ab dòng 13 đang ghi "KHÔNG sửa src/evaluation.py").
+- Importer sống: `benchmark_chunking.py:74`, `demo_streamlit.py:53` → `from tools.eval.evaluation import …`.
+- Test: `tests/test_evaluation.py:3`, `tests/test_evaluation_ab.py:11–12` → module mới;
+  `tests/test_t7_docs_consistency.py:329` whitelist → `tools/eval/analyze_ab.py`; `tests/test_main.py:6`
+  (docstring) tuỳ chọn.
+- Tài liệu sống: README (22 + 5 + 8 lần nhắc), `ROADMAP.md:75`, `.env.example:18`, `logs/README.md:9`,
+  `dev/.maestro/playbooks/02_tri_tue_rag.md:27` + `04_kiem_chung_cau_hinh.md:10/12/40`; giáo trình
+  `docs/giang_day/` (8 tệp, 16 lần nhắc đường dẫn đầy đủ + cây thư mục ghi tên trần ở `README.md:77–79`).
+- `tools/build_training_data.py:1287–1291`: 5 chuỗi lệnh (chỉ ảnh hưởng lần sinh dữ liệu sau).
+- `tools/diag/docs_consistency_check.py` **không cần sửa**: `tools/` đã nằm trong `CHECK_TOP`, regex
+  lệnh tổng quát (đã đọc code xác nhận), nên checker vẫn kiểm đúng đường dẫn mới.
+- **Không sửa:** `data/evaluation/benchmark_50_questions.{json,md}` + `benchmark_15_questions.md`
+  (input đo đã công bố, có nhắc `src/evaluation.py`), `data/training/sft_*.jsonl`, `docs/AUTONOMY_LOG.md`,
+  `docs/DECISION_LOG.md`, `docs/reports/*`, `dev/prompts/*` (bản ghi lịch sử) — chấp nhận tham chiếu cũ.
+
+**Vì sao khuyến nghị giữ nguyên (lý do kiến trúc, không chỉ vì test).** `evaluation.py` là **thư viện**
+mà GUI (`demo_streamlit.py`) và benchmark chunking import, lại kéo `_env_flag` private từ
+`src/generator.py`; chuyển sang `tools/` sẽ biến `tools/` thành thư viện của mã production (ngược
+chiều phụ thuộc). Muốn dọn đúng thì tái sinh dữ liệu train thành **phiên bản mới có chủ đích**
+(tên mới, manifest mới, cập nhật test audit theo phiên bản), không phải move lẻ trong đợt này.
+
+**Kiểm chứng nếu duyệt (theo `docs/CLEANUP_ANCHORS.md` §6):** pytest 1.495/5; fingerprint
+`2911c69f740d`; r11 chấm lại 182/629 + 0 lệch; `tools/diag/train_data_audit.py` phải `file_thieu=[]`;
+smoke `python tools/eval/evaluation.py --dry-run --limit 1` + import `tools.eval.evaluation` trong venv.
+
+**Hoàn tác:** chưa làm gì; B5 chỉ đọc và ghi đề xuất. Fingerprint trước/sau khi ghi tài liệu vẫn
+`2911c69f740d`.

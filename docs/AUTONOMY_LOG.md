@@ -1712,3 +1712,30 @@ trị mặc định trong code là nguồn sự thật; KHÔNG thêm cờ/ngư�
 **Cổng sau B4:** pytest **1495 passed / 5 skipped**, fingerprint `2911c69f740d`, r11 **182 / 629,
 item drift 0, 0 lệch**, docs check sạch. Hoàn tác: `git revert` commit B4 (14 file tracked:
 `src/config.py` mới + 9 module + `.env.example` + 3 docs); không xoá artifact/dữ liệu nào.
+
+## Ngã rẽ 40 — 26-10 (dọn repo B5): tách mã đánh giá khỏi `src/` — đề xuất bị chặn bởi bất biến #7
+
+**Quyết định kỹ thuật.**
+
+(a) KHÔNG chuyển 3 tệp (`evaluation.py`, `analyze_ab.py`, `evaluate_classifier.py`) trong đợt dọn
+này. Không phải vì "khó", mà vì mọi phương án move đều phải sửa một artifact đã công bố hoặc sửa
+dụng cụ kiểm: `tests/test_final_train_data_audit.py::…::test_bat_bien_7…` yêu cầu mọi
+`metadata.file` trong `data/training/sft_train.jsonl` tồn tại; 3 tệp xuất hiện ở **80 dòng train
++ 3 dòng val** ⇒ move là `file_thieu ≠ []`. Cùng cơ chế đã cắt PA-43 (74 dòng).
+
+(b) Không có "đợt 1 rẻ" cho hai script CLI: analyze_ab 5 dòng + evaluate_classifier 20 dòng train
+(+1 val) cũng đỏ. Đã cân nhắc và bác.
+
+(c) Lý do kiến trúc độc lập với test: `evaluation.py` là thư viện chấm điểm được
+`benchmark_chunking.py:74` và `demo_streamlit.py:53` import (7 tên, có `REFUSAL_MARKER`) và còn
+import `_env_flag` private từ `src/generator.py`; chuyển sang `tools/` đảo chiều phụ thuộc
+(tools thành thư viện của production). Đề xuất để ngỏ: tái sinh dữ liệu train phiên bản mới rồi
+move — PA-45 có danh sách sửa đầy đủ.
+
+**Bằng chứng.** `tmp/b5_refs.py` (chỉ-đọc) đếm 630 lần nhắc `evaluation.py` (35 tệp), 172 lần
+`analyze_ab.py` (16 tệp), 265 lần `evaluate_classifier.py` (14 tệp); file `tmp/b5_refs.json`.
+`REFEREE_FILES` = `tools/loop/verify.py`, `src/answer_guard.py`, `src/text_utils.py` — 0/3 bị ảnh
+hưởng, `verify.py` 0 lần nhắc evaluation; fingerprint đo lại = `2911c69f740d`.
+
+**Cổng sau B5 (chỉ sửa docs):** pytest 1495 / 5 skip, fingerprint `2911c69f740d`, r11 182 / 629 +
+0 lệch. Hoàn tác: `git revert` commit B5 (chỉ docs; script đo nằm ở `tmp/`, không commit).
