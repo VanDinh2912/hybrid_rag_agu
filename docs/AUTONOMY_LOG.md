@@ -1502,9 +1502,13 @@ memory. Không chạy lại probe, không đổi số đo, không đụng artifa
 (a) **Bằng chứng ngược nằm ở đâu.** `memory/project-local-training.md` (mục "Lesson GPU 4GB") ghi
 "--max-length 1024 OOM ở step 24 dù batch=1 + gradient checkpointing + bf16" — tức một lượt train **thật**
 đã chết, và phần T4b của chính memory chép "Khớp với bài học cũ — lần này có số thay vì chỉ OOM". Repo
-**không còn artifact** của lượt đó: `git ls-files` không có `trainer_state*` hay `*.log` nào của phiên train;
-`data/training/` không có `qwen25_05b_sft_adapter/`; `find` chỉ ra log của riêng phiên B trong `tmp/`.
-Kiểm lại bằng chính danh sách tệp trên đĩa, không nhớ theo memory.
+**không còn artifact của đúng lượt đó** — nhưng câu kiểm chứng tôi viết kèm lại SAI một phần: `find` chỉ ra
+`models/qwen25_05b_sft_adapter/checkpoint-410/trainer_state.json` và `.../training_metrics.json` **có tồn tại**
+(đọc `max_length=768`, `train_rows 1635`, `elapsed 1069,21 s` ⇒ đây là lượt train **thành công** ở 768 token,
+không phải lượt 1024 chết ở step 24). Sai ở chỗ: tôi đoán adapter nằm trong `data/training/` (nó nằm ở
+`models/`) rồi viết `git ls-files ... trainer_state*` = 0 như bằng chứng "không có artifact train nào"; con số
+0 đó chỉ đúng cho **file đã track**. Kiểm lại bằng danh sách tệp trên đĩa là đúng quy trình — nhưng phải liệt kê
+cả thư mục chưa track, nếu không sẽ kết luận thừa (đã sửa B5.md cùng ngày, Ngã rẽ 36).
 
 (b) **Sai ở chỗ nào.** B5/D-39/MORNING/STATE đã viết theo hướng "peak > VRAM không phải bằng chứng hết chỗ"
 (đúng) rồi lướt sang "⇒ chưa quan sát thất bại / chỉ là suy đoán" (kết luận **quá mức**: phủ một quan sát thật
@@ -1593,3 +1597,29 @@ quay về **2** LỆCH đúng như đã công bố. Không kết luận "mất t
 vào CUỐI `MORNING_REPORT.md`, trong khi qui ước của quyển này là mục mới nhất ở ĐẦU (16 heading gần nhất đều
 như vậy). `tmp/move_commit_scope_note_to_top.py` dời 26 dòng lên trước heading "## CẬP NHẬT 26-10 03:1x" kèm
 assert bảo toàn tập dòng (so `sorted(lines)` và số dòng) — nội dung không đổi một dòng nào, chỉ đổi vị trí.
+
+
+## Ngã rẽ 36 — 26-10 04:0x: một câu "không còn artifact" chưa kiểm hết thư mục chưa-track
+
+User yêu cầu chạy bốn lệnh đọc repo (`tree -L 2 ...`, `wc -l src/*.py`, đếm `os.environ|getenv`, liệt kê
+`ENABLE_*`). Trong số có `tree`, mà `tree` **không tồn tại** trong Git Bash của máy này — ngã rẽ là viết bản
+emulasi bằng `os.walk` (`tmp/show_tree_emu.py`) với đúng các mục user loại trừ, thêm `.generation_cache`
+(hàng nghìn file hash, sẽ lấp kín hai cấp) và ghi rõ độ lệch đó trong output, thay vì báo "không chạy được".
+
+Ba số đọc được (để đối chiếu với sổ quyết định, không diễn giải thêm): `src/` = **9.933 dòng** cho 22 tệp, lớn
+nhất là `generator.py` 1.377, `evaluation.py` 1.184, `chunking.py` 865, `pipeline.py` 680, `answer_guard.py`
+535; `grep -rn "os.environ\|getenv" src tools` = **158 lần** (137 nếu bỏ file nhị thư `__pycache__` bằng `-I`);
+cờ `ENABLE_*`/`*_ENABLED` trong `src/` = **12 tên** (hai tên `*_ENV` là hằng tra cứu, không phải cờ).
+
+(a) **Phát hiện quan trọng nhất nằm ngoài bốn lệnh đó.** Cây thư mục lộ `models/qwen25_05b_sft_adapter/` — tức
+thứ mà mục (a) của Ngã rẽ 33 đã ghi là "không thấy". Đọc tại chỗ: `training_metrics.json` có `max_length 768`,
+`train_rows 1635`, `elapsed_seconds 1069,21`, `eval_loss 1,3106 → 1,2297`; `checkpoint-410/trainer_state.json`
+có `max_steps 410`, 43 mốc log ⇒ đây là **lượt train thành công ở 768 token**, không phải lượt 1024 chết ở
+step 24. Kết luận B5 (câu hỏi train thật vẫn MỞ) **không đổi**, nhưng bằng chứng tôi viện dẫn thì sai một phần:
+`git ls-files | grep trainer_state` = 0 chỉ nói về **file đã track**, còn artifact thật nằm ở `models/` (chưa
+track). Đã sửa câu đó trong `docs/reports/B5.md` và trong chính Ngã rẽ 33 (giữ nguyên lỗi cũ + ghi rõ vì sao sai,
+không xoá dấu vết).
+
+(b) **Bài học quy trình.** "Không thấy gì" phải kèm phạm vi quét: với repo này, `models/`, `data/`, `tmp/` đều
+chưa track, nên tìm chứng cứ phải dùng `find`/`os.walk` trên đĩa, không dùng `git ls-files`. Ghi thành một vế
+của PA-40 (quy ước phát ngôn bộ nhớ) khi anh duyệt.
