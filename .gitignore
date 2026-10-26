@@ -47,3 +47,18 @@ Python/_cache/
 # ===== File lock tạm của MS Word/Excel/PowerPoint =====
 ~$*
 
+
+
+# ===== B3 (26-10): artifact lớn giữ ngoài git — xem ARTIFACT_MANIFEST.json ở gốc =====
+# models/ chỉ còn artifact + README; mã train/eval đã dời sang tools/train/.
+# classifier_baseline*/ và retrieval_baseline/ chưa thuộc phạm vi B3 (chờ PA-33 đầy đủ).
+models/*adapter*/
+models/qwen25_05b_sft_smoke/
+
+# ChromaDB / cache OCR: mọi biến thể (_vie, _headers_old, …)
+chroma_db*/
+.ocr_cache*/
+
+# outputs/: file mới mặc định KHÔNG stage; file đã track giữ nguyên trong git.
+# Chốt một kết quả mới để công bố thì `git add -f outputs/<file>` rồi chạy lại manifest.
+outputs/*

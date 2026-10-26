@@ -118,3 +118,7 @@ Ghi chú B2 (26-10 chiều): đã cắt **một bước con** của B2 — chuy�
 vào `tools/` — vì làm đỏ bất biến #7 trên dữ liệu train (74 dòng `metadata.file` không còn tồn tại);
 lý do đầy đủ ở AUTONOMY_LOG (Ngã rẽ 37) và PA-43. Sau khi cắt, cả 4 cổng §6 khớp neo
 (pytest 1495/5, `2911c69f740d`, r11 182/629 + 0 lệch).
+
+Ghi chú B3 (26-10 chiều): `.gitignore` chỉ phủ đúng vùng B3 (adapter/chroma/.ocr/outputs); PA-33 đầy
+đủ (`tmp/`, cả `models/`, `data/loop/rounds/`, `data/training/`) vẫn mở. Manifest
+`ARTIFACT_MANIFEST.json` = 158 file / 390.961.924 B, `--check` KHỚP. Cả 4 cổng §6 vẫn khớp neo.

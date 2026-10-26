@@ -1648,3 +1648,26 @@ Chạy lại đủ cổng sau khi cắt: pytest **1495 passed / 5 skipped (105,7
 r11 **182 / 629, item drift 0, 0 lệch**, docs check SẠCH LỖI (5 cảnh báo đúng danh sách trắng). Đề xuất mở:
 **PA-43** (muốn chuyển 2 script thì phải duyệt đổi dữ liệu train hoặc đổi máy kiểm). Hoàn tác bước này:
 revert commit B2 (file tracked); không có file untracked nào bị chạm.
+
+## Ngã rẽ 38 — 26-10 (dọn repo B3): .gitignore đúng phạm vi B3, manifest 158 file, tách mã train khỏi artifact
+
+**Quyết định kỹ thuật.**
+
+(a) `models/`: chuyển 6 script train/eval sang `tools/train/` (byte nguyên vẹn; `BASE_DIR` thêm một cấp
+`dirname`), `models/README.md` cập nhật 7 đường dẫn + ghi rõ `models/` chỉ còn artifact. Không xoá artifact
+nào. Sáu script chưa từng được git track nên B3 **không** thêm chúng vào git (PA-26 vẫn là quyết định riêng
+về commit mã nguồn/công cụ).
+
+(b) `.gitignore`: chỉ ignore đúng vùng B3 — `models/*adapter*/`, adapter smoke, `chroma_db*/`, `.ocr_cache*/`,
+`outputs/*`; **KHÔNG** ignore `tmp/`, cả `models/`, `data/loop/rounds/`, `data/training/` (đó là PA-33 đầy
+đủ, sẽ làm đỏ test ghim `git add -A` và phải sửa verifier — ngoài phạm vi bước này). Đo lại
+`git add --dry-run -A` = **2.153 mục**; đầu mục vẫn có `models` + `tmp` ⇒ test ghim `>=1000` xanh mà không
+sửa một dòng test nào. `outputs/` vẫn đủ **22 file tracked**; `logs/` vẫn **1 file tracked** (README).
+Kiểm bằng `git check-ignore -v`: adapter / chroma_db_vie / .ocr_cache_vie đều khớp đúng dòng mới.
+
+(c) Manifest: `tools/diag/artifact_manifest.py` (mặc định **chỉ đọc**) + `ARTIFACT_MANIFEST.json`:
+**158 file / 390.961.924 B**, sha256 từng file; `--check` chạy lại **KHỚP 158/158**.
+
+**Cổng sau B3:** pytest **1495 passed / 5 skipped (99,44 s)**, fingerprint `2911c69f740d`, r11 **182 / 629,
+item drift 0, 0 lệch**, docs check SẠCH LỖI. Hoàn tác: `git revert` commit B3 (file tracked) + chuyển 6
+script từ `tools/train/` về `models/` (untracked) — không có artifact nào bị xoá.

@@ -1240,6 +1240,8 @@ khỏi gây nhầm (trường này hiện trỏ về labelset r5 ở hai lượt
 
 ## PA-39 — Thêm đường "logits theo vị trí đáp án" vào `models/train_sft_lora.py` rồi chạy MỘT lượt train thật (B5, 26-10 02:5x)
 
+> **B3 26-10:** script nay ở `tools/train/train_sft_lora.py`; nội dung và số đo của đề xuất không đổi.
+
 **Số đo được (probe, 1 bước fwd+bwd, batch 1).** Ở tỷ lệ đáp án thật của đúng 13 dòng D-25 (median 0,0393):
 dòng 1707 token cần **6238,3 MiB** theo đường hiện tại (`full`) nhưng **3328,3 MiB** khi LM head chỉ tính ở
 vị trí có nhãn — từ 152,3% xuống 81,3% tổng card. Kiểm chứng độc lập cho thấy con số vượt card **không** còn
