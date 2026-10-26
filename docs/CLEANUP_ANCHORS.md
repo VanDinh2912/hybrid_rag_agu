@@ -136,3 +136,10 @@ chuyển đi làm đỏ bất biến #7 (80 dòng `sft_train.jsonl` + 3 dòng `s
 trùng tên 3 tệp), đúng cơ chế đã cắt PA-43; thêm nữa `evaluation.py` là thư viện được
 `benchmark_chunking.py`/`demo_streamlit.py` import. REFEREE_FILES 0/3 bị ảnh hưởng, fingerprint
 `2911c69f740d`. Đồ thị import đầy đủ + danh sách sửa nếu sau này duyệt: PA-45.
+
+Ghi chú B6 (26-10 chiều): B6 là **đề xuất**, không sửa mã. Kết luận: tách `generator.py` và dời lever
+đã bác đều bị chặn bởi PA-26 (generator/pipeline đóng băng, có thay đổi chưa commit) và bởi dụng cụ
+kiểm (`env_flag_audit` + test đòi mỗi lever có site đọc trong `src/`); riêng evidence còn đụng pipeline
+và `run_round.py`. Đề nghị duyệt trước **một** việc rẻ: tạo `experiments/negative_results/README.md`
+(bảng số đo D-03/T3/D-12). Bản đồ dòng + danh sách sửa đầy đủ: PA-46. Fingerprint `2911c69f740d`,
+pytest 1495/5, r11 182/629.

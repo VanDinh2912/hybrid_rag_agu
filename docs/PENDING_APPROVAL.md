@@ -1471,3 +1471,91 @@ smoke `python tools/eval/evaluation.py --dry-run --limit 1` + import `tools.eval
 
 **Hoàn tác:** chưa làm gì; B5 chỉ đọc và ghi đề xuất. Fingerprint trước/sau khi ghi tài liệu vẫn
 `2911c69f740d`.
+
+## PA-46 — Tách `generator.py` + dời lever đã bị bác vào `experiments/negative_results/` (B6, chỉ đề xuất — chưa làm)
+
+**Việc được giao (B6).** (1) Đề xuất tách `src/generator.py` theo lớp prompts/rescue/refusal/evidence,
+kèm **số dòng từng module**; (2) đề xuất dời các lever đã bị bác (rescue, evidence, header) sang
+`experiments/negative_results/` kèm README số đo. Mục này chỉ điều tra và ghi đề xuất; **không sửa mã**.
+
+**Đính chính phạm vi.** "evidence" và "header" **không nằm trong `generator.py`**: evidence là
+`src/evidence_selection.py` (396 dòng), header là `src/contextual_header.py` (421 dòng).
+`generator.py` chỉ chứa prompts + refusal + rescue. Vì vậy B6 là 3 tệp, không phải một.
+
+**Bản đồ `src/generator.py` (1.377 dòng) — đo trên cây hiện tại.**
+
+| dải | dòng | nội dung |
+|---|---:|---|
+| 1–57 | 57 | docstring + import + `DEFAULT_*` |
+| 58–59 | 2 | `REFUSAL_TEXT`, `REFUSAL_MARKER` |
+| 60–138 | 79 | `PROMPT_VERSION`/cache/quota + `QWEN_FALLBACK_*` |
+| 139–231 | 93 | **rescue**: banner, `RESCUE_INSTRUCTION`, `rescue_min_score`, danh sách đòi giá trị, `answer_rescue_enabled`, `looks_like_refusal`, `demands_specific_value` |
+| 232–347 | 116 | **prompts**: `SYSTEM_INSTRUCTION`, `PROMPT_RULES`, 3 biến thể theo question_type |
+| 348–377 | 30 | **refusal**: `canonicalize_refusal`, `is_canonical_refusal_answer` |
+| 378–415 | 38 | `select_prompt_rules` |
+| 416–466 | 51 | `GeneratorError`, `_env_float/_env_int/_env_flag`, `_pick` |
+| 467–598 | 132 | `normalize_docs` + 2 hàm citation |
+| 599–621 | 23 | `build_prompt` |
+| 622–1012 | 391 | `GeminiGenerator` (+ fallback Qwen) |
+| 1013–1043 | 31 | `_qwen_text` |
+| 1044–1377 | 334 | `QwenGenerator` — trong đó rescue: `_rescue_refusal` 1117–1185 (69), khóa cache rescue 1279–1282 (4), khối gọi 1320–1340 (21) |
+
+**Nếu tách (đề xuất, số dòng thô):**
+
+| module đích | lấy từ | dòng |
+|---|---|---:|
+| `src/generator_prompts.py` | 232–347 + 378–415 + 599–621 | **177** (+~12 dòng import/docstring) |
+| `src/generator_refusal.py` | 58–59 + 215–224 (`looks_like_refusal`) + 348–377 | **42** (+~10) |
+| `experiments/negative_results/rescue.py` | 139–214 + 225–231 + 1117–1185 + 1279–1282 + 1320–1340 | **177** (phải sửa `QwenGenerator`) |
+| `experiments/negative_results/evidence.py` | nguyên `src/evidence_selection.py` | **396** |
+| `experiments/negative_results/header.py` | nguyên `src/contextual_header.py` | **421** |
+| `src/generator.py` còn lại | phần core | **≈1.158** (chưa dời rescue) / **≈981** (dời cả rescue) |
+
+**Điều kiện tiên quyết — 6 chặn, không cái nào giải được bằng "move rồi sửa import".**
+1. **PA-26:** `src/generator.py` đang đóng băng và **có thay đổi chưa commit** (`git status` =
+   `M src/generator.py`). Không thể tách một tệp chưa chốt byte; phải quyết định commit hay bỏ
+   thay đổi trước (PA-26).
+2. **Referee:** `src/answer_guard.py` (REFEREE_FILES) import `REFUSAL_TEXT` từ `src.generator` lúc
+   chạy; `src/refusal_policy.py` import `REFUSAL_TEXT` + `looks_like_refusal`;
+   `src/faithfulness_heuristic.py` import `REFUSAL_MARKER`; `src/pipeline.py` import `REFUSAL_TEXT`;
+   `src/evaluation.py` import `REFUSAL_MARKER`. Tách refusal **chỉ an toàn nếu `generator.py`
+   re-export đúng các tên cũ** — sửa `answer_guard.py` là đổi chữ ký trọng tài `2911c69f740d` và
+   mọi round phải chấm lại.
+3. **Pipeline đóng băng:** `src/pipeline.py:32` import `src.evidence_selection` ở cấp module và gọi
+   `select_evidence` (dòng 620). Dời evidence bắt buộc sửa pipeline — chưa được phép.
+4. **Dụng cụ kiểm:** `tools/diag/env_flag_audit.py` đăng ký 3 lever (`ENABLE_ANSWER_RESCUE`,
+   `ENABLE_EVIDENCE_SELECTION`, `ENABLE_CONTEXTUAL_HEADER`); `tests/test_env_flag_audit.py::test_moi_co_deu_duoc_quet_thay_site_doc`
+   đòi mỗi lever có ≥1 site đọc trong `src/`+`tools/`. Move sang `experiments/` ⇒ mất site ⇒ test
+   đỏ. Sửa `SCAN_DIRS`/`LEVERS` = sửa dụng cụ kiểm ⇒ duyệt riêng + đột biến chứng minh.
+5. **Tái lập:** r5b/r9/r13 là các round đã công bố dùng đúng 3 cờ này; nếu code rời khỏi đường chạy
+   của `tools/loop/run_round.py` (import trễ `reranker_status` từ `src.evidence_selection` ở dòng
+   100; `tools/diag/build_header_index.py:38` import 6 tên từ `src.contextual_header`) thì các round
+   đó **không chạy lại được**.
+6. **Test:** `tests/test_answer_rescue.py` (308 dòng), `tests/test_evidence_selection.py` (360),
+   `tests/test_t5_contextual_header.py` (504), phần rescue trong `tests/test_t3_guardrails.py`
+   (1.175) — phải cập nhật import, không xoá test.
+
+**Đề xuất theo thứ tự ít rủi ro (nếu duyệt).**
+(a) **Chỉ tạo `experiments/negative_results/README.md`** — không đổi code; bảng số đo dưới đây.
+Đây là phần duy nhất làm được ngay mà không đụng file đóng băng.
+(b) header: dời `contextual_header.py` (421) — chỉ `tools/diag/build_header_index.py` + tests + env
+audit phải sửa; không đụng runtime pipeline.
+(c) evidence: dời `evidence_selection.py` (396) — phải sửa `pipeline.py` (frozen), `cache_policy.py`
+(import trễ), `run_round.py` (dụng cụ đo), tests, env audit.
+(d) rescue: dời khỏi `generator.py` — phải sửa `generator.py` (frozen) ở 4 chỗ, giữ
+`looks_like_refusal` trong `generator_refusal.py` vì `refusal_policy.py` dùng.
+**Khuyến nghị:** duyệt (a) ngay; (b)–(d) hoãn tới khi PA-26 đóng, làm từng bước, mỗi bước đủ 4 cổng
+`docs/CLEANUP_ANCHORS.md` §6.
+
+**Bảng số đo cho README `experiments/negative_results/` (nguồn là artifact, không chép từ trí nhớ).**
+
+| lever | giả thuyết | kết quả đo | n | thống kê | nguồn |
+|---|---|---|---|---|---|
+| `ENABLE_ANSWER_RESCUE` | lượt trích xuất thứ hai cứu câu từ chối oan | 60/64 lượt thử, **cứu được 1 = 1,7%**; r5b lặp y hệt ⇒ **BÁC vĩnh viễn** | 64 lượt / 100 item | — | D-03; `data/loop/rounds/r5b/rescue_tally.txt`; `data/loop/rounds_v2/r5b/round_summary_full.json` |
+| `ENABLE_EVIDENCE_SELECTION` | chọn 3–5 câu căn cứ thay cửa sổ chunk làm tăng PASS_CORRECT | r9 vs r8: PASS_CORRECT 19 = 19 nhưng **giao ba round chỉ 1 câu**; refusal 0,57 > trần 0,35; p95 33,27 s vs 19,93 s; cổng r9-vs-r5 **KHÔNG ĐẠT 5 luật** | 100 item | băng nhiễu ±3 item | `docs/reports/T3.md` §2.1–2.2; `data/loop/rounds_v2/r9/round_summary_full.json` (trọng tài v2 giữ nguyên 19) |
+| `ENABLE_CONTEXTUAL_HEADER` | header Chương/Điều/Khoản tăng gold@6 | 0,7400 → 0,7371, delta **−0,0029** (2/700) ⇒ **BÁC** trên corpus cũ | 700 cặp | CI [−0,0129; +0,0071], McNemar p=0,79 | D-12; `data/loop/diag/header_paired_r11_r13.json`; `data/loop/rounds/r13/gate_vs_r11_retrieval.json` |
+
+**Cổng khi duyệt:** pytest 1.495/5; fingerprint `2911c69f740d`; r11 182/629 + 0 lệch; riêng bước
+(b)–(d) phải chạy lại `tools/loop/run_round.py` cho round tương ứng hoặc chứng minh round cũ replay được.
+
+**Hoàn tác:** chưa làm gì. Fingerprint hiện tại `2911c69f740d`.

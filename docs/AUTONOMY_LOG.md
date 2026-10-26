@@ -1739,3 +1739,29 @@ hưởng, `verify.py` 0 lần nhắc evaluation; fingerprint đo lại = `2911c6
 
 **Cổng sau B5 (chỉ sửa docs):** pytest 1495 / 5 skip, fingerprint `2911c69f740d`, r11 182 / 629 +
 0 lệch. Hoàn tác: `git revert` commit B5 (chỉ docs; script đo nằm ở `tmp/`, không commit).
+
+## Ngã rẽ 41 — 26-10 (dọn repo B6): tách `generator.py` + dời lever đã bác — chặn bởi PA-26 và dụng cụ kiểm
+
+**Quyết định kỹ thuật.**
+
+(a) KHÔNG tách `src/generator.py` trong đợt dọn này: tệp đang đóng băng PA-26 và có thay đổi chưa
+commit (`M`), nên mọi phép tách sẽ trộn "chốt mã nguồn" với "dọn cấu trúc". Bản đồ tách (prompts
+177 dòng, refusal 42, rescue 177, core ≈981–1.158) đã ghi ở PA-46 để làm ngay khi PA-26 đóng.
+
+(b) KHÔNG dời rescue/evidence/header sang `experiments/negative_results/`: (i) evidence đụng
+`src/pipeline.py` (frozen) + `run_round.py` (dụng cụ đo); (ii) `env_flag_audit` + test đòi mỗi lever
+có site đọc trong `src/`/`tools/` — dời đi thì test đỏ, sửa SCAN_DIRS/LEVERS là sửa dụng cụ kiểm;
+(iii) r5b/r9/r13 phải còn replay được. Ba lý do độc lập, không phải "ngại sửa".
+
+(c) Phần duy nhất đề nghị duyệt ngay: `experiments/negative_results/README.md` — bảng số đo D-03
+(rescue 1/64 = 1,7%), T3 (r9: 19 = 19, giao 1 câu, p95 33,27 s), D-12 (header −0,0029,
+CI [−0,0129; +0,0071], p=0,79), kèm đường dẫn artifact. Không đổi mã, không đổi số.
+
+**Bằng chứng.** Bản đồ dòng `src/generator.py` 1.377 dòng (bảng PA-46); import chéo: answer_guard
+(referee) + refusal_policy + faithfulness_heuristic + evaluation import `REFUSAL_TEXT`/`REFUSAL_MARKER`/
+`looks_like_refusal` từ `src.generator`; `pipeline.py:32` import evidence_selection; `run_round.py:100`
+import trễ `reranker_status`; `build_header_index.py:38` import contextual_header. Fingerprint đo lại
+`2911c69f740d`.
+
+**Cổng sau B6 (chỉ sửa docs):** pytest 1495/5, fingerprint `2911c69f740d`, r11 182/629 + 0 lệch.
+Hoàn tác: `git revert` commit B6 (chỉ docs).
