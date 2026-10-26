@@ -26,12 +26,12 @@ Thuật toán liên quan:
   Xem chi tiết: SYSTEM_ARCHITECTURE.md - Section 2.3
 """
 
-import os
 import re
 from typing import Any, Optional
 
 import ollama
 
+from src.config import settings
 from src.text_utils import fold
 
 # Từ điển ánh xạ từ khóa học vụ & từ đồng nghĩa pháp lý theo Quy chế đào tạo ĐHAG.
@@ -296,9 +296,10 @@ def split_comparison_query(query: str, llm_client: Any = None) -> list[str]:
                 # Client chỉ chấp nhận (prompt, temperature) — ví dụ fake trong test.
                 text = llm_client.generate(prompt, temperature=0.0)
         else:
-            model_name = os.getenv("OLLAMA_MODEL") or DEFAULT_SPLIT_MODEL
-            host = os.getenv("OLLAMA_HOST") or DEFAULT_SPLIT_HOST
-            timeout = float(os.getenv("OLLAMA_TIMEOUT", str(DEFAULT_SPLIT_TIMEOUT)))
+            cfg = settings()
+            model_name = cfg.text_or("OLLAMA_MODEL", DEFAULT_SPLIT_MODEL)
+            host = cfg.text_or("OLLAMA_HOST", DEFAULT_SPLIT_HOST)
+            timeout = cfg.float_required("OLLAMA_TIMEOUT", DEFAULT_SPLIT_TIMEOUT)
             client = ollama.Client(host=host, timeout=timeout)
             response = client.generate(
                 model=model_name,

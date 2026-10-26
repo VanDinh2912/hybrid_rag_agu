@@ -26,7 +26,6 @@ quả của r8/r9; env chỉ tồn tại để tái lập phép đo trên máy k
 
 from __future__ import annotations
 
-import os
 import re
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Optional, Sequence
@@ -37,6 +36,7 @@ from src.answer_guard import (  # CHỈ import: answer_guard là file trọng t�
     extract_entities,
     is_enough_evidence,
 )
+from src.config import settings
 from src.text_utils import fold  # import, không sửa
 from src.vector_db import DEFAULT_RRF_C
 
@@ -72,43 +72,23 @@ def decoupled_refusal_enabled() -> bool:
     Chuỗi rỗng cũng tính là TẮT: `export ENABLE_DECOUPLED_REFUSAL=` trên shell nghĩa là
     "tắt", không phải "bật" — tránh một biến chưa gán giá trị làm đổi cả round.
     """
-    return os.getenv("ENABLE_DECOUPLED_REFUSAL", "0").strip().lower() not in {
-        "",
-        "0",
-        "false",
-        "no",
-        "off",
-    }
-
-
-def _env_float(name: str, default: float) -> float:
-    raw = os.getenv(name, "").strip()
-    if not raw:
-        return default
-    try:
-        value = float(raw)
-    except ValueError:
-        return default
-    return value if 0.0 <= value <= 1.0 else default
-
-
-def _env_int(name: str, default: int) -> int:
-    raw = os.getenv(name, "").strip()
-    try:
-        value = int(raw)
-    except ValueError:
-        return default
-    return value if value >= 0 else default
+    return settings()._env_flag("ENABLE_DECOUPLED_REFUSAL", "0")
 
 
 def thresholds() -> dict[str, Any]:
     """Bộ ngưỡng đang dùng (đã kẹp giá trị hỏng về mặc định đã đăng ký)."""
+    cfg = settings()
     return {
-        "min_entity_coverage": _env_float("DEC_MIN_ENTITY_COVERAGE", DEFAULT_MIN_ENTITY_COVERAGE),
-        "min_token_overlap": _env_float("DEC_MIN_TOKEN_OVERLAP", DEFAULT_MIN_TOKEN_OVERLAP),
-        "min_rrf_norm": _env_float("DEC_MIN_RRF_NORM", DEFAULT_MIN_RRF_NORM),
-        "min_grounding": _env_float("DEC_MIN_GROUNDING", DEFAULT_MIN_GROUNDING),
-        "max_unsupported": _env_int("DEC_MAX_UNSUPPORTED", DEFAULT_MAX_UNSUPPORTED),
+        "min_entity_coverage": cfg._env_float(
+            "DEC_MIN_ENTITY_COVERAGE", DEFAULT_MIN_ENTITY_COVERAGE, lo=0.0, hi=1.0),
+        "min_token_overlap": cfg._env_float(
+            "DEC_MIN_TOKEN_OVERLAP", DEFAULT_MIN_TOKEN_OVERLAP, lo=0.0, hi=1.0),
+        "min_rrf_norm": cfg._env_float(
+            "DEC_MIN_RRF_NORM", DEFAULT_MIN_RRF_NORM, lo=0.0, hi=1.0),
+        "min_grounding": cfg._env_float(
+            "DEC_MIN_GROUNDING", DEFAULT_MIN_GROUNDING, lo=0.0, hi=1.0),
+        "max_unsupported": cfg._env_int(
+            "DEC_MAX_UNSUPPORTED", DEFAULT_MAX_UNSUPPORTED, minimum=0),
     }
 
 

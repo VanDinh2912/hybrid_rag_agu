@@ -122,3 +122,11 @@ lý do đầy đủ ở AUTONOMY_LOG (Ngã rẽ 37) và PA-43. Sau khi cắt, c�
 Ghi chú B3 (26-10 chiều): `.gitignore` chỉ phủ đúng vùng B3 (adapter/chroma/.ocr/outputs); PA-33 đầy
 đủ (`tmp/`, cả `models/`, `data/loop/rounds/`, `data/training/`) vẫn mở. Manifest
 `ARTIFACT_MANIFEST.json` = 158 file / 390.961.924 B, `--check` KHỚP. Cả 4 cổng §6 vẫn khớp neo.
+
+Ghi chú B4 (26-10 chiều): `src/config.py` (mới) là điểm đọc env duy nhất cho 9 module; 29 site được
+chuyển, 0 `os.getenv` còn lại trong 9 file. Golden B0 chụp lại **trùng từng byte** bằng script
+chỉ-đọc `tmp/b4_golden_check.py` (xoá 41 tên chốt ở `tmp/b4_env_names_before.json`; ghi ra
+`tmp/b4_golden_env_off_after.txt`): full `ccc8a92e…a1bb`, 41 dòng giá trị `0ff913…fe410`.
+Đối chiếu ngữ nghĩa parse cũ/mới: **276/276 KHỚP** (`tmp/b4_diff_env_semantics.py`). 45 site đọc
+env còn lại (generator/pipeline/normalizer/router = PA-26; evaluation = runner đo; answer_guard =
+trọng tài; reranker chưa track) KHÔNG chuyển — PA-44. Cả 4 cổng §6 khớp neo.

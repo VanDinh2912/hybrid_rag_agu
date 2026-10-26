@@ -1,4 +1,3 @@
-import os
 import re
 from typing import Any, Optional
 
@@ -7,6 +6,7 @@ from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 
+from src.config import settings
 from src.text_utils import fold
 
 try:
@@ -60,7 +60,8 @@ class VectorStoreManager:
             model_kwargs={'device': 'cpu'}, # Đổi thành 'cuda' nếu máy hỗ trợ GPU tốt
             encode_kwargs={'normalize_embeddings': True}
         )
-        self.persist_directory = persist_directory or os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
+        self.persist_directory = persist_directory or settings().text(
+            "CHROMA_PERSIST_DIR", "./chroma_db")
 
     def create_vector_store(self, chunks: list[dict], collection_name="agu_regulations"):
         """Nạp chunk (kết quả của DocumentChunker.chunk_document) vào ChromaDB.
@@ -133,8 +134,9 @@ class VectorStoreManager:
         id_key: 'chunk_id' để so khớp chính xác từng chunk giữa hai bộ truy xuất.
         k: số ứng viên truy xuất (mặc định 12 cho oversampling, sau đó lọc Top-6).
         """
-        bm25_w = float(os.getenv("BM25_WEIGHT", str(DEFAULT_BM25_WEIGHT)))
-        vector_w = float(os.getenv("CHROMA_WEIGHT", str(DEFAULT_VECTOR_WEIGHT)))
+        cfg = settings()
+        bm25_w = cfg.float_required("BM25_WEIGHT", DEFAULT_BM25_WEIGHT)
+        vector_w = cfg.float_required("CHROMA_WEIGHT", DEFAULT_VECTOR_WEIGHT)
         resolved_weights = weights or [bm25_w, vector_w]
 
         bm25_retriever = self.create_bm25_retriever(vector_db, k=k)

@@ -22,9 +22,10 @@ PHẦN MỞ RỘNG (nửa sau file) — bộ chunking thực nghiệm đếm the
   làm thay đổi corpus đã index, nhờ vậy các số đo Hit@K/MRR cũ vẫn so sánh được.
 """
 
-import os
 import re
 from typing import Callable, Sequence
+
+from src.config import settings
 
 # "Điều N." phải nằm ở đầu dòng: một thông báo có câu trích dẫn "...theo Điều 5."
 # không phải văn bản cấu trúc Điều/Khoản; nhận nhầm sẽ mất toàn bộ nội dung trước đó.
@@ -193,7 +194,7 @@ DEFAULT_OVERLAP_TOKENS = 0
 DEFAULT_MIN_TOKENS = 8
 # Chunk được nhúng bằng bge-m3 nên tokenizer của chính bge-m3 (XLM-RoBERTa) là thước
 # đo trung thực nhất cho mốc "512 token"; đổi EMBEDDING_MODEL thì mốc tự đổi theo.
-DEFAULT_TOKENIZER_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
+DEFAULT_TOKENIZER_MODEL = settings().text("EMBEDDING_MODEL", "BAAI/bge-m3")
 
 # Thứ tự ranh giới ưu tiên của cắt đệ quy: đoạn văn -> dòng -> câu -> mệnh đề -> từ.
 # Phần tử "" cuối cùng là chốt chặn: cắt cứng theo token khi không còn ranh giới nào.

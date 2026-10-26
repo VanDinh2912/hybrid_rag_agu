@@ -22,12 +22,12 @@ số mới; (2) tỉ lệ token: phần từ của câu chuẩn hóa phải bắ
 truy xuất bằng một câu hỏi bịa chủ đề khác.
 """
 
-import os
 import re
 from typing import Optional
 
 import ollama
 
+from src.config import settings
 from src.text_utils import fold
 
 
@@ -116,17 +116,6 @@ CORRECTION_SUFFIX = (
     "Lần này chỉ được xuất ra DUY NHẤT MỘT CÂU HỎI kết thúc bằng dấu '?'. "
     "Không khẳng định đúng/sai, không giải thích, không thêm bất kỳ chữ nào khác."
 )
-
-
-def _env_float(name: str, default: float) -> float:
-    """Đọc số thực từ biến môi trường, trả về default nếu thiếu hoặc sai định dạng."""
-    raw = os.getenv(name)
-    if not raw:
-        return default
-    try:
-        return float(raw)
-    except ValueError:
-        return default
 
 
 QUOTES = "\"'`“”‘’"
@@ -229,9 +218,10 @@ class LocalSLM:
         max_retries: int = DEFAULT_MAX_RETRIES,
         min_token_overlap: float = MIN_TOKEN_OVERLAP,
     ):
-        self.model_name = model_name or os.getenv("OLLAMA_MODEL") or DEFAULT_MODEL
-        self.host = host or os.getenv("OLLAMA_HOST") or DEFAULT_HOST
-        self.timeout = timeout if timeout is not None else _env_float("OLLAMA_TIMEOUT", DEFAULT_TIMEOUT)
+        cfg = settings()
+        self.model_name = model_name or cfg.text_or("OLLAMA_MODEL", DEFAULT_MODEL)
+        self.host = host or cfg.text_or("OLLAMA_HOST", DEFAULT_HOST)
+        self.timeout = timeout if timeout is not None else cfg._env_float("OLLAMA_TIMEOUT", DEFAULT_TIMEOUT)
         self.probe_timeout = probe_timeout
         self.num_predict = num_predict
         self.max_retries = max(0, max_retries)

@@ -1671,3 +1671,44 @@ Kiểm bằng `git check-ignore -v`: adapter / chroma_db_vie / .ocr_cache_vie đ
 **Cổng sau B3:** pytest **1495 passed / 5 skipped (99,44 s)**, fingerprint `2911c69f740d`, r11 **182 / 629,
 item drift 0, 0 lệch**, docs check SẠCH LỖI. Hoàn tác: `git revert` commit B3 (file tracked) + chuyển 6
 script từ `tools/train/` về `models/` (untracked) — không có artifact nào bị xoá.
+
+## Ngã rẽ 39 — 26-10 (dọn repo B4): `src/config.py` gom 25 biến env của 9 module, mặc định y nguyên
+
+**Quyết định kỹ thuật.**
+
+(a) `src/config.py` (mới): `Settings` là frozen dataclass giữ **ảnh chụp** env; `settings()` đọc MỘT
+lượt `TRACKED_ENV` (25 tên) rồi cache theo snapshot. Env đổi giữa hai lượt gọi (198 lời
+`monkeypatch.setenv` trong tests) ⇒ dựng lại; env yên ⇒ dùng lại instance. KHÔNG đọc env lúc
+import, KHÔNG gọi `load_dotenv()`: classifier vẫn tự nạp dotenv như cũ, vector_db/loader vẫn
+không nạp — gom cấu hình không được kéo theo đổi nguồn env.
+
+(b) Ngữ nghĩa parse giữ **từng site**, không hợp nhất: cùng `OLLAMA_TIMEOUT` nhưng retrieval dùng
+`float_required` (rỗng ⇒ ném lỗi, đã nằm trong try/except sẵn có), local_slm dùng `_env_float`
+(rỗng ⇒ mặc định). `ENABLE_CONTEXTUAL_HEADER` dùng `_flag` (`in` on-values: giá trị lạ ⇒ TẮT);
+`ENABLE_EVIDENCE_SELECTION`/`ENABLE_DECOUPLED_REFUSAL` dùng `_env_flag` (`not in` off-values: giá
+trị lạ ⇒ BẬT). Tên accessor `_flag/_env_flag/_env_int/_env_float` giữ đúng "reader" mà
+`tools/diag/env_flag_audit.py` quét tĩnh — đổi tên là làm máy kiểm mù site đọc cờ.
+
+(c) Chỉ chuyển 9 module sạch, **29 site**: contextual_header 1, evidence_selection 5,
+refusal_policy 6, retrieval 3, loader 4, vector_db 3, local_slm 3, classifier 3, chunking 1. Đo
+lại bằng grep: 0 `os.getenv` còn trong 9 file này. KHÔNG chạm **45 site** còn lại: generator 13,
+pipeline 5, normalizer 5, router 6 (đóng băng PA-26), evaluation 7 (runner đo), answer_guard 3
+(file trọng tài), reranker 6 (chưa track) → PA-44.
+
+(d) `.env.example`: thêm khối đầu nói rõ `src/config.py` là điểm đọc duy nhất cho 9 module và giá
+trị mặc định trong code là nguồn sự thật; KHÔNG thêm cờ/ngưỡng lever nào (PA-30 vẫn chờ duyệt).
+
+**Bằng chứng.**
+- Golden B0 (`tmp/b0_golden_env_off.txt`, KHÔNG ghi đè) chụp lại bằng
+  `tmp/b4_golden_check.py` — xoá đúng 41 tên B0 đã xoá (lấy từ artifact trước thay đổi
+  `tmp/b4_env_names_before.json`) + `ENABLE_CONTEXTUAL_HEADER` — ghi ra
+  `tmp/b4_golden_env_off_after.txt`: **trùng từng byte**, full
+  `ccc8a92e1d928ba09b8203f59a9058f4b809788bd2b65830dd8958531243a1bb`, 41 dòng giá trị
+  `0ff9135504e5613d922c21b398469e20ce396e6da81434d1cbb4ee582f7fe410`. Cả dòng header
+  "41 tên" cũng giữ nguyên.
+- `tmp/b4_diff_env_semantics.py`: 12 accessor × 23 giá trị env (thiếu/rỗng/khoảng trắng/số/âm/
+  ngoài khoảng/nan/inf/rác) = **276/276 KHỚP** với biểu thức cũ chép nguyên văn từ HEAD.
+
+**Cổng sau B4:** pytest **1495 passed / 5 skipped**, fingerprint `2911c69f740d`, r11 **182 / 629,
+item drift 0, 0 lệch**, docs check sạch. Hoàn tác: `git revert` commit B4 (14 file tracked:
+`src/config.py` mới + 9 module + `.env.example` + 3 docs); không xoá artifact/dữ liệu nào.

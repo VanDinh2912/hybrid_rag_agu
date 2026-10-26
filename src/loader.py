@@ -20,6 +20,8 @@ import pypdfium2 as pdfium
 from docx import Document as DocxDocument
 from pypdf import PdfReader
 
+from src.config import settings
+
 # Trang ít ký tự hơn ngưỡng này bị coi là trang scan và đưa sang OCR: văn bản hành
 # chính một trang thường > 1.000 ký tự, trang scan trả về 0, nên ngưỡng thấp vẫn an
 # toàn mà bắt được cả trang chỉ có con dấu/số trang.
@@ -98,16 +100,17 @@ class DocumentLoader:
                  min_chars_per_page: int | None = None, ocr_cache_dir: str | None = None):
         self.data_dir = data_dir
         self.default_tier = default_tier
+        cfg = settings()
         self.enable_ocr = (
-            os.getenv("OCR_ENABLED", "1").strip().lower() not in {"0", "false", "no", "off"}
+            cfg._env_flag("OCR_ENABLED", "1")
             if enable_ocr is None else enable_ocr
         )
-        self.ocr_dpi = int(os.getenv("OCR_DPI", DEFAULT_OCR_DPI)) if ocr_dpi is None else ocr_dpi
+        self.ocr_dpi = cfg.int_required("OCR_DPI", DEFAULT_OCR_DPI) if ocr_dpi is None else ocr_dpi
         self.min_chars_per_page = (
-            int(os.getenv("OCR_MIN_CHARS_PER_PAGE", DEFAULT_MIN_CHARS_PER_PAGE))
+            cfg.int_required("OCR_MIN_CHARS_PER_PAGE", DEFAULT_MIN_CHARS_PER_PAGE)
             if min_chars_per_page is None else min_chars_per_page
         )
-        self.ocr_cache_dir = os.getenv("OCR_CACHE_DIR", DEFAULT_CACHE_DIR) if ocr_cache_dir is None else ocr_cache_dir
+        self.ocr_cache_dir = cfg.text("OCR_CACHE_DIR", DEFAULT_CACHE_DIR) if ocr_cache_dir is None else ocr_cache_dir
         self.skipped: list[tuple[str, str]] = []
         self.ocr_stats: list[tuple[str, int, int, int]] = []
         os.makedirs(self.data_dir, exist_ok=True)

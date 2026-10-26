@@ -36,11 +36,11 @@ thì "câu bằng chứng" của module và "câu vàng" của trọng tài là 
 from __future__ import annotations
 
 import math
-import os
 import re
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Optional, Sequence
 
+from src.config import settings
 from src.refusal_policy import query_entities
 from src.text_utils import fold
 
@@ -57,27 +57,14 @@ _TOKEN = re.compile(r"\w+", flags=re.UNICODE)
 
 def evidence_selection_enabled() -> bool:
     """Cờ bật chọn câu bằng chứng. Mặc định TẮT (tắt = đưa nguyên cửa sổ chunk như cũ)."""
-    return os.getenv("ENABLE_EVIDENCE_SELECTION", "0").strip().lower() not in {
-        "",
-        "0",
-        "false",
-        "no",
-        "off",
-    }
-
-
-def _env_int(name: str, default: int) -> int:
-    try:
-        value = int(os.getenv(name, "").strip() or default)
-    except ValueError:
-        return default
-    return value if value > 0 else default
+    return settings()._env_flag("ENABLE_EVIDENCE_SELECTION", "0")
 
 
 def sentence_budget() -> tuple[int, int]:
     """(min, max) số câu; max luôn >= min kể cả khi env vô lý (kẹp về mặc định đã đăng ký)."""
-    lo = _env_int("EV_MIN_SENTENCES", DEFAULT_MIN_SENTENCES)
-    hi = _env_int("EV_MAX_SENTENCES", DEFAULT_MAX_SENTENCES)
+    cfg = settings()
+    lo = cfg._env_int("EV_MIN_SENTENCES", DEFAULT_MIN_SENTENCES, minimum=1)
+    hi = cfg._env_int("EV_MAX_SENTENCES", DEFAULT_MAX_SENTENCES, minimum=1)
     if hi < lo:
         lo, hi = DEFAULT_MIN_SENTENCES, DEFAULT_MAX_SENTENCES
     return lo, hi
@@ -137,7 +124,7 @@ MIN_KEYWORD_HITS_DEFAULT = 2
 
 
 def min_keyword_hits() -> int:
-    return _env_int("EV_MIN_KEYWORD_HITS", MIN_KEYWORD_HITS_DEFAULT)
+    return settings()._env_int("EV_MIN_KEYWORD_HITS", MIN_KEYWORD_HITS_DEFAULT, minimum=1)
 
 
 TIER_ENTITY = 3
@@ -226,7 +213,7 @@ def get_reranker(embeddings: Any = None, *, force_reload: bool = False) -> Reran
     global _RERANKER
     if _RERANKER is not None and not force_reload:
         return _RERANKER
-    requested = os.getenv("EVIDENCE_RERANKER", DEFAULT_RERANKER).strip() or DEFAULT_RERANKER
+    requested = settings().text_strip_or("EVIDENCE_RERANKER", DEFAULT_RERANKER)
     notes: list[str] = []
     try:
         from sentence_transformers import CrossEncoder  # import trễ: chỉ khi cờ BẬT
@@ -252,11 +239,11 @@ def get_reranker(embeddings: Any = None, *, force_reload: bool = False) -> Reran
 
 def reranker_status() -> dict[str, Any]:
     """Trạng thái reranker để manifest ghi lại (đăng ký: round phải GHI rõ dùng kind nào)."""
+    requested = settings().text_strip_or("EVIDENCE_RERANKER", DEFAULT_RERANKER)
     if _RERANKER is None:
-        requested = os.getenv("EVIDENCE_RERANKER", DEFAULT_RERANKER).strip() or DEFAULT_RERANKER
         return {"requested": requested, "kind": "chưa_chạy", "notes": []}
     return {
-        "requested": os.getenv("EVIDENCE_RERANKER", DEFAULT_RERANKER).strip() or DEFAULT_RERANKER,
+        "requested": requested,
         "kind": _RERANKER.kind,
         "model": _RERANKER.model_name,
         "notes": list(_RERANKER._notes),

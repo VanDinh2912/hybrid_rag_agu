@@ -26,12 +26,12 @@ Cấu hình (đọc qua dotenv như các module `src/` khác):
 """
 
 import json
-import os
 import re
 from typing import Optional
 
 from dotenv import load_dotenv
 
+from src.config import settings
 from src.local_slm import LocalSLM
 from src.text_utils import fold
 
@@ -536,22 +536,15 @@ def _keyword_question_type(folded_query: str) -> str:
 
 def _classifier_timeout() -> float:
     """Đọc CLASSIFIER_TIMEOUT; giá trị thiếu/sai/không dương đều về mặc định 20s."""
-    raw = os.getenv("CLASSIFIER_TIMEOUT")
-    if not raw:
-        return DEFAULT_TIMEOUT
-    try:
-        timeout = float(raw)
-    except ValueError:
-        return DEFAULT_TIMEOUT
-    return timeout if timeout > 0 else DEFAULT_TIMEOUT
+    return settings()._env_float("CLASSIFIER_TIMEOUT", DEFAULT_TIMEOUT, gt=0.0)
 
 
 def _classifier_model() -> str:
     """CLASSIFIER_MODEL nếu có, ngược lại OLLAMA_MODEL, cuối cùng là Qwen mặc định."""
+    cfg = settings()
     return (
-        (os.getenv("CLASSIFIER_MODEL") or "").strip()
-        or os.getenv("OLLAMA_MODEL")
-        or DEFAULT_MODEL
+        cfg.text("CLASSIFIER_MODEL", "").strip()
+        or cfg.text_or("OLLAMA_MODEL", DEFAULT_MODEL)
     )
 
 

@@ -45,6 +45,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
+from src.config import settings
+
 ENABLE_CONTEXTUAL_HEADER_ENV = "ENABLE_CONTEXTUAL_HEADER"
 
 DEFAULT_TITLE = "Văn bản"
@@ -55,8 +57,6 @@ FALLBACK_WHOLE = "Toàn văn"
 
 #: Index đang được pipeline sản xuất dùng; TUYỆT ĐỐI không ghi đè.
 PROTECTED_INDEX_DIRS = ("chroma_db", "chroma_db_vie")
-
-_ON_VALUES = {"1", "true", "yes", "on"}
 
 # Dòng đầu của chunk production:
 #   "[tên văn bản] - [Điều 8.] \n ..."
@@ -85,7 +85,7 @@ _MD_TABLE_SEP_RE = re.compile(
 # --------------------------------------------------------------------- cờ
 def contextual_header_enabled() -> bool:
     """Cờ T5b. Mặc định TẮT; giá trị rác không bật được (cùng kiểu các cờ khác)."""
-    return os.getenv(ENABLE_CONTEXTUAL_HEADER_ENV, "0").strip().lower() in _ON_VALUES
+    return settings()._flag(ENABLE_CONTEXTUAL_HEADER_ENV, "0")
 
 
 # --------------------------------------------------------------------- phân tích chunk

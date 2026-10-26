@@ -29,8 +29,9 @@ PA-37 (weights cross-encoder nhỏ) · PA-38 (đăng ký lại phép đo có m�
 logits-theo-đáp-án) · PA-40 (quy ước phát ngôn bộ nhớ) · PA-41 (hai kỳ vọng cũ của `final_number_audit`).
 
 **Đợt dọn repo (26-10 chiều, đề bài dọn cấu trúc "không đổi một con số đo nào"):** PA-42 (EOL vs
-chữ ký trọng tài, B1) · PA-43 (tách mã đánh giá khỏi `src/`, B5) · PA-44 (tách `generator.py`, B6) —
-chi tiết ở cuối file. Neo trước/sau: `docs/CLEANUP_ANCHORS.md`.
+chữ ký trọng tài, B1) · PA-43 (chuyển `learn.py`/`benchmark_chunking.py`, B2 — đã cắt bước) ·
+PA-44 (gom nốt 45 site env còn lại, B4) · PA-45 (tách mã đánh giá khỏi `src/`, B5) ·
+PA-46 (tách `generator.py`, B6) — chi tiết ở cuối file. Neo trước/sau: `docs/CLEANUP_ANCHORS.md`.
 
 **Thứ tự đề xuất cho sáng mai:** PA-35 (hoặc chạy pha sinh trên r16 trước) → PA-17 → PA-26/PA-33/PA-31/
 PA-34 → PA-39 (+ PA-40) để đóng T4 mục 5, có thể rút PA-11/PA-12 nếu xanh → PA-41 để máy kiểm số xanh lại.
@@ -1365,3 +1366,32 @@ minh nó vẫn bắt được file thiếu.
 **Hoàn tác:** bước move đã bị cắt; không xoá file nào. Byte hai script đã trả đúng HEAD (5.739 B /
 49.915 B); `ui/app.py` trả về import gốc; mọi tham chiếu `tools/learn.py` / `tools/benchmark_chunking.py`
 trong README/ROADMAP/demo/dev/docs đã trả về tên gốc.
+
+## PA-44 — Gom nốt 45 site đọc env còn lại sau B4 (đề xuất, CHƯA làm)
+
+**Bối cảnh.** B4 (26-10 chiều) đã tạo `src/config.py` và chuyển **29 site** đọc env của 9 module
+sạch (contextual_header, evidence_selection, refusal_policy, retrieval, loader, vector_db,
+local_slm, classifier, chunking) với bằng chứng golden B0 trùng byte + 276/276 phép đối chiếu
+ngữ nghĩa. Còn lại **45 site** vẫn gọi `os.getenv` trực tiếp:
+
+| file | số site | vì sao chưa chuyển |
+|---|---|---|
+| `src/generator.py` | 13 | đóng băng PA-26 (chưa từng được commit ở phiên nào) |
+| `src/router.py` | 6 | đóng băng PA-26 |
+| `src/pipeline.py` | 5 | đóng băng PA-26 |
+| `src/query_normalizer.py` | 5 | đóng băng PA-26 (+ `src/text_utils.py` là REFEREE_FILES) |
+| `src/evaluation.py` | 7 | runner đo — sửa trong đợt dọn làm artifact khó truy nguyên |
+| `src/reranker.py` | 6 | file chưa được git track (PA-26 là quyết định riêng) |
+| `src/answer_guard.py` | 3 | file trọng tài; `referee_fingerprint` băm **byte thô** (PA-42) |
+
+**Việc đề xuất.** Sau khi PA-26 được duyệt (commit hay không commit mã nguồn hiện có), chuyển nốt
+các site trên về `src/config.py` theo đúng luật B4: (1) giữ nguyên ngữ nghĩa parse từng site;
+(2) golden env-off phải trùng byte; (3) với `answer_guard.py` phải có quyết định riêng về chữ ký
+trọng tài trước khi đổi bất kỳ byte nào (mọi round cũ sẽ phải chấm lại).
+
+**Rủi ro nếu làm sớm.** `evaluation.py` là runner tạo số của mọi round; `answer_guard.py` nằm
+trong 3 file REFEREE_FILES; `generator/pipeline/query_normalizer/router` đang có thay đổi chưa
+commit từ phiên trước — gom env vào lúc này sẽ trộn ba quyết định (commit mã nguồn, đổi chữ ký
+trọng tài, dọn cấu trúc) vào một commit, trái mục tiêu "không đổi một con số đo nào".
+
+**Hoàn tác:** chưa làm gì. Đề xuất này chỉ để duyệt; hiện trạng sau B4 đã xanh cả 4 cổng.
