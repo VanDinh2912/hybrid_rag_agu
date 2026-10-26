@@ -1,7 +1,7 @@
 # ROADMAP — Hướng làm lại đồ án
 
 > Phiên bản 1.0 · Ngày 2026-10-20 · Trạng thái: **chờ người dùng duyệt** (cổng P0.1)
-> Văn bản định hướng cho toàn bộ P0.2 → P5.4; chi tiết từng nhiệm vụ xem `prompts/README.md`.
+> Văn bản định hướng cho toàn bộ P0.2 → P5.4; chi tiết từng nhiệm vụ xem `dev/prompts/README.md`.
 
 ## 1. Tên đề tài mới
 
@@ -76,7 +76,7 @@ Nguồn: `logs/benchmark/summary_comparison_report.md`, lượt 2026-10-17 23:36
 | Demo hiển thị nhãn | CLI, `ui/app.py`, `demo_streamlit.py` | Hiển thị 2 nhãn và cấu hình truy xuất đã chọn ở chế độ bật classifier |
 | Công tắc an toàn | `ENABLE_CLASSIFIER` | `0` = giữ hành vi pipeline cũ nguyên vẹn 100%; `1` = bật classifier + router. Đề xuất mặc định `0`, P0.3 chốt khi khai báo |
 
-Nguồn phạm vi: `prompts/P0_1_direction_doc.md` (mục "Phạm vi làm lại") và `prompts/README.md`; số liệu tái sử dụng lấy từ `README.md` và kiểm tra trực tiếp ngày 2026-10-20.
+Nguồn phạm vi: `dev/prompts/archive/P0_1_direction_doc.md` (mục "Phạm vi làm lại") và `dev/prompts/README.md`; số liệu tái sử dụng lấy từ `README.md` và kiểm tra trực tiếp ngày 2026-10-20.
 
 **Tái sử dụng nguyên vẹn, không làm lại:** corpus 26 tài liệu, index 361 chunks, hybrid search BM25 + Chroma, generator trích dẫn Điều/Khoản + Soft Refusal, bộ chỉ số Hit@K/MRR/Citation/Faithfulness, 85 unit test hiện có. Benchmark v2 được nâng thành v3 bằng cách thêm khóa `question_type`, không đổi câu hỏi và ground truth.
 
@@ -101,7 +101,7 @@ Mọi đề xuất vượt bốn mục trên cần người dùng duyệt riêng
 | Unit test | Toàn bộ test xanh, chạy offline hoàn toàn, không tốn quota | P2.2, P3.2, P4.1 |
 | Bất biến tương thích | `ENABLE_CLASSIFIER=0` cho hành vi pipeline cũ nguyên vẹn 100% | P3.2, P5.4 |
 
-Nguồn ngưỡng: `prompts/P0_1_direction_doc.md` và `prompts/README.md` (mục "Các điểm BẠN phải quyết"). Ngưỡng 5% tương đối là đề xuất, sẽ chốt cùng người dùng tại P4.3.
+Nguồn ngưỡng: `dev/prompts/archive/P0_1_direction_doc.md` và `dev/prompts/README.md` (mục "Các điểm BẠN phải quyết"). Ngưỡng 5% tương đối là đề xuất, sẽ chốt cùng người dùng tại P4.3.
 
 ## 7. Kế hoạch 6 giai đoạn
 
@@ -1000,7 +1000,7 @@ Quy tắc cứng của giai đoạn này (chi tiết trong `data/loop/README.md`
 không do AI viết; item split=test không bao giờ thành dữ liệu train; mọi vòng lặp chấm
 bằng code vì quota Gemini ~14 request/ngày; lỗi được quy về đúng tầng trước khi retrain.
 
-Nguồn: `prompts/README.md` (bảng nhiệm vụ, thời lượng từng giai đoạn và các cổng kiểm tra).
+Nguồn: `dev/prompts/README.md` (bảng nhiệm vụ, thời lượng từng giai đoạn và các cổng kiểm tra).
 
 ---
 

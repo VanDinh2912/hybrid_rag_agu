@@ -113,3 +113,8 @@ backup byte + ghi lý do, và **bỏ bước**.
 |---|---|---|---|---|---|
 | B0 — trước dọn | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
 | sau B1–B7 | điền ở KẾT PHIÊN | | | | |
+
+Ghi chú B2 (26-10 chiều): đã cắt **một bước con** của B2 — chuyển `learn.py` + `benchmark_chunking.py`
+vào `tools/` — vì làm đỏ bất biến #7 trên dữ liệu train (74 dòng `metadata.file` không còn tồn tại);
+lý do đầy đủ ở AUTONOMY_LOG (Ngã rẽ 37) và PA-43. Sau khi cắt, cả 4 cổng §6 khớp neo
+(pytest 1495/5, `2911c69f740d`, r11 182/629 + 0 lệch).

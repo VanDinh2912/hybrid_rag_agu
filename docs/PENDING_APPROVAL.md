@@ -1338,3 +1338,28 @@ trong đợt dọn này. Nếu duyệt (a) kèm `-text` cho `text_utils.py`, ph�
 
 **Hoàn tác nếu bị từ chối.** Không có gì phải hoàn tác: B1 chỉ đọc và ghi tài liệu, không sửa byte
 của ba file referee.
+
+## PA-43 — Chuyển `learn.py` + `benchmark_chunking.py` vào `tools/` (B2 đợt dọn repo, 26-10 chiều)
+
+**Việc đề xuất.** B2 muốn đưa hai script công cụ từ gốc repo vào `tools/` (cùng chỗ với các script
+`tools/build_*.py`). Đã thử và **cắt bước này trong B2** vì cổng đỏ; đây là đề xuất làm lại có duyệt.
+
+**Số đo tại sao đỏ.** `tests/test_final_train_data_audit.py::TestSoThatCuaRepo::test_bat_bien_7_tren_dong_train_code_qa`
+dùng máy kiểm chỉ-đọc `tools/diag/train_data_audit.py`; sau khi move, `self_contained_code_qa` trả
+`n_rows=1635`, `co_trich_file=1049` nhưng `file_thieu` = **74** dòng — 72 × `benchmark_chunking.py`,
+2 × `learn.py` (trước move = 0; `line_vuot` = 0). Bất biến #7 coi mỗi dòng train code-QA phải tự chứa:
+`metadata.file` phải tồn tại đúng đường dẫn. Kèm theo `ui/app.py:46` phải đổi
+`from learn import …` → `from tools.learn import …`.
+
+**Ba lựa chọn.** (a) Giữ nguyên vị trí hai script (hiện trạng sau B2) — không đổi gì thêm;
+(b) move + cập nhật 74 giá trị `metadata.file` trong `data/training/sft_train.jsonl` rồi kiểm lại
+`dinh_danh_khong_co`/`co_trich_file`: đổi dữ liệu train đã công bố, phải rebuild manifest/hash;
+(c) move + cho `train_data_audit.py` dò tên file đã chuyển — sửa dụng cụ đo, phải thêm đột biến chứng
+minh nó vẫn bắt được file thiếu.
+
+**Khuyến nghị (bảo thủ):** (a) trong đợt dọn này. Muốn (b)/(c) thì duyệt riêng, kèm chạy lại 4 cổng
+`docs/CLEANUP_ANCHORS.md` §6 và ghi số trước/sau.
+
+**Hoàn tác:** bước move đã bị cắt; không xoá file nào. Byte hai script đã trả đúng HEAD (5.739 B /
+49.915 B); `ui/app.py` trả về import gốc; mọi tham chiếu `tools/learn.py` / `tools/benchmark_chunking.py`
+trong README/ROADMAP/demo/dev/docs đã trả về tên gốc.

@@ -68,7 +68,7 @@ Hai cơ chế xuyên suốt các tầng:
 - **`fold()`** (`src/text_utils.py`) — bỏ dấu thanh dùng chung cho mọi tầng: câu hỏi có dấu vẫn khớp được chunk OCR mất dấu ở tầng truy xuất và tầng đánh giá.
 - **Oversampling** — mỗi lượt truy xuất lấy về `top_k × 2` ứng viên; chỉ `top_k` đứng đầu theo thứ hạng RRF được đưa vào generator, phần còn lại phục vụ đo Hit@K.
 
-Đặc tả chi tiết (công thức BM25/cosine/RRF, sơ đồ 6 tầng, đặc tả classifier/router/sub-query/prompt biến thể ở mục 6, bảng biến môi trường): xem `SYSTEM_ARCHITECTURE.md` (kèm bản `.docx`/`.txt` sinh tự động từ cùng một nguồn qua `export_architecture.py`).
+Đặc tả chi tiết (công thức BM25/cosine/RRF, sơ đồ 6 tầng, đặc tả classifier/router/sub-query/prompt biến thể ở mục 6, bảng biến môi trường): xem `SYSTEM_ARCHITECTURE.md` (`.txt`/`.docx` sinh lại bằng `export_architecture.py` khi cần nộp kèm).
 
 ---
 
@@ -122,7 +122,6 @@ hybrid_rag_agu/
 │
 ├── tests/                   # 319 unit test (chunking, pipeline, classifier, router, local_slm,
 │                            #   evaluation, GUI flag...) — offline hoàn toàn
-├── notebooks/               # Chỗ chứa Jupyter Notebook thực nghiệm (hiện đang trống)
 │
 ├── logs/                    # MỌI file tự sinh khi chạy — quy ước chi tiết ở logs/README.md
 │   ├── benchmark/           # Output của benchmark_chunking.py (log, results_all.json, chroma_*/) — xóa được
@@ -139,8 +138,9 @@ hybrid_rag_agu/
 │   ├── figures/                                               # 3 biểu đồ P4.3 (PNG)
 │   └── baseline_2026-10-20/                                   # Snapshot baseline pipeline cũ (P0.2)
 │
-├── .maestro/
-│   └── playbooks/           # Quy tắc cộng tác đa-agent (4 group + base_prompt) — xem mục 7
+├── dev/                     # Tài liệu & quy tắc phát triển (không phải mã chạy)
+│   ├── .maestro/playbooks/  # Quy tắc cộng tác đa-agent (4 group + base_prompt) — xem mục 7
+│   └── prompts/             # Playbook nhiệm vụ P0→P5 + PROGRESS (lịch sử)
 │
 ├── chroma_db/               # ChromaDB đã persist (ingest.py tự sinh — gitignored)
 ├── .ocr_cache/              # Cache kết quả OCR (tự sinh, xóa được — lần nạp sau sẽ OCR lại)
@@ -159,8 +159,7 @@ hybrid_rag_agu/
 │   └── bao_cao/             # Bản nháp chương báo cáo (chương 3 kiến trúc, chương 4 thực nghiệm,
 │                            #   outline chương 1/2/5) — mọi số liệu có nguồn ở outputs//logs/
 │
-├── SYSTEM_ARCHITECTURE.md   # Đặc tả kiến trúc True Hybrid Search 6 tầng (nguồn duy nhất)
-├── SYSTEM_ARCHITECTURE.docx / .txt   # Hai định dạng xuất tự động từ .md — CẤM sửa tay riêng lẻ
+├── SYSTEM_ARCHITECTURE.md   # Đặc tả kiến trúc 6 tầng (nguồn duy nhất; .txt/.docx sinh lại bằng export_architecture.py)
 ├── NORMALIZATION_ACTIVE_LEARNING.md  # Cơ chế học chuẩn hóa từ phản hồi người dùng
 ├── TROUBLESHOOTING_GUI.md   # Xử lý sự cố thường gặp của GUI
 ├── LAYOUT_OPTIMIZATION.md   # Ghi chú tối ưu layout Tab 3
@@ -629,9 +628,9 @@ Ba thư mục cache ẩn khác cũng tự sinh nhưng **không phải log**: `ch
 
 ---
 
-## 7. Quy tắc cộng tác đa-agent (`.maestro/playbooks/`)
+## 7. Quy tắc cộng tác đa-agent (`dev/.maestro/playbooks/`)
 
-Repo được bảo trì song song bởi các agent AI chia theo 4 nhóm trách nhiệm; quy tắc dùng chung nằm ở `.maestro/playbooks/base_prompt.md`:
+Repo được bảo trì song song bởi các agent AI chia theo 4 nhóm trách nhiệm; quy tắc dùng chung nằm ở `dev/.maestro/playbooks/base_prompt.md`:
 
 | Playbook | Nhóm | Phạm vi sở hữu |
 |---|---|---|

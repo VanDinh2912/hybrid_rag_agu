@@ -1623,3 +1623,28 @@ không xoá dấu vết).
 (b) **Bài học quy trình.** "Không thấy gì" phải kèm phạm vi quét: với repo này, `models/`, `data/`, `tmp/` đều
 chưa track, nên tìm chứng cứ phải dùng `find`/`os.walk` trên đĩa, không dùng `git ls-files`. Ghi thành một vế
 của PA-40 (quy ước phát ngôn bộ nhớ) khi anh duyệt.
+
+## Ngã rẽ 37 — 26-10 (dọn repo B2): cổng đỏ vì bất biến dữ liệu train, cắt bước chuyển script
+
+Bối cảnh: B2 yêu cầu chuyển `learn.py` + `benchmark_chunking.py` vào `tools/` và gộp `.maestro/` +
+`prompts/` vào `dev/`. Phần gộp chạy sạch (fingerprint `2911c69f740d`, r11 182/629, 0 lệch; docs check
+SẠCH LỖI), nhưng sau khi sửa `ui/app.py:46` sang `from tools.learn import …`, pytest còn **2 failed /
+1493 passed / 5 skipped**:
+
+- `test_final_train_data_audit.py::…test_bat_bien_7_tren_dong_train_code_qa`: máy kiểm `tools/diag/train_data_audit.py`
+  đếm **74 dòng** code-QA có `metadata.file` không còn tồn tại — 72 × `benchmark_chunking.py`, 2 × `learn.py`
+  (đo trực tiếp bằng `self_contained_code_qa`; trước move = 0, `line_vuot` = 0).
+- `test_t7_docs_consistency.py::…test_script_khong_argparse_chi_dung_o_muc_canh_bao`: câu văn mới ở README
+  biến `export_architecture.py` thành **lệnh** thiếu `--help` → sửa câu chữ (bỏ chữ `python `), không thêm
+  ngoại lệ vào test.
+
+Hai đường để giữ move: (a) sửa 74 giá trị `metadata.file` trong `data/training/sft_train.jsonl` — đổi dữ liệu
+đã công bố; (b) cho máy kiểm dò lại tên file đã chuyển — sửa dụng cụ đo. Cả hai vượt phạm vi "dọn cấu trúc
+không đổi số đo" ⇒ **bỏ đúng bước chuyển script**: ghi lại byte gốc từ HEAD (5.739 B / 49.915 B), trả
+`ui/app.py` về `from learn import …`, trả mọi tham chiếu `tools/…` trong README/ROADMAP/demo/dev/docs về
+tên gốc; giữ phần gộp `dev/` và việc xoá `.txt`/`.docx`.
+
+Chạy lại đủ cổng sau khi cắt: pytest **1495 passed / 5 skipped (105,73 s)**, fingerprint `2911c69f740d`,
+r11 **182 / 629, item drift 0, 0 lệch**, docs check SẠCH LỖI (5 cảnh báo đúng danh sách trắng). Đề xuất mở:
+**PA-43** (muốn chuyển 2 script thì phải duyệt đổi dữ liệu train hoặc đổi máy kiểm). Hoàn tác bước này:
+revert commit B2 (file tracked); không có file untracked nào bị chạm.

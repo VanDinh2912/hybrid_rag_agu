@@ -6,8 +6,7 @@
 ## Phạm vi được đụng
 
 - `ui/app.py`, `TROUBLESHOOTING_GUI.md`, `LAYOUT_OPTIMIZATION.md`
-- `README.md`, `SYSTEM_ARCHITECTURE.md`, `SYSTEM_ARCHITECTURE.docx`,
-  `SYSTEM_ARCHITECTURE.txt`, `export_architecture.py`, `logs/export/export_report.txt`,
+- `README.md`, `SYSTEM_ARCHITECTURE.md`, `export_architecture.py`, `logs/export/export_report.txt`,
   `logs/feedback/user_feedback.json`
 - `tmp/` cho build trung gian (ví dụ render docx)
 
@@ -17,8 +16,8 @@
   layout/cơ chế phải được cập nhật vào doc tương ứng. GUI chỉ GỌI API của pipeline,
   không chứa logic nghiệp vụ
 - Docs đồng bộ với code thực tế (mô tả đúng module, flag, luồng đang tồn tại);
-  3 định dạng `SYSTEM_ARCHITECTURE.*` sinh từ MỘT nguồn qua `export_architecture.py`
-  — CẤM sửa tay từng file riêng lẻ
+  `SYSTEM_ARCHITECTURE.md` là nguồn duy nhất; `.txt`/`.docx` sinh lại khi cần bằng
+  `python export_architecture.py` — CẤM sửa tay từng file riêng lẻ
 
 ## Vùng cấm
 

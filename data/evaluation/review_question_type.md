@@ -131,6 +131,6 @@ Nhãn được rà thủ công từng câu theo thứ tự luật C.1 → C.4 c�
 
 1. **Bảng nhãn:** duyệt 100 nhãn, sửa Q95 và Q99 từ `THU_TUC` → `TRA_CUU`; phân bố chốt: `TRA_CUU=87`, `SO_SANH=5`, `THU_TUC=5`, `NGOAI_PHAM_VI=3`.
 2. **Q96–Q98: giữ trống GT.** Đáp án đúng của câu ngoài corpus là **lời từ chối**, đã được đo qua `in_corpus=false`; không cần GT đáp án. Bổ sung GT từ văn bản ngoài corpus sẽ mâu thuẫn nguyên tắc **corpus là biên tri thức** của hệ thống.
-   - Lưu ý P4: `skipped_no_gt` chỉ bỏ chấm generation theo GT; phép đo **từ chối/ảo giác** của 3 câu này vẫn phải chạy (đã ghi trong `prompts/P4_1_evaluation_ab_mode.md`).
-3. **Per-class:** chấp nhận. Cổng P2.3 (đã nâng trong `prompts/P2_3_classifier_accuracy.md`) gồm accuracy tổng ≥ 80% **và** recall từng lớp `SO_SANH`/`THU_TUC`/`NGOAI_PHAM_VI` ≥ 50%; báo cáo thêm per-class recall/F1 và macro-F1. Không thêm câu mới để cân bằng tập trong P1.2.
+   - Lưu ý P4: `skipped_no_gt` chỉ bỏ chấm generation theo GT; phép đo **từ chối/ảo giác** của 3 câu này vẫn phải chạy (đã ghi trong `dev/prompts/archive/P4_1_evaluation_ab_mode.md`).
+3. **Per-class:** chấp nhận. Cổng P2.3 (đã nâng trong `dev/prompts/archive/P2_3_classifier_accuracy.md`) gồm accuracy tổng ≥ 80% **và** recall từng lớp `SO_SANH`/`THU_TUC`/`NGOAI_PHAM_VI` ≥ 50%; báo cáo thêm per-class recall/F1 và macro-F1. Không thêm câu mới để cân bằng tập trong P1.2.
 
