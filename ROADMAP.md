@@ -141,9 +141,9 @@ duyệt khiến mọi thay đổi phải chứng minh không làm tăng bịa đ
 | P5.17 | Round tổ hợp r7: đường chốt truy xuất (bonus 12) + lever chuẩn hóa, không rescue | `tmp/r7_driver.sh`, `rounds/r7/`, `rounds/r7/combo_tally.txt` | **ĐO XONG 24-10**: 6/7 quy tắc ĐẠT cả hai cổng, chỉ veto vì trần refusal tuyệt đối; **chênh r7-vs-r6 nằm trong băng nhiễu ±3** ⇒ bonus 12 không xác nhận cũng không bác khi đã bật guard; guard tái lập **5/5 ca trùng khít với r6**; 2 ca `PASS_CORRECT` → từ chối oan vì bonus đẩy chunk cần thiết ra cửa sổ. Câu hỏi "bonus 3 hay 12" chuyển sang lặp lại/tăng cỡ mẫu (chi tiết P5.17) |
 | P5.18 | T3 đòn bẩy 1+2: bỏ đường từ chối khỏi prompt, quyền từ chối chuyển xuống tầng ngoài deterministic (5 luật, ngưỡng đăng ký trước) | `src/refusal_policy.py` + `EXTRACT_ONLY_HEAD`/`effective_prompt_version()` trong `src/generator.py` + `_collect_leg_ranks`/luật trong `src/pipeline.py`, cờ `ENABLE_DECOUPLED_REFUSAL` (mặc định TẮT), `tests/test_decoupled_refusal.py` (24 hàm/29 case), round `r8` | **ĐO XONG 24-10 — KHÔNG ĐẠT** (`PASS_CORRECT` 19 < 25; fabrication 1→0 là vế duy nhất đạt): refusal **0,69→0,28** (dưới trần 0,35 lần đầu trong chuỗi r), `FAIL_OVERREFUSAL` **37→23**, +16 câu từ over-refusal thành đúng, nhưng **`PASS_REFUSAL` 17→2** ⇒ 12 câu ngoài phạm vi được trả lời sai + 4 ca tiền giả sai, `pass_rate` 0,31→0,21, cổng veto ở 5 quy tắc. **Năm luật chỉ hai luật bắt** (rank 25, refusal-marker 3); `no_evidence`/`off_topic_window`/`ungrounded` = 0 vì grounding ≡ 1,0 với prompt trích xuất ⇒ tầng ngoài mù với "có căn cứ nhưng lạc đề". Giữ cờ TẮT, code + test + round giữ làm bằng chứng (chi tiết P5.18) |
 | P5.19 | T3 đòn bẩy 3: extract-then-generate — cửa sổ sinh là 3–5 CÂU bằng chứng thay vì ~7k ký tự | `src/evidence_selection.py` (bậc thang thực thể→keyword→tên nguồn→reranker, metadata sao nguyên vẹn) + móc trong `src/pipeline.py`, cờ `ENABLE_EVIDENCE_SELECTION` (mặc định TẮT), `tests/test_evidence_selection.py` (18 case), round `r9` | **ĐO XONG 24-10 — KẾT QUẢ ÂM**: phần pre giống hệt r8 (25 từ chối, gold@k 0,7125 không đổi ⇒ phép một biến đúng), nhưng 75/75 cửa sổ đều **đúng 5 câu** (6898→1022 ký tự) làm `model_still_refuses` **3→32**, refusal **0,28→0,57** (vượt trần), `FAIL_OVERREFUSAL` 23→35, CLOZE_OCR `PASS_CORRECT` **8→3**, p95 **19,93→33,27 s (+67%)**; `PASS_CORRECT` đi ngang 19 nhưng tập câu khác (giao nhau 11 id). Reranker lùi bi-encoder `bge-m3` (cross-encoder không tải được) — đã ghi trong `settings.evidence_reranker`. Không chỉnh ngưỡng `EV_*`; không đo lại trước khi corpus có dấu / model sinh mạnh hơn (chi tiết P5.19) |
-| P5.20 | T4a: generator 3B trên đúng máy triển khai (một biến = model sinh) + T4b pipeline dữ liệu SFT/chi phí bộ nhớ | cờ `GENERATOR_OLLAMA_MODEL` (`src/generator.py`, `src/pipeline.py`), manifest `generator_status` (`tools/loop/run_round.py`), `tests/test_loop_generator_model_flag.py` (11 case), round `r10` (100 item, cache lạnh `tmp/loop_gen_cache_r10`), `tools/build_sft_from_round.py` + `data/training/t4b_r5r8r9r10/`, `tools/diag/{t4_stats,one_variable_check,qlora_memory_probe}.py` | **ĐO XONG 24-10 — 3B KHÔNG đạt ngưỡng đã đăng ký trước** (`PASS_CORRECT` 14→16 < 22; McNemar p = 0,804, CI delta [−0,06; +0,10] chứa 0) trong khi p95 **18,65→34,12 s (+83%)**, model 2,3 GB **100% GPU**, không offload; refusal 0,69→0,75, fabrication 0,0323→0,0. `one_variable_check`: 100/100 item giống nhau từng ký tự ở `contexts`/`sources`/`normalized_query`/`labels`/`retrieval_config`. ⇒ **giữ 1,5B, không mở round Qwen3-4B** (điều khoản: chỉ mở nếu 3B cải thiện). 4b: **trần train đo được của card 4 GB ≈ 1.000 token/dòng** (960 → 3.931,0 MiB; 1.024 → 4.156,9 MiB; gradient checkpointing không giúp) trong khi **13/13 dòng train ≥ 1.016 token** ⇒ cần duyệt PA-11 (4-bit) / PA-12 (đổi định dạng dữ liệu). Chi tiết: `docs/reports/T4.md` |
-| P5.21 | T5a: reranker cross-encoder trên pool 20 RRF → top-6 (bge-reranker-v2-m3, GPU riêng `venv_gpu`) | `src/reranker.py` (`ENABLE_RERANKER`, `RERANKER_*`, mặc định TẮT), nối trong `src/pipeline.py`, `tests/test_reranker_flag.py` + `tests/test_t5_reranker_contract.py` (46 case), round `r12`, `tools/diag/reranker_cost_probe.py` | **ĐO XONG 25-10 — KẾT LUẬN ÂM, giữ cờ TẮT**: gold@6 **0,7400→0,6686** (delta −0,0714 CI [−0,1014; −0,0414], McNemar 83 mất/33 được **p = 3,9e−06**), EXACT **0,2115→0,0385**, TRAP→0, neo HUMAN 0,8144→0,7010, `FAIL_RETRIEVAL` 182→232, cổng **6/8 kiểm tra vi phạm**; round thật **≈66 phút** (median 4,74 s/item — vượt ngưỡng tự đặt 60 phút, đính chính ở T5.md §2.6). Nguyên nhân đo được: `score_pairs` chấm `fold(query)` với passage còn dấu (0/30 chunk vàng vào top-6 so với 28/30 khi dùng query nguyên văn) ⇒ **PA-25** chờ duyệt để bỏ fold + chạy r14. Trần oracle pool-20 = 0,8871. Chi tiết: `docs/reports/T5.md` |
-| P5.22 | T5b: contextual chunk header `[tên file] - [Điều/Khoản]` trong ngữ cảnh sinh | `ENABLE_CONTEXTUAL_HEADER` (mặc định TẮT), metadata header dựng sẵn cho 253/361 chunk, `tests/test_t5_contextual_header.py`, round `r13` | **ĐO XONG 25-10 — KHÔNG CÓ TÍN HIỆU**: gold@6 **0,7371**, delta **−0,0028** CI [−0,0129; +0,0071] (chứa 0), McNemar **p = 0,79**, EXACT +1 item; cổng **6/6 kiểm tra ĐẠT**. Phạm vi can thiệp thật nhỏ vì header `[file] - [Điều]` đã có sẵn ở 253/361 chunk; phần còn lại là Chương/Khoản + 108 chunk fallback. Có **lệch thiết kế đã ghi** (chạy trên `chroma_db` cũ thay vì index header riêng — PA-21/PA-22). Chi tiết: `docs/reports/T5.md` §5 |
+| P5.20 | T4a: generator 3B trên đúng máy triển khai (một biến = model sinh) + T4b pipeline dữ liệu SFT/chi phí bộ nhớ | cờ `GENERATOR_OLLAMA_MODEL` (`src/generator.py`, `src/pipeline.py`), manifest `generator_status` (`tools/loop/run_round.py`), `tests/test_loop_generator_model_flag.py` (11 case), round `r10` (100 item, cache lạnh `tmp/loop_gen_cache_r10`), `tools/build_sft_from_round.py` + `data/training/t4b_r5r8r9r10/`, `tools/diag/{t4_stats,one_variable_check,qlora_memory_probe}.py` | **ĐO XONG 24-10 — 3B KHÔNG đạt ngưỡng đã đăng ký trước** (`PASS_CORRECT` 14→16 < 22; McNemar p = 0,804, CI delta [−0,06; +0,10] chứa 0) trong khi p95 **18,65→34,12 s (+83%)**, model 2,3 GB **100% GPU**, không offload; refusal 0,69→0,75, fabrication 0,0323→0,0. `one_variable_check`: 100/100 item giống nhau từng ký tự ở `contexts`/`sources`/`normalized_query`/`labels`/`retrieval_config`. ⇒ **giữ 1,5B, không mở round Qwen3-4B** (điều khoản: chỉ mở nếu 3B cải thiện). 4b: **trần train đo được của card 4 GB ≈ 1.000 token/dòng** (960 → 3.931,0 MiB; 1.024 → 4.156,9 MiB; gradient checkpointing không giúp) trong khi **13/13 dòng train ≥ 1.016 token** ⇒ cần duyệt PA-11 (4-bit) / PA-12 (đổi định dạng dữ liệu). Chi tiết: `docs/archive/reports/T4.md` |
+| P5.21 | T5a: reranker cross-encoder trên pool 20 RRF → top-6 (bge-reranker-v2-m3, GPU riêng `venv_gpu`) | `src/reranker.py` (`ENABLE_RERANKER`, `RERANKER_*`, mặc định TẮT), nối trong `src/pipeline.py`, `tests/test_reranker_flag.py` + `tests/test_t5_reranker_contract.py` (46 case), round `r12`, `tools/diag/reranker_cost_probe.py` | **ĐO XONG 25-10 — KẾT LUẬN ÂM, giữ cờ TẮT**: gold@6 **0,7400→0,6686** (delta −0,0714 CI [−0,1014; −0,0414], McNemar 83 mất/33 được **p = 3,9e−06**), EXACT **0,2115→0,0385**, TRAP→0, neo HUMAN 0,8144→0,7010, `FAIL_RETRIEVAL` 182→232, cổng **6/8 kiểm tra vi phạm**; round thật **≈66 phút** (median 4,74 s/item — vượt ngưỡng tự đặt 60 phút, đính chính ở T5.md §2.6). Nguyên nhân đo được: `score_pairs` chấm `fold(query)` với passage còn dấu (0/30 chunk vàng vào top-6 so với 28/30 khi dùng query nguyên văn) ⇒ **PA-25** chờ duyệt để bỏ fold + chạy r14. Trần oracle pool-20 = 0,8871. Chi tiết: `docs/archive/reports/T5.md` |
+| P5.22 | T5b: contextual chunk header `[tên file] - [Điều/Khoản]` trong ngữ cảnh sinh | `ENABLE_CONTEXTUAL_HEADER` (mặc định TẮT), metadata header dựng sẵn cho 253/361 chunk, `tests/test_t5_contextual_header.py`, round `r13` | **ĐO XONG 25-10 — KHÔNG CÓ TÍN HIỆU**: gold@6 **0,7371**, delta **−0,0028** CI [−0,0129; +0,0071] (chứa 0), McNemar **p = 0,79**, EXACT +1 item; cổng **6/6 kiểm tra ĐẠT**. Phạm vi can thiệp thật nhỏ vì header `[file] - [Điều]` đã có sẵn ở 253/361 chunk; phần còn lại là Chương/Khoản + 108 chunk fallback. Có **lệch thiết kế đã ghi** (chạy trên `chroma_db` cũ thay vì index header riêng — PA-21/PA-22). Chi tiết: `docs/archive/reports/T5.md` §5 |
 | P5.23 | T7: tái lập một chuỗi round bằng một lệnh + sổ quyết định + khóa chính sách trong cache sinh | `tools/loop/run_chain.{py,ps1,sh}` + `chains/*.json` (dry-run, manifest tất định, preflight, không ghi đè round), `tests/test_run_chain.py` (11 test), `src/cache_policy.py` + `tests/test_cache_policy.py` (26 test), `docs/DECISION_LOG.md`, mục README 5.10 + 8.1 | **XONG TRONG WORKING TREE 25-10**: `run_chain` chạy end-to-end chuỗi demo 2 round × 20 item + gate + attribute; mutation run_chain **6/6**, cache policy **10/10** bị bắt; toàn repo **1.011 passed** (1.004 tại thời điểm T7, +1 test biên T6a, +1 test T0 "CI chứa ước lượng điểm giải tích", +5 test T1). Cache sinh chỉ thêm trường `policy` khi ngưỡng lệch mặc định ⇒ cờ TẮT giữ khóa cũ từng byte. **Chưa commit được**: 35 file nguồn/công cụ/test chưa tracked + 6 file sửa dở ⇒ **PA-26** (commit freeze) chờ duyệt |
 
 ### P5.12 — over-refusal đến từ tầng nào (23-10, 100 item pha sinh)
@@ -514,7 +514,7 @@ corpus mất dấu thanh — ba hướng đó không đụng nhau và không c�
 
 #### T0 — đóng round r5b + noise floor chính thức (23-10, nhiệm vụ T0)
 
-Báo cáo đầy đủ: `docs/reports/T0.md`. Số liệu dưới đây truy được về
+Báo cáo đầy đủ: `docs/archive/reports/T0.md`. Số liệu dưới đây truy được về
 `data/loop/noise_floor.json` (sinh bởi `tools/loop/noise_floor.py`, seed 20261023,
 10.000 lượt bootstrap ghép cặp, chỉ đọc verdicts đã lưu — 0 lời gọi model).
 
@@ -566,7 +566,7 @@ một dòng code nào ⇒ đề xuất "family chỉ được phủ quyết khi 
 `GATE_MIN_FAMILY_N`) nay có số, vẫn **chờ người dùng duyệt, `gate.py` chưa sửa**.
 
 **5. Sửa nhận định latency/KV-prefix bằng số đo trực tiếp (ĐÃ ĐO 23-10, hai lượt độc lập,
-`tmp/probe_prefix_cache_result.json`; chi tiết trong `docs/reports/T0.md` mục 5):**
+`tmp/probe_prefix_cache_result.json`; chi tiết trong `docs/archive/reports/T0.md` mục 5):**
 probe 3 lượt gọi Ollama cục bộ/item-pair, 0 Gemini. Số: lượt đầy đủ A
 `prompt_eval_count=3542` · 1,21 s; lượt đuôi B = A + `RESCUE_INSTRUCTION`
 `prompt_eval_count=3806` · **0,52 s**; đối chứng C (prompt item khác + cùng đuôi, 3351 tok)
@@ -738,7 +738,7 @@ Cấu hình: **đúng r5 từng ký tự** + `ENABLE_DECOUPLED_REFUSAL=1`, cache
 `tmp/loop_gen_cache_r8`, 100/100 item, exit 0, **0 lượt Gemini**. Chữ ký trọng tài
 `9f1179ccab74` khớp cả ba round ⇒ không round cũ nào phải chấm lại.
 Bản ghi: `rounds/r8/round_summary_full.json`, `rounds/r8/attribution_vs_r5.txt`,
-`rounds/r8/gate_vs_r5_full.json`, log `tmp/r8_run.log`, báo cáo `docs/reports/T3.md`.
+`rounds/r8/gate_vs_r5_full.json`, log `tmp/r8_run.log`, báo cáo `docs/archive/reports/T3.md`.
 
 **Vì sao lever chạy được về mặt cơ học.** `EXTRACT_ONLY_HEAD` (prompt `v2.0-extract-only`) bỏ mọi
 đường "không đủ thông tin" khỏi chỉ dẫn, nên model chỉ còn một việc: trích câu trả lời từ ngữ cảnh.
@@ -800,17 +800,17 @@ không tải được (`RepositoryNotFoundError`), module lùi về bi-encoder `
 `settings.evidence_reranker` của manifest đúng yêu cầu đăng ký ⇒ số r9 phải đọc là "chọn câu theo
 bi-encoder"; (ii) **75/75 cửa sổ đều đúng 5 câu** (`EV_MAX_SENTENCES`), không lần nào chọn 3–4 và không
 lần nào phải nới lỏng bậc thang, trung bình **6898 → 1022 ký tự (còn 15%)** — tức lever đang hoạt động
-như "cắt còn 5 câu", chưa phải "chọn 3–5 câu"; nguyên nhân chưa đo, có probe đề xuất ở `docs/reports/T3.md` §6.
+như "cắt còn 5 câu", chưa phải "chọn 3–5 câu"; nguyên nhân chưa đo, có probe đề xuất ở `docs/archive/reports/T3.md` §6.
 
 **Xử lý theo điều khoản đã ký:** tiêu chí `PASS_CORRECT ≥ 25` không đạt ở cả hai round ⇒ **không mở
 lever thứ ba, không chỉnh ngưỡng `DEC_*`/`EV_*` theo số**. Hai cờ giữ mặc định TẮT; module + 47 test
 + artifact round giữ làm bằng chứng (tiền lệ `rescue` ở P5.15c). Hướng điều tra tiếp theo (đều cần duyệt,
-chưa tự làm) nằm ở `docs/PENDING_APPROVAL.md` PA-9/PA-10.
+chưa tự làm) nằm ở `docs/archive/PENDING_APPROVAL.md` PA-9/PA-10.
 
 
 #### P5.20 — T4: 3B trên máy triển khai không mua được gì, và SFT bị chặn bởi 1.000 token (24-10)
 
-Báo cáo đầy đủ: `docs/reports/T4.md`. Cấu hình r10 = **đúng r5** chỉ đổi
+Báo cáo đầy đủ: `docs/archive/reports/T4.md`. Cấu hình r10 = **đúng r5** chỉ đổi
 `GENERATOR_OLLAMA_MODEL=qwen2.5:3b-instruct` (Q4, `num_ctx` 8192, prompt `v1.3`, temperature 0,1),
 100/100 item, cache lạnh `tmp/loop_gen_cache_r10`, exit 0, **0 lượt Gemini**; log `tmp/r10_run.log`.
 
@@ -835,7 +835,7 @@ cho cải thiện nhưng chưa đạt mục tiêu" — **không kích hoạt**, 
 n=8/n=10 (đúng lỗ #23 đã chờ duyệt), còn `refusal_rate_bounded` vi phạm trần tuyệt đối độc lập.
 `ollama ps` trong phiên: `qwen2.5:3b-instruct 2,3 GB 100% GPU 8192` — không offload nên phép so
 latency hợp lệ trực tiếp; snapshot thành tệp của chính khoảnh khắc đó chưa có (lần thử lại bị model
-1,5B của classifier chiếm GPU), đã ghi là "bằng chứng chờ" trong `docs/reports/T4.md` §5.4.
+1,5B của classifier chiếm GPU), đã ghi là "bằng chứng chờ" trong `docs/archive/reports/T4.md` §5.4.
 
 **4b — hai bằng chứng chặn đường SFT, không phải thiếu script.** (1) Dữ liệu:
 `data/training/t4b_r5r8r9r10/manifest.json` = 23 dòng SFT (khử trùng theo item id) trên 9 tài liệu,

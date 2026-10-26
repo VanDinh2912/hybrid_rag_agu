@@ -27,7 +27,7 @@ Trích `tools/loop/verify.py::referee_fingerprint()`: `hashlib.sha256` cập nh�
 | `src/text_utils.py` | `5f810aa52b6b` | 1.235 | CRLF toàn bộ (23 dòng) | TRACKED; index LF, worktree CRLF, không attr |
 
 Hệ quả áp cho cả đợt: (a) B1 **không** chuẩn hóa EOL ba file này — chỉ đề xuất vào
-`docs/PENDING_APPROVAL.md`; (b) `src/config.py` (B4) không được sửa ba file này; (c) mốc kiểm:
+`docs/archive/PENDING_APPROVAL.md`; (b) `src/config.py` (B4) không được sửa ba file này; (c) mốc kiểm:
 
 ```
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -c "import sys;sys.path.insert(0,'tools/loop');from verify import referee_fingerprint;print(referee_fingerprint())"
@@ -143,3 +143,11 @@ kiểm (`env_flag_audit` + test đòi mỗi lever có site đọc trong `src/`);
 và `run_round.py`. Đề nghị duyệt trước **một** việc rẻ: tạo `experiments/negative_results/README.md`
 (bảng số đo D-03/T3/D-12). Bản đồ dòng + danh sách sửa đầy đủ: PA-46. Fingerprint `2911c69f740d`,
 pytest 1495/5, r11 182/629.
+
+Ghi chú B7 (26-10 chiều): `docs/` nay có 4 tài liệu trục (README, ARCHITECTURE, EXPERIMENTS,
+REPRODUCE); 26 tệp báo cáo/nhật ký dời nguyên trạng vào `docs/archive/` (4 nhật ký + 22 báo cáo),
+không xoá tệp nào. Ba ngoại lệ có lý do: `DECISION_LOG.md` (checker đọc cứng + test đòi ≥20 mục),
+`bao_cao/` (`tools/build_training_data.py:944` glob), `giang_day/` (giáo trình); thêm
+`CLEANUP_ANCHORS.md` của chính đợt dọn. Đường dẫn trong README/ROADMAP/DECISION_LOG/data loop README
+đã sửa theo vị trí mới (6 + 10 + 36 + 6 + 1 chỗ, thay theo byte). Checker: 0 lỗi / 5 cảnh báo /
+100 đường dẫn. Fingerprint `2911c69f740d`, pytest 1495/5, r11 182/629.

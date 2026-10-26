@@ -301,7 +301,7 @@ dưới ±3 item nằm trong băng nhiễu T0 (`data/loop/noise_floor.json`) th�
 (r5 median 16,2 s ⇒ ước tính 30–60 phút/round). Reranker chạy CPU/local, không gọi API.
 
 **→ ĐÃ CHẠY XONG (24-10) và KHÔNG ĐẠT TIÊU CHÍ** (`PASS_CORRECT` 19 < 25 ở cả r8 lẫn r9).
-Số và phân tích nằm ở mục "Số đo đã có" (khối **r8 + r9**) và `docs/reports/T3.md`. Toàn bộ ngưỡng
+Số và phân tích nằm ở mục "Số đo đã có" (khối **r8 + r9**) và `docs/archive/reports/T3.md`. Toàn bộ ngưỡng
 `DEC_*` / `EV_*` ở bảng trên **giữ nguyên như đã đăng ký trước khi chạy** — không có ô nào được sửa
 sau khi thấy số. Hai cờ vẫn mặc định TẮT.
 
@@ -311,7 +311,7 @@ sau khi thấy số. Hai cờ vẫn mặc định TẮT.
 minh tầng **sinh** là chỗ nghẽn (oracle MỘT chunk vàng vẫn 63/80 từ chối oan, trần `PASS_CORRECT`
 8,75% — `data/loop/diag/a_oracle_qwen/summary.json`) và nghiêng về nghi-phạm "năng lực model"
 (5/7 câu Qwen-từ-oan được Gemini trả đúng), nhưng **chưa chốt** vì cấu hình (b) mới 7/30 id.
-Theo quyết định của user 24-10 (`docs/AUTONOMY_LOG.md`): 4a chạy như phép **THĂM DÒ** song song với
+Theo quyết định của user 24-10 (`docs/archive/AUTONOMY_LOG.md`): 4a chạy như phép **THĂM DÒ** song song với
 việc resume (b) tới đủ 30 id; **cấm** viết câu "năng lực model là nút thắt" và **cấm** bắt đầu train
 4b trước khi (b) đủ 30 id. Phán quyết cuối phải ghi rõ "n=30 trên nhóm over-refusal, không ngoại suy".
 
@@ -426,13 +426,23 @@ nguyên văn, sắp **ổn định** theo `(-điểm, hạng cũ)`; (7) trả `d
 KEEP_CANDIDATES). Rerank chạy **sau** bonus nên không đối đầu lever nguồn; tie-break vẫn là hạng cũ
 nên kết quả tái lập được. `sources`/`contexts` của row = thứ tự model thật sự đọc.
 
+> **ĐÍNH CHÍNH ĐÃ DUYỆT 25-10 (PA-25) — bước (6) đổi thành query NGUYÊN VĂN × `page_content`
+> nguyên văn.** Bản gốc ở đoạn trên ghi `fold(query)` và đã được dùng cho r12; r12 cho kết quả âm
+> và nguyên nhân đo được là chính quy ước đó: cặp "query mất dấu × passage còn dấu" làm
+> `bge-reranker-v2-m3` gần như mất tín hiệu — probe 30 item: `fold` **0/30** chunk vàng vào top-6,
+> nguyên văn **28/30** (`tmp/probe_r12_fold.json`); round thật r12 gold@6 0,7400→0,6686, EXACT
+> 0,2115→0,0385 (`docs/archive/reports/T5.md` §2.7). Round r16 (danh cho PA-25) chấm theo quy ước mới;
+> `manifest` của mỗi round tự ký bằng `settings.retrieval_reranker.query_convention`, nên round cũ
+> (fold) và round mới (nguyên văn) không đọc nhầm là cùng cấu hình. Các mục khác của thứ tự
+> (1)–(7) giữ nguyên.
+
 **Khác biệt có chủ đích so với T3:** KHÔNG có phương án lùi thầm. Model không tải được hoặc chấm
 điểm lỗi ⇒ `RerankerUnavailable` (kế thừa `RuntimeError`) được `pipeline.retrieve` **ném thẳng lên**
 (tránh cả nhánh `except Exception` vốn lùi về `similarity_search`) ⇒ `run_round` ghi `error` vào
 dòng đó. Một round đo nhầm lever còn tệ hơn một round dừng tường minh.
 
-**Chống rò đáp án (bất biến #6):** reranker chỉ thấy `fold(normalized_query)` + `page_content`;
-không đọc `gold_chunk_id`, `gold_sentence`, `required_entities`. (Khác `src/evidence_selection.py`:
+**Chống rò đáp án (bất biến #6):** reranker chỉ thấy câu hỏi đã chuẩn hóa (từ PA-25: nguyên văn,
+chỉ `.strip()`) + `page_content`; không đọc `gold_chunk_id`, `gold_sentence`, `required_entities`. (Khác `src/evidence_selection.py`:
 cái đó chọn CÂU cho tầng sinh, đã bác ở T3.)
 
 **Hai round, một biến (id luôn = số lớn nhất + 1; r10 đang chạy = 4a của T4):**
@@ -765,7 +775,7 @@ ngưỡng `DEC_*`/`EV_*` theo kết quả (đúng điều khoản đã ký ở m
 `rounds/r8/round_summary_full.json` + `rounds/r8/attribution_vs_r5.txt` + `tmp/r8_run.log`,
 `rounds/r9/round_summary_full.json` + `rounds/r9/attribution_vs_r8.txt` +
 `rounds/r9/attribution_vs_r5.txt` + `tmp/r9_run.log`; cổng: `rounds/r8/gate_vs_r5_full.json`,
-`rounds/r9/gate_vs_r8_full.json`, `rounds/r9/gate_vs_r5_full.json`. Báo cáo đầy đủ: `docs/reports/T3.md`.
+`rounds/r9/gate_vs_r8_full.json`, `rounds/r9/gate_vs_r5_full.json`. Báo cáo đầy đủ: `docs/archive/reports/T3.md`.
 
 | Chỉ số | r5 | r8 | r9 |
 |---|---|---|---|
@@ -823,7 +833,7 @@ Bản ghi: `rounds/r10/round_summary_full.json`, `rounds/r10/t4_stats.json` (10.
 seed 20261023), `rounds/r10/gate_vs_r5_full.json`, `rounds/r10/gate_vs_r9_full.json`,
 `rounds/r10/triage_report.md`, log `tmp/r10_run.log`; kiểm "một biến":
 `data/loop/diag/one_variable_check.json` (contexts/sources/normalized_query/labels/retrieval_config
-**trùng 100/100** item). Báo cáo: `docs/reports/T4.md`.
+**trùng 100/100** item). Báo cáo: `docs/archive/reports/T4.md`.
 
 | Chỉ số | r5 = 1,5B | **r10 = 3B** |
 |---|---|---|
@@ -854,7 +864,7 @@ Quy lỗi: `ranking_no_filter` 57 · `ranking_despite_filter` 37 · `filter_bloc
 gate_vs_r11_retrieval.json,attribution_retrieval.json}`; ghép cặp:
 `data/loop/diag/reranker_paired_r11_r12.json`; chi phí `data/loop/diag/reranker_cost_gpu.json`;
 probe nguyên nhân `tmp/probe_r12_fold.json`; log `tmp/r12_run.log`, `tmp/vram_r12_run.log`.
-Báo cáo: `docs/reports/T5.md` §2.6–§2.7.
+Báo cáo: `docs/archive/reports/T5.md` §2.6–§2.7.
 
 | Chỉ số (700 item, ghép cặp) | r11 | **r12** |
 |---|---|---|

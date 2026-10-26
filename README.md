@@ -605,7 +605,7 @@ lại lượt sinh — thà tốn lượt hơn trộn hai thể chế vào một
 
 > Trạng thái đóng gói: các file `tools/loop/*`, `src/answer_guard.py`, `src/reranker.py`,
 > `src/cache_policy.py` và nhiều test hiện **chưa được commit** (xem PA-26 trong
-> `docs/PENDING_APPROVAL.md`). Trong working tree hiện tại, `pytest tests -q` = **1.124 passed, 2 skipped**
+> `docs/archive/PENDING_APPROVAL.md`). Trong working tree hiện tại, `pytest tests -q` = **1.124 passed, 2 skipped**
 > (2 skipped là hai test T4 **slow**; chạy riêng bằng `T4_RUN_SLOW=1`).
 
 ---
@@ -672,27 +672,27 @@ Những điều dưới đây **không** được che bằng số đẹp; mỗi 
 
 1. **Tầng sinh là nút thắt, không phải truy xuất.** Gold@6 = **0,7400** (r11, 811 item) nhưng
    `PASS_CORRECT` của pha sinh chỉ **14–19/100** qua r1→r12 và **không** vượt ngưỡng 25 ở bất kỳ
-   round nào (`data/loop/README.md`, `docs/reports/T3.md`, `T4.md`). Câu hỏi "model 1,5B có phải
+   round nào (`data/loop/README.md`, `docs/archive/reports/T3.md`, `T4.md`). Câu hỏi "model 1,5B có phải
    trần?" **chưa được trả lời dứt khoát**: 3B không cải thiện (p = 0,804) và mới có 25/30 id T1(b).
 2. **Corpus còn mất dấu thanh.** Đo từ `chroma_db`: **18,6%** số từ còn dấu; 171/361 chunk < 5%;
    `.docx` giữ 78–81% ⇒ nút thắt nằm ở **pipeline convert PDF**, không ở chunking. Mọi số retrieval
-   hiện tại đều đo trên corpus này (nguồn: `data/loop/diag/corpus_check/`, `docs/PENDING_APPROVAL.md`
+   hiện tại đều đo trên corpus này (nguồn: `data/loop/diag/corpus_check/`, `docs/archive/PENDING_APPROVAL.md`
    PA-1/PA-2/PA-3).
 3. **Trần truy xuất có giới hạn đo được.** Oracle trong pool 12 = **0,8214** (EXACT 0,3269); pool 20 =
    **0,8871**. Reranker hiện tại (cross-encoder chấm fold query) đi **ngược**: gold@6 0,7400→0,6686
    (r12), nên mọi kỳ vọng "+10 điểm EXACT" phải chờ PA-25 (bỏ fold) và round r14.
 4. **Contextual header chưa có tín hiệu.** r13: gold@6 0,7371, delta **−0,0028** CI [−0,0129; +0,0071],
    p = 0,79; header dạng `[tên file] - [Điều]` vốn đã có trong 253/361 chunk nên phạm vi can thiệp thật
-   chỉ còn Chương/Khoản + 108 chunk fallback (`docs/reports/T5.md` §5).
+   chỉ còn Chương/Khoản + 108 chunk fallback (`docs/archive/reports/T5.md` §5).
 5. **Bộ đo 811 item chỉ có một phiên bản, không có tập giữ riêng.** Nhãn do luật sinh, **không phải
    người gán**; mẫu 60 câu phân tầng để đo đồng thuận người–máy đã dựng nhưng `n_filled = 0`
-   (`docs/reports/T6.md` §6b), nên `referee_agreement` **chưa có số**. Mọi kết luận "tăng/giảm" chỉ đúng
+   (`docs/archive/reports/T6.md` §6b), nên `referee_agreement` **chưa có số**. Mọi kết luận "tăng/giảm" chỉ đúng
    trong bộ đo này, chưa suy ra được cho câu hỏi thật ngoài đời (`tools/eval/real_questions.jsonl` hiện 0 câu).
 6. **Nhiễu ±3 item.** Các chênh lệch 1–3 item giữa hai round được ghi là "đi ngang", không phải cải
    thiện; quy ước ở `tools/loop/noise_floor.py` + `data/loop/README.md`.
 7. **SFT bị chặn bởi bộ nhớ, không phải ý tưởng.** Card 4 GB hết chỗ từ **1.024 token** (~3 MiB/token)
    trong khi **13/13 dòng train ≥ 1.016 token** ⇒ chưa train được trên máy này (PA-11 4-bit / PA-12
-   đổi định dạng chờ duyệt; `docs/reports/T4.md` §5).
+   đổi định dạng chờ duyệt; `docs/archive/reports/T4.md` §5).
 8. **HEAD không tái lập được cây đã test**: 41 file nguồn/công cụ/test chưa commit + 6 file đang sửa.
    "Người ngoài chạy lại từ README" chỉ đúng trong working tree hiện tại cho tới khi PA-26 được duyệt.
 9. **Chi phí round được đo, không ngoại suy.** r12 thật = **≈66 phút** (3.855,5 s tổng latency, median

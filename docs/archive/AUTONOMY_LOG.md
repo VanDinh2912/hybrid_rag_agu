@@ -1765,3 +1765,35 @@ import trễ `reranker_status`; `build_header_index.py:38` import contextual_hea
 
 **Cổng sau B6 (chỉ sửa docs):** pytest 1495/5, fingerprint `2911c69f740d`, r11 182/629 + 0 lệch.
 Hoàn tác: `git revert` commit B6 (chỉ docs).
+
+## Ngã rẽ 42 — 26-10 (dọn repo B7): cấu trúc `docs/` — dời báo cáo, giữ 4 tài liệu trục
+
+**Quyết định kỹ thuật.**
+
+(a) Dời NGUYÊN thư mục `docs/reports/` (22 tệp) + 4 nhật ký phiên (`AUTONOMY_LOG`, `STATE`,
+`MORNING_REPORT`, `PENDING_APPROVAL`) vào `docs/archive/`, giữ nguyên byte, không xoá tệp nào. Dời cả
+`B1–B5.md` (không chỉ T*/test_*): cùng một lớp "báo cáo phiên"; tách ra sẽ để lại thư mục
+`docs/reports/` dở dang, trái mục tiêu cấu trúc.
+
+(b) GIỮ `docs/DECISION_LOG.md` tại chỗ: `tools/diag/docs_consistency_check.py` đọc cứng đường dẫn
+này và `tests/test_t7_docs_consistency.py::test_so_muc_quyet_dinh_khong_giam` đòi ≥20 mục — dời đi là
+làm đỏ máy kiểm, không phải dọn cấu trúc. GIỮ `docs/bao_cao/` vì `tools/build_training_data.py:944`
+glob thư mục này khi dựng dữ liệu train. GIỮ `docs/giang_day/` (giáo trình) và
+`docs/CLEANUP_ANCHORS.md` (sổ neo của đợt dọn, được `docs/CLEANUP_REPORT.md` dẫn).
+
+(c) Viết mới 4 tài liệu trục: `docs/README.md` (chỉ mục + giải thích ngoại lệ), `docs/ARCHITECTURE.md`
+(bản đồ module + 7 bất biến), `docs/EXPERIMENTS.md` (**một bảng** 25 dòng: giả thuyết · kết quả · n ·
+CI 95% · tệp nguồn, chép từ D-01…D-42), `docs/REPRODUCE.md` (lệnh + bảng 5 số neo), và
+`docs/archive/README.md` (bản đồ lưu trữ; liên kết trong archive giữ đường dẫn cũ).
+
+(d) Sửa đường dẫn tham chiếu ở 5 tệp sống (README 6 chỗ, ROADMAP 10, DECISION_LOG 36,
+`data/loop/README.md` 6, `CLEANUP_ANCHORS` 1) — thay theo byte, assert đúng số lần khớp. Riêng
+DECISION_LOG: sửa cột "Nguồn" theo đúng quy ước của chính sổ ("file bị di chuyển thì dòng tương ứng
+phải ghi lại"); không đổi một con số đo nào.
+
+**Bằng chứng.** `docs_consistency_check.py` sau khi dời: 0 lỗi, 5 cảnh báo, **100 đường dẫn** (bằng
+trước), 263 lệnh (bằng HEAD); mọi nguồn của 25 dòng EXPERIMENTS tồn tại trên đĩa (assert trong
+`tmp/b7_newdocs.py`). Không chạy lại script đo nào; fingerprint `2911c69f740d`.
+
+**Cổng sau B7 (chỉ tài liệu):** pytest 1495/5, fingerprint `2911c69f740d`, r11 182/629 + 0 lệch.
+Hoàn tác: `git revert` commit B7 (git mv + docs).
