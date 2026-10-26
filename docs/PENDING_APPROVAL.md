@@ -28,6 +28,10 @@ Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách ho
 PA-37 (weights cross-encoder nhỏ) · PA-38 (đăng ký lại phép đo có mốc hạng) · PA-39 (lượt train thật
 logits-theo-đáp-án) · PA-40 (quy ước phát ngôn bộ nhớ) · PA-41 (hai kỳ vọng cũ của `final_number_audit`).
 
+**Đợt dọn repo (26-10 chiều, đề bài dọn cấu trúc "không đổi một con số đo nào"):** PA-42 (EOL vs
+chữ ký trọng tài, B1) · PA-43 (tách mã đánh giá khỏi `src/`, B5) · PA-44 (tách `generator.py`, B6) —
+chi tiết ở cuối file. Neo trước/sau: `docs/CLEANUP_ANCHORS.md`.
+
 **Thứ tự đề xuất cho sáng mai:** PA-35 (hoặc chạy pha sinh trên r16 trước) → PA-17 → PA-26/PA-33/PA-31/
 PA-34 → PA-39 (+ PA-40) để đóng T4 mục 5, có thể rút PA-11/PA-12 nếu xanh → PA-41 để máy kiểm số xanh lại.
 
@@ -1296,3 +1300,41 @@ lệch thật sẽ lẫn vào hai lệch đã biết.
 chạy lại để xác nhận 63/63 KHỚP; (b) thêm cơ chế "kỳ vọng theo phiên bản" (máy kiểm chọn giá trị theo chữ ký
 trọng tài của round đang kiểm) — đắt hơn, nhưng đúng bài học B2; (c) giữ nguyên, chấp nhận đỏ có chủ đích và
 ghi chú ở README; (d) **hai điều kiện kỹ thuật mới phát hiện khi đính chính** — cho máy kiểm **trả mã lỗi khác 0 khi có dòng LỆCH** (hiện luôn trả 0, nên "đỏ" chỉ tồn tại trên văn bản in ra), và in rõ yêu cầu chạy bằng venv của repo (interpreter hệ thống thiếu `pypdfium2`/`streamlit` ⇒ 4 file collect-only lỗi ⇒ thêm 1 LỆCH GIẢ). **Không tự làm** vì đây là sửa máy kiểm, không phải sửa dữ liệu đo.
+
+## PA-42 — Chữ ký trọng tài băm BYTE THÔ trên 3 file: 2 file chưa từng vào kho, 1 file đổi byte theo `core.autocrlf` (B1 đợt dọn repo, 26-10 chiều)
+
+**Cách tính (đọc từ nguồn, không suy).** `tools/loop/verify.py::referee_fingerprint()` cập nhật
+`hashlib.sha256` bằng `path.read_bytes()` cho từng file trong `REFEREE_FILES = (tools/loop/verify.py,
+src/answer_guard.py, src/text_utils.py)` rồi trả 12 hex đầu. Không decode, không chuẩn hóa EOL ⇒
+**thêm/bớt một `\r` là đổi chữ ký**. Chữ ký hiện hành: `2911c69f740d` (đã ghi ở
+`docs/CLEANUP_ANCHORS.md` §2).
+
+**Đo trên đĩa hôm nay (26-10).**
+
+| file | worktree | index/HEAD | git |
+|---|---|---|---|
+| `tools/loop/verify.py` | 14.960 B, LF thuần | — | **UNTRACKED** (`git status` = `??`) |
+| `src/answer_guard.py` | 24.279 B, LF thuần | — | **UNTRACKED** (`??`) |
+| `src/text_utils.py` | 1.235 B, CRLF toàn bộ | 1.212 B, LF | TRACKED; không attr; `core.autocrlf=true` |
+
+Hai hệ quả đo được: (1) nếu `src/text_utils.py` ở dạng LF (clone đặt `autocrlf=false`, hoặc clone
+trên Linux/macOS) và hai file kia có mặt đúng byte hiện tại, chữ ký là **`582310bdd278`** — không
+phải `2911c69f740d`; (2) clone mới **không có** `verify.py`/`answer_guard.py` ⇒ không chạy được bộ
+loop/trọng tài (chữ ký sẽ chỉ còn phần của `text_utils.py`, hoặc rỗng nếu thiếu cả ba). Theo đúng
+B1, hôm nay **KHÔNG** chuẩn hóa EOL ba file này.
+
+**Việc cần duyệt — ba lựa chọn.** (a) Giữ nguyên byte và chữ ký; **commit hai file referee đang
+untracked** (không đổi một byte nào, nên không đổi chữ ký) để chữ ký tái lập được từ clone; tuỳ chọn
+kèm `.gitattributes` `-text` cho ba đường dẫn — lưu ý với `src/text_utils.py` việc này đổi blob
+trong kho (LF→CRLF) chứ **không** đổi byte worktree. (b) Chuẩn hóa **worktree** cả ba file về LF rồi
+cập nhật chữ ký ở mọi nơi (đổi `2911c69f740d`, phải chấm lại toàn bộ round, sửa
+`tests/test_t8_referee_v2.py`, `tools/diag/final_number_audit.py`) — phá mọi so sánh đã công bố.
+(c) Đổi `referee_fingerprint()` sang băm sau chuẩn hóa EOL (`read_bytes().replace(b"\r\n", b"\n")`)
+— sửa dụng cụ đo, chữ ký đổi một lần rồi ổn định.
+
+**Khuyến nghị (bảo thủ):** (a) — chỉ commit hai file untracked, không đổi byte; **không** làm (b)/(c)
+trong đợt dọn này. Nếu duyệt (a) kèm `-text` cho `text_utils.py`, phải chạy lại 4 cổng ở
+`docs/CLEANUP_ANCHORS.md` §6 ngay sau khi `git add` để chứng minh byte worktree không đổi.
+
+**Hoàn tác nếu bị từ chối.** Không có gì phải hoàn tác: B1 chỉ đọc và ghi tài liệu, không sửa byte
+của ba file referee.
