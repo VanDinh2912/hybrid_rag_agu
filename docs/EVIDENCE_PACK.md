@@ -73,7 +73,7 @@ cùng dòng (mốc baseline, cổng so sánh, nhật ký đếm); `neo` = neo đ
 | D-14 | phụ | `data/loop/diag/b_gemini_top6/id_status.json` | 14525 | `766d36ab1735` | tracked |
 | D-14 | phụ | `data/loop/diag/b_gemini_top6/rows.jsonl` | 153108 | `5ddf2b1bdc67` | tracked |
 | D-14 | phụ | `data/loop/diag/b_gemini_top6/settings.json` | 734 | `993191ec9a85` | tracked |
-| D-16 | chính | `docs/bao_cao/danh_gia_tong_quan_2026-10-23.md` | 46073 | `38bf89363348` | tracked |
+| D-16 | chính | `docs/bao_cao/danh_gia_tong_quan_2026-10-23.md` | 47101 | `dcc488f27e39` | tracked |
 | D-20 | chính | `data/loop/rounds/r12/round_summary_retrieval.json` | 8428 | `67879ac8e265` | chưa |
 | D-20 | phụ | `data/loop/diag/reranker_cost_gpu.json` | 38663 | `bd6bbee25d18` | chưa |
 | D-20 | phụ | `data/loop/diag/reranker_cost.json` | 848 | `bb8671041993` | tracked |

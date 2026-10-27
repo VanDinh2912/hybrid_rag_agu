@@ -75,15 +75,15 @@
 
 ### 5.1. Kết luận (trả lời 3 câu hỏi nghiên cứu — số chép từ chương 4)
 1. Bộ phân loại 2 nhãn: topic **85,0%**, question_type **81,0%**, recall lớp hiếm 100% — đạt cổng thiết kế. (nguồn: `logs/classifier/accuracy_report.md`)
-2. Router cải thiện rõ nhất nhóm TRA_CUU (Hit@3 58,6% → 77,0%) nhờ lọc nguồn; nhóm SO_SANH tăng MRR 0,4333 → 0,8286 nhờ tách truy vấn con; nhóm chủ đề tăng mạnh: chương trình đào tạo +45,5 pp, khen thưởng sinh viên +40,0 pp. (nguồn: `outputs/ab_comparison.md` mục 2, 3)
-3. Bật tầng phân loại tốt hơn trên tổng thể: Hit@3 +27,1% tương đối, MRR +50,9% tương đối, GATE ĐẠT (ngưỡng −5%); giá phải trả: +3 câu từ chối oan trên nền ~50% sẵn có, number support −3,05 pp. (nguồn: `outputs/ab_comparison.md` mục 1, 5, 8)
+2. Gói thay đổi của lượt WITH (router chọn tham số + thu hẹp nguồn, tách truy vấn con, prompt theo loại) cải thiện rõ nhất nhóm TRA_CUU (Hit@3 58,6% → 77,0%); nhóm SO_SANH tăng MRR 0,4333 → 0,8286 nhờ tách truy vấn con; nhóm chủ đề tăng mạnh: chương trình đào tạo +45,5 pp, khen thưởng sinh viên +40,0 pp. **Không quy riêng cho lọc nguồn**: phép đo tách riêng trên 811 item (V2, 27-10) cho lọc mềm **−18 item** so all-off (CI cụm [−4,62; −0,69] điểm %, p=2,77e−4). (nguồn: `outputs/ab_comparison.md` mục 2, 3; `tmp/v2_rescore.json`)
+3. Bật tầng phân loại tốt hơn trên tổng thể **trong gói thay đổi đó**: Hit@3 +27,1% tương đối, MRR +50,9% tương đối, GATE ĐẠT (ngưỡng −5%); giá phải trả: +3 câu từ chối oan trên nền ~50% sẵn có, number support −3,05 pp. (nguồn: `outputs/ab_comparison.md` mục 1, 5, 8)
 
 ### 5.2. Hạn chế
 (tóm tắt 5 mục hạn chế từ `chuong4_thuc_nghiem.md` mục 4.4.3: latency tham chiếu, NGOAI precision 25%, nhóm n nhỏ, faithfulness heuristic, từ chối đúng 33,3%)
 
 ### 5.3. Hướng phát triển
 - **Active learning cho classifier**: thu thập câu hỏi thật từ log hệ thống, bổ sung neo âm (biên mơ TTTN-vs-CTĐT, SV Giỏi-vs-SV5T) vào few-shot/bảng từ khóa — cải thiện precision lớp hiếm thay vì tinh chỉnh trên chính bộ đo. (nguồn: `logs/classifier/accuracy_report.md` mục "Hướng cải thiện")
-- **Lọc `source_filter` mạnh hơn**: hiện chỉ 8/14 chủ đề đủ bằng chứng ngưỡng (n ≥ 5, ≥ 80% trong ≤ 2 nguồn); mở rộng benchmark cho các chủ đề n nhỏ để bật thêm lọc nguồn. (nguồn: `src/router.py` docstring)
+- **Tách đóng góp của lọc nguồn (`source_filter`) trước khi mở rộng**: phép đo 811 item (V2, 27-10) cho thấy lọc mềm **−18 item** so với all-off, còn lọc cứng mất 244/244 item nguồn-sai ⇒ hướng đúng là đo ablation từng thành phần (router tham số / thu hẹp nguồn / tách truy vấn con), không bật thêm lọc. Hiện chỉ 8/14 chủ đề đủ bằng chứng ngưỡng (n ≥ 5, ≥ 80% trong ≤ 2 nguồn). (nguồn: `tmp/v2_rescore.json`, `src/router.py` docstring)
 - **A/B theo tuần**: tái chạy 2 lượt 100 câu định kỳ sau mỗi lần thay đổi (prompt, guardrail, corpus) để phát hiện hồi quy sớm; chuẩn hóa kịch bản offline (generator Qwen + heuristic faithfulness) đã dùng ở P4.2 để 0 quota.
 - *(mở rộng, tùy hướng dẫn viên)*: nâng generator (Gemini hoặc Qwen lớn hơn) để giảm nền ~50% từ chối oan; LLM judge bật lại khi có quota để đo faithfulness đầy đủ.
 

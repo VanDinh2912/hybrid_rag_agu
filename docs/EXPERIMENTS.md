@@ -1,7 +1,7 @@
 # Thí nghiệm đã đo — một bảng
 
 Bảng dưới đây tóm tắt các phép đo quyết định trong [DECISION_LOG.md](DECISION_LOG.md) (sổ đầy đủ
-42 dòng, kèm ngữ cảnh và trạng thái từng mục). Quy ước đọc:
+44 dòng, kèm ngữ cảnh và trạng thái từng mục). Quy ước đọc:
 
 - Số trong ô "Kết quả" được chép từ artifact hoặc từ dòng D-xx tương ứng; **không** làm tròn thêm.
 - `n` là số đơn vị đo, đọc kèm đơn vị ghi ngay trong ô.
@@ -11,8 +11,8 @@ Bảng dưới đây tóm tắt các phép đo quyết định trong [DECISION_L
 
 | Giả thuyết | Kết quả | n | CI 95% | Tệp nguồn |
 |---|---|---|---|---|
-| D-01 · lọc nguồn mềm thay lọc cứng kéo recall lên | GIỮ lever: gold@6 51,86→**76,57%**; FAIL_RETRIEVAL 337→164; bị lọc cắt 244→0; neo HUMAN 81,44→77,32% (−5,06% tương đối) nên cổng chặn | 811 item (700 vàng) | — | `data/loop/rounds/r1/round_summary_retrieval.json` |
-| D-02 · hạn ngạch 4 nguồn/cửa sổ sửa "một nguồn chiếm cả cửa sổ" | **BÁC** (giả thuyết cấu trúc sai): gold@6 74,00→74,29% (+0,29 ≈ 2 item), 2 cổng ĐẠT nhưng gold không hồi phục | 811 item (700 vàng) | — | `data/loop/rounds/r4/round_summary_retrieval.json` |
+| D-01 · lọc nguồn **cứng** phá recall; thay bằng lọc **mềm** + bonus sẽ kéo gold@6 lên | **BÁC nửa sau** (V2, 27-10): lọc cứng gây hại thật — gold@6 51,86→**76,57%**, `FAIL_RETRIEVAL` 337→164, bị cắt 244→0 — **nhưng r1 thực chất là all-off, không router** (700/700 verdict gold trùng all-off, 0 nhãn classifier, 0,18 s/item), nên mức tăng là do **bỏ** lọc cứng chứ không chứng minh lọc mềm. Lọc mềm đo đúng baseline: r11 518/700 vs all-off 536/700 = **−18 item** (−2,57 điểm %, CI cụm [−4,62; −0,69], p=2,77e−4); neo HUMAN 79 vs 75 (+4, CI **[−1,32; +7,87]** chứa 0); độ trễ 2,76 s vs 0,18 s/item | 811 item (700 vàng) | [−0,0462; −0,0069] | `tmp/v2_rescore.json`, `tmp/v2_extra.json`, `tmp/alloff_811.json` |
+| D-02 · hạn ngạch 4 nguồn/cửa sổ sửa "một nguồn chiếm cả cửa sổ" | **BÁC** (giả thuyết cấu trúc sai): gold@6 74,00→74,29% (+0,29 ≈ 2 item), 2 cổng ĐẠT nhưng gold không hồi phục. Hai bên cùng bật lọc mềm nên phép thử vẫn hợp lệ trong nội bộ router, nhưng cả hai đều thấp hơn all-off (536/700) nên không cứu được giả thuyết | 811 item (700 vàng) | — | `data/loop/rounds/r4/round_summary_retrieval.json`, `tmp/v2_rescore.json` |
 | D-03 · rescue cứu được câu sai | **BÁC vĩnh viễn**: 60/64 lượt thử, cứu được **1 = 1,7%**; r5b lặp lại y hệt | 64 lượt thử / 100 item | — | `data/loop/rounds/r5b/rescue_tally.txt` |
 | D-04 · guard chuẩn hóa lấy lại chunk vàng | GIỮ lever (bật mặc định = CHỜ DUYỆT #23): **5/5** ca lấy lại chunk vàng; PASS_CORRECT 10→14; gold@k 0,6875→0,7875; refusal 0,72→0,64 | 5 ca bị bác / 100 item | — | `data/loop/rounds/r6/round_summary_full.json` |
 | D-05 · bonus 12 cộng hưởng với guard | **BÁC** tổ hợp: PASS_CORRECT 14→14 (trong băng nhiễu ±3); 2 ca PASS_CORRECT → từ chối oan | 100 item | — | `data/loop/rounds/r7/gate_vs_r6_full.json` |
@@ -36,3 +36,5 @@ Bảng dưới đây tóm tắt các phép đo quyết định trong [DECISION_L
 | D-40 · chunk vàng có dấu (index mới) giúp Qwen 1,5B trả lời đúng hơn | **BÁC cách thiết kế phép thử** (không bác giả thuyết): 54/57 chunk vàng giống từng byte, 3 khác thật ⇒ 57/57 câu trả lời byte-identical; McNemar 0 bất đồng p=1,0 | 57 item | [0,0000; 0,0000] | `data/loop/diag/b1_cprime/analysis.json` |
 | D-41 · siết hai luật trọng tài (PA-2 + PA-20) không đổi verdict round đã đóng | GIỮ trọng tài v2: 5/1000 verdict đổi chiều, 100% chặt hơn; PASS_CORRECT 148→143; refusal/fabrication không đổi | 1.000 câu × 10 round | — | `data/loop/rounds_v2/compare_v1_v2.json` |
 | D-42 · máy kiểm số cuối tái lập được mọi số sau ba mục đã duyệt | **CHỜ DUYỆT** (PA-41): 63 dòng, **61 KHỚP / 2 LỆCH**, rc=0; hai lệch là kỳ vọng cũ của máy kiểm (46→51 test; chữ ký `9f1179ccab74`→`2911c69f740d`) | 63 dòng kiểm | — | `tmp/final_number_audit_b_shift.json` |
+| V1 · nhánh dense nhận query **nguyên văn** thay vì đã `fold` sẽ tăng recall | **ĐẠT** (27-10): hit@6 **474/700 = 67,71%** vs 202/700 = 28,86% (b=308, c=36, McNemar p=5,27e−55, CI cụm [+19,18; +54,75] điểm %, 24 cụm); MRR@12 0,5003 vs 0,2060; chỉ nhóm OCR mất nhẹ (CLOZE_OCR 154 vs 160). Cờ chưa viết ⇒ PA-48a | 700 item | [+0,1918; +0,5475] | `tmp/dense_orig_query.json` |
+| V2 · chuỗi r0→r1 là bằng chứng "lọc mềm cải thiện gold@6" | **BÁC cách đọc** (27-10): r1 = **không router** (0/811 dòng có nhãn classifier; 700/700 verdict trùng all-off; 0,18 s/item vs r11 2,76 s) ⇒ r0→r1 chỉ là "bỏ lọc cứng". Lọc mềm so all-off: 518 vs 536 = **−18 item** (−2,57 điểm %, p=2,77e−4, CI cụm [−4,62; −0,69]); mất tập trung ở nhóm router chọn sai nguồn (all-off 178 → r11 157 trong 245 item); neo HUMAN 79 vs 75 (+4, CI chứa 0) | 811 item (700 vàng) | [−0,0462; −0,0069] | `tmp/v2_rescore.json` |

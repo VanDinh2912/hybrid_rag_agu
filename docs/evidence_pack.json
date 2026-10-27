@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-27T18:29:02",
+ "generated_at": "2026-10-27T22:19:28",
  "algorithm": "sha256",
  "root": ".",
  "note": "sha256 trên byte thô, không chuẩn hoá EOL; artifact nặng không commit",
@@ -546,8 +546,8 @@
   },
   {
    "path": "docs/bao_cao/danh_gia_tong_quan_2026-10-23.md",
-   "bytes": 46073,
-   "sha256": "38bf893633484e8103b69abbb59f052758851b340bcfd61684f3de6cac018128",
+   "bytes": 47101,
+   "sha256": "dcc488f27e3917621e9c4bee18acfce584d39aca6803aef1a12ac577adb8ed10",
    "tracked": true
   },
   {
@@ -776,6 +776,6 @@
  "summary": {
   "rows": 25,
   "files": 84,
-  "total_bytes": 4040474
+  "total_bytes": 4041502
  }
 }

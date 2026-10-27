@@ -659,18 +659,20 @@ Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ đư�
 | Citation F1 | 13,4% | 25,7% | +12,34 pp |
 | Từ chối oan (trong 97 câu in corpus) | 46/97 | 49/97 | +3 câu |
 
-Nhóm tăng rõ nhất: chương trình đào tạo Hit@3 45,5% → 90,9% (n=22, nhờ lọc nguồn theo chủ đề); `SO_SANH` MRR 0,4333 → 0,8286 (n=5, nhờ tách truy vấn con). GATE P4.3 **ĐẠT**: không chỉ số truy xuất nào giảm quá 5% tương đối. Lưu ý khi đọc: generator là Qwen 1.5B offline nên số tuyệt đối của tầng trích dẫn chỉ mang tính so sánh nội bộ giữa 2 lượt; điểm giảm trung thực cần nhắc: number support −3,05 pp, đánh giá rèn luyện Hit@3 −18,2 pp (n=11).
+Nhóm tăng rõ nhất: chương trình đào tạo Hit@3 45,5% → 90,9% (n=22); `SO_SANH` MRR 0,4333 → 0,8286 (n=5, nhờ tách truy vấn con). Đây là chênh lệch của **cả gói thay đổi** ở lượt WITH (chọn tham số + thu hẹp nguồn + tách truy vấn con + prompt), **không tách riêng được lọc nguồn**: trên vòng 811 item (V2, 27-10) lọc mềm so all-off **−18 item** (518 vs 536; CI cụm [−4,62; −0,69] điểm %, p=2,77e−4) và chậm 2,76 s vs 0,18 s/item; lọc cứng (r0) chỉ đạt 363/700. GATE P4.3 **ĐẠT**: không chỉ số truy xuất nào giảm quá 5% tương đối. Lưu ý khi đọc: generator là Qwen 1.5B offline nên số tuyệt đối của tầng trích dẫn chỉ mang tính so sánh nội bộ giữa 2 lượt; điểm giảm trung thực cần nhắc: number support −3,05 pp, đánh giá rèn luyện Hit@3 −18,2 pp (n=11).
 - **Bộ unit test (1.124 test, 25-10):** chạy bằng `python -m pytest` — hoàn toàn offline (fake Qwen/ChromaDB/Gemini, monkeypatch), không tốn quota; gồm test 3 chiến lược chunking, pipeline (fold-query + oversampling), classifier + router (few-shot, guardrail, ánh xạ cấu hình), tách truy vấn con, prompt biến thể, guardrail Local SLM, các hàm đánh giá và cờ GUI/CLI, bộ test vòng lặp P5 (`tests/test_loop_*.py`, `test_run_chain.py`, `test_cache_policy.py`), bộ test T4 (`test_t4_sft_invariants.py`, `test_t4_generator_contract.py`; phần GPU `test_t4_gpu_slow.py` cần `T4_RUN_SLOW=1` nên mặc định được skip) và bộ test T5 (`test_t5_reranker_contract.py`, `test_t5_contextual_header.py`) và bộ test T6 (`test_t6_gate_refusal_and_regression.py`, `test_t6_referee_validation.py`, `test_t6_real_questions_and_metrics.py` — 60 test, trong đó cổng refusal chỉ chạy trên **bản đề xuất**, `gate.py` chưa đổi). Con số này là của **working tree**; xem PA-26 về khoảng trống giữa HEAD và cây đã test.
 - **Bộ benchmark:** 5 file trong `data/evaluation/` — 15 câu GUI tự sinh (schema 10 khóa cũ), **50 câu** và **100 câu v1/v2** (đúng 12 khóa, do các agent sinh theo playbook); benchmark mặc định của `src/evaluation.py` là 100 câu v2, của `benchmark_chunking.py` và demo là 50 câu. Ngoài ra `data/evaluation/manual_test_checklist.md` có **34 câu kiểm tra tay chia 7 nhóm tài liệu** (kèm nhóm câu ngoài corpus để thử hành vi từ chối) — dùng để đánh giá thủ công sau mỗi lần đổi pipeline.
 - **Benchmark v3 (2026-10-20):** `data/evaluation/benchmark_100_questions_v3.json` — 100 câu, 13 khóa (12 khóa v2 + `question_type` theo [TAXONOMY.md](TAXONOMY.md)), nhãn đã duyệt; phân bố `TRA_CUU`=87 / `SO_SANH`=5 / `THU_TUC`=5 / `NGOAI_PHAM_VI`=3. Mặc định của `src/evaluation.py` vẫn là 100 câu v2; **lượt A/B chính thức dùng `--benchmark ...v3.json`** (mục 5.7).
 - **Hành vi cần lưu ý của Qwen2.5-1.5B (tầng chuẩn hóa):** khi câu hỏi nằm ngoài phân bố few-shot, model có xu hướng **tự trả lời** thay vì viết lại câu hỏi, sinh ra nhận định không có căn cứ. Các lớp chặn hiện có: (1) system prompt chống bịa + few-shot của `src/query_normalizer.py` — đường đi chính trong pipeline, kèm active learning từ phản hồi người dùng; (2) `is_acceptable()` (4 điều kiện: không rỗng, ≤ 300 ký tự, phải có dấu `?`, không chứa mẫu lạc đề) và `guardrail_violation()` (bảo toàn con số + tỉ lệ token trùng với câu gốc ≥ 30%) trong `src/local_slm.py` — dùng khi chuẩn hóa trực tiếp qua wrapper `LocalSLM`, có test riêng trong `tests/test_local_slm.py`. Mọi đường đều suy giảm mềm: nghi ngờ là dùng lại câu hỏi gốc để truy xuất.
 - **Lịch sử xử lý lỗi chất lượng:** file mẫu `quy_che_dao_tao_mau.txt` từng xếp hạng #1 cho một câu hỏi quy chế thật và được Gemini dùng làm căn cứ — đã chuyển sang `data/evaluation/reference/` nên không còn bị index. Điểm yếu còn lại của truy xuất nằm ở các chủ đề ít từ khóa trùng lặp (xem cột Hit@6 và MRR trong `outputs/evaluation_summary.md` để theo dõi sau mỗi lần cải tiến chunking/retrieval).
 
-### 8.1. Giới hạn thật lòng (cập nhật 25-10, sau r0–r13)
+### 8.1. Giới hạn thật lòng (cập nhật 27-10, sau V1/V2)
 
 Những điều dưới đây **không** được che bằng số đẹp; mỗi mục kèm nơi kiểm chứng.
 
-1. **Tầng sinh là nút thắt, không phải truy xuất.** Gold@6 = **0,7400** (r11, 811 item) nhưng
+1. **Tầng sinh là nút thắt, không phải truy xuất.** Gold@6 = **0,7657** (all-off, 811 item); cấu hình
+   lọc mềm r11 chỉ 0,7400 = **−18 item** so với all-off (CI cụm [−4,62; −0,69] điểm %, p=2,77e−4,
+   chậm 2,76 s vs 0,18 s/item). Nhưng
    `PASS_CORRECT` của pha sinh chỉ **14–19/100** qua r1→r12 và **không** vượt ngưỡng 25 ở bất kỳ
    round nào (`data/loop/README.md`, `docs/archive/reports/T3.md`, `T4.md`). Câu hỏi "model 1,5B có phải
    trần?" **chưa được trả lời dứt khoát**: 3B không cải thiện (p = 0,804) và mới có 25/30 id T1(b).
@@ -680,7 +682,8 @@ Những điều dưới đây **không** được che bằng số đẹp; mỗi 
    PA-1/PA-2/PA-3).
 3. **Trần truy xuất có giới hạn đo được.** Oracle trong pool 12 = **0,8214** (EXACT 0,3269); pool 20 =
    **0,8871**. Reranker hiện tại (cross-encoder chấm fold query) đi **ngược**: gold@6 0,7400→0,6686
-   (r12), nên mọi kỳ vọng "+10 điểm EXACT" phải chờ PA-25 (bỏ fold) và round r14.
+   (r12, so trong cùng cấu hình lọc mềm r11 — cả hai đều dưới all-off 0,7657), nên mọi kỳ vọng
+   "+10 điểm EXACT" phải chờ PA-25 (bỏ fold) với round đo lại trên baseline all-off.
 4. **Contextual header chưa có tín hiệu.** r13: gold@6 0,7371, delta **−0,0028** CI [−0,0129; +0,0071],
    p = 0,79; header dạng `[tên file] - [Điều]` vốn đã có trong 253/361 chunk nên phạm vi can thiệp thật
    chỉ còn Chương/Khoản + 108 chunk fallback (`docs/archive/reports/T5.md` §5).

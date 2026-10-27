@@ -16,7 +16,7 @@ Năm kết luận kỹ thuật đã được dữ liệu chốt (hoặc mở l�
 
 | vấn đề | quyết định | bằng chứng |
 |---|---|---|
-| Bộ định tuyến phá recall (cắt cứng `source_filter`) | đổi thành **lọc mềm, bonus 12** — cổng r2-vs-r0 ĐẠT, neo HUMAN giữ 81,44% | `data/loop/rounds/r2`, `r4` |
+| Bộ định tuyến phá recall (cắt cứng `source_filter`) | **Bỏ lọc cứng**: r0 51,86% → all-off **76,57%**, 244/244 item nguồn-sai được trả lại. **Lọc mềm không phải bản sửa**: r11 518/700 vs all-off 536/700 = **−18 item** (CI cụm [−4,62; −0,69] điểm %, p=2,77e−4), 2,76 s vs 0,18 s/item; neo HUMAN 79 vs 75 (+4, CI chứa 0) | `tmp/v2_rescore.json`, `tmp/v2_extra.json`, `tmp/alloff_811.json` |
 | "Một nguồn chiếm trọn cửa sổ" có phải nút thắt? | **Không** — quota 4 không phá gì nhưng cũng không hồi phục gold@6 (0,7400→0,7429) ⇒ giả thuyết cấu trúc bị bác, quota giữ TẮT | `rounds/r4/gate_vs_*_retrieval.json` |
 | Hỏi lại bằng chỉ dẫn trích xuất (rescue) có cứu được từ chối oan? | **Không** — 60/64 câu đủ điều kiện thực sự được hỏi lại, chỉ **1** câu cứu được (1,7%) ⇒ **bác lever vĩnh viễn** | `rounds/r5b/rescue_tally.txt` |
 | Bản chuẩn hóa câu hỏi thỉnh thoảng là một câu khác — có phải lỗi "hạng mục ghi chú"? | **Không, nó là lỗi hệ thống có thể sửa**: `NORMALIZE_SANITY_GUARD=1` ở r6 bắt 5/100 ca, **cả 5 item lấy lại chunk vàng vào cửa sổ**, `PASS_CORRECT` 10→14, gold@k 0,6875→0,7875 ⇒ lever pha sinh đầu tiên có bằng chứng nhân quả; **đang chờ bạn duyệt để bật làm mặc định** | `rounds/r6/normalizer_guard_tally.txt`, `rounds/r6/gate_vs_r1_full.json` |
@@ -38,7 +38,7 @@ Năm kết luận kỹ thuật đã được dữ liệu chốt (hoặc mở l�
 
 ### 1.3 Tầng truy xuất
 - Hybrid BM25 + ChromaDB (bge-m3) + RRF, oversample ×2 (cửa sổ 12 cho top_k 6).
-- Chuỗi round trên cùng 811 item: **gold@6 51,86% (r0, cắt cứng) → 76,57% (r1, lọc mềm bonus 3) → 74,00% (r2, bonus 12) → 74,29% (r4, bonus 12 + quota 4)**; `FAIL_RETRIEVAL` 337 → 164 → 182 → 180.
+- Chuỗi round trên cùng 811 item: **gold@6 51,86% (r0, cắt cứng) → 76,57% (r1, đo lại 27-10: không router, trùng khít all-off) → 74,00% (r2, lọc mềm bonus 12) → 74,29% (r4, bonus 12 + quota 4)**; nghĩa là **bỏ lọc cứng +24,7 điểm**, còn **lọc mềm −18 item** so với all-off (CI cụm [−4,62; −0,69] điểm %, p=2,77e−4). `FAIL_RETRIEVAL` 337 → 164 → 182 → 180.
 - Máy quy lỗi `attribute.py` tách được ba nguyên nhân: `filter_blocked_wrong_topic` 179→60, `filter_blocked_wrong_table` 65→20, và hai nhóm còn lại (`ranking_*`) mà lever nguồn không với tới.
 - A/B trên benchmark 100 câu: **Hit@3 60,8%→77,3% (+27,1% tương đối), MRR 0,510→0,769 (+50,9%), Citation F1 13,4%→25,7%** — GATE P4.3 ĐẠT (`outputs/ab_comparison.md`).
 
@@ -68,7 +68,7 @@ Năm kết luận kỹ thuật đã được dữ liệu chốt (hoặc mở l�
 Bốn dụng cụ đo đã bị phát hiện sai và sửa *trong khi dự án vẫn đang chạy*: (a) `verify.py` bug `has_gold_chunk` đếm nhầm 97 item → 434 thay vì 337 `FAIL_RETRIEVAL`; (b) `is_refusal`/`judge_faithfulness` so chuỗi *có dấu* với text *đã fold* → mọi chỉ số "từ chối đúng" cũ luôn 0%, nghĩa là baseline cũ vô nghĩa; (c) probe A/B dùng kim có dấu nên 25/52 dòng gắn nhầm `refused=False`; (d) hai lỗi mới nhất hôm nay: khẳng định "bản chuẩn hóa hỏng tái lập y hệt qua ba round" (sai: r0≡r3 100/100 nhưng r1 lệch 18/100 ⇒ là **tần suất**, không phải hàm tất định), và **latency không đếm được số lượt gọi model** (prompt cứu là phần mở rộng của prompt cũ nên Ollama tái dùng KV prefix, lượt hai chỉ ~1–2 s ⇒ con số "r3 chỉ thử ~9/60 lượt" mất cơ sở). Không phải đồ án nào cũng tự bóc lỗi đo của mình như vậy; đây là điểm cộng lớn nhất khi chấm.
 
 **2.2 Tầng truy xuất — ổn về phương pháp, đã tới điểm bão hoà của lever đang có.**
-Từ 51,86% lên ~74% gold@6 là cải thiện thật, có cơ chế giải thích được (bỏ cắt cứng nguồn), và hai cổng độc lập xác nhận (r2-vs-r0 ĐẠT, r4-vs-r2 ĐẠT). Điều quan trọng không kém: vòng lặp đã **chứng minh mình hết ý tưởng ở tầng này** bằng dữ liệu — r4 đạt cổng nhưng bác giả thuyết, nên không vẽ thêm lever. Đó là cách kết thúc đúng một hướng nghiên cứu.
+Từ 51,86% lên **76,57%** gold@6 là cải thiện thật, nhưng cơ chế là **bỏ cắt cứng nguồn**, không phải lọc mềm: đọc lại bằng trọng tài v2 (27-10) cho thấy r1 trùng khít all-off 700/700 item (0 nhãn classifier, 0,18 s/item), còn lọc mềm so all-off **mất 18 item** (518 vs 536; CI cụm [−4,62; −0,69] điểm %, p=2,77e−4), chậm 2,76 s/item, neo HUMAN +4 nhưng CI chứa 0. Vì vậy hai cổng cũ (r2-vs-r0, r4-vs-r2) chỉ chứng minh "bỏ lọc cứng tốt hơn giữ lọc cứng", không chứng minh lọc mềm — và đó cũng là lý do chuyển baseline truy xuất sang **all-off**. Điều quan trọng không kém: vòng lặp đã **chứng minh mình hết ý tưởng ở tầng này** bằng dữ liệu — r4 đạt cổng nhưng bác giả thuyết, nên không vẽ thêm lever. Đó là cách kết thúc đúng một hướng nghiên cứu.
 
 **2.3 Chống bịa đặt — phần "không bịa" thì ổn.**
 `check_grounding` deterministic, từ chối chuẩn hoá về một chuỗi duy nhất, guard chạy trước cache, và tỉ lệ bịa trên câu đã trả lời giữ ở **1 câu/100** qua ba round cấu hình khác nhau. Quan trọng hơn: lever cứu câu từ chối **không được phép** biến "không biết" thành "biết sai" — khi ứng viên không đạt ngưỡng thì hệ thống trả lại chính lời từ chối. r3 (rescue v1, ngưỡng 0,6) từng tạo thêm đúng một ca "trả lời bịa cho câu không có đáp án" (2→3); r5 (v2, ngưỡng 0,8 + `unsupported` phải rỗng + `score is not None`) đưa về 2. Cơ chế "siết ngưỡng thì lỗi bịa giảm" hoạt động như thiết kế — bằng chứng nhân quả, không phải tương quan.
@@ -194,7 +194,7 @@ có chunk vàng):** nguồn `data/loop/diag/bonus_paired_r1_r2.json`,
 
 | chỉ số | round | điểm | CI 95% | đọc |
 |---|---|---|---|---|
-| `gold@6` (n=700) | r11 | 0,7400 | [0,7071 ; 0,7729] | nền truy xuất, tái lập đúng r2 |
+| `gold@6` (n=700) | r11 | 0,7400 | [0,7071 ; 0,7729] | nền **của T5**, tái lập đúng r2; không phải baseline hiện hành — từ 27-10 baseline là **all-off 0,7657** (V2: r11 thấp hơn 18 item) |
 | `gold@6` (n=700) | r13 (header 5b) | 0,7371 | [0,7043 ; 0,7700] | CI chồng hoàn toàn với r11 |
 | delta ghép cặp r11→r13 | | −0,0028 | [−0,0129 ; +0,0071] | 8 mất / 6 được, McNemar p = 0,79 ⇒ **không tín hiệu** |
 | `gold@6` family EXACT (n=52) | r11 → r13 | 0,2115 → 0,2308 | [0,1154 ; 0,3269] → [0,1154 ; 0,3462] | +1 câu; CI cực rộng vì n=52 |

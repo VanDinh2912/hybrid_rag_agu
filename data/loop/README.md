@@ -923,3 +923,247 @@ chốt; r13 vẫn chạy trên **corpus cũ** ⇒ số này **không** thay cho 
 - Mọi số liệu ở đây offline (Qwen qua Ollama). Muốn kết luận cho đường Gemini phải
   chạy lại `--generator gemini` trong ngân sách quota, và cổng phải mở trên chính
   round đó.
+
+## V1–V4 — chẩn đoán truy xuất 27-10: TIÊU CHÍ ĐĂNG KÝ TRƯỚC (viết TRƯỚC khi chạy V1/V3)
+
+Mục đích: giải thích ba câu hỏi còn treo của tầng truy xuất mà chưa phép đo nào trả lời
+dứt điểm — (V1) query dense nên fold hay nguyên văn, (V2) lớp router/soft-filter đang
+cộng hay trừ giá trị, (V3) index `chroma_db_vie` còn đo được trên bao nhiêu item. Đây
+là **chẩn đoán**, không phải lever: mọi cờ lever TẮT, không sinh văn bản, **0 lượt
+Gemini**, không sửa `src/`, không đổi `k`/trọng số RRF mặc định. Mọi phép đo mở **bản
+sao** index trong `tmp/diag_index_copies_20261027/`, không mở index thật.
+
+**Số đã biết trước khi đăng ký (nguồn công bố, không phải số của phép đo mới):**
+r0 363/700 · r1 536/700 · r2 518/700 · r4 520/700 · r11 518/700; probe all-off trên
+700 item (mọi cờ TẮT) = 536/700 (`tmp/retriever_ranks_700.json`). Các số này **không**
+được dùng để chỉnh tiêu chí bên dưới.
+
+**Quy ước thống kê chốt trước (áp cho cả V1, V2, V3):**
+
+- Đơn vị ghép cặp = **item**; chỉ item có `gold_chunk_id` (700) cho gold@6.
+- McNemar **chính xác hai phía**: `p = min(1, 2·Σ_{k=0..min(b,c)} C(n,k)/2^n)` với
+  `b,c` là hai chiều lật.
+- Bootstrap **theo cụm tài liệu**: cụm = `source_document` nguyên văn; lấy mẫu lại
+  cụm có hoàn lại đến đúng số cụm, giữ toàn bộ item của cụm được chọn (trùng cụm thì
+  item lặp), 10.000 lượt, seed `20261027`, CI percentile 2,5–97,5 của **delta ghép
+  cặp**. Báo kèm `n_clusters`; nếu < 20 cụm thì ghi "CI cụm không đáng tin" thay vì
+  kết luận.
+- **Chỉ gọi "có tín hiệu" khi đồng thời**: (a) McNemar `p ≤ 0,05` đúng chiều, (b) CI
+  cụm **không chứa 0** cùng chiều, (c) `|delta| ≥ 11/700 ≈ 1,5 điểm %` — ngưỡng nhiễu
+  đã dùng ở T5 cho cùng bộ 700 item. Thiếu bất kỳ điều kiện nào ⇒ ghi **"không kết
+  luận"**, không suy diễn từ số tuyệt đối.
+- Mọi số theo family là **thăm dò**; chỉ in `n` và delta, không tuyên bố ý nghĩa nếu
+  `n < 8` hoặc CI chứa 0.
+
+### V1 — dense leg: query nguyên văn vs `fold(query)`
+
+**Hiện trạng code (đã kiểm, không sửa):** dense không nằm trong `src/retrieval.py`;
+`src/retrieval.py` chỉ fold cho mở rộng từ đồng nghĩa và khử trùng truy vấn con.
+Chỗ nhúng dense thật là `src/pipeline.py:319` — `docs = self.ensemble_retriever.invoke(fold(query))`
+(và `:323` `_collect_leg_ranks(fold(query))`, fallback `:419` `vector_query = fold(query)`).
+Vì vậy V1 đo đúng một biến: **query đưa vào nhánh Chroma** (BM25 giữ nguyên, không dùng
+trong phép đo này).
+
+- Đối chứng: `dense_rank` của `tmp/retriever_ranks_700.json` (query fold, k=12).
+- Can thiệp: cùng bản sao index, `dense.invoke(raw_query)` **không fold**, k=12.
+- Chỉ số chính: hit@6 của dense leg. Phụ: MRR@12, phân bố hạng 1–6 / 7–12 / ngoài 12.
+- Quyết định đăng ký trước: nếu can thiệp **tốt hơn** theo đủ (a)(b)(c), đề xuất một
+  PA thêm cờ `DENSE_QUERY_RAW` (mặc định 0) — **không tự sửa `src/`**. Nếu kém hơn
+  hoặc không kết luận ⇒ giữ `fold`, ghi lý do bằng số. Kết quả ghi
+  `tmp/dense_orig_query.json`.
+
+### V2 — gold@6 dưới trọng tài v2 + hiệu ứng soft-filter
+
+`data/loop/rounds_v2/compare_v1_v2.json` **không trả lời được câu này**: nó chỉ chứa
+các round pha sinh (r0,r1,r3,r5,r5b,r6,r7,r8,r9,r10), 100 dòng/round, và không có
+r2/r4/r11. Vì vậy gold@6 của r0/r1/r2/r4/r11 được **chấm lại offline** từ
+`rounds/<r>/retrieval.jsonl` bằng `tools.loop.verify.score_item` hiện tại (chữ ký
+`2911c69f740d`, `answer=None`) trên đúng 700 item có `gold_chunk_id`. Nếu số chấm lại
+lệch `round_summary_retrieval.json` của chính round đó **quá 0 item**, dừng và báo
+(xung đột dụng cụ đo, không tự chọn số nào).
+
+- **all-off** = cùng bản sao index, mọi cờ = 0, gọi `pipeline.retrieve(raw_query, k=12,
+  fallback_query=raw_query)`, cửa sổ = `sources[:6]`; chạy đủ **811 item** để đo cả neo
+  HUMAN. Kiểm tương thích: 700 hạng RRF phải trùng `tmp/retriever_ranks_700.json`;
+  lệch 1 item cũng dừng.
+- **r1 vs all-off:** so **tập** top-6 theo item (không chỉ tổng số): số item trùng tập,
+  số lật mỗi chiều, McNemar. Kết luận "trùng" chỉ được viết nếu tập trùng; nếu chỉ
+  trùng tổng 536 thì phải ghi rõ là **trùng số, không trùng tập**. Phân rã theo
+  `retrieval_config.source_filter` của r1: rỗng / trùng nguồn chứa gold / không trùng.
+- **r0 thấp:** đếm item r0 trượt vì `source_filter` khác nguồn của gold (lọc cứng), so
+  với all-off trên cùng item; đây là lời giải thích cơ chế, không phải lever mới.
+- **Hiệu ứng soft-filter = r11 − all-off**, ghép cặp theo item, xuất theo family và
+  theo **neo HUMAN** (`source_document` fold trùng một `source` trong `sources[:6]`;
+  n=97). Bootstrap cụm như trên. Không được gọi là cải thiện/thoái hóa nếu thiếu
+  (a)(b)(c).
+- Kết quả ghi `tmp/v2_rescore.json` + `tmp/alloff_811.json`.
+
+### V3 — `chroma_db_vie`: đo trên các item còn neo
+
+- Bản sao `tmp/diag_index_copies_20261027/chroma_db_vie`, phải đúng **342 chunk**;
+  lệch thì dừng.
+- **"Còn neo" (định nghĩa chốt trước):** item có `gold_sentence` mà sau `fold` + gộp
+  khoảng trắng là **chuỗi con** của ít nhất một chunk trong index mới **cùng
+  `source_document`** (fold). Tập đích = **mọi** chunk thoả; hit@6 nếu bất kỳ chunk
+  đích nào nằm trong top-6, hạng = hạng tốt nhất. Định nghĩa phụ (báo kèm, không dùng
+  để kết luận): toàn bộ text chunk vàng cũ là chuỗi con của chunk mới cùng nguồn.
+- Đo **BM25 và dense** (query fold, k=12 — giữ đúng quy ước đang chạy để V3 đo index,
+  không đo lại V1) trên đúng tập còn neo: hit@6 từng nhánh, ma trận 2×2, theo family.
+- Đối chứng ghép cặp: cùng item, hạng trong index cũ lấy từ
+  `tmp/retriever_ranks_700.json`; delta + CI cụm. **Không** tuyên bố index nào tốt hơn
+  nếu thiếu (a)(b)(c); V3 không phải cổng kích hoạt.
+- **Đèn đỏ giữ nguyên:** nếu tỉ lệ còn neo < 90% thì `chroma_db_vie` vẫn **chưa** đủ
+  điều kiện kích hoạt (PA-21/PA-1 vẫn mở), bất kể hit@6 trên tập còn neo cao đến đâu.
+- Kết quả ghi `tmp/vie_anchored.json`.
+
+### V4 — khung r17–r19 (chỉ kế hoạch, CHƯA chạy)
+
+Ba round tương ứng ba câu hỏi trên, **mỗi round một biến**, baseline r11, mọi cờ khác
+giữ như r11, 0 Gemini, `--phase retrieval --split all --top-k 6`. Chi tiết + ngưỡng
+đầy đủ ở `docs/archive/PENDING_APPROVAL.md` (PA-48). Tóm tắt điều kiện mở round:
+
+| Round | Một biến | Chỉ chạy khi | Ngưỡng ĐẠT (đăng ký trước) | Veto neo HUMAN |
+|---|---|---|---|---|
+| r17 | query dense nguyên văn (cờ mới, cần duyệt) | V1 đủ (a)(b)(c) theo hướng nguyên văn tốt hơn | gold@6 ≥ r11 + 11/700, McNemar p ≤ 0,05, CI cụm không chứa 0 | giảm > 5% tương đối (≈5 item / 97) ⇒ bác |
+| r18 | `ENABLE_CLASSIFIER=0` (tắt cả lớp router; soft-filter/bonus ngủ) | V2 cho thấy r11 − all-off âm và đủ (a)(b)(c) | như trên | như trên |
+| r19 | đổi index sang `chroma_db_vie` | V3 xong **và** PA-21 re-anchor đạt ≥90% neo **và** PA-1 được duyệt | trên tập còn neo: +5 điểm % tuyệt đối, p ≤ 0,05, CI cụm không chứa 0, không family n≥8 nào giảm > 0,10 | như trên |
+
+Không round nào được chạy trong nhiệm vụ này; kết quả V1–V3 chỉ để quyết định có mở
+round hay không. Nếu V1/V3 không kết luận được, ghi "không mở round" — không thay
+lever khác để "cứu số".
+
+## P3–P4 — ĐĂNG KÝ TRƯỚC r17 (27-10, viết TRƯỚC khi chạy round)
+
+**Quan hệ với bảng V4 ở trên (ghi rõ để không đổi thước sau khi thấy số):** bảng V4
+được viết khi r17 còn giả định "một biến so với r11". Sau khi V1–V2 chốt, biến duy
+nhất của r17 là `ENABLE_DENSE_ORIGINAL_QUERY` — một cờ nằm *trong cùng đường all-off*
+(không router, không reranker, không T3). Vì vậy **đối chứng đúng là all-off**, không
+phải r11: so với r11 sẽ trộn hai biến (query dense + cả gói router/soft-filter) và
+không quy được nguyên nhân. Mục này thay dòng r17 của bảng V4; hai dòng r18/r19 của
+bảng V4 giữ nguyên. Ngưỡng dưới đây chốt trước khi chạy, không sửa sau khi thấy số.
+
+**Một biến:** `ENABLE_DENSE_ORIGINAL_QUERY` (`0` = đối chứng, `1` = can thiệp). Mọi cờ
+khác TẮT như all-off. Không sinh văn bản, 0 Gemini, không sửa `src/`, không đổi `k`
+(12) / trọng số RRF (0,5/0,5, c=60) / tập 811 item.
+
+**Dữ liệu & lời gọi (chốt trước):**
+
+- Index: **bản sao** `tmp/diag_index_copies_20261027/chroma_db` (361 chunk); không mở
+  `chroma_db` thật. Lệch số chunk ⇒ dừng.
+- `pipeline.retrieve(raw_query, k=12, fallback_query=raw_query)`; cửa sổ đo =
+  `sources[:6]`. `fallback_query == raw_query` nên nhánh fallback không chạy.
+- Câu hỏi KHÔNG qua chuẩn hóa Qwen (đúng thang đo của `--phase retrieval`).
+
+**Số đã biết trước khi đăng ký (không dùng để chỉnh ngưỡng):** all-off 536/700, neo
+HUMAN 75/97 (`tmp/alloff_811.json`); V1 dense-raw 474/700 vs fold 202/700.
+
+**Tiêu chí chính (quyết định):**
+
+- Chỉ số: `gold@6` trên **700** item có `gold_chunk_id`, ghép cặp theo item,
+  delta = can thiệp − đối chứng.
+- **Có tín hiệu** khi đồng thời: (a) McNemar chính xác hai phía `p ≤ 0,05` đúng chiều
+  dương; (b) bootstrap cụm theo `source_document` (10.000 lượt, seed `20261027`, CI
+  percentile 2,5–97,5) **không chứa 0** và cùng chiều; (c) `|delta| ≥ 11/700`
+  (≈1,57 điểm %, ngưỡng nhiễu đã dùng cho cùng bộ 700 item).
+- **Veto neo HUMAN (97 item):** neo = có ít nhất một `source` trong top-6 fold-trùng
+  `source_document` của item. Nếu can thiệp **thấp hơn** all-off (75/97) — dù chỉ 1
+  item — thì **BÁC** cờ, bất kể gold@6. Không nới thành "−5%" như bảng V4 cũ vì người
+  duyệt đã chốt "thấp hơn là bác".
+
+**Kiểm tra trước khi diễn giải (fail-fast, không tự chọn số):**
+
+1. Lượt đối chứng phải tái lập **từng item** `tmp/alloff_811.json`: hạng gold của 700
+   item và neo HUMAN của 97 item trùng khít; lệch 1 item ⇒ dừng, không đo can thiệp.
+2. **Stress test "mọi query đã fold"** (đăng ký trước, không phải kết quả): đặt
+   `q' = fold(raw_query)` rồi chạy cả hai cấu hình trên đủ 811 item. Vì `q'` không còn
+   dấu, `fold(q') = q'` (kiểm idempotence cho cả 811 câu) nên hai cấu hình phải cho
+   **cùng tập top-6 và cùng thứ tự** ở 811/811 item. Khác dù 1 item ⇒ lỗi triển khai
+   ⇒ dừng, kết luận "không kết luận", không diễn giải số chính.
+
+**Thăm dò (không dùng để kết luận):** chia theo `family` và theo **tỉ lệ từ có dấu
+của chunk vàng** (hàm `word_diacritic_ratio` của `tools/diag/corpus_diacritics.py`,
+chốt 3 khoảng từ trước: `< 5%`, `5–20%`, `≥ 20%`); in `n`, delta, McNemar; bootstrap
+cụm cho nhóm `n ≥ 8`. Không tuyên bố ý nghĩa nếu `n < 8`, cụm < 20, hoặc CI chứa 0.
+
+**Kết quả & phán quyết:**
+
+- ĐẠT (đủ (a)(b)(c) và không veto) ⇒ đề xuất một PA bật cờ làm mặc định; **không tự
+  bật** trong phiên này.
+- KHÔNG ĐẠT ⇒ cờ giữ TẮT; ghi delta + CI + p, không "cứu số" bằng lever khác.
+- Thiếu bất kỳ điều kiện nào ⇒ "không kết luận".
+- Ghi `tmp/r17_dense_orig_2026-10-27.json` + log cùng tên; tên mới, không ghi đè
+  artifact đã công bố (D-27).
+
+## P5 — ĐĂNG KÝ TRƯỚC r18 (viết 27-10 **sau** r17, TRƯỚC khi chạy r18)
+
+**Quan hệ với các bảng trước (ghi rõ để không đổi thước sau khi thấy số):** mục P3–P4 ở
+trên hứa "hai dòng r18/r19 của bảng V4 giữ nguyên". Nay dòng r18 được **viết lại** theo
+đúng nhiệm vụ P5 ("viết lại thiết kế r18 theo kết quả [r17]") và theo kết quả ma trận
+nhánh. Lý do đổi là **số của r17 và ma trận nhánh P5**, không phải số của r18 (r18 chưa chạy,
+chưa có số):
+(i) `rrf_fold` 536 thua **BM25 một mình** 568 (Δ=−32, McNemar p=9,4e−7) và thua union
+hai nhánh 574 (Δ=−38, p=7,5e−11) — chế độ dense-**fold** đã bị chế độ dense-**nguyên
+văn** áp đảo; (ii) vì vậy đo lớp router trên nền fold (dòng r18 cũ: "r11 +
+`ENABLE_CLASSIFIER=0`") sẽ trả lời một câu hỏi về hệ thống **không còn là ứng viên
+mặc định**. Phép đối chứng (lớp router bật vs tắt) **giữ nguyên**; chỉ đổi chế độ query
+sang nguyên văn — nơi r17 đã chứng minh là cấu hình tốt hơn. Ngưỡng (a)(b)(c) và veto
+HUMAN không đổi.
+
+**Một lớp, bốn cờ (không phải một cờ):** lớp router của r11 là một **khối**:
+`ENABLE_CLASSIFIER=1` + `ROUTER_SOFT_FILTER=1` + `ROUTER_FILTER_RANK_BONUS=12` +
+`ROUTER_SOURCE_QUOTA=0`. Classifier sinh `source_filter`; ba cờ còn lại chỉ tiêu thụ
+`source_filter` đó, nên tách lẻ sẽ đo một hệ thống chưa từng tồn tại. V2/r11 đã đo đúng
+khối này; r18 đo lại khối đó trên nền mới. Hệ quả phải ghi: **không quy được công/thủ
+cho từng cờ con**; muốn tách phải thêm round riêng, không tự thêm.
+
+**Nền đối chứng (r17-T, đã đo):** all-off + `ENABLE_DENSE_ORIGINAL_QUERY=1` = 581/700,
+neo HUMAN 77/97 (`tmp/r17_dense_orig_2026-10-27.json`). Mọi cờ khác TẮT y như r17-T.
+Không đổi `k` (12), trọng số RRF (0,5/0,5, c=60), index (bản sao 361 chunk), tập 811.
+
+**Can thiệp:** lớp router BẬT (bốn cờ ở trên) trên cùng nền. 0 Gemini, không sửa `src/`.
+
+**Tiêu chí chính (quyết định) — r18 vs r17-T:**
+
+- `gold@6` trên 700 item có `gold_chunk_id`, ghép cặp theo item; cùng bộ (a)(b)(c) của
+  r17 (McNemar chính xác hai phía p ≤ 0,05 đúng chiều; bootstrap cụm `source_document`
+  10.000 lượt seed `20261027` không chứa 0; |Δ| ≥ 11/700). Hai phía vì V2 dự đoán âm.
+- **Luật quyết định chốt trước:** r18 **thấp hơn** r17-T có tín hiệu ⇒ đóng câu hỏi
+  router: đề xuất (PA riêng) để router TẮT trong mặc định ứng viên, không tự tắt.
+  r18 **cao hơn** có tín hiệu ⇒ đề xuất bật khối router (PA riêng), không tự bật.
+  Không đủ (a)(b)(c) ⇒ "không kết luận", **giữ mặc định hiện hành** (router BẬT).
+- **Veto neo HUMAN:** r18 phải không thấp hơn **77/97** — "thấp hơn là bác", đúng luật
+  đã duyệt ở r17, không nới thành −5%.
+
+**Sao lặp bắt buộc (không phải quyết định, nhưng chặn PA bật mặc định):** r18 vs **r11
+đã công bố** (dùng lại `data/loop/rounds/r11/retrieval.jsonl`, KHÔNG chạy lại r11) trên
+700 item, cùng (a)(b)(c), để xem hiệu ứng dense-nguyên-văn (+45 ở r17) còn giữ khi
+router bật. Nếu hiệu ứng đảo chiều hoặc mất tín hiệu ⇒ ghi "tương tác với router" và
+**không** bật cờ dense-nguyên-văn làm mặc định cho tới khi giải quyết xong.
+
+**Tương tác (thăm dò, không quyết định):** DiD = (r18 − r11) − (r17-T − all-off) ghép
+cặp theo item; bootstrap cụm như trên; chỉ in số, không tuyên bố.
+
+**Fail-fast (không tự chọn số):**
+
+1. Lượt đối chứng (router TẮT + dense nguyên văn) phải tái lập **từng item** r17-T
+   (hạng gold 700 item, neo HUMAN 97 item); lệch 1 item ⇒ dừng.
+2. Đối chiếu **r11 đã công bố** phải trùng khít `retrieval.jsonl` của r11 theo từng
+   item (không chạy lại r11); lệch 1 item ⇒ dừng và báo xung đột dụng cụ đo.
+3. Mọi lượt phải có `attribute.py` trước/sau và một artifact ghép cặp
+   (`tools/diag/bonus_paired.py` khi hai round cùng định dạng); thiếu ⇒ **không mở cổng**
+   (luật PA-48).
+
+**Điều kiện công cụ (phải duyệt trước khi chạy):** `tools/loop/run_round.py` hiện
+**không ghi** `ENABLE_DENSE_ORIGINAL_QUERY` vào `settings` của manifest ⇒ round chạy
+qua runner sẽ tự ký thiếu biến và trông như "cùng cấu hình". Vì vậy r18 chỉ được chạy
+theo một trong hai đường, cả hai đều cần duyệt riêng: (A) thêm khóa đó vào manifest
+runner (PA-51, không đổi trọng tài), rồi chạy runner bình thường; (B) chạy như
+diagnostic tự ký (như r17) **và** ghi thêm `retrieval.jsonl` đúng định dạng round vào
+thư mục **mới** `data/loop/rounds/r18/` để `attribute.py` đọc được. Không ghi đè
+round nào đã công bố.
+
+**Chi phí:** 811 lượt classifier Ollama (~40–60 phút), 0 Gemini, không đổi index.
+
+**Kết quả & phán quyết:** ghi `tmp/r18_router_raw_2026-10-27.json` + log cùng tên,
+và (nếu đường B) `data/loop/rounds/r18/`. Tên mới, không ghi đè artifact đã công bố.
+Mọi thay đổi mặc định sau r18 phải qua PA riêng.

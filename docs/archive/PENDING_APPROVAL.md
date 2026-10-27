@@ -1590,3 +1590,224 @@ chỉ 6 hash container + `generated_at` đổi, tổng vẫn 158 tệp / 390.961
 test/công cụ mở index thật; hiện đường pytest đã sạch nên không cấp thiết.
 
 **Trạng thái:** phần cô lập test + sinh lại manifest đã áp (C1); phần index digest chờ duyệt.
+
+## PA-48 — Kế hoạch r17–r19 sau chẩn đoán V1–V3 (27-10; cập nhật cuối ngày: r17 ĐÃ CHẠY — ĐẠT, r18 thiết kế lại, r19 đóng)
+
+**Bối cảnh.** Ba câu hỏi truy xuất còn treo (dense query fold vs nguyên văn; lớp router/soft-filter
+đang cộng hay trừ; index `chroma_db_vie` còn neo bao nhiêu) đã được đăng ký tiêu chí đo ở
+`data/loop/README.md` mục "V1–V4 — chẩn đoán truy xuất 27-10". Mục này dựng **kế hoạch round**
+từ ba câu trả lời đó. **Trạng thái sau phiên 27-10 tối (P1–P6):** r17 **đã chạy** và ĐẠT; r18
+**đã viết lại thiết kế** (chưa chạy); r19 vẫn **đóng**. Mọi ngưỡng ở đây đã ghi trước khi đo
+nhánh tương ứng; phần cập nhật chỉ thêm *trạng thái* và *hệ quả*, không chỉnh ngưỡng.
+
+**Trạng thái đo 27-10 (V1–V3 đã xong, ghi lại nguyên văn lúc đo — trước khi triển khai cờ; xem
+`tmp/retrieval_diag_report.md`; ngưỡng bên dưới giữ nguyên vì đã ghi trước):**
+
+- **V1 — ĐẠT, PA-48a MỞ.** Dense query nguyên văn 474/700 = 67,71% so với `fold` 202/700 =
+  28,86%; b=308, c=36, McNemar p = 5,27e−55, CI cụm [+19,18; +54,75] điểm % (24 cụm),
+  Δ = +38,86 điểm % ≥ 11/700. Kết luận theo đúng tiêu chí: nguyên văn tốt hơn. Lúc đo, cờ
+  `DENSE_QUERY_RAW` **chưa được viết** và `src/` chưa bị sửa; cờ đã được viết sau đó dưới tên
+  `ENABLE_DENSE_ORIGINAL_QUERY` (xem PA-48a).
+- **V2 — ĐẠT, PA-48b MỞ.** r11 518/700 vs all-off 536/700: mất 21, được 3, Δ = −18
+  (−2,57 điểm %), McNemar p = 2,77e−4, CI cụm [−4,62; −0,69] điểm % (24 cụm). Mất mát tập
+  trung ở nhóm router chọn sai nguồn (178 → 157/245); neo HUMAN 79 vs 75 (+4, CI chứa 0;
+  là tăng, không kích hoạt veto). **Đính chính kèm theo:** artifact r1 (536, 0/811 dòng có
+  nhãn classifier, latency 0,18 s) trùng khít all-off 700/700 ⇒ r1 thực chất chạy **không
+  router**, nên cách đọc cũ "r2 bonus 12 vs r1 bonus 3" là so router-bật với router-tắt;
+  phép thử bonus hợp lệ vẫn là r6/r7. Không sửa số/cổng đã công bố.
+- **V3 — ĐÈN ĐỎ, PA-48c ĐÓNG.** Neo 407/700 = 58,14% (< 90%): mọi family không-OCR giữ 100%,
+  còn OCR gần mất sạch (CLOZE_OCR 9,22%, NUMERIC 15,18%, TRAP_OCR 35,29%) — hạn chế của định
+  nghĩa neo theo chuỗi OCR cũ, nhưng theo tiêu chí đăng ký trước là chưa đủ điều kiện kích hoạt.
+  Trên 407 item còn neo: BM25 86,49% vs 82,06% (p=4,0e−5, 14 cụm) và dense 24,08% vs 6,63%
+  (p=1,6e−20, 14 cụm) — **không kết luận** vì 14 cụm < 20 và tập bị chọn lệch.
+
+**Luật chung cho cả ba round (không thương lượng) — luật gốc lúc lập kế hoạch; nền đối chứng của
+r17/r18 đã được đăng ký lại (all-off, rồi r17-T) với lý do ghi ở PA-48a/PA-48b, ngưỡng tín hiệu
+và veto HUMAN không đổi:**
+
+- Mỗi round **một biến** so với r11; mọi cờ khác giữ đúng r11 (`ENABLE_CLASSIFIER=1`,
+  `ROUTER_SOFT_FILTER=1`, `ROUTER_FILTER_RANK_BONUS=12`, `ROUTER_SOURCE_QUOTA=0`, `top_k=6`,
+  `ENABLE_RERANKER=0`, hai cờ T3 TẮT, `NORMALIZE_SANITY_GUARD=0`). Không đổi `k`/trọng số RRF.
+- `--phase retrieval --split all --top-k 6`, 811 item, **0 lượt Gemini**; mỗi lúc một runner.
+- Dùng bản sao index trong `tmp/`; **cấm** mở `chroma_db`/`chroma_db_vie` thật.
+- **Veto neo HUMAN (đăng ký trước, giống định nghĩa V2):** `source_document` fold trùng một
+  `source` trong `sources[:6]`, n=97. Round bị **bác** nếu neo giảm **quá 5% tương đối** so với
+  baseline (≈5 item trên 97) — đúng ngưỡng `GATE_MAX_HUMAN_REL_DROP=0,05` hiện hành. Mức giảm
+  ≤5 item chỉ được ghi là "trong nhiễu", không được gọi là giữ nguyên.
+- **Nhiễu/tín hiệu:** chỉ gọi "có tín hiệu" khi `|delta gold@6| ≥ 11/700` **và** McNemar chính xác
+  `p ≤ 0,05` đúng chiều **và** CI bootstrap cụm tài liệu (10.000 lượt, seed `20261027`) không chứa
+  0. Không đạt đủ ba ⇒ "không kết luận", giữ mặc định hiện tại.
+- Mọi round phải kèm `attribute.py` trước/sau và `tools/diag/bonus_paired.py` ghép cặp; round không
+  có artifact ghép cặp thì **không được mở cổng**.
+
+### PA-48a — r17: query dense NGUYÊN VĂN — **ĐÃ DUYỆT, ĐÃ TRIỂN KHAI, ĐÃ CHẠY: ĐẠT**
+
+**Trạng thái (27-10 tối).** Người dùng đã duyệt PA-48a. Cờ được **viết thật** với tên
+`ENABLE_DENSE_ORIGINAL_QUERY` (thay tên nháp `DENSE_QUERY_RAW` trong bản đăng ký đầu), mặc định
+`0`, đọc qua `settings()._flag` trong `src/pipeline.py`; chỉ **nhánh Chroma** nhận query nguyên
+văn, BM25 vẫn nhận `fold(query)`; tắt cờ chứng minh **byte-identical** bằng golden + 26 test +
+**8/8 đột biến** bị bắt. 6 tệp PA-26 đã commit (`c778bdf`), pytest xanh, golden không đổi.
+
+**Hai chỗ lệch bản đăng ký đầu — đã được người duyệt chốt trong nhiệm vụ P3/P4, ghi lại đây:**
+
+1. **Tên cờ:** `DENSE_QUERY_RAW` → `ENABLE_DENSE_ORIGINAL_QUERY`.
+2. **Nền đối chứng:** ban đầu "r17 = r11 + cờ, gate r17 vs r11". Khi triển khai, cờ nằm **trong
+   cùng đường all-off**, nên so với r11 sẽ trộn hai biến (query dense + cả khối router/soft-filter).
+   Đăng ký lại ở `data/loop/README.md` (mục P3–P4) **trước khi chạy**: đối chứng = **all-off**
+   (536/700, neo HUMAN 75/97). Ngưỡng (a)(b)(c) và veto HUMAN giữ nguyên.
+
+**Kết quả r17 (retrieval-only, 811 item, bản sao index 361 chunk, 0 Gemini, referee `2911c69f740d`):**
+
+- **Chính:** gold@6 536 → **581** (Δ = **+45 item**, +6,43 điểm %); 57 item được / 12 mất;
+  McNemar chính xác p = **3,74e−8**; bootstrap cụm `source_document` 24 cụm, CI 95%
+  **[+0,0259; +0,0957]** (tỉ lệ; tương đương +2,59…+9,57 điểm %), không chứa 0; |Δ| ≥ 11/700
+  ⇒ **có tín hiệu, ĐẠT**.
+- **Veto HUMAN:** 75 → **77**/97 (+2; 10 được / 8 mất; McNemar p = 0,815; 15 cụm, CI
+  [−15,7; +18,0] điểm %). Không thấp hơn 75 ⇒ **không veto**. (Đây là *tăng*, không phải bằng
+  chứng "giữ nguyên" — trong nhiễu.)
+- **Fail-fast:** lượt đối chứng tái lập `tmp/alloff_811.json` **từng item** 811/811 (0 lệch);
+  stress "mọi query đã fold" cho **0/811** khác biệt tập+thứ tự top-6; fold idempotent 811/811.
+- **Latency (truy xuất, không sinh):** median 0,1531 → 0,1514 s; p95 0,3402 → 0,3123 s.
+- **Thăm dò (không tuyên bố ý nghĩa — mọi cụm family < 20):** EXACT +15 (p=6,1e−5),
+  YESNO_FACT +8 (0,0078), TRAP +7 (0,0156), SOURCE_LOOKUP +5 (0,0625), NUMERIC +5 (0,267),
+  CLOZE +4 (0,344), CLOZE_OCR **−2** (0,727), TRAP_OCR +3 (0,25), REVERSE_LEGAL 0. Theo tỉ lệ
+  dấu của chunk vàng: `≥20%` **+43** (p=7,1e−10), `5–20%` +4, `<5%` **−2** (0,727). Cơ chế
+  nằm ở nhóm chunk còn dấu; nhóm mất dấu gần như đứng yên.
+- **Artifact:** `tmp/r17_dense_orig_2026-10-27.json` + `.log`.
+
+**Hệ quả:** đủ điều kiện để **đề xuất** bật cờ làm mặc định (PA-49) — nhưng **không tự bật**;
+mặc định hiện tại vẫn `ENABLE_DENSE_ORIGINAL_QUERY=0`.
+
+### PA-48b — r18: lớp router trên nền dense NGUYÊN VĂN (thiết kế LẠI sau r17, **CHƯA CHẠY**)
+
+**Thiết kế cũ đã bị thay (ghi lý do bằng số, không đổi ngưỡng):** bản đầu là "r18 = r11 +
+`ENABLE_CLASSIFIER=0`, gate r18 vs r11" — tức đo lớp router trên nền dense-**fold**. Ma trận P5
+(`tmp/p5_rrf_branch_matrix_2026-10-27.json`) cho thấy nền đó đã bị áp đảo:
+
+- RRF fold 536 **thua BM25 một mình** 568 (Δ = −32, McNemar p = 9,4e−7) và thua union hai nhánh
+  574 (Δ = −38, p = 7,5e−11). Dense fold chỉ đóng góp **6** item riêng; dense nguyên văn đóng
+  góp **36**.
+- Vì vậy V2 (−18 item cho router) là số đo trên một hệ thống **không còn là ứng viên mặc định**.
+  Câu hỏi đúng là: *khi dense đã nguyên văn, lớp router còn cộng hay trừ?*
+
+**Nền đối chứng:** r17-T = all-off + `ENABLE_DENSE_ORIGINAL_QUERY=1` = 581/700, neo HUMAN 77/97.
+
+**Một lớp, bốn cờ (không tách lẻ):** can thiệp = khối router của r11
+(`ENABLE_CLASSIFIER=1`, `ROUTER_SOFT_FILTER=1`, `ROUTER_FILTER_RANK_BONUS=12`,
+`ROUTER_SOURCE_QUOTA=0`). Classifier sinh `source_filter`; ba cờ kia tiêu thụ nó. Không quy
+công/thủ cho từng cờ con; muốn tách phải thêm round riêng (không tự thêm).
+
+**Ngưỡng & luật quyết định (đăng ký đầy đủ ở `data/loop/README.md` mục "P5 — ĐĂNG KÝ TRƯỚC
+r18"):** r18 vs r17-T trên 700 item, cùng (a)(b)(c) (|Δ| ≥ 11/700, McNemar hai phía p ≤ 0,05 đúng
+chiều, CI cụm 24 tài liệu không chứa 0). r18 **thấp hơn** có tín hiệu ⇒ đề xuất tắt router trong
+mặc định ứng viên; **cao hơn** có tín hiệu ⇒ đề xuất bật khối router; không đủ ⇒ "không kết
+luận", giữ mặc định hiện hành (router BẬT). **Veto HUMAN:** r18 < 77/97 là **bác** ("thấp hơn là
+bác", đúng luật r17).
+
+**Sao lặp bắt buộc:** r18 vs **r11 đã công bố** (dùng lại `retrieval.jsonl`, không chạy lại) để
+xem +45 của dense-nguyên-văn còn giữ khi router bật. Nếu đảo chiều hoặc mất tín hiệu ⇒ ghi "tương
+tác với router" và **chặn PA-49** cho tới khi giải quyết. DiD là số thăm dò, không quyết định.
+
+**Điều kiện công cụ (chặn cổng nếu thiếu):** `tools/loop/run_round.py` **không ghi** cờ
+`ENABLE_DENSE_ORIGINAL_QUERY` vào `settings` của manifest ⇒ phải hoặc (A) thêm khóa vào runner
+(PA-51), hoặc (B) chạy diagnostic tự ký như r17 **và** ghi `retrieval.jsonl` định dạng round vào
+`data/loop/rounds/r18/` (thư mục mới). Kèm `attribute.py` trước/sau + artifact ghép cặp — thiếu
+thì không mở cổng (luật PA-48).
+
+- **Chi phí:** 811 lượt classifier Ollama (~40–60 phút), 0 Gemini, không đổi index/`k`/trọng số.
+
+### PA-48c — r19: đổi index sang `chroma_db_vie` (chỉ trên tập còn neo)
+
+- **Điều kiện mở (cả ba):** (1) V3 xong; (2) PA-21 re-anchor đạt **≥90% neo**; (3) PA-1 được duyệt
+  kích hoạt corpus mới. Thiếu một điều ⇒ **không mở**, vì đo trên index mất 48,81% neo là đo một
+  tập item khác, không so được với r11. **V3 đo 58,14% (407/700); P6 đo thêm neo cấu trúc chỉ
+  lên 86,57% (606/700) ⇒ điều kiện (2) CHƯA đạt, r19 vẫn ĐÓNG** (xem PA-50).
+- **Biến duy nhất:** `CHROMA_PERSIST_DIR` trỏ bản sao `chroma_db_vie` đã được re-anchor; mọi thứ
+  khác như r11. Không sửa code.
+- **Round:** `r19` = r11 + index mới; gate **r19 vs r11 trên đúng tập item còn neo** (không phải
+  700), kèm báo cáo riêng trên 97 HUMAN.
+- **Ngưỡng ĐẠT:** trên tập còn neo, gold@6 tăng ≥ **5 điểm % tuyệt đối**, McNemar p ≤ 0,05, CI cụm
+  không chứa 0, không family n≥8 nào giảm > 0,10. Veto HUMAN như trên.
+- **Chi phí:** ~40–60 phút + một lần build index (đã có bản sao); 0 Gemini.
+- **Nợ đăng ký:** nếu PA-49 được duyệt (mặc định dense nguyên văn), nền r19 phải được **đăng ký
+  lại** (r11 hay r17-T) trước khi chạy; hiện chưa chốt, và r19 đang đóng nên chưa cần.
+
+**Thứ tự thực hiện nếu được duyệt:** V1 → (r17 nếu đủ điều kiện) → V2 → (r18 nếu đủ) → V3 → PA-21 →
+(r19 nếu đủ). Không chạy r18/r19 trước khi V1–V3 xong. **Trạng thái 27-10 tối: V1–V3 xong; r17
+đã chạy và ĐẠT; r18 đã có thiết kế mới nhưng CHƯA chạy; r19 đóng.**
+
+**Ghi chú thiết kế — đã hết hiệu lực một phần:** bản đầu ghi "r17 đăng ký trên baseline r11;
+nếu r18 thắng, phép thử sạch cho dense-nguyên-văn trên đường không router *chưa đăng ký*". Thực
+tế r17 đã được chạy **trên đúng đường không router** (all-off), nên phép thử sạch đó **đã tồn
+tại**: dense nguyên văn +45/700, p=3,7e−8. Cặp còn thiếu là chiều ngược lại — dense nguyên văn
+**khi router bật** — và chính là "sao lặp bắt buộc" của r18 (dùng lại r11, không chạy lại).
+
+**Hoàn tác:** phần r17 hoàn tác được bằng cách tắt `ENABLE_DENSE_ORIGINAL_QUERY` (mặc định đang
+TẮT; 6 tệp PA-26 đã commit là thay đổi có cờ, không đổi hành vi khi cờ tắt — golden + 8/8 đột
+biến chứng minh). r18/r19 vẫn chỉ là kế hoạch. Fingerprint hiện tại `2911c69f740d`; **1 round
+đã chạy (r17)**, r18/r19 chưa.
+
+### PA-49 — Bật `ENABLE_DENSE_ORIGINAL_QUERY=1` làm mặc định? (đề xuất, **CHƯA bật**)
+
+- **Căn cứ:** r17 ĐẠT theo ngưỡng đăng ký trước (+45/700, p=3,74e−8, CI cụm không chứa 0, veto
+  HUMAN không kích hoạt). Đây là bằng chứng **pha truy xuất**; pha sinh chưa đo dưới cờ này.
+- **Đề xuất:** đổi mặc định thành `1` ở `.env.example` (tệp đang thiếu 14 khóa lever theo PA-30 —
+  thêm cùng lúc) và tài liệu vận hành; **không** đổi trọng tài/cổng. Golden test dump T3 **xoá
+  mọi LEVER** trước khi chạy nên mặc định mới **không** làm đổi golden — phải chứng minh lại bằng
+  pytest, không suy từ đọc code.
+- **Điều kiện trước khi bật:** (1) người dùng duyệt PA này; (2) nếu r18 được chạy, "sao lặp bắt
+  buộc" của r18 không được đảo chiều (xem PA-48b); (3) ít nhất một lượt kiểm pha sinh (100 item,
+  ngân sách offline, 0 Gemini) so sánh PASS_CORRECT/refusal trước–sau khi bật mặc định — nếu chưa
+  có lượt này, chỉ được bật cho `--phase retrieval`.
+- **Không làm trong phiên này.**
+
+### PA-50 — Kế hoạch thực thi PA-21: sinh `testset_vie1` bằng neo CẤU TRÚC (đo khả thi xong, **CHƯA sinh**)
+
+**Mục tiêu.** Có bộ đo trên `chroma_db_vie` (342 chunk, 26 nguồn) giữ nguyên 700 item có gold +
+**97 HUMAN không đổi** + 14 item từ chối, để mở đường cho r19 — thay neo chuỗi OCR cũ (407/700)
+bằng neo **(nguồn + mục "Điều N"/"Phần mở đầu")** do loader gắn, không phụ thuộc OCR.
+
+**Số khả thi đo được (chỉ đọc, bản sao index; `tmp/p6*_2026-10-27.json` + log):**
+
+| Cơ chế neo | Phủ 700 item | Cứu trong 293 item V3 từng rơi | Ghi chú |
+|---|---|---|---|
+| Chuỗi OCR cũ (V3) | 407 (58,14%) | — | định nghĩa đã công bố |
+| + Nguồn + tiêu đề mục | **606 (86,57%)** | **199** (CLOZE_OCR 130, NUMERIC 60, TRAP_OCR 9) | 26/26 nguồn còn đủ; 410 item có chunk vàng **không** có tiêu đề mục |
+| + Thực thể từ câu hỏi | 662 (94,57%) | +56 | **BỊ LOẠI làm neo**: 49/56 có 3–6 chunk đích (chỉ 7 ca duy nhất) ⇒ hit@6 bị thổi |
+| + Fuzzy `difflib` | 662 (không thêm) | +0 ngoài 56 ca thực thể | **BỊ LOẠI**: ≥0,55 chỉ 2/94, **cả 2 đã nằm trong 56 ca thực thể**; ≥0,70 = 0 |
+
+**Hệ quả trung thực:** trần neo cấu trúc tự động là **86,57% < 90%** ⇒ **không được sinh bộ đo**
+theo đúng định nghĩa này. Phải neo tay **ít nhất 24/94** item còn lại để chạm 90%; đề xuất làm
+đủ 94 để đạt 100% và không phải giải thích tập con.
+
+**Thiết kế (chưa chạy):**
+
+1. **Bất biến:** không ghi đè `testset_v1.jsonl`; tệp mới `data/loop/testset_vie1.jsonl`. Giữ
+   nguyên `id` gốc để ghép cặp; thêm `target_chunk_ids` (tập đích), `anchor_kind`
+   (`ocr_string` / `section` / `manual`), `anchor_evidence` (nguồn + tiêu đề + đoạn bằng chứng),
+   `reviewer`, `review_date`. Câu hỏi **không sửa**; nếu buộc phải viết lại thì `new_question=true`
+   và **loại khỏi so sánh ghép cặp** với v1.
+2. **Cổng phủ:** ≥90% tổng; **0 chunk đích sai nguồn** (nguồn lấy từ metadata, không từ chuỗi);
+   mỗi family n ≥ 8 phải ≥80% neo, thiếu thì bỏ item kèm lý do và **giữ nguyên số family** trong
+   báo cáo. HUMAN: 97/97 giữ nguyên (26/26 nguồn còn đủ — đã kiểm); 14 item từ chối giữ nguyên.
+3. **Cổng chất lượng:** người duyệt **20 đoạn** (≥2/family, tối đa 20) kiểm 3 điều: chunk đích
+   thật sự chứa câu trả lời; không lẫn nguồn khác; câu hỏi không lộ đáp án. 20/20 đạt mới dùng;
+   trượt ⇒ sửa luật neo, duyệt lại từ đầu.
+4. **Kiểm máy trước khi công bố:** id độc nhất; đủ 811 dòng; `split` 407/404 không đổi; family
+   không đổi; 700 item có `target_chunk_ids` khác rỗng; mọi `target_chunk_ids` tồn tại trong
+   index vie và đúng `source`; HUMAN/refusal giống v1 từng byte.
+5. **Sau khi công bố:** đo lại V3-style trên neo mới (diagnostic, không phải cổng); chỉ khi phủ
+   ≥90% **và** PA-1 được duyệt thì r19 mới mở. Không tự chạy r19.
+
+**Chi phí:** 0 Gemini; ~1–2 giờ máy (đã đo xong phần tự động) + công duyệt tay 94 + 20 đoạn.
+
+### PA-51 — Ghi `ENABLE_DENSE_ORIGINAL_QUERY` vào manifest của `run_round` (đề xuất, **CHƯA sửa**)
+
+- **Vấn đề:** `tools/loop/run_round.py` liệt kê `settings` bằng tay; cờ mới **không** có trong
+  danh sách ⇒ một round chạy qua runner sẽ tự ký thiếu biến, trông như "cùng cấu hình" với round
+  cũ. `env_flag_audit` và `src/config.TRACKED_ENV` đã có cờ, nhưng manifest round thì chưa.
+- **Đề xuất:** thêm `"dense_original_query": os.getenv("ENABLE_DENSE_ORIGINAL_QUERY", "0")` vào
+  `settings` của `run_round.py` (và một khóa tương ứng trong `attribute.py` nếu cần). **Không**
+  đổi trọng tài, không đổi ngưỡng cổng, không đổi danh sách khóa so khớp của `gate.compatibility()`
+  (cờ là lever nên thuộc diện "manifest tự ký", giống `retrieval_reranker`).
+- **Vì sao cần duyệt riêng:** đây là sửa dụng cụ đo; luật hiện hành cấm sửa dụng cụ đo ngoài PA.
