@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-26T14:50:03",
+ "generated_at": "2026-10-27T18:14:59",
  "root": ".",
  "algorithm": "sha256",
  "scopes": [
@@ -779,7 +779,7 @@
     {
      "path": "chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/data_level0.bin",
      "bytes": 423600,
-     "sha256": "a98833c2d94329c5fbd0ac5b8fadc5a6ed2a4036847a45c3dee8bb5f848b5053",
+     "sha256": "a1f688be2ac0c51223aa4148f55efd3d8b69f1016df809510a6369b9f968f332",
      "tracked": false
     },
     {
@@ -791,7 +791,7 @@
     {
      "path": "chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/length.bin",
      "bytes": 400,
-     "sha256": "01e49bb6dd2a6fdfcb1cca642f89bfdf95129d625b67d3ab70b8fe6bc4038e8f",
+     "sha256": "616c792b257b9ef0c79e4ba42de535e23f804bc51b07d01e33df18f336b206e0",
      "tracked": false
     },
     {
@@ -803,7 +803,7 @@
     {
      "path": "chroma_db/chroma.sqlite3",
      "bytes": 5513216,
-     "sha256": "4b1847498c0090d46df78d922b7ed6fa755a8a60913c3927f84279ffcf117f56",
+     "sha256": "ebb1a690568067b64031561ea842dd75e6e4413b12aa2c8fbc6d125f76739b0b",
      "tracked": false
     }
    ]
@@ -855,7 +855,7 @@
     {
      "path": "chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/data_level0.bin",
      "bytes": 423600,
-     "sha256": "e10889e5ea2e0cf4e682d16881db7dc25fe5ed21ebad053b2203163e8e492661",
+     "sha256": "e185cdac7e90653ac8b21bbaf4d2c59963f22971286b020470b2bfe8fcead9bc",
      "tracked": false
     },
     {
@@ -867,7 +867,7 @@
     {
      "path": "chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/length.bin",
      "bytes": 400,
-     "sha256": "6351b976c2b1e750888a150e0ccc3f1f0360d219c46697404e82a730cf31d4cb",
+     "sha256": "43945428809ba3db6809411c2c7b70d1560f4cd33c7f55dca37ffdf49ba0e14f",
      "tracked": false
     },
     {
@@ -879,7 +879,7 @@
     {
      "path": "chroma_db_vie/chroma.sqlite3",
      "bytes": 5808128,
-     "sha256": "c670eaaf3903d549ac6ab07ae33d7676159225f603d10638afff24934c2b542a",
+     "sha256": "dbca16743f085a8f6fe405e3f27b09424a3e1261b164b1eed8c39f4e7486b98f",
      "tracked": false
     }
    ]

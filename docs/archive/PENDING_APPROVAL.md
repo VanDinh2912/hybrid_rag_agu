@@ -1576,8 +1576,17 @@ và `..._after.json`): n = 361 / 342; sha256 ma trận embedding xếp theo id =
 `b688cd89dd05` trước = sau; 30 query mỗi DB lấy từ embedding đã lưu × top-6 ⇒ **0/30 đổi thứ tự id,
 0 cặp khoảng cách lệch**.
 
-**Đề xuất (chọn một).** (a) Bỏ 6 tệp container khỏi manifest, thay bằng "index digest" nội dung
-(sha ma trận embedding + tập id) do script chỉ-đọc mới sinh — khuyến nghị; (b) giữ manifest nhưng ghi
-rõ "chỉ đúng ngay sau khi sinh, pytest làm đỏ"; (c) chỉ sinh manifest ở hành động cuối phiên.
+**Đã sửa ở C1 (27-10).** Hai test đọc index thật nay dùng fixture `real_index_copy`: copy
+`chroma_db`/`chroma_db_vie` vào `tmp_path` rồi mở BẢN SAO
+(`test_chuyen_doi_header_khong_ghi_gi_len_index_that` với 2 tham số DB,
+`test_index_that_du_36x_chunk_va_nhan_hop_le`). Không đổi assertion nào (361/342 chunk, nhãn
+Điều/Chương, thân chunk nguyên văn). Sau sửa: chạy `pytest tests -q` hai lượt liền, cả 6 sha256
+container **không đổi** (trước sửa: đổi ở 100% lượt). `ARTIFACT_MANIFEST.json` sinh lại đúng MỘT lần:
+chỉ 6 hash container + `generated_at` đổi, tổng vẫn 158 tệp / 390.961.924 B; `--check` sau full pytest
+= KHỚP, rc=0. Không sửa byte index; nội dung truy xuất đã chứng minh không đổi ở khối trên.
 
-**Hoàn tác:** chưa làm gì; manifest B3 giữ nguyên (không ghi đè artifact đã công bố).
+**Đề xuất phụ (CHƯA áp).** Thay 6 tệp container bằng "index digest" nội dung (sha ma trận embedding
++ tập id) để manifest miễn nhiễm với việc Chroma tự ghi container. Chỉ cần nếu sau này có thêm
+test/công cụ mở index thật; hiện đường pytest đã sạch nên không cấp thiết.
+
+**Trạng thái:** phần cô lập test + sinh lại manifest đã áp (C1); phần index digest chờ duyệt.

@@ -1797,3 +1797,25 @@ trước), 263 lệnh (bằng HEAD); mọi nguồn của 25 dòng EXPERIMENTS t�
 
 **Cổng sau B7 (chỉ tài liệu):** pytest 1495/5, fingerprint `2911c69f740d`, r11 182/629 + 0 lệch.
 Hoàn tác: `git revert` commit B7 (git mv + docs).
+
+## Ngã rẽ 43 — 27-10 (C1): cô lập test khỏi index sản xuất, sinh lại manifest đúng một lần
+
+**Quyết định kỹ thuật.**
+
+(a) Hai test mở index thật nay nhận fixture `real_index_copy`: `shutil.copytree`
+`chroma_db`/`chroma_db_vie` vào `tmp_path` rồi đọc bản sao. Không đổi assertion nào (đếm 361/342,
+nhãn Điều/Chương, thân chunk nguyên văn); chỉ đổi nơi Chroma được phép ghi.
+
+(b) Sinh lại `ARTIFACT_MANIFEST.json` đúng MỘT lần sau khi đường pytest đã sạch. Không sửa byte nào
+trong index; 6 tệp container đổi hash là hệ quả còn lại của các lượt mở index trước đó — nội dung
+truy xuất đã chứng minh không đổi ở PA-47 (embedding digest + 30 query × top-6 y hệt).
+
+**Bằng chứng.** Trước sửa: hai lượt pytest liền đổi cả 6 sha256 ở cả hai lượt. Sau sửa: chạy riêng
+`tests/test_t5_contextual_header.py` rồi full `pytest tests -q` hai lượt ⇒ cả 6 sha256 **không đổi**
+(`tmp/c1_chroma_baseline.txt` = `tmp/c1_chroma_after_testfile.txt` = `tmp/c1_chroma_after_full.txt`).
+Manifest mới: 158 tệp / 390.961.924 B; so bản B3 chỉ 6 hash container + `generated_at` đổi; `--check`
+sau full pytest = KHỚP, rc=0. pytest 1495 passed / 5 skipped.
+
+**Không làm.** Không áp "index digest" (PA-47 phần phụ) vì chưa cần; không đổi mã nguồn, file trọng
+tài, gate hay bất kỳ số đo nào.
+

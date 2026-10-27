@@ -9,22 +9,24 @@ Bốn mục của đề bài:
      `page_content`, giống header production hiện có); phần HIỂN THỊ NGUỒN và định
      danh citation lấy từ metadata nên không bị header làm sai. Test ghim cả hai vế.
   10. Index mới phải ghi vào thư mục khác; index cũ giữ nguyên (so băm). Module có
-      `ensure_separate_index_target` chặn ghi đè; test băm thật `chroma_db/` và
-      `chroma_db_vie/` trước/sau khi chuyển đổi header trong bộ nhớ.
+      `ensure_separate_index_target` chặn ghi đè; test băm BẢN SAO của `chroma_db/` và
+      `chroma_db_vie/` trước/sau khi chuyển đổi header trong bộ nhớ. C1: Chroma tự ghi lại
+      container khi mở, nên chỉ được mở bản sao trong `tmp_path`, không mở index sản xuất.
 
 GIỚI HẠN PHẢI NÓI RÕ: T5b chưa được phép build index thật (PA-1 chốt corpus), nên
 mục 10 chỉ xanh ở mức "hàm chuyển đổi + chốt chặn + băm index cũ". Test dựng một index
 Chroma TÍ HON trong `tmp_path` để chứng minh ghi được vào thư mục khác, KHÔNG phải
 index 342 chunk của corpus. Xem docs/reports/test_T5.md.
 
-Không gọi model, không đọc Chroma thật ngoài việc lấy chuỗi tài liệu để kiểm header
-(đọc thuần). Bất biến #6: không đọc trường vàng nào của testset.
+Không gọi model; Chroma thật chỉ được COPY vào `tmp_path` rồi đọc bản sao (không mở trực
+tiếp index sản xuất). Bất biến #6: không đọc trường vàng nào của testset.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import shutil
 from pathlib import Path
 
 import chromadb
@@ -75,6 +77,25 @@ HEADER_ENVS = (
 def _clean_env(monkeypatch):
     for name in HEADER_ENVS:
         monkeypatch.delenv(name, raising=False)
+
+
+@pytest.fixture
+def real_index_copy(tmp_path):
+    """Bản sao tạm của index thật — Chroma ghi vào bản sao, index sản xuất không bị chạm.
+
+    Mở `chromadb.PersistentClient` làm Chroma ghi lại sqlite/HNSW container; đọc bản sao giữ
+    `ARTIFACT_MANIFEST.json` khớp byte và không đổi index đang dùng cho round/benchmark.
+    """
+
+    def _copy(db_name: str) -> Path:
+        src = REPO_ROOT / db_name
+        if not src.exists():
+            pytest.skip(f"không có {db_name}")
+        dst = tmp_path / db_name
+        shutil.copytree(src, dst)
+        return dst
+
+    return _copy
 
 
 def md(source: str, chunk_id: int, tier: str = "Tầng 1") -> dict:
@@ -436,10 +457,10 @@ class TestMuoiIndexRiengVaBam:
         assert directory_digest(target) != before
 
     @pytest.mark.parametrize("db_name,expected_count", sorted(REAL_INDEXES.items()))
-    def test_chuyen_doi_header_khong_ghi_gi_len_index_that(self, monkeypatch, db_name, expected_count):
-        db_path = REPO_ROOT / db_name
-        if not db_path.exists():
-            pytest.skip(f"không có {db_name}")
+    def test_chuyen_doi_header_khong_ghi_gi_len_index_that(
+        self, monkeypatch, real_index_copy, db_name, expected_count
+    ):
+        db_path = real_index_copy(db_name)
         texts = _real_chunk_texts(db_path)  # đọc xong trước khi băm
         assert len(texts) == expected_count
         before = directory_digest(db_path)
@@ -458,13 +479,11 @@ class TestMuoiIndexRiengVaBam:
             labels = build_header(original)[0].labels()
             assert labels and all(label.strip() for label in labels)
 
-    def test_index_that_du_36x_chunk_va_nhan_hop_le(self):
+    def test_index_that_du_36x_chunk_va_nhan_hop_le(self, real_index_copy):
         """Đo phân bố nhãn trên dữ liệu thật — con số dùng trong báo cáo test_T5.md."""
         stats = {}
         for db_name in REAL_INDEXES:
-            db_path = REPO_ROOT / db_name
-            if not db_path.exists():
-                pytest.skip(f"không có {db_name}")
+            db_path = real_index_copy(db_name)
             counts = {
                 "article": 0,
                 "preamble": 0,
