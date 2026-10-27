@@ -40,11 +40,13 @@ class FakeGenerator:
         self.received_query = None
         self.received_docs = None
         self.received_question_type = None
+        self.received_raw_query = None
 
-    def generate_answer(self, query, retrieved_docs, question_type=None):
+    def generate_answer(self, query, retrieved_docs, question_type=None, raw_query=None):
         self.received_query = query
         self.received_docs = retrieved_docs
         self.received_question_type = question_type
+        self.received_raw_query = raw_query
         return "answer-mau"
 
 
@@ -89,6 +91,19 @@ class TestRunFoldsQueryBeforeRetrieval:
         pipeline, _, generator = make_pipeline()
         pipeline.run("diem ren luyen 62 thi sao?")
         assert generator.received_query == NORMALIZED
+
+    def test_generator_nhan_ca_cau_hoi_goc_for_rescue(self):
+        """P5.12b: `raw_query` xuống generator phải là câu THÔ của sinh viên.
+
+        Lớp cứu từ chối oan (`ENABLE_ANSWER_RESCUE`) xét điều kiện "câu hỏi đòi một giá
+        trị cụ thể" trên cả hai văn bản, vì bộ chuẩn hóa Local SLM đôi khi trả về một câu
+        khác hẳn (đo: 16/300 lượt sinh ở r0/r1/r3 mất hơn 70% token câu gốc).
+        """
+        pipeline, _, generator = make_pipeline()
+        raw = "sinh viên đóng bảo hiểm y tế bao nhiêu tiền?"
+        pipeline.run(raw)
+        assert generator.received_raw_query == raw
+        assert generator.received_query == NORMALIZED  # prompt không đổi, cache không đổi key
 
 
 # --- P3.2: tầng phân loại + router qua ENABLE_CLASSIFIER ---------------------
@@ -288,6 +303,85 @@ class TestEnsemblePlumbingWithClassifier:
         assert ensemble.weights == [0.5, 0.5]
         assert "filter" not in ensemble.retrievers[0].search_kwargs
         assert len(result["sources"]) == len(self.DOCS)
+
+
+class TestSoftSourceFilter:
+    """ROUTER_SOFT_FILTER=1: nguồn router chọn được ƯU TIÊN chứ không bị CẮT.
+
+    Bắt buộc có vì vòng lặp đo được 217/308 FAIL_RETRIEVAL do cửa sổ truy xuất
+    mất chunk vàng đúng vì phép cắt cứng này.
+    """
+
+    DOCS = [
+        FakeDoc("chunk khac 1", {"source": "khac-1.pdf", "chunk_id": 3}),
+        FakeDoc("chunk s2", {"source": "888-qd-dhag-2022-08-08.pdf", "chunk_id": 2}),
+        FakeDoc("chunk s1", {"source": "1059-qd-dhag-2020-09-29.pdf", "chunk_id": 1}),
+    ]
+
+    LABELS = {"topic": "đánh giá rèn luyện", "question_type": "TRA_CUU", "raw_response": ""}
+
+    def test_mặc_định_vẫn_cắt_cứng_như_trước(self, monkeypatch):
+        monkeypatch.delenv("ROUTER_SOFT_FILTER", raising=False)
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        install_classifier(monkeypatch, labels=self.LABELS)
+        pipeline, ensemble = make_pipeline_with_ensemble(monkeypatch, self.DOCS)
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+        assert [s["chunk_id"] for s in result["sources"]] == [1]
+
+    def test_bật_lọc_mềm_giữ_đủ_cửa_sổ_và_đẩy_nguồn_đúng_lên_đầu(self, monkeypatch):
+        monkeypatch.setenv("ROUTER_SOFT_FILTER", "1")
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        install_classifier(monkeypatch, labels=self.LABELS)
+        pipeline, ensemble = make_pipeline_with_ensemble(monkeypatch, self.DOCS)
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+
+        # Không mất chunk nào; chunk thuộc nguồn router chọn vượt lên trước.
+        assert [s["chunk_id"] for s in result["sources"]] == [1, 3, 2]
+
+    def test_lọc_mềm_phải_bỏ_filter_lúc_tìm_trong_chroma(self, monkeypatch):
+        """Nếu vẫn gán filter lúc search thì ứng viên ngoài nguồn không bao giờ
+        xuất hiện — 'mềm' chỉ còn trên danh nghĩa."""
+        monkeypatch.setenv("ROUTER_SOFT_FILTER", "1")
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        install_classifier(monkeypatch, labels=self.LABELS)
+        pipeline, ensemble = make_pipeline_with_ensemble(monkeypatch, self.DOCS)
+        pipeline.run("diem ren luyen 62 thi sao?")
+        assert "filter" not in ensemble.retrievers[0].search_kwargs
+
+    def test_bonus_đổi_được_cường_độ_ưu_tiên(self, monkeypatch):
+        monkeypatch.setenv("ROUTER_SOFT_FILTER", "1")
+        monkeypatch.setenv("ROUTER_FILTER_RANK_BONUS", "0")
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        install_classifier(monkeypatch, labels=self.LABELS)
+        pipeline, ensemble = make_pipeline_with_ensemble(monkeypatch, self.DOCS)
+        result = pipeline.run("diem ren luyen 62 thi sao?")
+
+        # bonus=0 => không ưu tiên gì, giữ nguyên thứ tự RRF nhưng vẫn không cắt.
+        assert [s["chunk_id"] for s in result["sources"]] == [3, 2, 1]
+
+    def test_hạn_ngạch_nguồn_chừa_suất_cho_nguồn_khac(self, monkeypatch):
+        """P5.14: bonus >= cỡ cửa sổ làm MỘT nguồn chiếm trọn cửa sổ — đúng cơ chế r2
+        mất 21 item gold@6. ROUTER_SOURCE_QUOTA=1 buộc nguồn được ưu tiên nhả suất."""
+        docs = [
+            FakeDoc("chunk khac 1", {"source": "khac-1.pdf", "chunk_id": 3}),
+            FakeDoc("chunk s2", {"source": "888-qd-dhag-2022-08-08.pdf", "chunk_id": 2}),
+            FakeDoc("chunk s1", {"source": "1059-qd-dhag-2020-09-29.pdf", "chunk_id": 1}),
+            FakeDoc("chunk s1 lan hai", {"source": "1059-qd-dhag-2020-09-29.pdf", "chunk_id": 4}),
+        ]
+        monkeypatch.setenv("ROUTER_SOFT_FILTER", "1")
+        monkeypatch.setenv("ROUTER_FILTER_RANK_BONUS", "12")
+        monkeypatch.delenv("ROUTER_SOURCE_QUOTA", raising=False)
+        monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
+        install_classifier(monkeypatch, labels=self.LABELS)
+        pipeline, _ = make_pipeline_with_ensemble(monkeypatch, docs)
+        no_quota = [s["chunk_id"] for s in pipeline.run("diem ren luyen 62 thi sao?")["sources"]]
+        assert no_quota == [1, 4, 3, 2]
+
+        monkeypatch.setenv("ROUTER_SOURCE_QUOTA", "1")
+        pipeline, _ = make_pipeline_with_ensemble(monkeypatch, docs)
+        limited = [s["chunk_id"] for s in pipeline.run("diem ren luyen 62 thi sao?")["sources"]]
+        # 1059 chỉ còn 1 suất ở đầu, hai nguồn khác được vào lại, phần hoãn xuống cuối.
+        assert limited == [1, 3, 2, 4]
 
 
 class FakeEnsembleRetriever:

@@ -39,6 +39,7 @@ from dataclasses import dataclass, replace
 from typing import List, Optional
 
 from dotenv import load_dotenv
+from langchain_core.documents import Document
 
 from src.classifier import QUESTION_TYPES, TOPICS, _TOPIC_BY_FOLDED
 from src.text_utils import fold
@@ -193,6 +194,110 @@ def get_retrieval_config(labels: Optional[dict], base: RetrievalConfig) -> Retri
         config.top_k = base.top_k
 
     return config
+
+
+# --- Bộ lọc "mềm" theo nguồn (P5.2, lever truy xuất) -------------------------
+# Bằng chứng từ vòng lặp (data/loop/rounds/r0, 593 item pha truy xuất):
+# gold@6 = 46.8% và 217/308 FAIL_RETRIEVAL có chunk vàng BỊ LOẠI KHỎI CỬA SỔ vì
+# `source_filter` cắt cứng (165 item do nhãn chủ đề sai, 52 item do bảng
+# TOPIC_SOURCE_FILTER quá hẹp). Nói cách khác router đang phạt sai lầm của
+# classifier bằng cách xóa luôn bằng chứng — thay vì chỉ ưu tiên nguồn đúng.
+#
+# Chế độ mềm đổi "loại bỏ" thành "cộng ưu tiên theo hạng": chunk thuộc nguồn được
+# router chọn được dời lên `rank_bonus` hạng so với thứ tự RRF gốc; chunk ngoài
+# nguồn vẫn giữ suất trong cửa sổ. Mặc định TẮT để không đổi hành vi đã nghiệm thu.
+ROUTER_SOFT_FILTER_ENV = "ROUTER_SOFT_FILTER"
+ROUTER_FILTER_RANK_BONUS_ENV = "ROUTER_FILTER_RANK_BONUS"
+DEFAULT_FILTER_RANK_BONUS = 3
+
+
+def router_soft_filter_enabled() -> bool:
+    """Cờ bật bộ lọc mềm theo nguồn. Mặc định TẮT (giữ nguyên hành vi cũ).
+
+    Dùng tập giá trị BẬT tường minh (chứ không phải "trừ các giá trị tắt") để
+    một giá trị rác trong env không vô tình bật lever.
+    """
+    return os.getenv(ROUTER_SOFT_FILTER_ENV, "0").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def router_filter_rank_bonus(default: int = DEFAULT_FILTER_RANK_BONUS) -> int:
+    """Số hạng được cộng cho chunk thuộc nguồn router chọn (>= 0)."""
+    raw = os.getenv(ROUTER_FILTER_RANK_BONUS_ENV, "").strip()
+    if not raw:
+        return default
+    try:
+        return max(0, int(float(raw)))
+    except ValueError:
+        return default
+
+
+def rescore_with_source_preference(
+    docs: List[Document],
+    allowed_sources: List[str],
+    *,
+    rank_bonus: int = DEFAULT_FILTER_RANK_BONUS,
+) -> List[Document]:
+    """Sắp lại ứng viên theo sở thích nguồn mà KHÔNG loại ai.
+
+    Hạng RRF gốc là `pos`; chunk có metadata `source` trùng nguyên văn (so khớp
+    không dấu, giống hệt bộ lọc cứng cũ) được tính `pos - rank_bonus`. Ổn định
+    (stable) nên hai chunk cùng khóa giữ nguyên thứ tự tương đối.
+    """
+    if not allowed_sources or rank_bonus <= 0:
+        return list(docs)
+    allowed = {fold(str(source)) for source in allowed_sources}
+    keyed = []
+    for pos, doc in enumerate(docs):
+        source = fold(str((getattr(doc, "metadata", None) or {}).get("source", "")))
+        key = pos - rank_bonus if source in allowed else pos
+        keyed.append((key, pos, doc))
+    keyed.sort(key=lambda item: (item[0], item[1]))
+    return [doc for _, _, doc in keyed]
+
+
+# --- Hạn ngạch nguồn trong cửa sổ (P5.14, lever truy xuất kế tiếp) -------------
+# Bằng chứng round r2 (811 item, cổng r2-vs-r1 KHÔNG ĐẠT): tăng bonus từ 3 lên 12 mua
+# được neo HUMAN (77,32% -> 81,44%) nhưng mất gold@6 (76,57% -> 74,00%). Probe cơ chế
+# trên 21 item hồi quy: 21/21 có chunk vàng nằm NGOÀI `source_filter`. Nghĩa là lỗi
+# không nằm ở độ lớn con số bonus mà ở cấu trúc — khi bonus >= cỡ cửa sổ, MỘT nguồn
+# được ưu tiên chiếm trọn cửa sổ và đẩy chunk vàng của nguồn khác ra, đúng vào những
+# ca router đã chọn SAI nguồn (47,2% FAIL_RETRIEVAL của r2 vẫn do filter).
+#
+# Luật mới: không nguồn nào được chiếm quá `quota` suất trong danh sách ứng viên.
+# Phần bị hoãn giữ nguyên thứ tự tương đối và nối vào cuối — mất ưu tiên, không mất
+# suất. Mặc định TẮT (quota 0) để không đổi hành vi đã nghiệm thu.
+ROUTER_SOURCE_QUOTA_ENV = "ROUTER_SOURCE_QUOTA"
+
+
+def router_source_quota() -> int:
+    """Số suất tối đa cho MỘT nguồn trong danh sách ứng viên (0 = không hạn ngạch)."""
+    raw = os.getenv(ROUTER_SOURCE_QUOTA_ENV, "").strip()
+    try:
+        return max(0, int(float(raw)))
+    except ValueError:
+        return 0
+
+
+def apply_source_quota(docs: List[Document], quota: int) -> List[Document]:
+    """Giữ tối đa `quota` ứng viên mỗi nguồn, phần còn lại nối vào cuối theo thứ tự cũ."""
+    if quota <= 0 or not docs:
+        return list(docs)
+    kept: List[Document] = []
+    deferred: List[Document] = []
+    used: dict[str, int] = {}
+    for doc in docs:
+        source = fold(str((getattr(doc, "metadata", None) or {}).get("source", "")))
+        if used.get(source, 0) >= quota:
+            deferred.append(doc)
+            continue
+        used[source] = used.get(source, 0) + 1
+        kept.append(doc)
+    return kept + deferred
 
 
 # Đảm bảo bảng filter chỉ chứa chủ đề chuẩn (phát hiện lỗi đánh máy sớm).

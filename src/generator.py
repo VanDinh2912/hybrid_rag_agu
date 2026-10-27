@@ -38,6 +38,13 @@ from typing import Any, Optional
 import google.generativeai as genai
 import ollama
 
+from src.answer_guard import (
+    answer_guard_enabled,
+    check_grounding,
+    guard_qwen_answer,
+    is_enough_evidence,
+    refusal_thresholds,
+)
 from src.text_utils import fold
 
 DEFAULT_MODEL = "gemini-2.5-flash"
@@ -54,6 +61,27 @@ REFUSAL_MARKER = "không đủ thông tin"
 # Phiên bản prompt: đưa vào cache key để mọi thay đổi SYSTEM_INSTRUCTION/PROMPT_RULES
 # (nằm NGOÀI chuỗi prompt truyền vào) đều tự làm cache cũ vô hiệu — bump khi sửa prompt.
 PROMPT_VERSION = "v1.3"  # P3.4b: cache vẫn lưu text CHƯA inject; inject thành hậu xử lý dùng chung HIT/MISS — entry cũ vẫn hợp lệ, KHÔNG bump.
+
+# --- T3, đòn bẩy 1 (24-10): prompt TRÍCH XUẤT THUẦN, quyền từ chối rời khỏi tầng sinh ---
+# Số đo T1 (`docs/reports/T1.md`): đặt đúng chunk vàng nguyên văn trước mặt Qwen 2.5:1.5B,
+# model vẫn nói "không đủ thông tin" ở 86,25% ca; rút ngữ cảnh còn ±2 câu thì 95%. Nghi phạm
+# là CHÍNH HÀNH VI được prompt mời gọi (đầu prompt có sẵn câu "Nếu NGỮ CẢNH không đủ căn cứ,
+# trả lời đúng một câu: …"). Khi `ENABLE_DECOUPLED_REFUSAL=1`, tầng sinh chỉ còn nhiệm vụ
+# TÌM-CHÉP; phán quyết từ chối do `src/refusal_policy.py` trả bằng số deterministic.
+#
+# Tách không gian cache, KHÔNG làm vô hiệu cache cũ: `PROMPT_VERSION` gốc ("v1.3") vẫn là
+# version của mọi lượt chạy khi cờ TẮT, nên 351+ entry cũ còn dùng được. Lượt chạy khi cờ
+# BẬT dùng version riêng dưới đây — key SHA-1 tự khác, không ghi đè, không lẫn câu trả lời
+# của hai hành vi (bất biến #2: tắt cờ = hành vi cũ từng ký tự).
+EXTRACT_ONLY_PROMPT_VERSION = "v2.0-extract-only"
+
+
+def effective_prompt_version() -> str:
+    """Phiên bản prompt đang áp cho tầng sinh Qwen — nhánh tách theo cờ T3."""
+    from src.refusal_policy import decoupled_refusal_enabled  # import trễ: tránh vòng module
+
+    return EXTRACT_ONLY_PROMPT_VERSION if decoupled_refusal_enabled() else PROMPT_VERSION
+
 
 # --- Response caching: lưu câu trả lời đã sinh vào ./.generation_cache/ ---
 # Key là SHA-1 của {model, temperature, prompt_version, prompt} nên corpus re-ingest,
@@ -107,6 +135,99 @@ QWEN_FALLBACK_NUM_PREDICT = 512
 QWEN_FALLBACK_TEMPERATURE = 0.1
 QWEN_MAX_BLOCK_CHARS = 1600
 QWEN_MAX_TOTAL_CHARS = 10000
+
+# --------------------------------------------------------------------------
+# P5.12 — lớp "cứu" câu từ chối (ENABLE_ANSWER_RESCUE, mặc định TẮT)
+#
+# Bằng chứng ĐO THẬT (vòng lặp P5, round r1, 100 item pha sinh):
+#   - 38/100 ca FAIL_OVERREFUSAL; 35 ca có CÂU TRẢ LỜI NGUYÊN VĂN nằm trong prompt
+#     (13 ca ở block [1]); cắt block 1600 / tổng 10000 không ăn mất câu vàng nào;
+#   - áp `check_grounding` lên chính câu vàng: 37/38 ca đi qua -> guard không buộc
+#     phải chặn;
+#   - classifier vô can: 34/38 ca mang nhãn TRA_CUU, giống nhóm trả lời đúng;
+#   - replay 38 ca với guard TẮT: 31 ca model tự nói "không đủ thông tin", 4 ca model
+#     trả lời nhưng bản nháp lệch căn cứ, 3 ca đáng lẽ đã được chấp nhận.
+#   - refusal_rate toàn round 0,72 trong khi 4/4 câu ngoài phạm vi và 8/8 câu bẫy đều
+#     từ chối ĐÚNG -> model an toàn quá mức, không phải thiếu căn cứ.
+# Vì vậy: khi model trả về câu từ chối trong khi bằng chứng đã có trong ngữ cảnh,
+# hỏi lại MỘT lượt với chỉ dẫn trích xuất. Câu trả lời mới vẫn đi qua đúng
+# `check_grounding` — cứu được câu đúng nhưng không mở đường cho câu bịa.
+# Hiệu nghiệm thu của chính lớp này do round `r3` và cổng gate quyết, chưa phải số.
+# --------------------------------------------------------------------------
+RESCUE_INSTRUCTION = (
+    "\n\nYÊU CẦU TRÍCH XUẤT (lượt thứ hai, vì lượt trước bạn trả lời 'không đủ thông tin'): "
+    "nhiệm vụ của bạn KHÔNG phải quyết định có đủ căn cứ hay không — nhiệm vụ là TÌM và CHÉP. "
+    "Đọc lại từng đoạn [1]..[n]; với mỗi đoạn, chép ra NGUYÊN VĂN câu (hoặc cụm) chứa thông "
+    "tin được hỏi: con số, ngày, tín chỉ, mã lớp, số điện thoại, tên văn bản. "
+    "Làm theo mẫu sau (mẫu là số BỊA, cấm chép số của mẫu vào câu trả lời):\n"
+    "  NGỮ CẢNH: [2] VD-quy-che-mau.pdf: Mức phí thực hành của ngành Mẫu A là 3.456.000 đồng "
+    "mỗi học kỳ.\n"
+    "  CÂU HỎI: Mức phí thực hành của ngành Mẫu A?\n"
+    "  TRẢ LỜI: 3.456.000 đồng mỗi học kỳ (VD-quy-che-mau.pdf).\n"
+    "Chỉ trả 'không đủ thông tin' sau khi đã chép ra và đối chiếu hết n đoạn."
+)
+# Ngưỡng nhận câu cứu: CHẶT HƠN ngưỡng của guardrail sản xuất (0,60). Lý do đo ở round
+# r3: một ca PASS_REFUSAL bị cứu thành FAIL_HALLUCINATED_ON_UNANSWERABLE — giá trị model
+# chép ra có thật trong ngữ cảnh nhưng KHÔNG phải giá trị được hỏi, nên `check_grounding`
+# (chỉ bắt thực thể không căn cứ) vẫn cho qua ở 0,60.
+RESCUE_MIN_SCORE_ENV = "RESCUE_MIN_SCORE"
+DEFAULT_RESCUE_MIN_SCORE = 0.8
+
+
+def rescue_min_score(default: float = DEFAULT_RESCUE_MIN_SCORE) -> float:
+    raw = os.getenv(RESCUE_MIN_SCORE_ENV, "").strip()
+    if not raw:
+        return default
+    try:
+        value = float(raw)
+    except ValueError:
+        return default
+    return min(1.0, max(0.0, value))
+
+# Câu hỏi dạng "tìm một giá trị" — tức là lời từ chối gần như chắc chắn là oan khi chunk
+# vàng đã vào ngữ cảnh. Không nhận diện bằng machine learning: một luật chữ đơn giản, đo
+# được, giải thích được. Danh sách viết KHÔNG DẤU và so với `fold(question)` — cùng chiều
+# với `looks_like_refusal`/`verify.is_refusal`, nên câu hỏi OCR mất dấu vẫn được cứu.
+#
+# Số đo trên 100 item pha sinh của r1 (probe tạm, chấm lại bằng chính hàm này; số chốt
+# ghi ở ROADMAP muc P5.13): 37/38 ca FAIL_OVERREFUSAL du dieu kien cuu (truoc day chi
+# 22/38), 16/19 ca PASS_REFUSAL cung du dieu kien — do la 1 luot goi model them cho moi
+# ca tu choi dung, va la ri ro ma cong r3-vs-r1 phai do (transition
+# PASS_REFUSAL -> FAIL_HALLUCINATED_ON_UNANSWERABLE). Ba ca TRAP "… phải không?" COC Y
+# ngoai danh sach: thêm "phải không" sẽ kéo cả câu bẫy vào đường cứu.
+# Đã bỏ "ai" khỏi danh sách cũ vì nó khớp cả "loại", "hai", "cài".
+_RESCUE_DEMANDS_FOLDED = (
+    "muc", "bao nhieu", "la gi", "ngay nao", "khi nao", "thoi diem", "thoi gian",
+    "dong", "nop", "tin chi", "ma lop", "ma mon", "so dien thoai", "lien he",
+    "don vi", "the thuc", "hinh thuc", "thoi han", "bao gom", "thuoc", "bang cap",
+    "can cu", "thong tu", "quyet dinh", "nghi dinh",
+    "dien", "gia tri con thieu", "cho biet", "co dung", "dung khong", "dung hay sai",
+    "nam trong", "van ban nao", "quy dinh", "quy che", "hoc phi", "le phi",
+    "gom nhung", "danh sach", "the nao", "la bao", "ap dung",
+)
+
+
+def answer_rescue_enabled() -> bool:
+    """Cờ bật lượt cứu câu từ chối. Mặc định TẮT để giữ nguyên hành vi đã nghiệm thu."""
+    return os.getenv("ENABLE_ANSWER_RESCUE", "0").strip().lower() not in {"0", "false", "no"}
+
+
+def looks_like_refusal(text: str) -> bool:
+    """Câu trả lời có phải một lời từ chối (chuẩn hoặc biến thể) hay không.
+
+    Dùng fold() cùng chiều với `verify.is_refusal` để mất dấu vẫn khớp: câu của model
+    thường thiếu dấu hoặc kèm rác phía sau.
+    """
+    f = fold(text or "")
+    if not f.strip():
+        return True
+    return "khong du thong tin" in f or "khong tim thay" in f or "khong du can cu" in f
+
+
+def demands_specific_value(question: str) -> bool:
+    """Câu hỏi xin một giá trị xác định — đối tượng được cứu của lớp rescue."""
+    f = fold(question or "")
+    return any(needle in f for needle in _RESCUE_DEMANDS_FOLDED)
 
 SYSTEM_INSTRUCTION = (
     "Bạn là trợ lý học vụ của Trường Đại học An Giang (AGU), trả lời câu hỏi của sinh viên "
@@ -642,17 +763,27 @@ class GeminiGenerator:
     # ------------------------------------------------- Response caching (Giải pháp 2) ---
 
     def _cache_key(self, prompt: str, temperature: float) -> str:
-        """SHA-1 của {model, temperature, prompt} — đổi model/prompt/corpus là tự miss cache."""
-        payload = json.dumps(
-            {
-                "model": self.model_name,
-                "temperature": temperature,
-                "prompt_version": PROMPT_VERSION,
-                "prompt": prompt,
-            },
-            ensure_ascii=False,
-            sort_keys=True,
-        )
+        """SHA-1 của {model, temperature, prompt_version, [policy], prompt}.
+
+        Đổi model/prompt/corpus làm miss cache (như cũ). Từ T7, khi **ngưỡng** cứu/từ chối/
+        guard/chọn câu bằng chứng/chuẩn hóa lệch mặc định đã đăng ký, khóa mang thêm trường
+        `policy` (`src/cache_policy.cache_policy_deviation`) ⇒ KHÔNG tái dùng câu trả lời của
+        thể chế cũ. Thể chế mặc định giữ khóa cũ TỪNG BYTE (bất biến #2: cờ TẮT = hành vi cũ,
+        351+ entry cache còn dùng được). `prompt_version` là `effective_prompt_version()` để
+        nhánh trích xuất thuần (T3) có không gian cache riêng.
+        """
+        from src.cache_policy import cache_policy_deviation  # import trễ: tránh vòng module
+
+        payload = {
+            "model": self.model_name,
+            "temperature": temperature,
+            "prompt_version": effective_prompt_version(),
+            "prompt": prompt,
+        }
+        deviation = cache_policy_deviation()
+        if deviation is not None:
+            payload["policy"] = deviation
+        payload = json.dumps(payload, ensure_ascii=False, sort_keys=True)
         return hashlib.sha1(payload.encode("utf-8")).hexdigest()
 
     def _cache_get(self, key: str) -> Optional[str]:
@@ -764,11 +895,15 @@ class GeminiGenerator:
         retrieved_docs: list,
         temperature: Optional[float] = None,
         question_type: Optional[str] = None,
+        raw_query: Optional[str] = None,
     ) -> str:
         """Sinh câu trả lời: cache → Gemini → (hết quota/sự cố) fallback Local Qwen.
 
         question_type (P3.4): nhãn loại câu hỏi từ tầng classifier; None → prompt
         gốc giống hệt từng ký tự (đường ENABLE_CLASSIFIER=0, cache cũ còn trúng).
+
+        raw_query (P5.12b): chữ ký trùng với `QwenGenerator` để pipeline gọi thống nhất
+        một giao diện Generator; Gemini KHÔNG dùng nó (prompt luôn là `query`).
 
         Hàm này là giao diện chính của Layer Generator trong kiến trúc Hybrid RAG.
         Nó thực hiện quy trình sau:
@@ -875,9 +1010,40 @@ class GeminiGenerator:
         return answer
 
 
+def _qwen_text(response: Any) -> str:
+    """Rút chuỗi trả lời từ phản hồi Ollama (dict hoặc object) — dùng chung cho
+    lượt sinh chính và lượt tự sửa của AnswerGuard."""
+    raw = response.get("response") if isinstance(response, dict) else getattr(response, "response", "")
+    return (raw or "").strip()
+
+
+# Đầu prompt bản TRÍCH XUẤT THUẦN (T3 đòn bẩy 1) — thay toàn bộ head gốc khi
+# `ENABLE_DECOUPLED_REFUSAL=1`. Ba điểm có chủ đích:
+#  * KHÔNG chứa cụm "không đủ thông tin" / "không đủ căn cứ" dưới mọi hình thức:
+#    đó chính là lời mời từ chối mà đo ở T1 cho thấy model dùng làm đường thoát;
+#  * nói thẳng quyền phán quyết thuộc tầng khác, để model 1,5B không tự "an toàn";
+#  * giữ nguyên mọi ràng buộc chống bịa (cấm kiến thức ngoài, cấm tự viết
+#    Điều/Khoản, bắt buộc chép được từ ngữ cảnh) — bỏ lời mời từ chối KHÔNG có
+#    nghĩa bỏ guardrail; phần chặn câu bịa nằm ở `refusal_policy` + answer_guard.
+EXTRACT_ONLY_HEAD = (
+    "Bạn là bộ máy TRÍCH XUẤT của trợ lý học vụ Trường Đại học An Giang (AGU). "
+    "Nhiệm vụ duy nhất của bạn: TÌM và CHÉP thông tin được hỏi từ NGỮ CẢNH dưới đây.\n"
+    "Bạn KHÔNG được quyền phán xét ngữ cảnh, không được quyền từ chối — một tầng khác "
+    "của hệ thống đã kiểm tra độ căn cứ trước khi đưa ngữ cảnh cho bạn. Nếu bạn không "
+    "trích được gì, tầng đó sẽ lo; bạn cứ chép những gì NGỮ CẢNH nói về đối tượng hỏi.\n"
+    "CẤM dùng kiến thức bên ngoài. CẤM tự viết ra số Điều/Khoản, con số, ngày, mã số hay "
+    "tên văn bản mà NGỮ CẢNH không ghi — mọi chữ số trong câu trả lời phải chép nguyên văn "
+    "từ NGỮ CẢNH.\n"
+    "Trả lời bằng tiếng Việt, ngắn gọn (dưới 200 từ), mỗi ý PHẢI kèm căn cứ pháp lý:\n"
+    "- Nếu ngữ cảnh có đánh số: (Điều N, Khoản M — Tên_file.pdf)\n"
+    "- Nếu không đánh số: (Tên_file.pdf)\n"
+    "Ví dụ: (Điều 14, Khoản 5 — 1059-qd-dhag-2020-09-29.pdf)\n"
+)
+
+
 class QwenGenerator:
     """Lớp sinh câu trả lời bằng Local SLM (Qwen chạy trên Ollama).
-    
+
     Chạy 100% offline, không tốn token Gemini và không bị giới hạn quota API.
     Có hỗ trợ response caching để tăng tốc đánh giá lặp lại.
     """
@@ -921,9 +1087,20 @@ class QwenGenerator:
             total += len(block)
         context = "\n\n".join(parts)
         format_line = ""
+        type_key = ""
         if question_type:
-            key = fold(str(question_type)).strip().lower()
-            format_line = self.QWEN_FORMAT_LINES.get(key, "")
+            type_key = fold(str(question_type)).strip().lower()
+            format_line = self.QWEN_FORMAT_LINES.get(type_key, "")
+        from src.refusal_policy import decoupled_refusal_enabled  # import trễ: tránh vòng module
+
+        if decoupled_refusal_enabled():
+            # Nhánh T3: bản trích xuất thuần. Bỏ cả dòng định dạng NGOAI_PHAM_VI —
+            # dòng đó chính là lời mời từ chối; câu ngoài phạm vi giờ do luật 1-3 của
+            # `refusal_policy` chặn, không do model quyết.
+            head = EXTRACT_ONLY_HEAD
+            if format_line and type_key != "ngoai_pham_vi":
+                head += f"{format_line}\n"
+            return f"{head}\nNGỮ CẢNH:\n{context}\n\nCÂU HỎI: {question}\nTRẢ LỜI:"
         head = (
             "Bạn là trợ lý học vụ Trường Đại học An Giang (AGU). Chỉ được dùng thông tin trong "
             "NGỮ CẢNH dưới đây, tuyệt đối không dùng kiến thức bên ngoài, không bịa số Điều/Khoản.\n"
@@ -937,17 +1114,97 @@ class QwenGenerator:
             head += f"{format_line}\n"
         return f"{head}\nNGỮ CẢNH:\n{context}\n\nCÂU HỎI: {question}\nTRẢ LỜI:"
 
-    def _cache_key(self, prompt: str, temperature: float) -> str:
-        payload = json.dumps(
-            {
-                "model": self.ollama_model,
-                "temperature": temperature,
-                "prompt_version": PROMPT_VERSION,
-                "prompt": prompt,
-            },
-            ensure_ascii=False,
-            sort_keys=True,
+    def _rescue_refusal(
+        self,
+        *,
+        text: str,
+        question: str,
+        docs: list[dict],
+        prompt: str,
+        generate_fn,
+        question_type: Optional[str] = None,
+        raw_query: Optional[str] = None,
+    ) -> str:
+        """P5.12: model từ chối trong khi căn cứ đã có trong ngữ cảnh -> hỏi lại MỘT lượt.
+
+        Nhận câu mới chỉ khi (1) nó không còn là lời từ chối và (2) `check_grounding`
+        chấp nhận nó với đúng ngưỡng của guardrail. Mọi thất bại đều trả lại lời từ chối
+        ban đầu: lớp cứu không được phép đổi "không biết" thành "biết sai".
+
+        Câu hỏi đã bị phân loại NGOAI_PHAM_VI được bỏ qua — ở đó từ chối là hành vi đúng.
+        """
+        if not answer_rescue_enabled() or not looks_like_refusal(text):
+            return text
+        if question_type and fold(str(question_type)).strip().lower() == "ngoai_pham_vi":
+            return text
+        contexts = [(d.get("content") or "") for d in (docs or [])]
+        names = [str(d.get("source") or "") for d in (docs or [])]
+        # Xét điều kiện trên CẢ câu gốc: câu đã chuẩn hóa có thể bị bộ chuẩn hóa viết
+        # thành một câu khác (đo: 16/300 lượt), và bỏ mất từ để hỏi thì lever câm.
+        demands = demands_specific_value(question) or demands_specific_value(raw_query or "")
+        if not demands or not is_enough_evidence(contexts):
+            return text
+        try:
+            candidate = (generate_fn(prompt + RESCUE_INSTRUCTION) or "").strip()
+        except Exception as exc:  # noqa: BLE001
+            print(f"[AnswerRescue] Lượt cứu lỗi ({type(exc).__name__}) — giữ nguyên từ chối")
+            return text
+        if not candidate or looks_like_refusal(candidate):
+            # Duong im lang lam nghieu phep do: round r3 co 60/61 ca tu choi du dieu kien
+            # cuu nhung chi 9 luot thuc su den `check_grounding`. Phai dem duoc so luot
+            # THO cuu, neu khong thi "lever that bai" voi "lever khong chay" khong phan
+            # biet duoc.
+            print("[AnswerRescue] Đã thử lượt trích xuất, model vẫn từ chối — giữ nguyên từ chối")
+            return text
+        try:
+            report = check_grounding(candidate, contexts, question, extra_haystack=names)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[AnswerRescue] Không kiểm chứng được câu cứu ({exc}) — giữ nguyên từ chối")
+            return text
+        guard_min, _ = refusal_thresholds()
+        # Nhận CHẶT HƠN guardrail sản xuất: điểm >= max(ngưỡng guard, RESCUE_MIN_SCORE),
+        # KHÔNG còn thực thể chưa căn cứ, và phải có điểm thật (score None = câu không
+        # chứa khẳng định nào kiểm được -> không chứng minh vừa trích xuất được gì).
+        bar = max(guard_min, rescue_min_score())
+        accepted = (
+            (not report.fabricated)
+            and not report.unsupported
+            and report.grounding_score is not None
+            and report.grounding_score >= bar
         )
+        if not accepted:
+            bad = ", ".join(sorted({e.text for e in report.unsupported})[:4])
+            print(
+                f"[AnswerRescue] Câu cứu mới không đạt ngưỡng {bar} "
+                f"(score={report.grounding_score} — {bad or 'không có thực thể chưa căn cứ'})"
+                " — giữ nguyên từ chối"
+            )
+            return text
+        print("[AnswerRescue] Cứu một câu từ chối oan bằng lượt yêu cầu trích xuất.")
+        return candidate
+
+    def _cache_key(self, prompt: str, temperature: float) -> str:
+        """SHA-1 của {model, temperature, prompt_version, [policy], prompt}.
+
+        T7: cùng lý do với `GeminiGenerator._cache_key` — đổi ngưỡng cứu/từ chối/guard/
+        chọn câu bằng chứng thì KHÔNG được tái dùng câu trả lời của thể chế cũ. Vòng lặp
+        chạy Qwen qua cache này, nên thiếu `policy` ở đây là lever mới bị cache cũ che.
+        Thể chế mặc định giữ khóa cũ từng byte (bất biến #2).
+        """
+        from src.cache_policy import cache_policy_deviation  # import trễ: tránh vòng module
+
+        payload = {
+            "model": self.ollama_model,
+            "temperature": temperature,
+            # T3: khi cờ decoupled bật, version là "v2.0-extract-only" — hành vi cũ
+            # (cờ TẮT) vẫn dùng "v1.3" nên toàn bộ entry cache cũ còn nguyên giá trị.
+            "prompt_version": effective_prompt_version(),
+            "prompt": prompt,
+        }
+        deviation = cache_policy_deviation()
+        if deviation is not None:
+            payload["policy"] = deviation
+        payload = json.dumps(payload, ensure_ascii=False, sort_keys=True)
         return hashlib.sha1(payload.encode("utf-8")).hexdigest()
 
     def _cache_get(self, key: str) -> Optional[str]:
@@ -985,11 +1242,19 @@ class QwenGenerator:
         retrieved_docs: list,
         temperature: Optional[float] = None,
         question_type: Optional[str] = None,
+        raw_query: Optional[str] = None,
     ) -> str:
         """Sinh câu trả lời trực tiếp qua Ollama Qwen.
 
         question_type (P3.4): None → prompt giữ nguyên từng ký tự; nhãn SO_SANH/
         THU_TUC/NGOAI_PHAM_VI → chèn 1 dòng định dạng ngắn (cache tự tách key).
+
+        raw_query (P5.12b): câu hỏi GỐC trước khi bộ chuẩn hóa (Local SLM) viết lại.
+        Không dùng để dựng prompt (prompt vẫn là `query`, từng ký tự như cũ, cache
+        không đổi key) — chỉ để xét điều kiện kích hoạt `ENABLE_ANSWER_RESCUE`: số đo
+        300 lượt sinh cho thấy `normalize_user_query` có 16/300 lượt trả về văn bản
+        lệch câu hỏi (echo few-shot / tự trả lời), nên để nguyên `query` thì lever
+        câm đúng trên những item hỏng nặng nhất.
         """
         if not isinstance(query, str):
             raise TypeError(f"query phải là str, nhận được {type(query).__name__}.")
@@ -1011,6 +1276,10 @@ class QwenGenerator:
 
         if self.use_cache:
             key = self._cache_key(prompt, resolved_temp)
+            if answer_rescue_enabled():
+                # Bật rescue = một không gian cache riêng: câu đã được cứu (hoặc câu
+                # từ chối vì cứu không đạt) không lẫn với cache cũ của hành vi tắt.
+                key = hashlib.sha1(f"{key}|rescue".encode("utf-8")).hexdigest()
             cached = self._cache_get(key)
             if cached is not None:
                 print(f"[Cache] Trúng cache Qwen ./.generation_cache/{key[:12]}...")
@@ -1037,14 +1306,62 @@ class QwenGenerator:
                 f"Local Qwen ({self.ollama_model} @ {self.ollama_host}) thất bại: {exc}"
             ) from exc
 
-        text = response.get("response") if isinstance(response, dict) else getattr(response, "response", "")
-        text = (text or "").strip()
+        text = _qwen_text(response)
         if not text:
             raise GeneratorError(f"Local Qwen trả về nội dung rỗng cho câu hỏi: {question}")
 
         # P3.4: chuẩn hóa từ chối cho NGOAI_PHAM_VI TRƯỚC khi lưu cache để
         # lượt sau (trúng cache) cũng trả đúng chuỗi chuẩn.
         text = canonicalize_refusal(text, question_type)
+
+        # P5.12 (mặc định TẮT): lời từ chối + căn cứ có thật trong ngữ cảnh = nghi án
+        # bỏ lỡ câu trả lời. Hỏi lại MỘT lượt với chỉ dẫn trích xuất; câu mới vẫn phải
+        # qua `check_grounding` nên cứu được câu đúng mà không mở đường cho câu bịa.
+        text = self._rescue_refusal(
+            text=text,
+            question=question,
+            docs=docs,
+            prompt=prompt,
+            question_type=question_type,
+            raw_query=raw_query,
+            generate_fn=lambda p: _qwen_text(
+                client.generate(
+                    model=self.ollama_model,
+                    prompt=p,
+                    options={
+                        "temperature": resolved_temp,
+                        "num_predict": QWEN_FALLBACK_NUM_PREDICT,
+                        "num_ctx": QWEN_FALLBACK_NUM_CTX,
+                    },
+                    stream=False,
+                )
+            ),
+        )
+
+        # ANSWER GUARD (mặc định TẮT để giữ nguyên hành vi đã nghiệm thu): khi
+        # ENABLE_ANSWER_GUARD=1, mọi khẳng định (số/mã/Điều/ngày/tên riêng) trong
+        # câu trả lời phải có mặt trong ngữ cảnh; không có căn cứ -> cho model tự
+        # sửa một lượt, vẫn sai -> từ chối chuẩn. Đây là lớp chặn "bịa có căn cứ giả"
+        # mà token-overlap không bắt được (vụ CON515-vs-CON915, 20/10).
+        if answer_guard_enabled() and not is_canonical_refusal_answer(text, question_type):
+            text = guard_qwen_answer(
+                text=text,
+                question=question,
+                docs=docs,
+                generate_fn=lambda p: _qwen_text(
+                    client.generate(
+                        model=self.ollama_model,
+                        prompt=p,
+                        options={
+                            "temperature": resolved_temp,
+                            "num_predict": QWEN_FALLBACK_NUM_PREDICT,
+                            "num_ctx": QWEN_FALLBACK_NUM_CTX,
+                        },
+                        stream=False,
+                    )
+                ),
+                prompt=prompt,
+            )
 
         if self.use_cache:
             self._cache_put(key, prompt, resolved_temp, question, text)

@@ -38,6 +38,8 @@ from typing import Any, Optional
 
 import ollama
 
+from src.text_utils import fold
+
 DEFAULT_MODEL = "qwen2.5:1.5b-instruct"
 DEFAULT_HOST = "http://localhost:11434"
 DEFAULT_TIMEOUT = 90.0
@@ -157,6 +159,31 @@ def load_normalization_pairs() -> dict:
     return all_pairs
 
 
+# 4 ví dụ base cố định. Đưa lên cấp module để `prompt_example_lines()` (bản kiểm
+# chứng đầu ra, P5.16) dùng lại ĐÚNG danh sách này — một bản sao thứ hai sẽ lệch âm
+# thầm khi ai đó sửa few-shot, và gate sẽ bảo vệ nhầm cái prompt cũ.
+BASE_EXAMPLES = [
+    {
+        "raw": "Bị điểm rèn luyện loại yếu thì có bị đuổi học không ad?",
+        "normalized": "Sinh viên có kết quả xếp loại rèn luyện Yếu có bị buộc thôi học không?"
+    },
+    {
+        "raw": "Nếu em rớt môn thì có được xét học bổng với khen thưởng không ạ?",
+        "normalized": "Sinh viên có điểm học phần lần thứ nhất dưới 5.5 có được xét khen thưởng và học bổng không?"
+    },
+    {
+        "raw": "Em đang nợ học phí chưa đóng tiền học kịp thì làm đơn gì để được đi thi?",
+        "normalized": "Sinh viên cần làm thủ tục gì về hỗ trợ học phí, miễn giảm học phí và gia hạn nộp học phí để được dự thi?"
+    },
+    {
+        "raw": "môn Thiết kế và cài đặt mạng mã mấy vậy, học mấy tín với phải qua môn nào trước",
+        "normalized": "Môn Thiết kế và cài đặt mạng có mã môn học là gì, bao nhiêu tín chỉ và có môn học trước là môn nào?"
+    },
+]
+
+LEARNING_EXAMPLE_LIMIT = 4
+
+
 def build_few_shot_with_learning(user_query: str, learning_pairs: dict) -> str:
     """Xây dựng Few-Shot Prompt với các ví dụ học từ người dùng.
     
@@ -173,30 +200,12 @@ def build_few_shot_with_learning(user_query: str, learning_pairs: dict) -> str:
     Trả về:
         Chuỗi prompt Few-Shot đã xây dựng
     """
-    # 4 ví dụ base cố định
-    base_examples = [
-        {
-            "raw": "Bị điểm rèn luyện loại yếu thì có bị đuổi học không ad?",
-            "normalized": "Sinh viên có kết quả xếp loại rèn luyện Yếu có bị buộc thôi học không?"
-        },
-        {
-            "raw": "Nếu em rớt môn thì có được xét học bổng với khen thưởng không ạ?",
-            "normalized": "Sinh viên có điểm học phần lần thứ nhất dưới 5.5 có được xét khen thưởng và học bổng không?"
-        },
-        {
-            "raw": "Em đang nợ học phí chưa đóng tiền học kịp thì làm đơn gì để được đi thi?",
-            "normalized": "Sinh viên cần làm thủ tục gì về hỗ trợ học phí, miễn giảm học phí và gia hạn nộp học phí để được dự thi?"
-        },
-        {
-            "raw": "môn Thiết kế và cài đặt mạng mã mấy vậy, học mấy tín với phải qua môn nào trước",
-            "normalized": "Môn Thiết kế và cài đặt mạng có mã môn học là gì, bao nhiêu tín chỉ và có môn học trước là môn nào?"
-        },
-    ]
+    base_examples = BASE_EXAMPLES
     
     # Chọn tối đa 4 ví dụ từ learning_pairs
     learning_examples = []
     if learning_pairs:
-        for raw, norm in list(learning_pairs.items())[:4]:
+        for raw, norm in list(learning_pairs.items())[:LEARNING_EXAMPLE_LIMIT]:
             learning_examples.append({"raw": raw, "normalized": norm})
     
     # Xây dựng prompt
@@ -258,6 +267,101 @@ def clean_normalized_text(text: str) -> str:
         cleaned = re.sub(r"\s+", " ", cleaned)
         if cleaned:
             return cleaned
+    return ""
+
+
+# ---------------------------------------------------------------------------
+# P5.16 — bản kiểm chứng đầu ra của bộ chuẩn hóa (mặc định TẮT)
+# ---------------------------------------------------------------------------
+# Vì sao cần: vòng lặp P5 đo trên 300 lượt sinh (r0/r1/r3, 100 item x 3 round) cho thấy
+# `normalize_user_query` thỉnh thoảng trả về văn bản KHÔNG PHẢI câu hỏi đã chuẩn hóa:
+#   (a) ECHO NGUYÊN VĂN một dòng few-shot — "Sinh viên: Bị điểm rèn luyện loại yếu thì có
+#       bị đuổi học không ad?" xuất hiện làm output của 3 item KHÁC nhau;
+#   (b) TRẢ LỜI thay vì chuẩn hóa — item hỏi mức phụ cấp nội quy nhận được
+#       "Mức độ hoàn thành: 9/10".
+# Không phải hàm tất định dù temperature=0.0: so 100 item trùng khớp giữa các round thì
+# r0 và r3 cho `normalized_query` giống nhau 100/100, còn r1 lệch 18/100 (cùng code, cùng
+# model). Coi tỉ lệ hỏng là đặc tính TẦN SUẤT (5-6/100 mỗi lượt), đừng dựa vào một bản
+# chuẩn hóa của MỘT lượt chạy.
+# Hậu quả không dừng ở câu trả lời lệch: `src/pipeline.py:386` đưa `normalized_query` vào
+# CẢ truy xuất lẫn sinh, nên item bị hỏng từ gốc — 5/23 `FAIL_RETRIEVAL` của r1 ở pha đắt
+# thuộc nhóm này, tức một phần "lỗi truy xuất" thực chất là lỗi tầng input.
+#
+# Ngưỡng 0.3 KHÔNG phải số vẽ ra: phân bố containment (số token gốc còn sót trong output)
+# trên 300 lượt có median 1,00 và p10 0,46; cả hai mode hỏng ở trên nằm dưới 0,15. Một
+# chuẩn hóa tốt được phép ĐỔI chữ (từ lóng → thuật ngữ) nên chỉ số này không cần cao; rơi
+# xuống dưới 0,3 nghĩa là phần lớn nội dung câu hỏi đã biến mất.
+NORMALIZE_SANITY_GUARD_ENV = "NORMALIZE_SANITY_GUARD"
+NORMALIZE_MIN_CONTAINMENT_ENV = "NORMALIZE_MIN_CONTAINMENT"
+DEFAULT_NORMALIZE_MIN_CONTAINMENT = 0.3
+
+_CONTENT_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+
+def normalize_sanity_guard_enabled() -> bool:
+    """Mặc định TẮT — bật bằng `NORMALIZE_SANITY_GUARD=1` (đường production cũ không đổi)."""
+    return (os.getenv(NORMALIZE_SANITY_GUARD_ENV) or "0").strip().lower() not in (
+        "",
+        "0",
+        "false",
+        "no",
+        "off",
+    )
+
+
+def normalize_min_containment() -> float:
+    """Ngưỡng tối thiểu tỉ lệ token gốc còn sót trong output (0..1, giá trị hỏng -> mặc định)."""
+    raw = (os.getenv(NORMALIZE_MIN_CONTAINMENT_ENV) or "").strip()
+    try:
+        value = float(raw)
+    except ValueError:
+        return DEFAULT_NORMALIZE_MIN_CONTAINMENT
+    return min(1.0, max(0.0, value))
+
+
+def content_tokens(text: str) -> set:
+    """Token "nội dung" (bỏ ký tự đơn và dấu câu), so không dấu qua `fold()`."""
+    return {tok for tok in _CONTENT_TOKEN_RE.findall(fold(text or "")) if len(tok) > 2}
+
+
+def token_containment(raw_query: str, normalized: str) -> float:
+    """Bao nhiêu token của câu GỐC còn xuất hiện trong câu chuẩn hóa (1.0 = giữ hết)."""
+    base = content_tokens(raw_query)
+    if not base:
+        return 1.0
+    return len(base & content_tokens(normalized)) / len(base)
+
+
+def prompt_example_lines(learning_pairs: Optional[dict] = None) -> set:
+    """Mọi dòng ví dụ model có thể chép lại, đã `fold()` (cả vế 'Sinh viên:' lẫn vế 'Chuẩn hóa:').
+
+    Danh sách lấy thẳng từ `BASE_EXAMPLES` + learning pairs đang dùng để dựng prompt, nên
+    sửa few-shot thì gate tự cập nhật — không có bản sao thứ hai để lệch âm.
+    """
+    lines = set()
+    pairs = [(ex["raw"], ex["normalized"]) for ex in BASE_EXAMPLES]
+    if learning_pairs:
+        pairs += [(raw, norm) for raw, norm in list(learning_pairs.items())[:LEARNING_EXAMPLE_LIMIT]]
+    for raw, norm in pairs:
+        for text in (raw, norm, f"Sinh viên: {raw}"):
+            lines.add(fold(str(text)).strip())
+    return lines
+
+
+def normalized_output_rejection(
+    raw_query: str, normalized: str, learning_pairs: Optional[dict] = None
+) -> str:
+    """Lý do BÁC bản chuẩn hóa, hoặc chuỗi rỗng nếu chấp nhận. Deterministic, không gọi model."""
+    if not (normalized or "").strip():
+        return "output rỗng"
+    if fold(normalized).strip() in prompt_example_lines(learning_pairs):
+        return "chép nguyên văn một dòng few-shot"
+    ratio = token_containment(raw_query, normalized)
+    floor = normalize_min_containment()
+    if ratio < floor:
+        return (
+            f"mất nội dung câu gốc (containment={ratio:.2f} < ngưỡng {floor:.2f})"
+        )
     return ""
 
 
@@ -373,10 +477,19 @@ def normalize_user_query(llm_client: Any, user_query: str) -> str:
             text = response.get("response") if isinstance(response, dict) else getattr(response, "response", "")
 
         cleaned = clean_normalized_text(text)
-        if cleaned:
-            return cleaned
-        return raw_text
-
+        if not cleaned:
+            return raw_text
+        if normalize_sanity_guard_enabled():
+            # P5.16: output phải còn LÀ câu hỏi này. Không đạt -> dùng câu gốc, tức đúng
+            # hành vi của hệ thống trước khi có bộ chuẩn hóa (không bao giờ lệch chủ đề).
+            reason = normalized_output_rejection(raw_text, cleaned, learning_pairs)
+            if reason:
+                print(
+                    f"[QueryNormalizer] Bác bản chuẩn hóa: {reason} — dùng câu gốc "
+                    f"(gốc={raw_text[:60]!r} -> model={cleaned[:60]!r})"
+                )
+                return raw_text
+        return cleaned
     except Exception as exc:
         print(f"[QueryNormalizer] Lỗi khi gọi Local Qwen ({type(exc).__name__}: {exc}) - Fallback về câu gốc.")
         return raw_text

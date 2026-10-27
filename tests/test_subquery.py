@@ -199,7 +199,7 @@ class FakeGenerator:
         self.received_docs = None
         self.received_question_type = None
 
-    def generate_answer(self, query, retrieved_docs, question_type=None):
+    def generate_answer(self, query, retrieved_docs, question_type=None, raw_query=None):
         self.received_docs = retrieved_docs
         self.received_question_type = question_type
         return "answer-mau"

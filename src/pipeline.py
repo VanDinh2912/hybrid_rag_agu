@@ -29,9 +29,34 @@ from typing import Any, Optional
 from langchain_core.documents import Document
 
 from src.classifier import classify_query
+from src.evidence_selection import evidence_selection_enabled, select_evidence
 from src.query_normalizer import normalize_user_query
+from src.refusal_policy import (
+    decoupled_refusal_enabled,
+    decide_post_generation,
+    decide_pre_generation,
+    log_decision,
+)
 from src.retrieval import SYNONYM_DICTIONARY, expand_query_with_synonyms, split_comparison_query
-from src.router import RetrievalConfig, base_config_from_env, get_retrieval_config
+from src.reranker import (
+    RerankerUnavailable,
+    last_call,
+    reranker_candidate_pool,
+    reranker_enabled,
+    reranker_fallback_enabled,
+    reranker_keep_candidates,
+    rerank_documents,
+)
+from src.router import (
+    RetrievalConfig,
+    apply_source_quota,
+    base_config_from_env,
+    get_retrieval_config,
+    rescore_with_source_preference,
+    router_filter_rank_bonus,
+    router_source_quota,
+    router_soft_filter_enabled,
+)
 from src.text_utils import fold
 from src.vector_db import (
     DEFAULT_BM25_WEIGHT,
@@ -104,6 +129,15 @@ class HybridRAGPipeline:
         # Nếu người dùng truyền thẳng retriever tùy chỉnh vào
         self.custom_retriever = retriever
 
+        # T3: hạng THÔ của từng chunk trong từng nhánh (BM25, vector) của lượt truy xuất
+        # gần nhất. CHỈ được điền khi `ENABLE_DECOUPLED_REFUSAL=1`; cờ TẮT thì thuộc tính
+        # này luôn None và không code T3 nào chạy (bất biến #2).
+        self.last_leg_ranks: Optional[dict] = None
+
+        # T5a: số liệu lượt rerank gần nhất (đếm ứng viên, giây, điểm cao/thấp nhất).
+        # Cờ `ENABLE_RERANKER` TẮT thì thuộc tính này luôn None.
+        self.last_rerank_call: Optional[dict] = None
+
         # Khởi tạo EnsembleRetriever (BM25 + Chroma) nếu được bật
         self.ensemble_retriever: Optional[Any] = None
         if self.custom_retriever is not None:
@@ -144,6 +178,62 @@ class HybridRAGPipeline:
         except Exception as exc:
             print(f"[HybridSearch] Cảnh báo: không thể khởi tạo BM25 ({exc}) — tự động lùi về Chroma vector search.")
             self.ensemble_retriever = None
+
+    # ------------------------------------------------------------------ T3: đo hạng từng nhánh
+    def _collect_leg_ranks(self, folded_query: str) -> None:
+        """Lấy hạng THÔ của từng chunk trong TỪNG nhánh (BM25, vector) — chỉ cho luật 3.
+
+        Vì sao phải đo riêng: `EnsembleRetriever` trả về danh sách ĐÃ trộn theo RRF nên
+        thứ hạng sau fusion không còn cho biết chunk đó đứng đâu trong từng nhánh — mà
+        "điểm truy xuất" theo định nghĩa đã đăng ký (`DEC_MIN_RRF_NORM`) là hàm của hai
+        hạng thô đó. Gọi lại từng nhánh là thao tác ĐỌC: `docs` trả về cho tầng sinh vẫn
+        do đúng một lần `ensemble_retriever.invoke(...)` sinh ra, nên bật cờ không đổi
+        đầu vào của generator. Giá phải trả là chi phí đo (thêm một lượt nhúng + một lượt
+        BM25 mỗi câu) — tính vào p95 latency của r8 và ghi rõ trong báo cáo.
+        """
+        ranks = dict(self.last_leg_ranks or {})
+        legs = list(getattr(self.ensemble_retriever, "retrievers", []) or [])
+        if len(legs) != 2:
+            # Không đoán mò thứ tự nhánh: không đo được thì ghi nhận không đo được
+            # (quyết định đã đăng ký — `rrf_unavailable`, KHÔNG âm thầm coi là đạt).
+            self.last_leg_ranks = ranks or None
+            return
+        for pos, leg in enumerate(legs):  # 0 = BM25, 1 = Chroma (đúng thứ tự weights)
+            try:
+                hits = leg.invoke(folded_query)
+            except Exception as exc:  # noqa: BLE001
+                print(
+                    "[DecoupledRefusal] Cảnh báo: không đo được hạng nhánh "
+                    f"{pos} ({type(exc).__name__}: {exc}) — luật 3 bỏ qua lượt này."
+                )
+                continue
+            for i, doc in enumerate(hits or [], start=1):
+                cid = str((getattr(doc, "metadata", None) or {}).get("chunk_id"))
+                pair = list(ranks.get(cid, [None, None]))
+                if pair[pos] is None:
+                    pair[pos] = i
+                    ranks[cid] = (pair[0], pair[1])
+        self.last_leg_ranks = ranks or None
+
+    def _aligned_leg_ranks(self, docs: list) -> Optional[list]:
+        """Ánh danh sách chunk cửa sổ generator sang `(rank_bm25, rank_vector)`.
+
+        Chunk không có mặt ở cả hai lượt đo (vd. chỉ vào được nhờ fallback query) thành
+        None — `decide_pre_generation` xử lý bằng `rrf_unavailable`, không coi là đạt.
+        """
+        if not self.last_leg_ranks:
+            return None
+        aligned = []
+        for doc in docs:
+            cid = str((getattr(doc, "metadata", None) or {}).get("chunk_id"))
+            aligned.append(self.last_leg_ranks.get(cid))
+        return aligned
+
+    def _fusion_weights(self, config: Optional[RetrievalConfig]) -> tuple:
+        """Trọng số RRF thực sự dùng cho lượt này (router ghi đè theo câu, P3.2)."""
+        if config is not None:
+            return float(config.bm25_weight), float(config.chroma_weight)
+        return float(self.bm25_weight), float(self.vector_weight)
 
     def retrieve(
         self,
@@ -191,15 +281,30 @@ class HybridRAGPipeline:
 
                 # Đồng bộ tham số k cho các sub-retrievers bên trong
                 sub_retrievers = getattr(self.ensemble_retriever, "retrievers", [])
+                soft_filter = bool(
+                    config is not None
+                    and config.source_filter
+                    and router_soft_filter_enabled()
+                )
+                # T5a: khi bật reranker, mỗi nhánh phải QUÉT SÂU hơn cửa sổ để pool 20
+                # ứng viên tồn tại thật. Cờ TẮT -> leg_k == k -> từng ký tự như cũ.
+                leg_k = max(k, reranker_candidate_pool()) if reranker_enabled() else k
                 for r in sub_retrievers:
                     if hasattr(r, "k"):
-                        r.k = k
+                        r.k = leg_k
                     elif hasattr(r, "search_kwargs") and isinstance(r.search_kwargs, dict):
-                        r.search_kwargs["k"] = k
+                        r.search_kwargs["k"] = leg_k
                         # Filter metadata `source` cho nhánh Chroma (API hỗ trợ chính
                         # thức qua search_kwargs). Xóa filter khi không còn để đường
-                        # cũ không bị vướng trạng thái từ lượt trước.
-                        if config is not None and config.source_filter:
+                        # cũ không bị vướng trạng thái từ lượt trước. Ở chế độ LỌC MỀM
+                        # (P5.2) nhánh này phải quét toàn corpus — nếu cắt ngay lúc tìm
+                        # thì chunk ngoài nguồn được ưu tiên sẽ không bao giờ vào ứng
+                        # viên, và "mềm" chỉ còn trên danh nghĩa.
+                        if (
+                            config is not None
+                            and config.source_filter
+                            and not soft_filter
+                        ):
                             r.search_kwargs["filter"] = {
                                 "source": {"$in": list(config.source_filter)}
                             }
@@ -212,6 +317,10 @@ class HybridRAGPipeline:
                 # Thực nghiệm 15-10: cùng index, query có dấu → 6 chunk sai nguồn;
                 # query đã fold → chunk đúng lên hạng 1.
                 docs = self.ensemble_retriever.invoke(fold(query))
+                # T3: hạng thô từng nhánh cho luật 3 của tầng từ chối ngoài. Đặt SAU
+                # `invoke` chính để không ảnh hưởng `docs` (cờ TẮT thì không gọi gì).
+                if decoupled_refusal_enabled():
+                    self._collect_leg_ranks(fold(query))
 
                 # Fallback Query: chạy song song với câu hỏi gốc nếu được cung cấp
                 if fallback_query and fallback_query != query:
@@ -251,7 +360,19 @@ class HybridRAGPipeline:
                         for doc in docs
                         if fold(str(doc.metadata.get("source", ""))) in allowed_sources
                     ]
-                    if filtered_docs:
+                    if soft_filter:
+                        # Chế độ mềm: không cắt, chỉ cộng ưu tiên hạng cho nguồn đúng
+                        # để cửa sổ vẫn còn suất cho phần còn lại của corpus.
+                        docs = rescore_with_source_preference(
+                            docs,
+                            config.source_filter,
+                            rank_bonus=router_filter_rank_bonus(),
+                        )
+                        # P5.14: ưu tiên không đồng nghĩa "chiếm hết cửa sổ". Số liệu r2
+                        # cho thấy chính lúc bonus >= cỡ cửa sổ là lúc chunk vàng của
+                        # nguồn khác bị đẩy ra (21/21 item hồi quy).
+                        docs = apply_source_quota(docs, router_source_quota())
+                    elif filtered_docs:
                         docs = filtered_docs
                     else:
                         print(
@@ -259,7 +380,37 @@ class HybridRAGPipeline:
                             f"({config.source_filter}) — giữ nguyên kết quả chưa lọc."
                         )
 
+                # T5a: xếp lại bằng cross-encoder TRÊN POOL đã có (sau bonus + quota, vì
+                # đó đúng thứ tự mà đường cũ giao cho cửa sổ). Cờ TẮT thì không gọi gì.
+                if reranker_enabled():
+                    docs = rerank_documents(
+                        query,
+                        docs,
+                        top_n=None if reranker_keep_candidates() else k,
+                    )
+                    self.last_rerank_call = last_call.as_dict()
+
                 # Lọc lấy Top-k chunks tốt nhất (Best-First Search / Beam Filter)
+                if reranker_enabled() and reranker_keep_candidates():
+                    return docs
+                return docs[:k]
+            except RerankerUnavailable as exc:
+                # Mặc định (RERANKER_FALLBACK=0) vẫn dừng loudly: không để reranker rơi
+                # vào nhánh lùi về similarity_search ở dưới, vì một round đo nhầm lever
+                # còn tệ hơn một round dừng tường minh.
+                if not reranker_fallback_enabled():
+                    raise
+                # RERANKER_FALLBACK=1 (mục 5 đề bài T5, PA-18a): lùi về ĐÚNG thứ tự
+                # RRF+bonus trước rerank, cảnh báo rõ, và ghi manifest để hậu kiểm.
+                print(
+                    f"[Reranker] Cảnh báo: {exc} — lùi về thứ tự RRF trước rerank "
+                    "(RERANKER_FALLBACK=1)."
+                )
+                self.last_rerank_call = {
+                    "fallback_used": True,
+                    "error": str(exc),
+                    "pool": reranker_candidate_pool(),
+                }
                 return docs[:k]
             except Exception as exc:
                 print(f"[HybridSearch] Lỗi truy xuất qua EnsembleRetriever ({exc}), lùi về similarity_search.")
@@ -392,6 +543,11 @@ class HybridRAGPipeline:
                 )
                 sub_queries = None
 
+        # --- T3 (mặc định TẮT): chuẩn bị đo hạng cho tầng từ chối ngoài ---
+        decoupled = decoupled_refusal_enabled()
+        if decoupled:
+            self.last_leg_ranks = None
+
         if sub_queries:
             # Truy xuất TỪNG sub-query với retrieve_k như thường, tái dùng
             # index/Ensemble hiện có (không dựng lại BM25). Mỗi sub-query cũng
@@ -428,9 +584,80 @@ class HybridRAGPipeline:
         # NGOAI_PHAM_VI). labels là None khi ENABLE_CLASSIFIER=0 → question_type
         # None → prompt gốc giống hệt từng ký tự, cache cũ vẫn trúng.
         question_type = labels.get("question_type") if labels else None
-        answer = self.generator.generate_answer(
-            query=normalized_query, retrieved_docs=gen_docs, question_type=question_type
-        )
+
+        answer: Optional[str] = None
+        pre_features: Optional[dict] = None
+        refusal_decision: Optional[dict] = None
+        if decoupled:
+            # Luật 1-3: tầng ngoài CÓ quyền từ chối mà không tốn một lượt sinh.
+            # Luật 1-3 luôn đo trên cửa sổ CHUNK GỐC (không phải cửa sổ đã cắt câu):
+            # phán quyết "có căn cứ không" là phán quyết về CHẤT LƯỢNG TRUY XUẤT — r8 và
+            # r9 phải cùng một phép đo ở đây thì hai round mới chỉ khác nhau MỘT biến là
+            # những gì model được đọc.
+            from src.generator import REFUSAL_TEXT  # import trễ: cờ TẮT không nạp module
+
+            bm25_w, vec_w = self._fusion_weights(retrieval_config)
+            pre = decide_pre_generation(
+                question=normalized_query,
+                contexts=contexts,
+                leg_ranks=self._aligned_leg_ranks(gen_docs),
+                bm25_weight=bm25_w,
+                vector_weight=vec_w,
+            )
+            log_decision("pre", pre, question=normalized_query)
+            refusal_decision = {"stage": "pre", **pre.to_dict()}
+            if pre.refuse:
+                answer = REFUSAL_TEXT
+            else:
+                pre_features = pre.features
+
+        # --- T3 đòn bẩy 3: extract-then-generate (mặc định TẮT) ---
+        # Cửa sổ generator được thay bằng 3–5 CÂU bằng chứng; `sources` (toàn bộ
+        # retrieve_k) KHÔNG đổi nên gold@k của round vẫn đo đúng tầng truy xuất.
+        # `contexts` trong kết quả LÀ CÁI MODEL ĐÃ ĐỌC — trọng tài chấm grounding trên
+        # đúng căn cứ đó, không được privileged hơn model.
+        evidence_info: Optional[dict] = None
+        if answer is None and evidence_selection_enabled():
+            source_names = [
+                str((getattr(d, "metadata", None) or {}).get("source") or "") for d in gen_docs
+            ]
+            if retrieval_config is not None:
+                source_names += [str(s) for s in (retrieval_config.source_filter or [])]
+            window, evidence_info = select_evidence(
+                normalized_query,
+                gen_docs,
+                source_names=source_names,
+                embeddings=getattr(self.vector_db, "embeddings", None),
+            )
+            gen_docs = window
+            contexts = [doc.page_content for doc in gen_docs]
+
+        if answer is None:
+            answer = self.generator.generate_answer(
+                query=normalized_query,
+                retrieved_docs=gen_docs,
+                question_type=question_type,
+                # P5.12b: truyền cả câu gốc để lớp cứu từ chối oan (`ENABLE_ANSWER_RESCUE`)
+                # xét điều kiện trên câu HỎI thật, chứ không trên bản chuẩn hóa đôi khi
+                # bị bộ chuẩn hóa viết thành câu khác (đo: 16/300 lượt sinh).
+                raw_query=raw_query,
+            )
+
+        if pre_features is not None:
+            # Luật 4-5: câu vừa sinh phải đứng được trên căn cứ, nếu không tầng ngoài
+            # thay nó bằng câu từ chối chuẩn. Chỉ chạy khi luật 1-3 đã CHO SINH
+            # (`pre_features` không None), vì thế cờ TẮT không bao giờ tới đây.
+            post = decide_post_generation(
+                question=normalized_query,
+                contexts=contexts,
+                answer=answer,
+                source_names=[str((getattr(d, "metadata", None) or {}).get("source") or "") for d in gen_docs],
+                pre_features=pre_features,
+            )
+            log_decision("post", post, question=normalized_query)
+            refusal_decision = {"stage": "post", **post.to_dict()}
+            if post.refuse:
+                answer = REFUSAL_TEXT  # đã nạp ở nhánh `decoupled` phía trên
 
         return {
             "raw_query": raw_query,
@@ -443,6 +670,11 @@ class HybridRAGPipeline:
             "answer": answer,
             "labels": labels,
             "retrieval_config": asdict(retrieval_config) if retrieval_config is not None else None,
+            # T3: phán quyết của tầng từ chối ngoài (None khi cờ TẮT). Không vào schema
+            # `.jsonl` của round — `run_round` chỉ đọc các khóa nó cần — mà để UI và
+            # hậu kiểm đếm được lý do từ chối mà không parse log.
+            "refusal_decision": refusal_decision,
+            "evidence_selection": evidence_info,
         }
 
 
