@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-27T18:23:53",
+ "generated_at": "2026-10-27T18:29:02",
  "algorithm": "sha256",
  "root": ".",
  "note": "sha256 trên byte thô, không chuẩn hoá EOL; artifact nặng không commit",
@@ -720,8 +720,8 @@
   },
   {
    "path": "docs/CLEANUP_ANCHORS.md",
-   "bytes": 10083,
-   "sha256": "85c26ff95f52fd5c6c72b80e31a29dd6c1127686160f8d2d045c72b221ff0ee8",
+   "bytes": 10957,
+   "sha256": "8c47b8480d9ad1fd98b6d1c5384cda68a5d5519cf8db397ed6d13d7127756f4b",
    "tracked": true
   },
   {
@@ -776,6 +776,6 @@
  "summary": {
   "rows": 25,
   "files": 84,
-  "total_bytes": 4039600
+  "total_bytes": 4040474
  }
 }

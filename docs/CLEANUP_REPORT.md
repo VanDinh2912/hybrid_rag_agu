@@ -6,7 +6,8 @@ trong 3 tệp trọng tài hay bất kỳ dụng cụ đo nào.
 
 > Phát hiện ngoài phạm vi bước, **không đổi số đo**: `ARTIFACT_MANIFEST.json` của B3 ghim byte
 > container Chroma, mà mỗi lượt pytest mở index thật lại ghi lại 6 tệp ⇒ `--check` đỏ dù nội dung
-> truy xuất không đổi (đo ở §5). Đề xuất xử lý: PA-47; **không** sinh lại manifest trong đợt dọn.
+> truy xuất không đổi (đo ở §5). **Đã xử lý ở C1** (27-10): hai test chỉ đọc bản sao trong `tmp_path`,
+> manifest sinh lại đúng một lần; `--check` KHỚP sau pytest (§8).
 
 ## 1. Đã làm
 
@@ -44,7 +45,7 @@ ghi chú B2…B7 trong `docs/CLEANUP_ANCHORS.md` và Ngã rẽ 37…42 trong `do
 | PA-44 | Gom nốt 45 site đọc env còn lại (generator/pipeline/normalizer/router, evaluation, answer_guard, reranker) | chờ |
 | PA-45 | Giữ 3 tệp đánh giá trong `src/` | chờ (khuyến nghị giữ) |
 | PA-46 | Tách `generator.py` + `experiments/negative_results/README.md` | chờ |
-| PA-47 | Manifest ghim byte container Chroma ⇒ `--check` đỏ sau mỗi pytest (phát hiện ở KẾT PHIẾN) | chờ |
+| PA-47 | Manifest ghim byte container Chroma ⇒ `--check` đỏ sau mỗi pytest (phát hiện ở KẾT PHIẾN) | đã áp phần cô lập test + sinh lại manifest (C1); index digest chờ |
 | PA-33 | `.gitignore` mở rộng (`tmp/`, cả `models/`, `data/loop/rounds/`, `data/training/`) | chờ |
 
 PA-35…PA-41 của phiên trước vẫn chờ duyệt; `ENABLE_RERANKER` giữ TẮT.
@@ -55,6 +56,7 @@ PA-35…PA-41 của phiên trước vẫn chờ duyệt; `ENABLE_RERANKER` giữ
 |---|---|---|---|---|---|
 | B0 — trước dọn | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
 | sau B1–B7 | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
+| sau C1–C5 | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
 
 Bằng chứng lượt chốt:
 
@@ -63,6 +65,9 @@ Bằng chứng lượt chốt:
   811 dòng, FAIL_RETRIEVAL 182, PENDING_GENERATION 629, 0 lệch, item drift 0. So bản B6
   (`tmp/anchor_r11_rescore_v2_b6.json`): chỉ khác `generated_at`.
 - Golden B0 chụp lại ở B4: toàn tệp `ccc8a92e…a1bb`; 41 dòng giá trị `0ff913…fe410`.
+- Lượt C5 (27-10, sau C1–C4): pytest `1495 passed, 5 skipped`; chấm lại r11 →
+  `tmp/anchor_r11_rescore_v2_c5.json`: 811 dòng, 182 / 629, 0 lệch, item drift 0; golden 41 dòng
+  `0ff9135504e5`; `ARTIFACT_MANIFEST.json --check` KHỚP — lượt đầu sau nhiều pytest kể từ C1.
 
 Hai máy kiểm số chạy thêm ở B7 (không nằm trong 4 cổng):
 
@@ -91,6 +96,14 @@ embedding đã lưu × top-6 ⇒ **0/30 đổi thứ tự id, 0 cặp khoảng c
 Xử lý đề xuất: PA-47 (ưu tiên thay 6 tệp container bằng "index digest" nội dung); **không** sinh lại
 manifest trong KẾT PHIẾN để khỏi ghi đè artifact đã công bố.
 
+**Đã xử lý ở C1 (27-10).** `tests/test_t5_contextual_header.py` thêm fixture `real_index_copy`: hai
+test đọc index (`test_chuyen_doi_header_khong_ghi_gi_len_index_that` và
+`test_index_that_du_36x_chunk_va_nhan_hop_le`) nay `shutil.copytree` index sang `tmp_path` và chỉ đọc
+bản sao; Chroma ghi vào bản sao. Kiểm: hai lượt pytest đầy đủ liền nhau để 6 hash container **không
+đổi**; sau đó `--write` một lần — manifest vẫn 158 tệp / 390.961.924 B, chỉ 6 hash container +
+`generated_at` đổi; `--check` KHỚP rc=0 sau pytest. Đề xuất phụ "index digest" (băm nội dung
+documents + embedding thay cho byte container) **chưa áp** — PA-47.
+
 ## 6. Cảnh báo còn lại
 
 - `tools/loop/verify.py`, `src/answer_guard.py`, `src/reranker.py` vẫn **UNTRACKED**: `git revert`
@@ -102,11 +115,31 @@ manifest trong KẾT PHIẾN để khỏi ghi đè artifact đã công bố.
 - 6 tệp mã/test có thay đổi chưa commit từ phiên trước (`src/generator.py`, `pipeline.py`,
   `query_normalizer.py`, `router.py`, `tests/test_pipeline.py`, `tests/test_subquery.py` — PA-26)
   **không** bị stage ở bất kỳ bước nào của đợt dọn.
+- 8 tệp `tmp/` được ghim trong gói bằng chứng (anchor r11, golden, `compare_r0_repro.json`,
+  `probe_r12_fold.json`, `final_number_audit*.json`) **không** vào git: máy khác chạy `--check` sẽ
+  báo THIẾU — đó là hành vi đúng của gói, ghi ở `docs/EVIDENCE_PACK.md` §6.
+- `docs/PA_TRIAGE.md` là **khuyến nghị**, không áp PA nào; `ENABLE_RERANKER` vẫn TẮT.
 
 ## 7. Hình dạng repo sau dọn
 
 - `docs/`: `README.md`, `ARCHITECTURE.md`, `EXPERIMENTS.md` (một bảng 25 dòng), `REPRODUCE.md`,
-  `CLEANUP_ANCHORS.md`, `CLEANUP_REPORT.md`, `DECISION_LOG.md`, `bao_cao/`, `giang_day/`, và
-  `archive/` (4 nhật ký phiên + `reports/` 22 tệp + README bản đồ lưu trữ).
+  `CLEANUP_ANCHORS.md`, `CLEANUP_REPORT.md`, `PA_TRIAGE.md`, `EVIDENCE_PACK.md` +
+  `evidence_pack.json`, `DECISION_LOG.md`, `bao_cao/`, `giang_day/`, và `archive/` (4 nhật ký
+  phiên + `reports/` 22 tệp + README bản đồ lưu trữ).
 - Gốc repo: chỉ còn tệp chạy và thư mục nguồn; tài liệu quy trình ở `dev/`; artifact lớn ở `models/`,
   `chroma_db*/`, `data/`.
+
+## 8. Đợt C sau KẾT PHIẾN (27-10) — C1…C5
+
+| bước | commit | nội dung | cổng |
+|---|---|---|---|
+| C1 | `b421f44` | Cô lập 2 test đọc index thật bằng fixture `real_index_copy` (sao chép sang `tmp_path`); sinh lại `ARTIFACT_MANIFEST.json` đúng một lần; cập nhật PA-47 | khớp, manifest `--check` KHỚP sau pytest |
+| C2 | `fc45fa0` | `docs/PA_TRIAGE.md`: 47 PA, nhóm (a) 26 / (b) 17 / (c) 4, khuyến nghị duyệt/đóng/hoãn; không áp PA nào | khớp |
+| C3 | `1a98996` | `docs/EVIDENCE_PACK.md` + `docs/evidence_pack.json` (25 D-row → 84 tệp, sha256 byte thô) + `tools/diag/evidence_pack_check.py` | khớp, evidence `--check` KHỚP |
+| C4 | `70206df` | `docs/ARCHITECTURE.md` thêm "Hạn chế đã biết": mã đánh giá trong `src/`, `generator.py` 1.377 dòng, lever âm sau cờ TẮT — kèm lý do không sửa | khớp |
+| C5 | báo cáo này | Chốt: 4 cổng §6, hai máy kiểm, `git status` chỉ còn tệp đã giải thích | khớp |
+
+Lượt chốt C5: pytest `1495 passed, 5 skipped`; chữ ký `2911c69f740d`; r11 182 / 629, 0 lệch;
+golden `0ff9135504e5`; `artifact_manifest --check` KHỚP; `evidence_pack_check --check` KHỚP;
+`docs_consistency_check` 0 lỗi / 5 cảnh báo / 100 đường dẫn / 263 lệnh; `final_number_audit`
+63 dòng / 61 KHỚP / 2 LỆCH đã biết / rc=0.

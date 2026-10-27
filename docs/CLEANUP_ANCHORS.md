@@ -113,6 +113,7 @@ backup byte + ghi lý do, và **bỏ bước**.
 |---|---|---|---|---|---|
 | B0 — trước dọn | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
 | sau B1–B7 | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
+| sau C1–C5 | `2911c69f740d` | 1495 / 5 skip | 182 / 629 | 0,74 | `0ff9135504e5` |
 
 Ghi chú B2 (26-10 chiều): đã cắt **một bước con** của B2 — chuyển `learn.py` + `benchmark_chunking.py`
 vào `tools/` — vì làm đỏ bất biến #7 trên dữ liệu train (74 dòng `metadata.file` không còn tồn tại);
@@ -151,3 +152,12 @@ không xoá tệp nào. Ba ngoại lệ có lý do: `DECISION_LOG.md` (checker �
 `CLEANUP_ANCHORS.md` của chính đợt dọn. Đường dẫn trong README/ROADMAP/DECISION_LOG/data loop README
 đã sửa theo vị trí mới (6 + 10 + 36 + 6 + 1 chỗ, thay theo byte). Checker: 0 lỗi / 5 cảnh báo /
 100 đường dẫn. Fingerprint `2911c69f740d`, pytest 1495/5, r11 182/629.
+
+Ghi chú C (27-10, sau KẾT PHIẾN): C1 cô lập hai test đọc index production (`real_index_copy` sao
+chép sang `tmp_path`, chỉ đọc bản sao) rồi sinh lại `ARTIFACT_MANIFEST.json` đúng một lần — vẫn
+158 tệp / 390.961.924 B, chỉ 6 hash container Chroma + `generated_at` đổi; từ đó `--check` KHỚP sau
+mỗi lượt pytest. C2 tạo `docs/PA_TRIAGE.md` (47 PA, 3 nhóm, không áp PA nào). C3 tạo
+`docs/EVIDENCE_PACK.md` + `docs/evidence_pack.json` (84 tệp, sha256 byte thô) và
+`tools/diag/evidence_pack_check.py` (`--check` lệch ⇒ mã 1, `--write` sinh lại). C4 thêm mục
+"Hạn chế đã biết" vào `docs/ARCHITECTURE.md`. C5 chốt: 4 cổng §6 khớp neo; không sửa mã đo, không
+sửa byte 3 tệp trọng tài.

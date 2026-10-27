@@ -105,7 +105,7 @@ cùng dòng (mốc baseline, cổng so sánh, nhật ký đếm); `neo` = neo đ
 | D-42 | chính | `tmp/final_number_audit_b_shift.json` | 14175 | `dde6e59d288a` | chưa |
 | D-42 | phụ | `tmp/final_number_audit.json` | 12054 | `53f4767f518a` | chưa |
 | D-42 | phụ | `tmp/final_number_audit_table.md` | 7240 | `3478c9dca8ba` | chưa |
-| neo | neo | `docs/CLEANUP_ANCHORS.md` | 10083 | `85c26ff95f52` | tracked |
+| neo | neo | `docs/CLEANUP_ANCHORS.md` | 10957 | `8c47b8480d9a` | tracked |
 | neo | neo | `tools/loop/verify.py` | 14960 | `137ee884af3c` | chưa |
 | neo | neo | `tools/diag/rescore_retrieval_round_v2.py` | 10027 | `1d5d8af50053` | tracked |
 | neo | neo | `data/loop/rounds/r11/verdicts_retrieval.jsonl` | 697158 | `d0a1b08dd096` | chưa |
