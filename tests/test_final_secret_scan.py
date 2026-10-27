@@ -161,8 +161,11 @@ class TestHienTrangRepo:
         chủ đích, không được âm thầm đổi kết luận.
         """
         mod, files, r = ket_qua
-        assert r["by_loai"].get("DU_CAO_NHAN_HOC") == 89, r["by_loai"]
-        assert len(r["pii_by_file"]) == 8, sorted(r["pii_by_file"])
+        # Q1 (27-10): +76 dòng / +1 tệp so với mốc 25-10, tất cả từ
+        # `data/loop/testset_v1.jsonl` được commit để clone tái lập được round.
+        # Đây là thay đổi có chủ đích (không phải PII mới phát sinh); PA-31 vẫn chờ duyệt.
+        assert r["by_loai"].get("DU_CAO_NHAN_HOC") == 165, r["by_loai"]
+        assert len(r["pii_by_file"]) == 9, sorted(r["pii_by_file"])
         # mọi file chứa PII đều là artifact dữ liệu, không phải code
         for f in r["pii_by_file"]:
             assert f.startswith(("data/", "outputs/", "logs/")), f
