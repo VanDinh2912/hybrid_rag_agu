@@ -77,8 +77,44 @@ runner đo, `reranker`) vẫn đọc env trực tiếp; gom nốt là PA-44.
   kích hoạt** vì mất neo vàng 389/797 = 48,81% (PA-17 re-anchor).
 - `data/loop/testset_v1.jsonl` — bộ đo 811 item cố định dùng cho mọi round.
 
-## Ghi chú phạm vi
+## Hạn chế đã biết
 
-`src/generator.py` chứa prompts + chính sách từ chối + lớp rescue đã bị bác; đề xuất tách đang
-chờ duyệt ở PA-46 (chưa làm vì PA-26 đóng băng tệp). `src/evaluation.py`, `src/analyze_ab.py`,
-`src/evaluate_classifier.py` được đề xuất giữ nguyên trong `src/` (PA-45).
+Ba hạn chế dưới đây là **có chủ đích**: mỗi cái có lý do đo được để không sửa ngay. Mục này để
+người đọc không phải phát hiện lại; mọi đề xuất sửa đi qua [PA_TRIAGE.md](PA_TRIAGE.md).
+
+### 1. Mã đánh giá nằm trong `src/`, cạnh mã sản xuất
+
+`src/evaluation.py` (1.184 dòng), `src/evaluate_classifier.py`, `src/analyze_ab.py` là thư viện:
+`benchmark_chunking.py`, `demo_streamlit.py` và các test import trực tiếp. Chúng cũng là **nguồn
+của dòng train**: `data/training/sft_train.jsonl` có 80 dòng và `sft_val.jsonl` có 3 dòng mang
+`metadata.file` trỏ đúng ba tệp này (55 + 20 + 5 và 2 + 1). Dời sang `tools/` làm máy kiểm dữ liệu
+train báo trỏ hụt — đúng cơ chế đã khiến bước con B2 bị cắt (PA-43).
+
+**Không sửa** trừ khi di trú dữ liệu train trong cùng bước (PA-45). Hệ quả chấp nhận: hằng số đo
+và logic chấm nằm trong gói sản xuất, nên "chỉ sửa mã đo" khó thấy trong diff hơn so với
+`tools/loop/`.
+
+### 2. `src/generator.py` quá lớn
+
+1.377 dòng: prompt theo loại câu hỏi, chính sách từ chối, lớp rescue đã bị bác, đường Gemini +
+Qwen. Tách tệp bị chặn bởi hai thứ: (a) PA-26 — tệp đang có thay đổi chưa commit, HEAD không tái
+lập được cây đã test, nên không được sửa trong bước dọn; (b) `tools/diag/env_flag_audit.py` chỉ
+quét `src/`, `tools/` và script gốc, còn `tests/test_final_env_flag_defaults.py` đòi **mỗi cờ
+đăng ký có ít nhất một site đọc** — chuyển phần đọc cờ sang thư mục mới làm test đỏ dù hành vi
+không đổi.
+
+**Không sửa** cho tới khi PA-26 đóng (PA-46). Hệ quả chấp nhận: diff một lever dễ chạm nhiều lever
+khác trong cùng tệp.
+
+### 3. Lever âm vẫn nằm trong mã, sau cờ TẮT
+
+`ENABLE_ANSWER_RESCUE` (r5b: cứu 1/64 lượt), `ENABLE_EVIDENCE_SELECTION` (r9: model_still_refuses
+3→32), `ENABLE_CONTEXTUAL_HEADER` (r13: −0,0029, không tín hiệu), `ENABLE_RERANKER` (D-37: gold@6
+tăng nhưng neo HUMAN −6,32% ⇒ cổng đỏ, PA-35), `ENABLE_DECOUPLED_REFUSAL` (r8: ảo giác ngoài phạm
+vi 2→12). Giữ mã vì (a) cần **replay** round đã công bố trong cùng điều kiện; (b) xoá mã làm đỏ
+test và phá bất biến #2 "cờ TẮT = byte-identical"; (c) reranker còn chờ duyệt.
+
+**Không xoá**; an toàn được kiểm bằng `tools/diag/env_flag_audit.py` +
+`tests/test_final_env_flag_defaults.py` (mặc định `0`/`false`, không `setdefault` bật ngầm trên
+đường production). Hệ quả chấp nhận: đọc mã phải kiểm giá trị mặc định trước khi kết luận một
+nhánh có chạy hay không.
