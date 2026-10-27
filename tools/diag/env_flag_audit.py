@@ -76,6 +76,9 @@ LEVERS: List[FlagRow] = [
          expect=False, probe=("src.query_normalizer", "normalize_sanity_guard_enabled")),
     dict(name="ROUTER_SOFT_FILTER", group="lever", intro="router — lọc mềm theo nguồn",
          expect=False, probe=("src.router", "router_soft_filter_enabled")),
+    dict(name="ENABLE_DENSE_ORIGINAL_QUERY", group="lever",
+         intro="V1/PA-48a — chỉ nhánh dense dùng query nguyên văn",
+         expect=False, probe=("src.pipeline", "dense_original_query_enabled")),
     # Ngưỡng: chỉ có tác dụng khi cờ bật, nhưng vẫn phải có mặc định "không đổi hành vi cũ".
     dict(name="ROUTER_SOURCE_QUOTA", group="ngưỡng", intro="quota nguồn (0 = không áp trần)",
          expect=0, probe=("src.router", "router_source_quota")),

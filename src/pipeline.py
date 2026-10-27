@@ -29,6 +29,7 @@ from typing import Any, Optional
 from langchain_core.documents import Document
 
 from src.classifier import classify_query
+from src.config import settings
 from src.evidence_selection import evidence_selection_enabled, select_evidence
 from src.query_normalizer import normalize_user_query
 from src.refusal_policy import (
@@ -77,6 +78,16 @@ except ImportError:
 from langchain_community.retrievers import BM25Retriever
 
 DEFAULT_OVERSAMPLE_FACTOR = 2
+
+
+def dense_original_query_enabled() -> bool:
+    """V1/PA-48a: chỉ nhánh dense (Chroma) nhận query NGUYÊN VĂN; BM25 vẫn `fold`.
+
+    Cờ TẮT (mặc định) giữ nguyên đường cũ — đúng một lời gọi `ensemble.invoke(fold(query))`
+    cho cả hai nhánh, nên byte đầu ra không đổi và khóa cache sinh không bị ảnh hưởng
+    (cờ này không nằm trong `cache_policy`).
+    """
+    return settings()._flag("ENABLE_DENSE_ORIGINAL_QUERY", "0")
 
 
 def _preview(text: str, limit: int = 160) -> str:
@@ -180,7 +191,9 @@ class HybridRAGPipeline:
             self.ensemble_retriever = None
 
     # ------------------------------------------------------------------ T3: đo hạng từng nhánh
-    def _collect_leg_ranks(self, folded_query: str) -> None:
+    def _collect_leg_ranks(
+        self, folded_query: str, dense_query: Optional[str] = None
+    ) -> None:
         """Lấy hạng THÔ của từng chunk trong TỪNG nhánh (BM25, vector) — chỉ cho luật 3.
 
         Vì sao phải đo riêng: `EnsembleRetriever` trả về danh sách ĐÃ trộn theo RRF nên
@@ -199,8 +212,11 @@ class HybridRAGPipeline:
             self.last_leg_ranks = ranks or None
             return
         for pos, leg in enumerate(legs):  # 0 = BM25, 1 = Chroma (đúng thứ tự weights)
+            # V1/PA-48a: khi cờ bật, nhánh dense phải đo bằng ĐÚNG query mà nó nhận
+            # lúc truy xuất (nguyên văn); BM25 vẫn đo bằng `fold` như trước.
+            leg_query = dense_query if (pos == 1 and dense_query is not None) else folded_query
             try:
-                hits = leg.invoke(folded_query)
+                hits = leg.invoke(leg_query)
             except Exception as exc:  # noqa: BLE001
                 print(
                     "[DecoupledRefusal] Cảnh báo: không đo được hạng nhánh "
@@ -234,6 +250,30 @@ class HybridRAGPipeline:
         if config is not None:
             return float(config.bm25_weight), float(config.chroma_weight)
         return float(self.bm25_weight), float(self.vector_weight)
+
+    def _invoke_hybrid(self, query: str) -> list[Document]:
+        """Một lượt truy xuất hybrid — giữ đúng công thức RRF của `EnsembleRetriever`.
+
+        Cờ `ENABLE_DENSE_ORIGINAL_QUERY` TẮT (mặc định): đúng một lời gọi
+        `invoke(fold(query))` như trước — đường cũ từng byte.
+
+        Cờ BẬT (V1/PA-48a): hai nhánh được gọi riêng để **chỉ dense** nhận query
+        nguyên văn — BM25 nhận `fold(query)` vì chỉ mục BM25 đã nhân đôi token
+        có/không dấu, còn bge-m3 nhận nguyên văn vì index cũ vẫn còn từ có dấu. Hợp
+        nhất bằng chính `weighted_reciprocal_rank` của ensemble (cùng `weights`, `c`,
+        `id_key`, cùng thứ tự nhánh) nên không đổi công thức RRF. Nếu ensemble không
+        có đúng 2 nhánh hoặc không phải `EnsembleRetriever` thật (retriever tùy biến),
+        lùi về đường cũ thay vì đoán thứ tự nhánh.
+        """
+        if not dense_original_query_enabled():
+            return self.ensemble_retriever.invoke(fold(query))
+        legs = list(getattr(self.ensemble_retriever, "retrievers", []) or [])
+        fuse = getattr(self.ensemble_retriever, "weighted_reciprocal_rank", None)
+        if len(legs) != 2 or fuse is None:
+            return self.ensemble_retriever.invoke(fold(query))
+        bm25_docs = legs[0].invoke(fold(query))
+        dense_docs = legs[1].invoke(query)
+        return fuse([bm25_docs, dense_docs])
 
     def retrieve(
         self,
@@ -311,21 +351,25 @@ class HybridRAGPipeline:
                         else:
                             r.search_kwargs.pop("filter", None)
 
-                # Tài liệu Tầng 1 mất dấu thanh vì OCR nên vector bge-m3 của chunk không còn dấu:
-                # query PHẢI được fold trước khi nhúng cho Chroma leg (BM25 không bị ảnh hưởng
-                # vì bm25_tokenize đã nhân đôi cả hai dạng token khi dựng chỉ mục).
-                # Thực nghiệm 15-10: cùng index, query có dấu → 6 chunk sai nguồn;
-                # query đã fold → chunk đúng lên hạng 1.
-                docs = self.ensemble_retriever.invoke(fold(query))
+                # V1 (27-10): query **nguyên văn** cho nhánh dense thắng `fold` trên đúng
+                # index cũ (474/700 vs 202/700, p=5,27e−55) vì fold xoá dấu câu hỏi trong
+                # khi 18,6% từ trong index vẫn có dấu — ghi chú 15-10 ("6 chunk sai nguồn")
+                # là quan sát 1 câu, không tái lập được trên 700 item. Vì vậy đường cũ
+                # (TẮT cờ) giữ nguyên từng byte, còn cờ BẬT chỉ đổi query của nhánh dense;
+                # BM25 vẫn nhận `fold` (bm25_tokenize đã nhân đôi token khi dựng chỉ mục).
+                docs = self._invoke_hybrid(query)
                 # T3: hạng thô từng nhánh cho luật 3 của tầng từ chối ngoài. Đặt SAU
                 # `invoke` chính để không ảnh hưởng `docs` (cờ TẮT thì không gọi gì).
                 if decoupled_refusal_enabled():
-                    self._collect_leg_ranks(fold(query))
+                    self._collect_leg_ranks(
+                        fold(query),
+                        query if dense_original_query_enabled() else None,
+                    )
 
                 # Fallback Query: chạy song song với câu hỏi gốc nếu được cung cấp
                 if fallback_query and fallback_query != query:
                     try:
-                        fallback_docs = self.ensemble_retriever.invoke(fold(fallback_query))
+                        fallback_docs = self._invoke_hybrid(fallback_query)
                         # Gộp và khử trùng lặp theo chunk_id
                         seen_chunk_ids = set()
                         merged_docs = []
@@ -415,8 +459,9 @@ class HybridRAGPipeline:
             except Exception as exc:
                 print(f"[HybridSearch] Lỗi truy xuất qua EnsembleRetriever ({exc}), lùi về similarity_search.")
 
-        # 2. Fallback tương thích ngược: ChromaDB similarity_search (sử dụng query đã fold để khớp tài liệu OCR mất dấu)
-        vector_query = fold(query)
+        # 2. Fallback tương thích ngược: ChromaDB similarity_search thuần vector. Đây là
+        #    nhánh dense duy nhất, nên cờ V1/PA-48a áp dụng y như nhánh Chroma trong RRF.
+        vector_query = query if dense_original_query_enabled() else fold(query)
         return self.vector_db.similarity_search(vector_query, k=k)
 
     def _merge_subquery_branches(

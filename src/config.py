@@ -27,7 +27,9 @@ Chỉ 9 module đã chuyển: contextual_header, evidence_selection, refusal_pol
 loader, vector_db, local_slm, classifier, chunking. CỐ Ý không chuyển:
 `generator/pipeline/query_normalizer/router` (đóng băng PA-26), `answer_guard` (file trọng
 tài — chữ ký `referee_fingerprint` băm byte), `evaluation` (runner đo), `reranker` (chưa
-được track). Các file đó vẫn đọc env trực tiếp; việc gom nốt nằm ở PA-44.
+được track). Các file đó vẫn đọc env trực tiếp; việc gom nốt nằm ở PA-44. Ngoại lệ duy
+nhất: `pipeline` đọc **một** cờ mới (`ENABLE_DENSE_ORIGINAL_QUERY`, PA-48a) qua
+`settings()._flag(...)`; các cờ cũ của pipeline vẫn đọc trực tiếp như trước.
 """
 
 from __future__ import annotations
@@ -74,6 +76,8 @@ TRACKED_ENV: tuple[str, ...] = (
     "CLASSIFIER_MODEL",
     # chunking
     "EMBEDDING_MODEL",
+    # pipeline (V1/PA-48a): chỉ nhánh dense dùng query nguyên văn thay vì fold
+    "ENABLE_DENSE_ORIGINAL_QUERY",
 )
 
 #: Giá trị được coi là BẬT khi dùng ngữ nghĩa `in _ON_VALUES` (contextual_header).
