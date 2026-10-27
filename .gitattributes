@@ -1,3 +1,11 @@
 # Byte-exact fixtures: snapshot trọng tài v1 (B2) — NGĂN chuyển đổi EOL của
 # core.autocrlf=true, vì chữ ký 9f1179ccab74 băm trên đúng từng byte của 3 file.
 tests/snapshots/** -text
+
+# REFEREE_FILES (PA-42): referee_fingerprint() băm BYTE THÔ, nên clone trên máy
+# core.autocrlf=true từng cho chữ ký khác (cc45972b72df thay vì 2911c69f740d).
+# Ghim nguyên byte của đúng ba tệp tạo nên chữ ký; worktree hiện tại không đổi:
+# verify.py + answer_guard.py LF, text_utils.py CRLF (hiện trạng đã băm).
+tools/loop/verify.py -text
+src/answer_guard.py -text
+src/text_utils.py -text

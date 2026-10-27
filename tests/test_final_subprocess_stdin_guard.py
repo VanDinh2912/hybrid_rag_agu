@@ -199,11 +199,11 @@ class TestHienTrangDungCuDo:
         assert "khong-co-git" not in nhan.values(), nhan
 
     def test_ghim_hien_trang_pa_26(self):
-        """verify.py + answer_guard.py CHƯA vào git; text_utils.py đã vào và sạch."""
+        """Q1 27-10: PA-42(a) đã duyệt => cả ba file dụng cụ đo đã vào git, sạch."""
         kit = _nap(KITPATH, "kit_stdin_that2")
         assert kit.git_state("src/text_utils.py") == "tracked-sach"
-        assert kit.git_state("tools/loop/verify.py") == "chua-commit"
-        assert kit.git_state("src/answer_guard.py") == "chua-commit"
+        assert kit.git_state("tools/loop/verify.py") == "tracked-sach"
+        assert kit.git_state("src/answer_guard.py") == "tracked-sach"
 
     def test_secret_scan_doc_du_file_du_oc_cua_stdin(self):
         """`tracked_files('tracked')` phải trả danh sách thật — không im lặng trả rỗng."""

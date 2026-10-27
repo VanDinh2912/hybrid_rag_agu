@@ -157,9 +157,10 @@ class TestCau2TrongTai:
         files = {f["file"]: f for f in cau2["file_dung_cu_do"]}
         assert set(files) == {"tools/loop/verify.py", "src/answer_guard.py", "src/text_utils.py"}
         assert files["src/text_utils.py"]["git"] == "tracked-sach"
-        # PA-26: hai file dụng cụ đo CHƯA vào git => không thể nói "không đổi so với HEAD".
-        assert files["tools/loop/verify.py"]["git"] == "chua-commit"
-        assert files["src/answer_guard.py"]["git"] == "chua-commit"
+        # Q1 (27-10): PA-42(a) đã được duyệt => hai file dụng cụ đo đã vào git
+        # (byte nguyên, không chuẩn hoá EOL), nên hiện trạng là "sạch so với HEAD".
+        assert files["tools/loop/verify.py"]["git"] == "tracked-sach"
+        assert files["src/answer_guard.py"]["git"] == "tracked-sach"
 
     def test_cong_tu_choi_so_hai_round_khac_chu_ky(self, cau2):
         g = cau2["cong_khoa_chu_ky"]
