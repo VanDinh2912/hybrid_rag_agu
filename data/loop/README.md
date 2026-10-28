@@ -1394,3 +1394,89 @@ kết luận; (3) hậu nghiệm, gắn nhãn rõ: danh sách ca `FAIL_FABRICATE
 không căn cứ, `answer_guard` hiện hành có chặn không — chạy trên văn bản đã lưu, 0 gọi model);
 (4) xác nhận fingerprint/pytest/`ARTIFACT_MANIFEST --check`, đỏ do container Chroma tự ghi lại thì
 ghi nguyên nhân, không sinh manifest giả xanh. Báo cáo: `tmp/r21b_report.md`. Không mục “Ngã rẽ”.
+
+
+## r21c — ĐĂNG KÝ (29-10, trước khi chạy): BẢN SAO LẶP TRÊN CÂY ĐÃ ĐÓNG GÓI
+
+**Vì sao có round này, ghi trung thực:** r21b đã chạy **COMPLETE** ngày 28-10
+(`tmp/r21b_20261028/status.json`, hai round `data/loop/rounds/r21b_A|B` 300/300, báo cáo
+`tmp/r21b_report.md`) và kết luận **"KHÔNG XÁC NHẬN"** đã công bố. Controller r21b từ chối chạy lại
+(`FileExistsError` khi `status.json`/round đã tồn tại) và quy ước làm việc **cấm chạy lại script đo
+để ghi đè artifact đã công bố** ⇒ round mới trên cây sau tái cấu trúc **không phải "r21b chạy lại"**,
+nó là một round paired **mới, tên r21c**, dùng lại đúng mẫu và đúng luật đã đăng ký.
+
+**Mục tiêu khoa học (một câu):** kiểm tra xem **việc đổi cấu trúc cây mã** (Phase 1–3 + PA-48,
+các commit `4b981b0`…`ed0fc74`) **có làm thay đổi hành vi của hai nhánh A/B trên cùng 300 câu**
+hay không. Đây là phép thử tái lập dụng cụ, không phải cơ hội sửa kết luận.
+
+**Câu bắt buộc theo lệnh 29-10 (mục 4), kèm bằng chứng:** *chỉ đổi đường dẫn neo, hành vi không đổi
+(golden, neo r11, chain dry-run đã KHỚP).* Bằng chứng chụp ngày 29-10 trong
+`tmp/r21c_20261029/preflight_check_1.json`:
+- Vùng neo vẫn là `src/**/*.py` + `tools/loop/**/*.py` và vẫn **33 tệp**, **cùng tập tên** với r21b
+  (`names_only_in_r21b = []`, `names_only_in_r21c = []`); **19 tệp đổi đường dẫn** đúng theo ánh xạ
+  mục 6.2 `docs/RESTRUCTURE_MAP.md` (`src/pipeline.py -> src/core/pipeline.py`, …);
+  **11 tệp byte-nguyên ở cùng đường dẫn**, trong đó có cả ba tệp trọng tài.
+- Ba tệp đổi byte **mà đường dẫn không đổi**: `src/generator.py`, `tools/loop/run_round.py`,
+  `tools/loop/testset.py`. Hiệu số `c8c2408..00bbd93` (bản ghi `tmp/r21c_20261029/anchor_diff_stat.txt`)
+  cho thấy chỉ có **dòng `import` trỏ tới module đã dời** và **chuỗi tài liệu kể đường dẫn**;
+  không có thay đổi logic. `tools/loop/testset.py` còn sửa một hằng số đường dẫn tới
+  `tools/train/build_training_data.py` (tệp đã dời ở Phase 1) — nằm **ngoài** đường dựng `items.jsonl`
+  của round này (round đọc `data/loop/testset_v1.jsonl` đã đóng băng).
+- Trọng tài ba tệp byte-nguyên ⇒ fingerprint giữ `2911c69f740d`; corpus 29 tệp khớp HEAD;
+  `git status` sạch trên đường chạy, 0 tệp mới trong vùng neo (bài học r21 đã được thực hiện).
+
+**Mẫu:** ĐÚNG 300 id đã đóng băng trong `tmp/r21_20261028/ids.json`; `items.jsonl` dựng lại từ
+`data/loop/testset_v1.jsonl` phải có sha256 **bằng đúng** `items_sha256` của r21 (controller assert,
+lệch là dừng). Không chọn mẫu mới, không đổi seed, không đổi thứ tự.
+
+**Cấu hình:** hai nhánh tuần tự A rồi B, `COMMON_ENV` sao y r21b (12 cờ lever = 0,
+`ENABLE_HYBRID_SEARCH=1`, `ROUTER_SOURCE_QUOTA=0`, `ROUTER_FILTER_RANK_BONUS=3`, `RESCUE_MIN_SCORE=0.8`,
+`BM25_WEIGHT=0.5`, `CHROMA_WEIGHT=0.5`, `GENERATION_CACHE=0`, model `qwen2.5:1.5b-instruct` ghim digest,
+`--top-k 6 --phase full --split all --limit 300 --strategy all --generator offline_qwen`);
+nhánh A `ENABLE_DENSE_ORIGINAL_QUERY=0`, nhánh B `=1`. Index làm việc là **bản sao** `chroma_db/`
+vào `tmp/r21c_20261029/index_A|B` (361 chunk); **digest nội dung bản sao phải bằng đúng
+`copy_digests` đã ghi ở `tmp/r21b_20261028/preflight.json`** — lệch là dừng, không chạy.
+0 lời gọi Gemini; khoá `GEMINI_API_KEY`/`GOOGLE_API_KEY`/`OLLAMA_TIMEOUT`/`CLASSIFIER_MODEL` bị gỡ
+khỏi môi trường con như r21b.
+
+**Vòng neo:** đường dẫn neo mới = 33 tệp theo cây đã đóng gói; controller chụp sha256 lúc prepare,
+đối chiếu **tên-tệp** với `tmp/r21b_20261028/preflight.json` và ghi bảng ánh xạ
+`old_path -> new_path` vào preflight của r21c. `auxiliary_hashes` của r21b ghim
+`data/normalization_pairs.json`; quy ước đó đã đổi sang `data/learning/normalization_pairs.json`
+(Phase 2c, `591d183`) và **cả hai path đều không tồn tại trên đĩa** ⇒ r21c ghim **cả hai** (giá trị
+`None` được chấp nhận và ghi rõ là absent) cùng `data/corpus/ghi_chu_hoc_them.txt`,
+`data/evaluation/benchmark_questions.json`. Watchdog hash+mtime mỗi ≤15s, lệch ⇒ `drift_log.txt` +
+`DRIFT_STOPPED` + **không kết luận, không tự chạy lại**.
+
+**LUẬT QUYẾT ĐỊNH — GIỮ NGUYÊN VĂN BẢN, không đổi sau khi thấy số:** McNemar chính xác hai phía
+**p < 0,05** VÀ **|Δ| >= 3 item** VÀ `FAIL_FABRICATED_B <= A` VÀ
+`FAIL_HALLUCINATED_ON_UNANSWERABLE_B <= A` ⇒ "xác nhận" (ghi rõ chiều); ngược lại "không xác nhận".
+CI bootstrap cụm `source_document` (10.000 lượt, seed 20261028) chỉ mô tả. Family: thăm dò.
+Luật áp dụng cho **cặp A3–B3 của chính r21c**; không nới, không thêm điều kiện, không pool số với r20.
+
+**Phân tích sau chạy (đăng ký trước):**
+1. Luật ở trên cho A3 vs B3.
+2. **Tái lập cây — so với r21b từng nhánh** (A2↔A3, B2↔B3): số verdict đổi chỗ + McNemar ghép cặp.
+   Đây là câu trả lời trực tiếp cho mục tiêu: nếu đóng gói không đổi hành vi, Δ phải nằm trong
+   nhiễu run-to-run đã đo ở r21b (nhánh B: 16 verdict đổi chỗ giữa run1 và run2).
+3. **Ba lần chạy cùng cấu hình** (A1=r21_A, A2=r21b_A, A3=r21c_A; B tương tự) — chỉ mô tả biên độ
+   nhiễu, **không** suy ra kết luận mới; nhớ rằng r21 lần 1 mang nhãn `INVALID_ANCHOR_DRIFT`.
+4. Hậu nghiệm, gắn nhãn rõ: các ca `FAIL_FABRICATED` của B3, thực thể không căn cứ, và
+   `answer_guard` hiện hành có can thiệp bước 1 trên văn bản đã lưu hay không (0 gọi model).
+5. Xác nhận dụng cụ sau chạy: fingerprint `2911c69f740d`, `pytest`, `ARTIFACT_MANIFEST --check`,
+   `evidence_pack --check`. Sau PA-48 (`ed0fc74`) manifest phải **KHỚP**; nếu đỏ thì ghi nguyên nhân
+   thật, **không sinh manifest giả xanh**.
+6. Kiểm chứng ngược: `tmp/r21b_20261028/status.json` và `tmp/r21b_report.md` phải **không đổi byte**
+   trong suốt round r21c (ghim sha vào `prelaunch_lock.json`, đối chiếu ở `check_lock`).
+
+**Phạm vi ghi:** trong lúc chạy chỉ ghi `tmp/r21c_20261029/` và `data/loop/rounds/r21c_A|B`.
+Không sửa tệp nào thuộc vùng neo trong khung giờ hai nhánh. Hạn chót cứng **29-10-2026 22:00 +07**;
+chưa xong ⇒ dừng, ghi dở, chấm chỉ-đọc phần có sẵn. Báo cáo: `tmp/r21c_report.md`
+(`tmp/r21b_report.md` giữ nguyên, không ghi đè).
+
+**Tính mù:** KHÔNG mù — đã thấy số của r21 và r21b; giá trị của round nằm ở phép thử tái lập dụng cụ.
+
+**`r22`: chưa tồn tại ở đâu cả.** Kiểm tra 29-10 (`docs/EXPERIMENTS.md`, `data/loop/README.md`,
+`docs/PA_TRIAGE.md`, `docs/archive/`) không thấy mục đăng ký hay luật nào cho "r22". Theo quy ước
+"luật phải đăng ký trước khi đo", r21c **không** tự đặt nội dung cho r22. Nếu còn cửa sổ thời gian
+sau khi r21c xong, bước tiếp theo sẽ được đăng ký thành mục riêng **trước** khi chạy.
