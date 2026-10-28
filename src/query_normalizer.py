@@ -44,8 +44,8 @@ DEFAULT_MODEL = "qwen2.5:1.5b-instruct"
 DEFAULT_HOST = "http://localhost:11434"
 DEFAULT_TIMEOUT = 90.0
 
-# Đường dẫn file Active Learning cho normalization
-NORMALIZATION_PAIRS_PATH = Path("data/normalization_pairs.json")
+# Đường dẫn file Active Learning (tệp GUI tự sinh; 28-10 dời vào `data/learning/`)
+NORMALIZATION_PAIRS_PATH = Path("data/learning/normalization_pairs.json")
 GHI_CHU_HOC_THEM_PATH = Path("data/corpus/ghi_chu_hoc_them.txt")
 BENCHMARK_QUESTIONS_PATH = Path("data/evaluation/benchmark_questions.json")
 

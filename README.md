@@ -103,7 +103,8 @@ hybrid_rag_agu/
 │   │   └── noise_floor.json # Băng nhiễu lịch sử ±3 item/100 (pha sinh)
 │   ├── training/            # Dữ liệu huấn luyện local: classifier/retrieval baseline, SFT (Alpaca),
 │   │                        #   probe bộ nhớ t4b_* — mô tả trong data/training/README.md
-│   └── normalization_pairs.json   # Cặp (câu gốc → câu chuẩn hóa) cho Qwen học — GUI tự sinh
+│   └── learning/                # Cặp (câu gốc → câu chuẩn hóa) cho Qwen học — GUI tự sinh
+│       └── normalization_pairs.json   #   (28-10: path cũ data/normalization_pairs.json)
 │
 ├── src/
 │   ├── __init__.py
@@ -445,7 +446,7 @@ Luồng lưu khi bấm "Sai" ở Tab 3:
 
 1. Ghi phản hồi vào `logs/feedback/user_feedback.json` (cả hai nhãn đúng/sai đều được ghi).
 2. Nếu điền đủ căn cứ + nguồn: bổ sung câu hỏi vào `data/evaluation/benchmark_questions.json` — lượt đánh giá sau dùng luôn.
-3. Nếu có câu chuẩn hóa (auto-fill từ kết quả, sửa được trước khi lưu): thêm cặp (câu gốc → câu chuẩn hóa) vào `data/normalization_pairs.json` — Qwen tự học ở các lượt sau (active learning).
+3. Nếu có câu chuẩn hóa (auto-fill từ kết quả, sửa được trước khi lưu): thêm cặp (câu gốc → câu chuẩn hóa) vào `data/learning/normalization_pairs.json` — Qwen tự học ở các lượt sau (active learning).
 4. Nếu tick "học ngay": ghi bài học vào `data/corpus/ghi_chu_hoc_them.txt`, rebuild ChromaDB tại chỗ và ghi log vào `logs/learning/learning_log.csv`.
 
 Chi tiết cơ chế học chuẩn hóa: `docs/guides/NORMALIZATION_ACTIVE_LEARNING.md`; sự cố thường gặp của GUI: `docs/guides/TROUBLESHOOTING_GUI.md`; ghi chú tối ưu layout Tab 3: `docs/guides/LAYOUT_OPTIMIZATION.md`.

@@ -103,7 +103,7 @@ ngữ cảnh.
 
 | Nguồn | Đường dẫn | Trạng thái hiện tại |
 |---|---|---|
-| Phản hồi người dùng | `data/normalization_pairs.json` | **không tồn tại** |
+| Phản hồi người dùng | `data/learning/normalization_pairs.json` | **không tồn tại** |
 | Ghi chú cũ | `data/corpus/ghi_chu_hoc_them.txt` | **không tồn tại** |
 | Benchmark cũ | `data/evaluation/benchmark_questions.json` | có, 15 cặp |
 

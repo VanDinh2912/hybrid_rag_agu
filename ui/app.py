@@ -50,7 +50,7 @@ FEEDBACK_PATH = ROOT_DIR / "logs" / "feedback" / "user_feedback.json"
 NOTES_PATH = ROOT_DIR / "data" / "corpus" / "ghi_chu_hoc_them.txt"
 BENCHMARK_PATH = ROOT_DIR / "data" / "evaluation" / "benchmark_questions.json"
 CORPUS_DIR = ROOT_DIR / "data" / "corpus"
-NORMALIZATION_PAIRS_PATH = ROOT_DIR / "data" / "normalization_pairs.json"
+NORMALIZATION_PAIRS_PATH = ROOT_DIR / "data" / "learning" / "normalization_pairs.json"
 
 # Hằng số giao diện
 APP_TITLE = "Hệ thống Hybrid RAG - Tra cứu Quy chế Đào tạo AGU"

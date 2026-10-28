@@ -55,6 +55,10 @@ CHECK_EXACT = {"README.md", "docs/planning/ROADMAP.md", "docs/spec/TAXONOMY.md",
 # "không tồn tại". Đây là nhóm "thư mục sinh lúc chạy" nhưng nằm trong `data/` nên CHECK_TOP không loại
 # được; ghi thành danh sách trắng CÓ LÝ DO để lần sau thêm file không tồn tại thật vẫn bị bắt.
 RUNTIME_GENERATED = {
+    "data/learning/normalization_pairs.json",
+    # Đường dẫn cũ TRƯỚC tái cấu trúc 28-10 (`data/normalization_pairs.json`): giữ lại vì
+    # tài liệu lịch sử còn trích tên đó; `ui/app.py` + `src/query_normalizer.py` chỉ đọc/ghi
+    # path mới. Không thêm tên thứ ba vào đây — mỗi mục phải là một file GUI thật tự sinh.
     "data/normalization_pairs.json",
     "data/corpus/ghi_chu_hoc_them.txt",
 }

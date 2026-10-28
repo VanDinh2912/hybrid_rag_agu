@@ -189,14 +189,36 @@ là một commit có chủ đích. PA-48 (`docs/PA_TRIAGE.md`) đăng ký hai vi
 
 Trong khi chờ, drift 36 mục **là tín hiệu có chủ đích**, không phải hỏng.
 
-### 5.4 Các mục khác của kế hoạch (giữ nguyên như đã duyệt)
+### 5.4 Các mục khác của kế hoạch
 
-1. **`data/normalization_pairs.json` → `data/learning/normalization_pairs.json`** — **CHƯA làm**:
-   đợt duyệt 28-10 giới hạn ở "indexes và cache"; mục này rủi ro thấp nhưng nằm ngoài phạm vi
-   được giao, chờ user yêu cầu tiếp.
-   - Sửa: `ui/app.py` (`NORMALIZATION_PAIRS_PATH`), docs/guides/NORMALIZATION_ACTIVE_LEARNING.md, `tools/diag/docs_consistency_check.py::RUNTIME_GENERATED`.
-   - Env: không.
-   - Rủi ro: thấp (tệp tự sinh lúc chạy; chưa từng có số công bố).
+1. **`data/normalization_pairs.json` → `data/learning/normalization_pairs.json`** — **ĐÃ làm
+   (Phase 2c, user yêu cầu 29-10)**. Phát hiện đầu tiên khi khảo sát: **không có tệp để move** —
+   `data/normalization_pairs.json` KHÔNG tồn tại trên đĩa và `git log --all --` trả rỗng (chưa
+   từng được commit ở bất kỳ nhánh nào): đây là artifact GUI tự sinh lúc người dùng bấm "Sai"
+   (Tab 3). Nên phép biến đổi đúng của mục này là **đổi quy ước đường dẫn**, không phải `git mv`.
+   - Sửa (2 hằng số + 1 allowlist + 5 tài liệu sống): `src/query_normalizer.py:48`,
+     `ui/app.py:53`, `tools/diag/docs_consistency_check.py::RUNTIME_GENERATED`,
+     `README.md` (cây thư mục + luồng Tab 3), `docs/giang_day/README.md` (cây),
+     `docs/giang_day/04_chuan_hoa_va_classifier.md` (bảng 3 nguồn),
+     `docs/guides/NORMALIZATION_ACTIVE_LEARNING.md` (4 dòng kèm thư mục).
+   - **Không đổi logic**: `ui/app.py::_save_normalization_pair` đã có
+     `NORMALIZATION_PAIRS_PATH.parent.mkdir(parents=True, exist_ok=True)` trước khi ghi ⇒ thư mục
+     `data/learning/` tự sinh ở lượt lưu đầu tiên. `load_normalization_pairs()` chỉ đọc.
+   - **Không sửa `data/learning/` trong repo**: probe dùng CWD giả lập trong `tmp/` (xem dưới),
+     vùng `data/` protected giữ nguyên 491 hash.
+   - Env: không (không có biến nào trỏ tới tệp này).
+   - `RUNTIME_GENERATED` giữ CẢ HAI tên (mới + cũ) có chủ đích: tài liệu lịch sử còn trích tên cũ
+     và `tests/test_t7_docs_consistency.py::test_file_tu_sinh_cua_gui_khong_bao_loi_nhung_ghi_ranh`
+     ghim đúng tên cũ làm ví dụ — thay một mục lấy một mục sẽ làm đỏ test mà không thêm giá trị.
+   - **Bằng chứng chức năng** `tmp/restructure/probe_2c_read.py`: cây giả lập có cặp mồi ở CẢ hai
+     path ⇒ đọc về đúng 1 cặp ở `data/learning/`, KHÔNG thấy cặp mồi ở `data/` (kỳ vọng ĐẠT, rc=0).
+     Đột biến điều khiển: quay hằng số về path cũ ⇒ probe đọc phải cặp mồi cũ và báo KHÔNG ĐẠT,
+     chứng minh probe không rỗng. Kiểm tĩnh phía ghi: hằng số `ui/app.py` mang `learning`, `mkdir(parents=True)` còn đó.
+   - **Hệ quả phải ghi (không tự xử lý)**: trên máy nào ĐÃ từng bấm lưu phản hồi, tệp
+     `data/normalization_pairs.json` cũ sẽ **ngừng được đọc** sau thay đổi này (không tự chuyển
+     vì `load_normalization_pairs()` chỉ có MỘT nguồn cho nhóm này; thêm fallback đọc hai nơi là
+     ĐỔI LOGIC ⇒ trái quy tắc vàng). Cách xử lý thủ công cho người dùng: tựMove tệp sang
+     `data/learning/` — dữ liệu không mất, chỉ cần đổi chỗ.
 2. **Đồng bộ cách gọi lệnh trong README/REPRODUCE sau khi chuyển `scripts/`** —
    đã làm một phần ở Phase 1; phần còn lại là thêm cờ `--help` vào `ingest.py`,
    `scripts/learn.py`, `ui/app.py`, `ui/demo_streamlit.py` (5 cảnh báo T7 hiện hữu)
@@ -211,6 +233,29 @@ Trong khi chờ, drift 36 mục **là tín hiệu có chủ đích**, không ph�
 | `chroma_db_vie/` | `indexes/experimental/chroma_db_vie/` | 5 | 6.232.228 | 342 chunk, chưa kích hoạt (PA-17) |
 | `chroma_db_headers_old/` | `indexes/experimental/chroma_db_headers_old/` | 5 | 5.937.316 | snapshot nền đo r13 |
 | `chroma_db/` | **không đổi** | 5 | 5.937.316 | index sản xuất, mặc định `CHROMA_PERSIST_DIR` |
+
+### 5.6 Phase 2c — `data/learning/` (29-10, user giao tiếp)
+
+Ánh xạ: `data/normalization_pairs.json` → `data/learning/normalization_pairs.json`.
+**Số tệp di chuyển = 0** (tệp chưa từng tồn tại trong git lẫn trên đĩa — xem 5.4 mục 1), nên
+bảng byte-identity của Phase 2 không dài thêm; thứ thay đổi là **quy ước đường dẫn** trong
+2 hằng số, 1 allowlist máy kiểm và 5 tài liệu sống.
+
+| Cổng | Kết quả | So baseline Phase 2b |
+|---|---|---|
+| `pytest tests -q` | **1549 passed / 5 skipped** (124,29 s) | bằng |
+| `docs_consistency_check.py` | **SẠCH LỖI** — 110 đường dẫn, 5 cảnh báo T7 cũ; ghi chú "tự sinh" nay liệt kê `data/learning/normalization_pairs.json` **và** tên cũ | bằng về số lỗi/số đường dẫn |
+| `probe_2c_read.py` | **ĐẠT** — đọc đúng 1 cặp ở `data/learning/`, mồi ở `data/` KHÔNG được đọc | mới (Phase 2c) |
+| đột biến điều khiển | quay hằng số về path cũ ⇒ probe đọc phải mồi cũ và báo KHÔNG ĐẠT (chứng minh probe không rỗng) | mới |
+| `protected_hash_check` | 491 / **ĐỔI 0** / **MẤT 0** / MOI 36 (`data/learning` **không** được tạo trong repo) | bằng |
+| `artifact_manifest --check` | cũ 158 → nay 122 / **THIẾU (36)** + ĐỔI (3) chroma — drift PA-48, không đổi vì Phase 2c không chạm scope | bằng |
+| `manifest_crosscheck` | KHỚP 38 / LỆCH 3 / THIẾU 0 | bằng |
+| `evidence_pack_check --check` | **KHỚP** (84 tệp) | bằng |
+| chain `t5a_reranker` `--dry-run` | **diff 0 dòng** | bằng |
+| `secret_scan` | SECRET_COTHAT **0**; PII 165 dòng / 9 tệp | bằng |
+| chữ ký trọng tài | **`2911c69f740d`** — `query_normalizer` không thuộc `REFEREE_FILES` | bằng |
+| `git diff --diff-filter=D` | **rỗng** | bằng |
+| `py_compile` 3 tệp sửa | rc=0; `src/query_normalizer.py` **NL 495 → 495**, `ui/app.py` **NL 1014 → 1014** (không dịch số dòng mà tài liệu khác đang trích) | — |
 
 ## 6. Phase 3 — ĐỀ XUẤT (không làm)
 
@@ -237,6 +282,13 @@ Hiện trạng giữ nguyên là an toàn nhất.
   `benchmark_chunking.py`") là **bản ghi lịch sử quyết định** — Phase 1 làm lại bước đó
   theo yêu cầu mới, không viết lại lịch sử.
 - `env_flag_audit.py` có sẵn 1 mục chết `evaluation.py` từ trước (không do tái cấu trúc).
+- **Số dòng trong tài liệu dạy học lệch 2 so với mã, CÓ TRƯỚC Phase 2c**:
+  `docs/giang_day/04_chuan_hoa_va_classifier.md` và `docs/giang_day/PHU_LUC_ham.md` ghi
+  `load_normalization_pairs` ở **dòng 96**; cây hiện tại (kể cả `HEAD` trước khi sửa) đặt nó ở
+  **dòng 98**. `data/training/sft_train*.jsonl` cũng trích "dòng 96" trong 4 dòng đã commit.
+  Phase 2c thay đúng 2 dòng ở đầu file (`# Đường dẫn…` + `NORMALIZATION_PAIRS_PATH`) ⇒ **không
+  làm dịch số dòng** (đã kiểm: `NL 495 → 495`, các mốc 98/187/236/368 giữ nguyên); không tự sửa
+  số 96 vì đề bài cấm chỉnh số liệu — ghi lại ở đây, chờ người dùng duyệt.
 
 ## 8. Rollback
 
@@ -250,7 +302,8 @@ Hiện trạng giữ nguyên là an toàn nhất.
 
 Khi người dùng xác nhận nghiệm thu: xóa `tmp/restructure/` (chứa các script tái lập
 cổng: `protected_hash_check.py`, `update_citations.py`, `phase2_baseline.py`,
-`phase2_verify.py`, `cache_hit_probe.py` + các log baseline/after).
+`phase2_verify.py`, `cache_hit_probe.py`, `phase2c_before.py`, `probe_2c_read.py`,
+`manifest_crosscheck.py` + các log baseline/after + cây giả lập `probe_2c/`).
 Không dọn `tmp/` nói chung (nhiều artifact được `docs/EXPERIMENTS.md` trích nguồn).
 
 Riêng `phase2_hashes.json` + `phase2_verify.py` + `guard_probe_phase2b.py` là **bằng chứng

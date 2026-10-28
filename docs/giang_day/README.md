@@ -60,7 +60,7 @@ hybrid_rag_agu/
 ├── data/
 │   ├── corpus/                 # PDF/DOCX/TXT quy chế, chia Tầng 1 / Tầng 2
 │   ├── evaluation/             # benchmark 100 câu v3, benchmark 50 câu chunking
-│   ├── normalization_pairs.json# cặp câu thô → câu chuẩn (active learning)
+│   ├── learning/               # cặp câu thô → câu chuẩn (active learning) — GUI tự sinh
 │   └── training/               # dataset SFT/classifier/retrieval đã sinh
 ├── src/
 │   ├── text_utils.py           # fold() — chuẩn hóa dấu dùng chung

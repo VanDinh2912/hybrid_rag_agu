@@ -28,7 +28,7 @@ Nhấn "Lưu phản hồi & Ghi nhận"
 Hệ thống thực hiện 4 việc:
   1. Lưu vào outputs/user_feedback.json
   2. Lưu vào benchmark_questions.json (nếu có citation + source)
-  3. Lưu vào data/normalization_pairs.json (cặp chuẩn hóa) ← THÊM MỚI
+  3. Lưu vào data/learning/normalization_pairs.json (cặp chuẩn hóa) ← THÊM MỚI
   4. Ghi vào ghi_chu_hoc_them.txt (nếu checkbox "Học ngay")
     ↓
 Lần test sau:
@@ -44,7 +44,7 @@ Lần test sau:
 
 ## 3 Nguồn Dữ liệu Learning
 
-### 1. `data/normalization_pairs.json` (Người dùng thêm qua GUI)
+### 1. `data/learning/normalization_pairs.json` (Người dùng thêm qua GUI)
 
 **Format:**
 ```json
@@ -333,7 +333,7 @@ def normalize_user_query(llm_client: Any, user_query: str) -> str:
 ### Kiểm tra số lượng learning pairs:
 ```bash
 # Xem file normalization_pairs.json
-cat data/normalization_pairs.json
+cat data/learning/normalization_pairs.json
 ```
 
 ### Kiểm tra log khi chạy:
@@ -347,7 +347,7 @@ cat data/normalization_pairs.json
 ### Reset learning (nếu cần):
 ```bash
 # Xóa normalization_pairs.json để bắt đầu lại
-rm data/normalization_pairs.json
+rm data/learning/normalization_pairs.json
 ```
 
 ---
