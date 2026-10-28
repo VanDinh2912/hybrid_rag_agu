@@ -7,8 +7,9 @@
 >
 > Ngày thực hiện: 28-10 → sáng 29-10-2026 · Nhánh: `chore/restructure`
 > · Commit Phase 1: `4b981b0` · Báo cáo: `35f4c53` · Phase 2 cache: `a085716`
-> · Phase 2b indexes: `83b3bc3` · Phase 2c `data/learning/`: `591d183` · **Phase 3 `src/`:
-> `876e017`** · Snapshot baseline: `24e5c9a` (trạng thái `auto/overnight` tại `c8c2408`).
+> · Phase 2b indexes: `83b3bc3` · Phase 2c `data/learning/`: `591d183` · Phase 3 `src/`:
+> `876e017` · **PA-48 re-anchor manifest: `ed0fc74`** · Snapshot baseline: `24e5c9a`
+> (trạng thái `auto/overnight` tại `c8c2408`).
 
 ---
 
@@ -168,7 +169,7 @@ sửa logic. Khảo sát xong: **cả ba đều quy về đường dẫn**, khô
 | `.gitignore` | `chroma_db*/` khớp ở **mọi cấp** ⇒ `indexes/experimental/chroma_db_*/` vẫn bị ignore (đo bằng `git check-ignore`); **không cần sửa rule**, chỉ thêm `indexes/experimental/README.md` có chủ đích (được track làm cầu tài liệu) |
 | `git diff --diff-filter=D` | **rỗng** — không xóa tệp nào |
 
-### 5.3 Việc còn treo do Phase 2 — **cần user duyệt, ĐÃ ĐĂNG KÝ PA-48**
+### 5.3 Việc còn treo do Phase 2 — **PA-48: user DUYỆT và ĐÃ ÁP 29-10 (`ed0fc74`)**
 
 `tools/diag/artifact_manifest.py::_scope_dirs()` sinh scope bằng `ROOT.glob("chroma_db*")` và
 `ROOT.glob(".ocr_cache*")` — **chỉ quét gốc repo**. Sau hai lượt move, cả hai glob đều không còn
@@ -176,18 +177,44 @@ khớp ⇒ `--check` báo thêm **THIẾU (36)** = 26 tệp cache + 10 tệp ind
 (`cũ 158 tệp/390.961.924 B → nay 122 tệp/378.288.797 B`), kèm đúng 3 mục ĐỔI chroma production
 có trước. `chroma_db/` vẫn ở gốc nên scope `chroma` của nó không đổi.
 
-**Không tự sửa glob, không regenerate manifest**: manifest là dụng cụ ghim byte, re-anchor phải
-là một commit có chủ đích. PA-48 (`docs/PA_TRIAGE.md`) đăng ký hai việc:
+**Đã làm (29-10, commit `ed0fc74`) — cả hai vế đã đăng ký:**
 
-1. Nối `.cache/ocr/*` và `indexes/experimental/*` vào `_scope_dirs()`, chạy lại
-   `artifact_manifest.py` sinh manifest mới, **đối chiếu 36 hash cũ↔mới khớp byte** bằng
-   `tmp/restructure/phase2_hashes.json` + `phase2_verify.py` trước khi commit.
-2. Thêm test ghim `PROTECTED_INDEX_DIRS` bản đường dẫn mới — test hiện tại
-   (`test_guard_tu_choi_ghi_de_index_cu`) chỉ khai báo tên cũ `chroma_db_vie`/`chroma_db`, nên
-   chốt lỏng ở layout mới **không có test nào bắt** (probe đột biến `guard_probe_phase2b.py`
-   chứng minh 2 trường hợp lọt trước khi sửa).
+1. `_scope_dirs()` nối vị trí mới bằng **cùng glob, bố mẹ mới**: `indexes/experimental/chroma_db*`
+   và `.cache/ocr/*`; glob cũ **giữ nguyên** để máy chưa dời thư mục không mất scope. Ghi manifest
+   bằng chính `artifact_manifest.py --write` (CRLF — xem lưu ý EOL dưới). **Điều kiện cứng
+   "36 hash cũ↔mới khớp byte TRƯỚC khi commit" đã kiểm và PASS** bằng
+   `tmp/restructure/pa48_crosscheck.py` (chỉ đọc, `--apply` chỉ chạy khi PASS):
+   **DI MOVE khớp byte 36/36, lệch 0, MẤT 0, MỚI 0, tổng 158 → 158 tệp / 390.961.924 B không đổi**.
+   3 mục GIỮ NGUYÊN lệch byte = đúng bộ `chroma_db/*` sản xuất có trước baseline Phase 1
+   (`manifest_check.txt`, `gate_manifest.txt`); script CHẶN nếu xuất hiện lệch thứ 4.
+   Sau re-anchor: `artifact_manifest.py --check` = **KHỚP, rc=0** (158 tệp / 390.961.924 B).
+   Manifest pre-anchor lưu nguyên byte ở `tmp/restructure/ARTIFACT_MANIFEST_pre_pa48.json`
+   (36.735 B, sha `f8f310702fd4`) ⇒ hoàn tác được, và bản mới là 37.225 B, sha `c265687e62e5`
+   (chênh +490 B = đường dẫn mới dài hơn, thuần text).
+2. Test ghim chốt đường dẫn mới trong `tests/test_t5_contextual_header.py`:
+   `test_protected_index_dirs_gim_duong_dan_layout_moi` (ghim nguyên văn tuple 4 mục + quét thư mục
+   có `chroma.sqlite3` trong `indexes/experimental/` trên đĩa, bắt trường hợp index mới chưa vào
+   chốt) và `test_guard_chan_layout_moi_va_lo_khi_chi_khai_ten_cu` (đối chứng NGAY TRONG test:
+   với `protected` chỉ mang tên cũ thì `indexes/experimental/chroma_db_vie` **lọt**, còn tuple hiện
+   hành thì chặn — chứng minh hai mục mới đang thật sự gánh trách nhiệm, không khai cho đủ).
+   Test file: **44 passed** (trước 42).
 
-Trong khi chờ, drift 36 mục **là tín hiệu có chủ đích**, không phải hỏng.
+**Hệ quả phải nói rõ (không tự ý sửa tài liệu lịch sử):**
+
+- `ARTIFACT_MANIFEST.json` là một **neo** trong `evidence_pack_check.ANCHORS`, nên re-anchor làm
+  gói bằng chứng lệch đúng 1 mục. Đã re-pin bằng chính `evidence_pack_check.py --write`:
+  83/84 tệp nguyên, chỉ dòng `ARTIFACT_MANIFEST.json` đổi (36.735→37.225 B), tổng
+  **4.041.502 → 4.041.992 B**; `--check` = KHỚP. Con số "4.041.502 B" đã công bố trong các bảng
+  cổng Phase 1–3 là **bản ghi theo thời điểm**, không sửa.
+- `protected_hash_check.py` (491 tệp: `data/` + `outputs/` + manifest) nay báo **ĐỔI 1** = chính
+  `ARTIFACT_MANIFEST.json` (thay vì ĐỔI 0 ở Phase 1–3); MẤT 0, MỚI 36 (= baseline).
+- `docs/CLEANUP_ANCHORS.md:125` ghi "ARTIFACT_MANIFEST.json = 158 file / 390.961.924 B, `--check`
+  KHỚP" — vẫn đúng về số đo, chỉ đường dẫn trong manifest đổi; tài liệu lịch sử **không sửa**.
+- Lưu ý EOL (bài học `logs/README.md`): manifest trên đĩa là **CRLF**; lần ghi đầu bằng
+  `write_bytes` cho ra LF và làm lệch 574 B, kéo tổng gói bằng chứng GIẢM (đã phát hiện và làm lại
+  bằng `--write`). Bài học: sinh artifact bằng chính công cụ của nó, không tự ghi bytes.
+
+Trong khi chờ duyệt (trạng thái cũ, đã khép): drift 36 mục **là tín hiệu có chủ đích**, không phải hỏng.
 
 ### 5.4 Các mục khác của kế hoạch
 
@@ -352,17 +379,21 @@ trong `data/training/` (18 tệp ở đó rơi vào bucket "MỚI"), nên cổng
 `f8f7eda7e3fd`→`4005ed6c51aa`), bản sao byte-gốc + sha đã ghi trong `phase3_citation_backup/`,
 và hoàn tác có kiểm sha bằng `phase3_citation_undo.py --check`.
 
-### 6.5 Việc còn treo do Phase 3 — chỉ ĐĂNG KÝ, chờ user duyệt
+### 6.5 Các mục treo do Phase 3 — trạng thái 29-10 (user chỉ đạo: đóng, không hỏi lại)
 
-- **PA-54** — đóng gói nốt `src/generator.py` (và nếu muốn, 2 tệp trọng tài). Điều kiện bắt
-  buộc: một vòng tái định chữ ký trọng tài có chủ đích (fingerprint mới + re-ghim 2 SHA-12
-  trong `test_final_council_scripts.py` + cập nhật `REFEREE_FILES` trong `verify.py`), tức là
-  đụng dụng cụ đo — theo luật hiện hành chỉ được làm SAU khi user duyệt.
-- **PA-55** — 2.230 chuỗi `src/<mod>.py` cũ trong ANSWER của `data/training/sft_*.jsonl` và
-  293 lần trong 42 tệp tài liệu lịch sử đã track (`docs/archive/*`, `dev/prompts/*`,
-  `data/loop/README.md`). Khuyến nghị: **chấp nhận như bản ghi lịch sử**, không sửa.
-- **PA-48** (treo từ Phase 2) — re-anchor manifest 36 mục + test ghim `PROTECTED_INDEX_DIRS`
-  bản path mới; Phase 3 không làm nặng thêm (`src/` không bị pin).
+- **PA-54 — ĐÓNG (ghi nhận là HƯỚNG PHÁT TRIỂN, không làm).** Đóng gói nốt `src/generator.py`
+  (và nếu muốn, 2 tệp trọng tài) đòi một vòng tái định chữ ký trọng tài có chủ đích: fingerprint
+  mới + re-ghim 2 SHA-12 trong `test_final_council_scripts.py` + cập nhật `REFEREE_FILES` trong
+  `verify.py` — tức sửa dụng cụ đo. `src/generator.py` ở lại gốc `src/` vô thời hạn; cây hiện tại
+  vẫn chạy bình thường với 4 tệp gốc. **Không đụng** `generator.py`, `answer_guard.py`,
+  `text_utils.py`, `verify.py`; chữ ký `2911c69f740d` giữ nguyên như một phần của quyết định đóng.
+- **PA-55 — ĐÓNG (BẢN GHI LỊCH SỬ).** 2.230 chuỗi `src/<mod>.py` cũ nằm trong phần ANSWER của
+  `data/training/sft_*.jsonl` và 293 lần trong 42 tệp tài liệu lịch sử đã track (`docs/archive/*`,
+  `dev/prompts/*`, `data/loop/README.md`). Đây là nội dung dữ liệu đã sinh và tài liệu đã công bố,
+  không phải citation hỏng ⇒ giữ nguyên là quyết định cuối mục; muốn "sạch" phải rebuild
+  `data/training` (đổi bộ train đã công bố, đụng benchmark) — không tự làm.
+- **PA-48 — ĐÃ ÁP 29-10 (`ed0fc74`)**, xem §5.3: `_scope_dirs()` nhận layout mới, 36/36 hash
+  khớp byte trước khi ghi, `--check` **KHỚP**, kèm 2 test ghim `PROTECTED_INDEX_DIRS`.
 
 ## 7. Mẫu thuẫn phát hiện — ghi lại, KHÔNG tự sửa
 
