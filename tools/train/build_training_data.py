@@ -15,7 +15,7 @@ chúng được ghi riêng vào *_benchmark_seed.* để người dùng chủ đ
 Nếu huấn luyện trên seed rồi đánh giá bằng benchmark v3, kết quả sẽ bị nhiễm.
 
 Cách chạy:
-    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/build_training_data.py
+    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/train/build_training_data.py
     ... --out data/training --seed 42
 """
 
@@ -36,7 +36,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -702,7 +702,7 @@ def _format_args(node: ast.AST) -> str:
 
 
 def build_code(b: DatasetBuilder) -> None:
-    py_files = sorted((ROOT / "src").glob("*.py")) + [ROOT / "main.py", ROOT / "demo_streamlit.py", ROOT / "benchmark_chunking.py", ROOT / "ingest.py", ROOT / "learn.py"]
+    py_files = sorted((ROOT / "src").glob("*.py")) + [ROOT / "main.py", ROOT / "ui" / "demo_streamlit.py", ROOT / "scripts" / "benchmark_chunking.py", ROOT / "ingest.py", ROOT / "scripts" / "learn.py"]
     for path in py_files:
         rel = path.relative_to(ROOT).as_posix()
         try:
@@ -797,7 +797,8 @@ def build_code(b: DatasetBuilder) -> None:
 def _py_files() -> list[Path]:
     files = sorted((ROOT / "src").glob("*.py"))
     files += [ROOT / name for name in (
-        "main.py", "demo_streamlit.py", "benchmark_chunking.py", "ingest.py", "learn.py")]
+        "main.py", "ui/demo_streamlit.py", "scripts/benchmark_chunking.py", "ingest.py",
+        "scripts/learn.py")]
     files += sorted((ROOT / "tests").glob("test_*.py"))
     return [p for p in files if p.exists()]
 
@@ -939,8 +940,8 @@ def parse_markdown_sections(path: Path) -> list[dict]:
 
 
 def build_docs(b: DatasetBuilder) -> None:
-    doc_files = [ROOT / "README.md", ROOT / "SYSTEM_ARCHITECTURE.md", ROOT / "TAXONOMY.md",
-                 ROOT / "ROADMAP.md", ROOT / "TROUBLESHOOTING_GUI.md"]
+    doc_files = [ROOT / "README.md", ROOT / "docs/architecture/SYSTEM_ARCHITECTURE.md", ROOT / "docs/spec/TAXONOMY.md",
+                 ROOT / "docs/planning/ROADMAP.md", ROOT / "docs/guides/TROUBLESHOOTING_GUI.md"]
     doc_files += sorted((ROOT / "docs/bao_cao").glob("*.md"))
     for path in doc_files:
         if not path.exists():
@@ -1289,10 +1290,10 @@ def build_handcrafted(b: DatasetBuilder) -> None:
         ("Chạy evaluation A/B lượt WITH", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json --with-classifier --output outputs/ab_results_with_classifier.json"),
         ("Ước lượng request trước khi chạy", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json --dry-run"),
         ("Đánh giá classifier trên benchmark", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluate_classifier.py"),
-        ("Chạy benchmark 3 chiến lược chunking", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe benchmark_chunking.py"),
-        ("Chạy demo Streamlit", "./venv/Scripts/python.exe -m streamlit run demo_streamlit.py"),
+        ("Chạy benchmark 3 chiến lược chunking", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe scripts/benchmark_chunking.py"),
+        ("Chạy demo Streamlit", "./venv/Scripts/python.exe -m streamlit run ui/demo_streamlit.py"),
         ("Chạy GUI Tkinter", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe ui/app.py"),
-        ("Chạy chế độ học (learn)", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe learn.py"),
+        ("Chạy chế độ học (learn)", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe scripts/learn.py"),
     ]
     for purpose, command in commands:
         b.add("code_commands", "silver",
@@ -1564,7 +1565,7 @@ def export(b: DatasetBuilder, out_dir: Path) -> dict:
             "benchmark": "data/evaluation/benchmark_100_questions_v3.json",
             "corpus": "chroma_db/chroma.sqlite3 (361 chunk)",
             "code": "AST docstring của src/*.py, main.py, demo_streamlit.py, tests/*.py, .env.example",
-            "docs": "README.md, SYSTEM_ARCHITECTURE.md, TAXONOMY.md, ROADMAP.md, docs/bao_cao/*.md",
+            "docs": "README.md, docs/architecture/SYSTEM_ARCHITECTURE.md, docs/spec/TAXONOMY.md, docs/planning/ROADMAP.md, docs/bao_cao/*.md",
         },
     }
     (out_dir / "manifest.json").write_text(

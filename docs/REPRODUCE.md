@@ -46,7 +46,7 @@ PYTHONIOENCODING=utf-8 venv/Scripts/python.exe ui/app.py
 ```bash
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe src/evaluation.py --use-qwen-generator --no-judge --limit 2
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe src/evaluate_classifier.py --limit 5
-PYTHONIOENCODING=utf-8 venv/Scripts/python.exe benchmark_chunking.py --generator qwen --limit 2
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe scripts/benchmark_chunking.py --generator qwen --limit 2
 ```
 
 Bỏ `--limit` để chạy đủ bộ; ghi `--output`/`--summary-output` sang tên mới nếu không muốn ghi đè

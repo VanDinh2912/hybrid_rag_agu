@@ -43,7 +43,7 @@ from src.local_slm import LocalSLM
 from src.generator import GeminiGenerator, QwenGenerator, _env_flag, is_fallback_answer, GeneratorError
 from src.pipeline import HybridRAGPipeline
 from ingest import run_ingestion
-from learn import append_note, log_learning
+from scripts.learn import append_note, log_learning
 
 # Đường dẫn lưu trữ
 FEEDBACK_PATH = ROOT_DIR / "logs" / "feedback" / "user_feedback.json"

@@ -7,7 +7,7 @@
 
 - `data/evaluation/**` (`benchmark_*.json`, `benchmark_*.md`, `reference/`,
   `manual_test_checklist.md`)
-- `src/evaluation.py`, `benchmark_chunking.py`, `logs/benchmark/`,
+- `src/evaluation.py`, `scripts/benchmark_chunking.py`, `logs/benchmark/`,
   `outputs/evaluation_results.json`, `outputs/evaluation_summary.md`
 - `src/evaluate_classifier.py`, `src/analyze_ab.py`, `logs/classifier/` (P2.3/P4.3:
   đo accuracy phân loại + phân tích A/B), `outputs/ab_results_*.json`,

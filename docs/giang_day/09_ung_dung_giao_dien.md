@@ -1,6 +1,6 @@
 # Chương 09 — Ứng dụng giao diện và thực nghiệm chunking
 
-> **Mục tiêu chương:** hiểu `demo_streamlit.py` như một **lớp trình bày** tái sử dụng
+> **Mục tiêu chương:** hiểu `ui/demo_streamlit.py` như một **lớp trình bày** tái sử dụng
 > nguyên vẹn backend; đọc được luồng dữ liệu từ sidebar → index → pipeline → 3 tab; phân
 > biệt live và replay, biết cache nào đang giữ gì; đọc đúng kết quả thực nghiệm 3 chiến
 > lược chunking và giải thích vì sao “structure-aware không thắng Hit@3”; cuối chương có
@@ -15,7 +15,7 @@ không còn là kết quả của pipeline đã đánh giá.
 
 ## 1. Vị trí của app trong đồ án
 
-`demo_streamlit.py` (1.217 dòng) mở đầu bằng một tuyên bố kiến trúc:
+`ui/demo_streamlit.py` (1.217 dòng) mở đầu bằng một tuyên bố kiến trúc:
 
 > “App CHỈ là lớp trình bày: toàn bộ chunking / truy xuất hybrid / sinh chữ / chấm điểm
 > được TÁI SỬ DỤNG từ `src/` — KHÔNG cài lại bất kỳ logic backend nào.”
@@ -99,7 +99,7 @@ logs/benchmark/chroma_structure/
 
 Thứ tự tìm index:
 
-1. `logs/benchmark/chroma_<strategy>/` — sản phẩm của `benchmark_chunking.py`;
+1. `logs/benchmark/chroma_<strategy>/` — sản phẩm của `scripts/benchmark_chunking.py`;
 2. `benchmark_logs/chroma_<strategy>/` — vị trí cũ;
 3. `logs/demo_chroma_<strategy>/` — app tự dựng trước đó;
 4. nếu không có: dựng mới từ `data/corpus` (OCR đã cache), ghi vào `logs/demo_chroma_*`.
@@ -152,7 +152,7 @@ gian tải tức thì. Nhưng nó có ba giới hạn phải nói:
 Điểm đáng khen: app gọi `citation_scores(expected, predicted)` **không truyền**
 `source_document`, kèm comment cảnh báo nhánh rút gọn chấm 1.0 cho câu không trích dẫn
 (`:450–452`). Đây là cùng lỗi đã phân tích ở chương 08, nhưng app đã tránh. Bài học: một
-hàm có nhánh nguy hiểm thì mọi call site phải được rà; `benchmark_chunking.py` cũng tránh
+hàm có nhánh nguy hiểm thì mọi call site phải được rà; `scripts/benchmark_chunking.py` cũng tránh
 (`:380–383`), chỉ `evaluation.py` còn dính.
 
 ### 3.3. Chế độ câu tự do
@@ -263,7 +263,7 @@ rank 4–6 vẫn nằm trong recall window nhưng không được sinh.
 
 ### 6.1. Thiết kế
 
-`benchmark_chunking.py` (1.051 dòng) so sánh:
+`scripts/benchmark_chunking.py` (1.051 dòng) so sánh:
 
 | Mã | Chiến lược | Cách cắt | Overlap |
 |---|---|---|---|
@@ -339,7 +339,7 @@ production 361.
 
 ### 6.5. Ba cảnh báo của thực nghiệm này
 
-1. **`refusal_rate = 0.0` không đáng tin.** `benchmark_chunking.py:413` dùng
+1. **`refusal_rate = 0.0` không đáng tin.** `scripts/benchmark_chunking.py:413` dùng
    `REFUSAL_MARKER in fold(answer)`: marker có dấu, `fold(answer)` bỏ dấu → không bao giờ
    khớp. Đây đúng là lỗi P4.1 đã sửa trong `evaluation.py` nhưng còn sót ở đây. Muốn đo
    đúng phải `fold(REFUSAL_MARKER) in fold(answer)`. Vì vậy không được nói “3 chiến lược
@@ -354,7 +354,7 @@ production 361.
 ### 6.6. Lệnh tái lập (không bắt buộc chạy)
 
 ```bash
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe benchmark_chunking.py \
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe scripts/benchmark_chunking.py \
   --generator qwen --top-k 3 --max-tokens 512 --overlap-tokens 0 \
   --strategies fixed recursive structure
 ```
@@ -566,7 +566,7 @@ trong top 3, fixed; nếu cần chunk đúng đứng sớm và trích dẫn tố
 
 **D.** Vì `REFUSAL_MARKER in fold(answer)` so marker **có dấu** với answer **đã bỏ dấu**,
 không bao giờ khớp. Đúng: `fold(REFUSAL_MARKER) in fold(answer)`. Đây là cùng lỗi đã sửa
-ở `evaluation.py` nhưng còn trong `benchmark_chunking.py`.
+ở `evaluation.py` nhưng còn trong `scripts/benchmark_chunking.py`.
 
 **E.** Ví dụ:
 `Composite = 0.3×Hit@3 + 0.2×MRR + 0.2×Faithfulness + 0.2×CitationF1 + 0.1×(1−latency_chuẩn_hóa)`.

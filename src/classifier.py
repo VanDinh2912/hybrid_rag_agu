@@ -2,7 +2,7 @@
 
 Trách nhiệm:
 - `classify_query(query)`: gán cho câu hỏi THÔ của sinh viên hai nhãn:
-  `topic` (1 trong 14 chủ đề của TAXONOMY.md hoặc None) và `question_type`
+  `topic` (1 trong 14 chủ đề của docs/spec/TAXONOMY.md hoặc None) và `question_type`
   (1 trong 4 nhãn TRA_CUU / SO_SANH / THU_TUC / NGOAI_PHAM_VI).
 - Mô hình: Qwen2.5-1.5B-Instruct chạy qua Ollama (không dùng Gemini, không tốn
   quota). Prompt few-shot được dựng CỐ ĐỊNH từ 16 câu đã chọn trong
@@ -12,7 +12,7 @@ Guardrail 3 lớp (suy giảm mềm, pipeline không bao giờ chết vì classi
 1. Lớp chính: Qwen trả JSON hợp lệ + nhãn hợp lệ → dùng luôn. `topic` được
    chuẩn hóa không dấu qua `fold()` để chịu được khác biệt dấu/hoa-thường.
 2. JSON lỗi hoặc nhãn lạ → bổ sung phần nhãn hỏng bằng bảng từ khóa theo chủ đề
-   và loại câu hỏi (dấu hiệu lấy từ TAXONOMY.md, so khớp không dấu).
+   và loại câu hỏi (dấu hiệu lấy từ docs/spec/TAXONOMY.md, so khớp không dấu).
 3. Từ khóa cũng không khớp → `topic=None`, `question_type="TRA_CUU"`. Router
    hiểu `topic=None` là không lọc, dùng cấu hình chung.
 
@@ -66,7 +66,7 @@ QUESTION_TYPES = ("TRA_CUU", "SO_SANH", "THU_TUC", "NGOAI_PHAM_VI")
 
 _TOPIC_BY_FOLDED = {fold(topic): topic for topic in TOPICS}
 
-# Mô tả ngắn/dấu hiệu từng chủ đề — lấy từ bảng A của TAXONOMY.md. Bản rút gọn
+# Mô tả ngắn/dấu hiệu từng chủ đề — lấy từ bảng A của docs/spec/TAXONOMY.md. Bản rút gọn
 # này hiệu quả hơn với Qwen 1.5B so với mô tả dài: model bám đúng từ khóa neo.
 TOPIC_RULES = {
     "chương trình đào tạo": (
@@ -109,7 +109,7 @@ TOPIC_RULES = {
     "hành chính sinh viên": "mẫu đơn, hoàn cảnh khó khăn, cơ quan xác nhận.",
 }
 
-# Thứ tự dòng 1–4 chính là thứ tự luật phân giải xung đột của TAXONOMY.md.
+# Thứ tự dòng 1–4 chính là thứ tự luật phân giải xung đột của docs/spec/TAXONOMY.md.
 QUESTION_TYPE_RULES = (
     (
         "NGOAI_PHAM_VI",
@@ -346,7 +346,7 @@ TOPIC_KEYWORDS = tuple(
     for topic, keywords in _TOPIC_KEYWORDS_RAW
 )
 
-# Cùng thứ tự luật phân giải xung đột của TAXONOMY.md: NGOAI_PHAM_VI →
+# Cùng thứ tự luật phân giải xung đột của docs/spec/TAXONOMY.md: NGOAI_PHAM_VI →
 # SO_SANH → THU_TUC → mặc định TRA_CUU.
 _QUESTION_TYPE_KEYWORDS_RAW = (
     (
@@ -552,7 +552,7 @@ def classify_query(query: str) -> dict:
     """Gán nhãn chủ đề + loại câu hỏi cho một câu hỏi THÔ.
 
     Trả về dict đúng 3 khóa:
-    - `topic`: 1 trong 14 chuỗi của TAXONOMY.md hoặc None (không xác định).
+    - `topic`: 1 trong 14 chuỗi của docs/spec/TAXONOMY.md hoặc None (không xác định).
     - `question_type`: luôn là 1 trong 4 chuỗi chuẩn.
     - `raw_response`: nguyên văn output của Qwen (rỗng nếu không gọi được model).
 

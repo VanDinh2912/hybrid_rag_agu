@@ -62,7 +62,7 @@ Vai trò: quét `data/corpus`, chunk, nhúng bge-m3, persist. Chương 02.
 | 14 | ★ `run_ingestion` | `(db_manager=None, reset=True)` | Loader → chunker → vector store; trả manager, store, số chunk. `reset=True` xóa thư mục cũ. |
 | 75 | `main` | `()` | CLI của ingest. |
 
-### 1.3. `learn.py` — test & học có trọng tài
+### 1.3. `scripts/learn.py` — test & học có trọng tài
 
 Vai trò: người dùng sửa câu trả lời sai; ghi “Điều 1001…” vào
 `data/corpus/ghi_chu_hoc_them.txt`, rebuild index, log CSV. Chương 07.
@@ -74,7 +74,7 @@ Vai trò: người dùng sửa câu trả lời sai; ghi “Điều 1001…” v
 | 60 | `log_learning` | `(question, wrong_answer, correction, chunks_before, chunks_after)` | Ghi `logs/learning/learning_log.csv`. |
 | 80 | ★ `main` | `()` | Vòng hỏi → đánh giá → sửa → rebuild. |
 
-### 1.4. `benchmark_chunking.py` — thực nghiệm 3 chiến lược
+### 1.4. `scripts/benchmark_chunking.py` — thực nghiệm 3 chiến lược
 
 Vai trò: chạy 50 câu × 3 chiến lược, mỗi chiến lược một index riêng, xuất log
 và báo cáo. Chương 02, 09.
@@ -116,7 +116,7 @@ và báo cáo. Chương 02, 09.
 ⚠ Dòng 413: `REFUSAL_MARKER in fold(answer)` — marker có dấu, answer đã fold;
 `refusal_rate` luôn 0. Đúng: `fold(REFUSAL_MARKER) in fold(answer)`.
 
-### 1.5. `demo_streamlit.py` — UI so sánh 3 chiến lược
+### 1.5. `ui/demo_streamlit.py` — UI so sánh 3 chiến lược
 
 Vai trò: lớp trình bày; không chứa logic RAG. Chương 09.
 
@@ -160,9 +160,9 @@ Vai trò: lớp trình bày; không chứa logic RAG. Chương 09.
 ⚠ Replay (502) không có `contexts`, không đo faithfulness, không khớp
 classifier/judge; chỉ demo.
 
-### 1.6. `export_architecture.py`
+### 1.6. `scripts/export_architecture.py`
 
-Script một lần: đọc `SYSTEM_ARCHITECTURE.md`, xuất `.txt` + `.docx`. Không định
+Script một lần: đọc `docs/architecture/SYSTEM_ARCHITECTURE.md`, xuất `.txt` + `.docx`. Không định
 nghĩa hàm/class; không thuộc pipeline RAG.
 
 ---
@@ -485,7 +485,7 @@ Chương 08.
 
 ## 4. Công cụ sinh dữ liệu
 
-### 4.1. `tools/build_training_data.py`
+### 4.1. `tools/train/build_training_data.py`
 
 Vai trò: sinh 3.912 mẫu / 10.619 dòng từ code, corpus, benchmark, tài liệu.
 Chương “dataset” trong README huấn luyện.
@@ -537,7 +537,7 @@ Chương “dataset” trong README huấn luyện.
 | 1473 | `export` | `(b, out_dir)` | Ghi 13 file + manifest + preview. |
 | 1592 | ★ `main` | `()` | CLI `--out`. |
 
-### 4.2. `tools/validate_training_data.py`
+### 4.2. `tools/train/validate_training_data.py`
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -574,7 +574,7 @@ Tổng: **280 test** trong 13 file (đếm `def test_`). Chạy:
 ⚠ Test không bắt được các lỗi đã biết vì:
 - `test_evaluation.py` không có ca predicted rỗng + `source_document` (lỗi L8).
 - `test_evaluation_ab.py` không kiểm tra cửa sổ `contexts` so với `top_k` (L11).
-- `benchmark_chunking.py` không có test riêng cho `is_refusal`.
+- `scripts/benchmark_chunking.py` không có test riêng cho `is_refusal`.
 - `evaluate_classifier.py` không có test repeat-check.
 
 Đây là **khoảng trống test** cần bổ sung ở P0 (chương 10).
@@ -588,11 +588,11 @@ Tổng: **280 test** trong 13 file (đếm `def test_`). Chạy:
 | `evaluation.py:471` | Generator nhận `retrieve_k`, không phải `top_k` | `pipeline.run(..., top_k=top_k)` | 08, 10 |
 | `evaluation.py:249–259` | Câu không trích dẫn được 1.0 | Xử lý `if not predicted: return 0` trước nhánh source | 08, 10 |
 | `evaluation.py:776` | Resume thiếu `top_k`/model | Thêm config hash vào meta/khóa | 08, 10 |
-| `benchmark_chunking.py:413` | `refusal_rate = 0.0` | `fold(REFUSAL_MARKER) in fold(answer)` | 09, 10 |
+| `scripts/benchmark_chunking.py:413` | `refusal_rate = 0.0` | `fold(REFUSAL_MARKER) in fold(answer)` | 09, 10 |
 | `evaluate_classifier.py:426–439` | `topic_stable == type_stable` | Hai dict `unstable` riêng | 08, 10 |
 | `evaluate_classifier.py:270` | Hard-code Qwen 85/81 | Đọc từ `results.json` hiện tại | 08 |
 | `evaluate_classifier.py:257` | Nối trùng mục khi chạy lại | Xóa mục cũ trước khi append / ghi đè | 08 |
-| `demo_streamlit.py:502` | Replay thiếu contexts/faith, bỏ qua classifier | Ghi nhãn “replay”, không so live | 09 |
+| `ui/demo_streamlit.py:502` | Replay thiếu contexts/faith, bỏ qua classifier | Ghi nhãn “replay”, không so live | 09 |
 | `evaluation.py:139` | Bỏ “Khoản” đứng riêng | Regex nhận cả `Khoản N` độc lập | 08 |
 | `faithfulness_heuristic.py:83` | Chấm hậu kiểm không cập nhật aggregate | Ghi lại aggregate sau khi chấm | 08 |
 

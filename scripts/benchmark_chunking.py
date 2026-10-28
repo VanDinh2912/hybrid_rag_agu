@@ -25,12 +25,12 @@ liệu của script này so sánh trực tiếp được với `outputs/evaluati
     chroma_<strategy>/            vector store độc lập của từng chiến lược (xóa được)
 
 CÁCH CHẠY (từ thư mục gốc dự án):
-    python benchmark_chunking.py                        # đủ 3 chiến lược × 50 câu, Gemini
-    python benchmark_chunking.py --limit 2              # smoke test nhanh 2 câu
-    python benchmark_chunking.py --strategies structure # chỉ một chiến lược
-    python benchmark_chunking.py --generator qwen       # 100% offline, không tốn quota
-    python benchmark_chunking.py --no-cache             # tắt cache để đo Latency trung thực
-    python benchmark_chunking.py --device cuda          # Colab GPU T4
+    python scripts/benchmark_chunking.py                        # đủ 3 chiến lược × 50 câu, Gemini
+    python scripts/benchmark_chunking.py --limit 2              # smoke test nhanh 2 câu
+    python scripts/benchmark_chunking.py --strategies structure # chỉ một chiến lược
+    python scripts/benchmark_chunking.py --generator qwen       # 100% offline, không tốn quota
+    python scripts/benchmark_chunking.py --no-cache             # tắt cache để đo Latency trung thực
+    python scripts/benchmark_chunking.py --device cuda          # Colab GPU T4
 
 LƯU Ý QUOTA: 50 câu × 3 chiến lược = 150 lần gọi Gemini. Free tier giới hạn theo NGÀY
 cho từng model, nên hãy chạy thử `--limit 2` trước, hoặc dùng `--generator qwen`, hoặc
@@ -58,7 +58,7 @@ from pathlib import Path
 from typing import Any, Iterator, Optional, Sequence
 
 if __package__ in (None, ""):  # cho phép chạy trực tiếp từ mọi thư mục làm việc
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dotenv import load_dotenv
 

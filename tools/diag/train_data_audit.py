@@ -2,7 +2,7 @@
 
 Dữ liệu train trong repo thuộc **hai họ** và bất biến #7 có nghĩa hơi khác nhau ở mỗi họ:
 
-* Họ LOOP (`data/training/t4b_*`, sinh từ `tools/build_sft_from_round.py`): "#7 — mỗi dòng train
+* Họ LOOP (`data/training/t4b_*`, sinh từ `tools/train/build_sft_from_round.py`): "#7 — mỗi dòng train
   phải **tự chứa** căn cứ của đáp án" + "không item test nào lọt vào train". Họ này đã có
   checker riêng (`tools/diag/check_sft_invariants.py`); ở đây chỉ gọi lại đúng hàm của nó và
   chép số, để báo cáo cuối có một chỗ duy nhất nhìn thấy cả hai họ.

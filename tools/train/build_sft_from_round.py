@@ -21,7 +21,7 @@ Bốn thứ bắt buộc, lấy từ bất biến của `data/loop/README.md`:
 
 Cách chạy:
 
-    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/build_sft_from_round.py \
+    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/train/build_sft_from_round.py \
         --rounds r5 r6 --out-root data/training/t4b_r5r6
 
 Output: `sft_train.jsonl`, `sft_holdout.jsonl`, `manifest.json` (số dòng train, số dòng bị
@@ -40,7 +40,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -271,7 +271,7 @@ def main() -> int:
     train_rows, holdout_rows, split_meta = group_split(rows, args.test_fraction, args.seed)
     manifest = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "tool": "tools/build_sft_from_round.py",
+        "tool": "tools/train/build_sft_from_round.py",
         "task_scope": "chỉ dựng dữ liệu + chi phí; chưa train (quyết định user 24-10)",
         "referee": referee_fingerprint(),
         "source_rounds": ledger["rounds"],

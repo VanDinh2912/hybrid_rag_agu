@@ -1,7 +1,7 @@
 """So sánh GHÉP CẶP hai round truy xuất trên toàn bộ 811 item — công cụ trả lời câu
 "bonus lọc mềm 3 hay 12?" (nhiệm vụ T5, 24-10).
 
-Bối cảnh: `ROADMAP.md` P5.16 ghi r1 (bonus 3) có gold@6 76,57% CAO HƠN r2 (bonus 12)
+Bối cảnh: `docs/planning/ROADMAP.md` P5.16 ghi r1 (bonus 3) có gold@6 76,57% CAO HƠN r2 (bonus 12)
 74,00%, nhưng r2 được chọn làm mặc định vì cổng r2-vs-r1 đổi chiều: bonus 12 "mua neo
 HUMAN bằng gold@6". Lý do cơ chế trong ROADMAP chỉ mới đứng trên một probe 21 item
 (`tmp/probe_bonus_regressions.py`). Script này kiểm lại lý do đó trên TOÀN BỘ cặp bất

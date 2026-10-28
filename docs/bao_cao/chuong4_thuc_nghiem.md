@@ -22,7 +22,7 @@
 
 Hai lượt chỉ khác đúng một biến `with_classifier` — thiết kế A/B một biến (mục 3.6).
 
-*Nguồn: khối `meta` của `outputs/ab_results_without_classifier.json` và `outputs/ab_results_with_classifier.json`; tham số embedding/truy xuất từ `SYSTEM_ARCHITECTURE.md` mục 2, 8 (cấu hình mặc định của repo, không ghi trong meta lượt chạy).*
+*Nguồn: khối `meta` của `outputs/ab_results_without_classifier.json` và `outputs/ab_results_with_classifier.json`; tham số embedding/truy xuất từ `docs/architecture/SYSTEM_ARCHITECTURE.md` mục 2, 8 (cấu hình mặc định của repo, không ghi trong meta lượt chạy).*
 
 ## 4.2. Kết quả bộ phân loại (đo trước khi ghép vào pipeline)
 

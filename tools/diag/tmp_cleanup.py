@@ -12,7 +12,7 @@ có cổng an toàn**, với bốn lớp chặn:
    `data/loop/diag/`, `chroma_db*`, `models/`, `data/training/`, `.git/`, `src/`, `docs/`, `tests/`,
    hoặc `../`/tuyệt đối — **bị từ chối kể cả khi có `--yes`**.
 3. **Mục được trích dẫn trong tài liệu thì không xoá được.** Một mục tên `X` coi như "được dẫn" nếu
-   chuỗi `tmp/X` xuất hiện trong `docs/**/*.md`, `ROADMAP.md`, `README.md` hoặc `data/loop/README.md`.
+   chuỗi `tmp/X` xuất hiện trong `docs/**/*.md`, `docs/planning/ROADMAP.md`, `README.md` hoặc `data/loop/README.md`.
    Đây đúng là định nghĩa đã dùng ở PA-24, nên danh sách "GIỮ" của báo cáo và của dụng cụ không lệch nhau.
 4. **Không đi theo symlink/junction ra ngoài `tmp/`.** Mọi mục là liên kết tượng trưng đều bị chặn
    (không cần biết nó trỏ vào đâu), vì `realpath` của nó có thể nằm ngoài repo.
@@ -45,7 +45,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Tên mục trong tmp/ được coi là "đang được dẫn chứng" — KHÔNG xoá, kể cả --yes.
-DOC_GLOBS = ("docs/**/*.md", "ROADMAP.md", "README.md", "data/loop/README.md")
+DOC_GLOBS = ("docs/**/*.md", "docs/planning/ROADMAP.md", "README.md", "data/loop/README.md")
 
 # Vùng bảo vệ: mọi đường dẫn tương đối với root, khớp theo tiền tố. Không nằm trong tmp/,
 # nhưng khai báo ở đây để `check_target()` chặn cả trường hợp đi lạc (qua `..`, symlink, tuyệt đối).

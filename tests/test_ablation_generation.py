@@ -98,7 +98,7 @@ class TestIsolation:
         assert before == after  # không file src/ nào bị chạm
 
     def test_load_chunks_doc_khong_ghi_src(self, tmp_path):
-        # load_chunks đọc build_training_data; bảo đảm nó không ghi vào src/ (chỉ đọc).
+        # load_chunks đọc tools/train/build_training_data; bảo đảm nó không ghi vào src/ (chỉ đọc).
         src_dir = REPO_ROOT / "src"
         before = sorted((str(p), p.stat().st_mtime_ns) for p in src_dir.rglob("*.py"))
         try:

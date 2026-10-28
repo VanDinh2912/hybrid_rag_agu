@@ -16,7 +16,7 @@ Cài đặt thêm (chưa có trong ./venv):
 
 Chạy (từ thư mục gốc repo — bắt buộc kèm flag watcher để app không chết im khi
 file watcher của Streamlit quét thư viện lớn):
-    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m streamlit run demo_streamlit.py --server.fileWatcherType none
+    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m streamlit run ui/demo_streamlit.py --server.fileWatcherType none
 
 Nguồn dữ liệu index (theo thứ tự ưu tiên cho từng chiến lược):
     1. logs/benchmark/chroma_<strategy>/     — sản phẩm của benchmark_chunking.py (vị trí mới)
@@ -34,8 +34,8 @@ import time
 from pathlib import Path
 from typing import Any, Callable
 
-if __package__ in (None, ""):  # cho phép chạy trực tiếp `streamlit run demo_streamlit.py`
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
+if __package__ in (None, ""):  # cho phép chạy trực tiếp `streamlit run ui/demo_streamlit.py`
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dotenv import load_dotenv
 
@@ -1179,7 +1179,7 @@ def main() -> None:
         payload, payload_path = load_replay_payload()
         if payload is None:
             st.caption(
-                "💡 Chưa có dữ liệu replay — chạy `python benchmark_chunking.py --generator qwen` "
+                "💡 Chưa có dữ liệu replay — chạy `python scripts/benchmark_chunking.py --generator qwen` "
                 "để tạo logs/benchmark/results_all.json rồi bật 'Chế độ demo nhanh (replay)'."
             )
         elif not sidebar["allow_replay"]:

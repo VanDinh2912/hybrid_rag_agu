@@ -105,7 +105,7 @@ HELPER_DEF_RE = re.compile(
     r"[^)]*\)[^:]*:", re.S)
 
 SCAN_DIRS = ["src", "tools"]
-SCAN_FILES = ["main.py", "demo_streamlit.py", "learn.py", "ingest.py", "evaluation.py"]
+SCAN_FILES = ["main.py", "ui/demo_streamlit.py", "scripts/learn.py", "ingest.py", "evaluation.py"]
 
 
 def _py_files() -> List[Path]:

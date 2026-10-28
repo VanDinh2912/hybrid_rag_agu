@@ -126,7 +126,7 @@ def run_ingestion(db_manager=None, reset=True):
 `main()` kiểm tra `stored == total`, nếu không thì `SystemExit`. Đây là **assertion
 toàn vẹn**: ChromaDB phải chứa đúng số chunk vừa tạo.
 
-`reset=False` dành cho `learn.py`: giữ đối tượng `VectorStoreManager` (đã nạp bge-m3)
+`reset=False` dành cho `scripts/learn.py`: giữ đối tượng `VectorStoreManager` (đã nạp bge-m3)
 và để `create_vector_store` xóa collection bên trong — tránh `rmtree` vấp file lock
 trên Windows.
 
@@ -334,9 +334,9 @@ recursive, nhờ vậy chunk thành phẩm **luôn** nằm trong mốc 512 token
 ### 5.5. Cách chạy thí nghiệm
 
 ```bash
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe benchmark_chunking.py --limit 2
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe benchmark_chunking.py --strategies structure
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe benchmark_chunking.py --generator qwen
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe scripts/benchmark_chunking.py --limit 2
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe scripts/benchmark_chunking.py --strategies structure
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe scripts/benchmark_chunking.py --generator qwen
 ```
 
 `chunk_with_strategy` là cổng duy nhất — cả benchmark và Streamlit đều gọi nó, nên

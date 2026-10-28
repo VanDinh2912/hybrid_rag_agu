@@ -3,7 +3,7 @@
 > **Mục tiêu chương:** đọc được `HybridRAGPipeline.run()` như một hợp đồng; biết mỗi
 > cờ môi trường bật/tắt tầng nào; truy vết được một câu hỏi từ `main.py` đến câu trả lời;
 > hiểu các đường suy giảm (Ollama chết, BM25 lỗi, filter rỗng, 429); và nhận ra hai
-> điểm hay bị bỏ qua: cửa sổ truy xuất khác cửa sổ sinh, và chế độ `learn.py` không
+> điểm hay bị bỏ qua: cửa sổ truy xuất khác cửa sổ sinh, và chế độ `scripts/learn.py` không
 > thực sự “học” vào retriever đang chạy.
 
 Chương 06 đã mổ xẻ tầng sinh. Chương này ghép mọi tầng lại và trả lời câu hỏi thực dụng
@@ -20,9 +20,9 @@ Repo có năm cửa vào, dùng chung lõi `HybridRAGPipeline`:
 |---|---|---|---|
 | `ingest.py` | nạp corpus → chunk → nhúng → Chroma | bge-m3 (embedding) | xóa collection cũ rồi tạo mới |
 | `main.py` | CLI hỏi đáp thật | Qwen chuẩn hóa + Gemini/Qwen sinh | mặc định Gemini |
-| `learn.py` | hỏi, người chấm, ghi bài học, rebuild | Qwen + Gemini | “học” = thêm file ghi chú |
+| `scripts/learn.py` | hỏi, người chấm, ghi bài học, rebuild | Qwen + Gemini | “học” = thêm file ghi chú |
 | `src/evaluation.py` | chạy benchmark, đo chỉ số | tùy cấu hình | chương 08 |
-| `benchmark_chunking.py` | so sánh chiến lược chunk | tokenizer, không sinh | chương 08 |
+| `scripts/benchmark_chunking.py` | so sánh chiến lược chunk | tokenizer, không sinh | chương 08 |
 | `streamlit run ui/app.py` | giao diện web | Qwen + Gemini | chương 09 |
 
 Điểm chung: tất cả đều dựng `VectorStoreManager` → `Chroma` đã persist, rồi
@@ -379,11 +379,11 @@ nhìn `[2b]` để biết classifier/router có bật; nhìn nhãn engine để 
 
 ---
 
-## 8. `learn.py`: “học” thật ra là gì?
+## 8. `scripts/learn.py`: “học” thật ra là gì?
 
 ### 8.1. Luồng
 
-`learn.py` (`:80–135`):
+`scripts/learn.py` (`:80–135`):
 
 1. Nạp Chroma; rỗng → `SystemExit`.
 2. Dựng `LocalSLM` + `HybridRAGPipeline` với `GeminiGenerator`.
@@ -430,7 +430,7 @@ collection và nhúng lại toàn bộ 361 chunk; với bge-m3 CPU, mỗi lần 
 so sánh chunk trước/sau khó hiểu. Với đồ án, chấp nhận được; với hệ thống thật, cần
 incremental indexing.
 
-Ngoài ra: `learn.py` cố định `top_k=4` (`:108`), không đọc `RAG_TOP_K`/`-k`; luôn dùng
+Ngoài ra: `scripts/learn.py` cố định `top_k=4` (`:108`), không đọc `RAG_TOP_K`/`-k`; luôn dùng
 `GeminiGenerator` (không tôn trọng `USE_QWEN_GENERATOR`), nên chạy offline sẽ tốn quota
 hoặc phải chờ fallback. `read_correction()` không bắt `EOFError`/`KeyboardInterrupt` —
 Ctrl+C giữa lúc dán sẽ thoát bằng traceback.
@@ -566,7 +566,7 @@ Vì sao `main.py` vẫn chạy được?
 kết quả chưa lọc? Nếu bạn muốn fail-closed (trả từ chối thay vì kết quả sai), sửa ở đâu
 và hệ quả với Hit@K là gì?
 
-**E. Learn mode.** Sau khi người dùng nhập đáp án đúng và `learn.py` rebuild xong, vì sao
+**E. Learn mode.** Sau khi người dùng nhập đáp án đúng và `scripts/learn.py` rebuild xong, vì sao
 câu hỏi tiếp theo có thể vẫn trả lời theo kiến thức cũ? Chỉ ra đối tượng chưa được cập
 nhật và viết ba dòng code sửa.
 
@@ -602,7 +602,7 @@ nhánh rỗng bằng `return []` hoặc ném lỗi cấu hình; khi đó generat
 `REFUSAL_TEXT`; Hit@K của các câu bị lọc oan sẽ về 0 (trung thực hơn so với việc âm thầm
 dùng kết quả sai nguồn), nhưng false refusal tăng. Cần đo cả hai.
 
-**E.** `learn.py` chỉ gán `pipeline.vector_db = vector_db` (`:131`), không cập nhật
+**E.** `scripts/learn.py` chỉ gán `pipeline.vector_db = vector_db` (`:131`), không cập nhật
 `pipeline.ensemble_retriever`. BM25 retriever vẫn giữ danh sách tài liệu cũ; Chroma
 retriever vẫn là handle cũ. Vì vậy bài học mới không được truy xuất (hoặc chỉ được qua
 nhánh Chroma nếu handle tình cờ trỏ sang collection mới). Sửa:
@@ -642,7 +642,7 @@ generator luôn ném `GeneratorError`, chạy `main` với query và assert exit
 7. `main.py` in 12/16 nguồn dưới nhãn “nguồn trích dẫn” — đó là ứng viên, không phải ngữ
    cảnh đã dùng.
 8. Lỗi một lần trong `main.py` vẫn trả exit code 0 — bug cần sửa nếu dùng automation.
-9. `learn.py` không fine-tune; nó ghi chú vào corpus rồi rebuild. Sau rebuild, retriever
+9. `scripts/learn.py` không fine-tune; nó ghi chú vào corpus rồi rebuild. Sau rebuild, retriever
    đang chạy **không** được dựng lại — câu hỏi tiếp theo có thể không thấy bài học mới.
 
 Tiếp theo: [08 — Đánh giá và thực nghiệm](08_danh_gia.md).

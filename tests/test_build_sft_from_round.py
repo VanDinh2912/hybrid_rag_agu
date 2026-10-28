@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Unit test cho `tools/build_sft_from_round.py` (T4b — chỉ dựng dữ liệu, không train).
+"""Unit test cho `tools/train/build_sft_from_round.py` (T4b — chỉ dựng dữ liệu, không train).
 
 Bốn điều phải chứng minh được bằng test, vì chúng là ràng buộc của đặc tả T4b:
 
@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.build_sft_from_round import (
+from tools.train.build_sft_from_round import (
     collect,
     group_split,
     read_items,
@@ -211,7 +211,7 @@ def test_exact_token_lengths_dung_duong_tokenize_false(pool):
 
     from transformers import PreTrainedTokenizerFast
 
-    from tools.build_sft_from_round import exact_token_lengths
+    from tools.train.build_sft_from_round import exact_token_lengths
 
     rows, _ = collect(["rfake"], pool)
     # max_length=64 cố ý: dòng giả lập chỉ vài trăm ký tự, cần ngưỡng thấp để kiểm tra

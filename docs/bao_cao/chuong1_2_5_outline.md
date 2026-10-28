@@ -17,11 +17,11 @@
 - **Đề tài mới**: bổ sung tầng phân loại câu hỏi 2 nhãn (chủ đề + loại) và router truy xuất theo lớp, đánh giá A/B có/không có tầng này.
 
 ### 1.3. Câu hỏi nghiên cứu
-(điền thẳng 3 câu hỏi từ `chuong3_kien_truc.md` mục 3.1.1 — nguồn ROADMAP.md mục 2)
+(điền thẳng 3 câu hỏi từ `chuong3_kien_truc.md` mục 3.1.1 — nguồn docs/planning/ROADMAP.md mục 2)
 
 ### 1.4. Phạm vi và đối tượng
-- Trong phạm vi: 26 văn bản quy chế học vụ AGU (3 tầng corpus), benchmark 100 câu v3, generator Qwen local/Gemini, không fine-tune embedding, không đổi vector DB. (nguồn: ROADMAP.md mục 4, 5)
-- Ngoài phạm vi: OCR chất lượng cao, mở rộng corpus ngoài học vụ, train mới embedding. (nguồn: ROADMAP.md mục 5)
+- Trong phạm vi: 26 văn bản quy chế học vụ AGU (3 tầng corpus), benchmark 100 câu v3, generator Qwen local/Gemini, không fine-tune embedding, không đổi vector DB. (nguồn: docs/planning/ROADMAP.md mục 4, 5)
+- Ngoài phạm vi: OCR chất lượng cao, mở rộng corpus ngoài học vụ, train mới embedding. (nguồn: docs/planning/ROADMAP.md mục 5)
 
 ### 1.5. Đóng góp của đề tài
 - Bộ phân loại 2 nhãn chạy offline (0 quota cloud) với guardrail suy giảm mềm.

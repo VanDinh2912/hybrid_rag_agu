@@ -29,7 +29,7 @@ Mỗi chương đều có bốn phần cố định:
 | 04 | [Chuẩn hóa & phân loại](04_chuan_hoa_va_classifier.md) | Qwen viết lại câu, guardrail, 14 chủ đề × 4 loại | 2 buổi |
 | 05 | [Router truy xuất](05_router.md) | Ánh xạ nhãn → cấu hình, lọc nguồn, A/B | 1 buổi |
 | 06 | [Generator & chống ảo giác](06_generator_va_chong_ao_giac.md) | Prompt, cache, quota, fallback, trích dẫn | 2 buổi |
-| 07 | [Pipeline đầu-cuối](07_pipeline_end_to_end.md) | `run()`, CLI, `learn.py`, xử lý lỗi | 1 buổi |
+| 07 | [Pipeline đầu-cuối](07_pipeline_end_to_end.md) | `run()`, CLI, `scripts/learn.py`, xử lý lỗi | 1 buổi |
 | 08 | [Đánh giá & thực nghiệm](08_danh_gia.md) | Hit@K, MRR, Citation, Faithfulness, A/B | 2 buổi |
 | 09 | [Ứng dụng giao diện](09_ung_dung_giao_dien.md) | Streamlit, so sánh 3 chiến lược chunking | 1 buổi |
 | 10 | [Bài học & bảo vệ](10_bai_hoc_va_ky_nang.md) | Giới hạn, thiết kế đánh đổi, Q&A hội đồng | 1 buổi |
@@ -80,9 +80,9 @@ hybrid_rag_agu/
 │   └── faithfulness_heuristic.py # chấm trung thực không cần API
 ├── main.py                     # CLI hỏi đáp
 ├── ingest.py                   # nạp corpus → ChromaDB
-├── learn.py                    # chế độ test & học có trọng tài
-├── benchmark_chunking.py       # thực nghiệm 3 chiến lược chunking
-├── demo_streamlit.py           # UI so sánh 3 chiến lược
+├── scripts/learn.py                    # chế độ test & học có trọng tài
+├── scripts/benchmark_chunking.py       # thực nghiệm 3 chiến lược chunking
+├── ui/demo_streamlit.py           # UI so sánh 3 chiến lược
 ├── tools/                      # sinh & kiểm định dataset huấn luyện
 ├── outputs/                    # kết quả đánh giá (JSON + Markdown + hình)
 └── logs/                       # log classifier, benchmark chunking
@@ -96,7 +96,7 @@ Giáo trình là **phần hiểu**; dataset là **phần luyện**. Hai thứ b�
 
 - Học chương nào, mở `data/training/preview.md` xem mẫu tương ứng (mã nguồn, corpus,
   classifier, retrieval) để thấy kiến thức vừa học được biểu diễn thành cặp hỏi–đáp.
-- Nếu fine-tune một SLM nhỏ: dùng `tools/build_training_data.py` để tái sinh sau khi
+- Nếu fine-tune một SLM nhỏ: dùng `tools/train/build_training_data.py` để tái sinh sau khi
   sửa code, **không** trộn `sft_benchmark_seed.jsonl` vào train khi vẫn dùng benchmark
   để đánh giá (rò rỉ).
 - Xem [README dataset](../../data/training/README.md) để biết schema, phân tầng
@@ -125,7 +125,7 @@ Giáo trình là **phần hiểu**; dataset là **phần luyện**. Hai thứ b�
 
 | Ký hiệu | Nghĩa |
 |---|---|
-| `P3.2`, `P4.3` | Mã giai đoạn trong kế hoạch làm đồ án (xem `ROADMAP.md`) |
+| `P3.2`, `P4.3` | Mã giai đoạn trong kế hoạch làm đồ án (xem `docs/planning/ROADMAP.md`) |
 | ✅ / ❌ | Hành vi đúng / phản ví dụ cần tránh |
 | 🔁 | Điểm có thể chạy lại để tự kiểm chứng |
 | ⚠️ | Giới hạn đã biết — phải nói khi bảo vệ |

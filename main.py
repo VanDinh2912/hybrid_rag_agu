@@ -52,7 +52,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Hybrid RAG tra cứu quy chế đào tạo AGU (Local Qwen + Gemini API). "
                     "Chạy không tham số để vào chế độ hỏi đáp tương tác; "
-                    "muốn dạy lại hệ thống thì dùng 'python learn.py'."
+                    "muốn dạy lại hệ thống thì dùng 'python scripts/learn.py'."
     )
     parser.add_argument("query", nargs="?", default=None,
                         help="Câu hỏi cần tra cứu (bỏ trống sẽ vào vòng lặp tương tác)")

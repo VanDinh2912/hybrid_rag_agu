@@ -10,7 +10,7 @@ Kiểm tra:
 - Thống kê phân bố task/quality/nhãn classifier.
 
 Cách chạy:
-    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/validate_training_data.py
+    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/train/validate_training_data.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 

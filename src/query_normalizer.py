@@ -26,7 +26,7 @@ ACTIVE LEARNING: Module hỗ trợ học từ phản hồi người dùng
 Bảo đảm chịu lỗi (fault-tolerant): khối try-except fallback trả về nguyên bản
 câu hỏi gốc nếu LLM gặp bất kỳ sự cố nào.
 
-Xem chi tiết kiến trúc: SYSTEM_ARCHITECTURE.md - Section 4.1
+Xem chi tiết kiến trúc: docs/architecture/SYSTEM_ARCHITECTURE.md - Section 4.1
 """
 
 import json
@@ -406,7 +406,7 @@ def normalize_user_query(llm_client: Any, user_query: str) -> str:
     Xem chi tiết:
         - System Prompt: NORMALIZER_SYSTEM_PROMPT (chống hallucination)
         - Learning: load_normalization_pairs(), build_few_shot_with_learning()
-        - Kiến trúc: SYSTEM_ARCHITECTURE.md - Section 4.1
+        - Kiến trúc: docs/architecture/SYSTEM_ARCHITECTURE.md - Section 4.1
     """
     if not isinstance(user_query, str):
         return str(user_query) if user_query is not None else ""

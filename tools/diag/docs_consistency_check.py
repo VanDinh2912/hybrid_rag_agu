@@ -11,10 +11,10 @@ nguồn phải tồn tại trên đĩa**. Đường dẫn được chuẩn hoá 
 snippet cuối `DECISION_LOG.md` đã dùng, nhưng lần này có test.
 
 **Mục 6 — Tài liệu chạy được.** (a) Mỗi *file* được README/ROADMAP nhắc bằng đường dẫn repo
-(`src/…`, `tools/…`, `tests/…`, `data/…`, `docs/…`, `models/…`, `outputs/…`) phải tồn tại;
+(`src/…`, `tools/…`, `scripts/…`, `tests/…`, `data/…`, `docs/…`, `models/…`, `outputs/…`) phải tồn tại;
 (b) mỗi *lệnh* trong block code trỏ tới một script của repo phải có thật, và nếu script đó dùng
 `argparse` thì `--help` phải chạy với mã 0 (đó là chế độ "in hướng dẫn, không làm gì"). Script
-không có `argparse` (vd. `ingest.py`, `learn.py`) được xếp vào nhóm **cảnh báo** chứ không phải lỗi:
+không có `argparse` (vd. `ingest.py`, `scripts/learn.py`) được xếp vào nhóm **cảnh báo** chứ không phải lỗi:
 đề bài yêu cầu "--help hoặc dry-run", nhưng thêm CLI vào các script đó là việc cần duyệt, không phải
 việc của bộ kiểm thử.
 
@@ -38,19 +38,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 DECISION_LOG = "docs/DECISION_LOG.md"
-DOC_FILES = ("README.md", "ROADMAP.md")
+DOC_FILES = ("README.md", "docs/planning/ROADMAP.md")
 
 # Tiền tố đường dẫn repo — chỉ những cái này mới bị kiểm tồn tại.
-REPO_TOP = ("src/", "tools/", "tests/", "data/", "docs/", "ui/", "models/", "outputs/", "logs/",
+REPO_TOP = ("src/", "tools/", "tests/", "data/", "docs/", "ui/", "models/", "outputs/", "logs/", "scripts/",
             "chroma_db", ".ocr_cache", "tmp/")
 
 # Nhưng **chỉ** nhóm được commit/quản lý có kỳ vọng tồn tại. `logs/`, `tmp/`, `chroma_db*`,
 # `.ocr_cache`, `.generation_cache` là thư mục **sinh ra lúc chạy** — bắt tồn tại trong bản clone
 # mới là đòi hỏi sai (và sẽ đỏ ngay trên máy chưa chạy lần nào).
-CHECK_TOP = ("src/", "tools/", "tests/", "data/", "docs/", "ui/", "models/", "outputs/")
-CHECK_EXACT = {"README.md", "ROADMAP.md", "TAXONOMY.md", "requirements.txt", ".env.example"}
+CHECK_TOP = ("src/", "tools/", "tests/", "data/", "docs/", "ui/", "models/", "outputs/", "scripts/")
+CHECK_EXACT = {"README.md", "docs/planning/ROADMAP.md", "docs/spec/TAXONOMY.md", "requirements.txt", ".env.example"}
 
-# Hai file `data/…` mà GUI/`learn.py` **tự sinh khi người dùng bấm "Sai"/"Học ngay"** — README mô tả
+# Hai file `data/…` mà GUI/`scripts/learn.py` **tự sinh khi người dùng bấm "Sai"/"Học ngay"** — README mô tả
 # luồng đó nên bắt buộc nhắc đường dẫn, kể cả khi chưa ai bấm. `docs/giang_day/04` đã ghi rõ
 # "không tồn tại". Đây là nhóm "thư mục sinh lúc chạy" nhưng nằm trong `data/` nên CHECK_TOP không loại
 # được; ghi thành danh sách trắng CÓ LÝ DO để lần sau thêm file không tồn tại thật vẫn bị bắt.

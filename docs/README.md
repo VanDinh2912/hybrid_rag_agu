@@ -1,7 +1,7 @@
 # Tài liệu dự án — chỉ mục
 
 Thư mục này chứa **tài liệu nghiên cứu và kiểm chứng** của đồ án. Điểm vào chính vẫn là
-[README.md](../README.md) (cài đặt, sử dụng) và [ROADMAP.md](../ROADMAP.md) (kế hoạch, cổng,
+[README.md](../README.md) (cài đặt, sử dụng) và [ROADMAP.md](planning/ROADMAP.md) (kế hoạch, cổng,
 lịch sử P5).
 
 | Tệp / thư mục | Nội dung | Khi nào đọc |
@@ -18,7 +18,7 @@ lịch sử P5).
 | [bao_cao/](bao_cao/) | Bản nháp chương báo cáo | Viết báo cáo |
 | [giang_day/](giang_day/) | Giáo trình/bài giảng 14 tệp | Dạy hoặc học lại pipeline |
 
-**Vì sao `bao_cao/` không nằm trong `archive/`:** `tools/build_training_data.py` đọc
+**Vì sao `bao_cao/` không nằm trong `archive/`:** `tools/train/build_training_data.py` đọc
 `docs/bao_cao/*.md` khi dựng dữ liệu huấn luyện — dời thư mục là đổi đầu vào của một dụng cụ sinh
 dữ liệu, nên giữ nguyên vị trí.
 

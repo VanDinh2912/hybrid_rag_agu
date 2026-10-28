@@ -5,19 +5,19 @@
 
 ## Phạm vi được đụng
 
-- `ui/app.py`, `TROUBLESHOOTING_GUI.md`, `LAYOUT_OPTIMIZATION.md`
-- `README.md`, `SYSTEM_ARCHITECTURE.md`, `export_architecture.py`, `logs/export/export_report.txt`,
+- `ui/app.py`, `docs/guides/TROUBLESHOOTING_GUI.md`, `docs/guides/LAYOUT_OPTIMIZATION.md`
+- `README.md`, `docs/architecture/SYSTEM_ARCHITECTURE.md`, `scripts/export_architecture.py`, `logs/export/export_report.txt`,
   `logs/feedback/user_feedback.json`
 - `tmp/` cho build trung gian (ví dụ render docx)
 
 ## Sản phẩm cuối
 
-- GUI đa tab ổn định, layout tuân theo `LAYOUT_OPTIMIZATION.md`; mọi quyết định
+- GUI đa tab ổn định, layout tuân theo `docs/guides/LAYOUT_OPTIMIZATION.md`; mọi quyết định
   layout/cơ chế phải được cập nhật vào doc tương ứng. GUI chỉ GỌI API của pipeline,
   không chứa logic nghiệp vụ
 - Docs đồng bộ với code thực tế (mô tả đúng module, flag, luồng đang tồn tại);
-  `SYSTEM_ARCHITECTURE.md` là nguồn duy nhất; `.txt`/`.docx` sinh lại khi cần bằng
-  `python export_architecture.py` — CẤM sửa tay từng file riêng lẻ
+  `docs/architecture/SYSTEM_ARCHITECTURE.md` là nguồn duy nhất; `.txt`/`.docx` sinh lại khi cần bằng
+  `python scripts/export_architecture.py` — CẤM sửa tay từng file riêng lẻ
 
 ## Vùng cấm
 
@@ -29,7 +29,7 @@
 
 - GUI khởi chạy không lỗi console; từng tab mở/render được nội dung;
   không có business logic (chunking, retrieval, generation) viết trong `ui/`
-- `export_architecture.py` chạy ra đủ 3 file, nội dung khớp nhau
+- `scripts/export_architecture.py` chạy ra đủ 3 file, nội dung khớp nhau
 - Grep: docs không mô tả module/flag/tính năng không tồn tại trong repo;
   không chứa API key hay đường dẫn máy cá nhân
 - `tmp/` đã xóa sạch

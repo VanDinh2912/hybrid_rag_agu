@@ -5,7 +5,7 @@ pypdfium2 render từng trang thành ảnh -> rapidocr-onnxruntime nhận diện
 Không phải cài phần mềm hệ thống (Tesseract/Poppler).
 
 Kết quả OCR được cache theo (đường dẫn, kích thước, mtime, dpi, ngưỡng) ra
-./.ocr_cache/ vì một lần OCR toàn bộ Tầng 1 mất ~10 phút, trong khi learn.py
+./.ocr_cache/ vì một lần OCR toàn bộ Tầng 1 mất ~10 phút, trong khi scripts/learn.py
 rebuild lại collection sau mỗi bài học.
 """
 

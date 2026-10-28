@@ -10,11 +10,16 @@ chunk nhận được), rebuild ChromaDB (không reset thư mục, tái dùng bg
 import csv
 import os
 import re
+import sys
 from datetime import datetime
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Script chạy từ gốc repo nhưng nằm ở scripts/ ⇒ tự thêm gốc dự án vào sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from ingest import run_ingestion
 from src.generator import GeminiGenerator

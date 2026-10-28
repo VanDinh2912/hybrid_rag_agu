@@ -951,7 +951,7 @@ class GeminiGenerator:
             - Prompt Rules: PROMPT_RULES (citation + soft refusal)
             - Cache: _cache_get(), _cache_put() (line 420-449)
             - Fallback: _qwen_answer() (line 478-519)
-            - Kiến trúc: SYSTEM_ARCHITECTURE.md - Section 2.5 (Logic Mệnh đề)
+            - Kiến trúc: docs/architecture/SYSTEM_ARCHITECTURE.md - Section 2.5 (Logic Mệnh đề)
         """
         if not isinstance(query, str):
             raise TypeError(f"query phải là str, nhận được {type(query).__name__}.")

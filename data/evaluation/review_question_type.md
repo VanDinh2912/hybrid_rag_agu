@@ -1,9 +1,9 @@
 # Review gán `question_type` cho 100 câu — benchmark v2
 
-> Ngày 2026-10-20 · Nguồn: `data/evaluation/benchmark_100_questions_v2.json` (v2.1) · Căn cứ: `TAXONOMY.md` v1.0 (đã duyệt ngày 2026-10-20).
+> Ngày 2026-10-20 · Nguồn: `data/evaluation/benchmark_100_questions_v2.json` (v2.1) · Căn cứ: `docs/spec/TAXONOMY.md` v1.0 (đã duyệt ngày 2026-10-20).
 > Trạng thái: **đã duyệt 2026-10-20** — bảng này là nguồn nhãn chính thức của `benchmark_100_questions_v3.json`.
 
-Nhãn được rà thủ công từng câu theo thứ tự luật C.1 → C.4 của TAXONOMY.md; không dùng đề xuất từ khóa tự động. `raw_query` trong bảng đã rút gọn để dễ đọc, bản đầy đủ nằm trong v2.
+Nhãn được rà thủ công từng câu theo thứ tự luật C.1 → C.4 của docs/spec/TAXONOMY.md; không dùng đề xuất từ khóa tự động. `raw_query` trong bảng đã rút gọn để dễ đọc, bản đầy đủ nằm trong v2.
 
 | ID | raw_query (ngắn) | question_type đề xuất | Lý do 1 dòng |
 |---|---|---|---|

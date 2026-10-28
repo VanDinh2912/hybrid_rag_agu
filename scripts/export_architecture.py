@@ -1,7 +1,7 @@
 """Script xuất tài liệu kiến trúc hệ thống sang định dạng TXT và DOCX.
 
 Sử dụng:
-    python export_architecture.py
+    python scripts/export_architecture.py
 """
 
 from docx import Document
@@ -10,11 +10,11 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from pathlib import Path
 
 # Đọc file markdown
-md_path = Path("SYSTEM_ARCHITECTURE.md")
+md_path = Path("docs", "architecture", "SYSTEM_ARCHITECTURE.md")
 md_content = md_path.read_text(encoding="utf-8")
 
 # Xuất sang TXT
-txt_path = Path("SYSTEM_ARCHITECTURE.txt")
+txt_path = Path("docs", "architecture", "SYSTEM_ARCHITECTURE.txt")
 txt_path.write_text(md_content, encoding="utf-8")
 
 # Xuất sang DOCX
@@ -83,7 +83,7 @@ while i < len(lines):
     i += 1
 
 # Lưu DOCX
-docx_path = Path("SYSTEM_ARCHITECTURE.docx")
+docx_path = Path("docs", "architecture", "SYSTEM_ARCHITECTURE.docx")
 doc.save(docx_path)
 
 # Tạo file báo cáo (nơi duy nhất được phép ghi log: logs/export/)
@@ -92,7 +92,7 @@ report_path.parent.mkdir(parents=True, exist_ok=True)
 report = f"""Export Report
 ==============
 
-Source: SYSTEM_ARCHITECTURE.md
+Source: docs/architecture/SYSTEM_ARCHITECTURE.md
 Output files:
   - TXT: {txt_path.absolute()}
   - DOCX: {docx_path.absolute()}

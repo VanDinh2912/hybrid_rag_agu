@@ -52,7 +52,8 @@ def make_repo(tmp_path: Path, *, log_rows=(GOOD_ROW,), readme="", roadmap="") ->
     header = "| ID | Ngày | Giả thuyết | Số đo quyết định | Nguồn | Trạng thái |\n|---|---|---|---|---|---|\n"
     (root / "docs" / "DECISION_LOG.md").write_text(header + "\n".join(log_rows) + "\n", encoding="utf-8")
     (root / "README.md").write_text(readme or "# Dự án\n\nXem `tools/real.py`.\n", encoding="utf-8")
-    (root / "ROADMAP.md").write_text(roadmap or "# Lộ trình\n\nDùng `src/gate_like.py`.\n", encoding="utf-8")
+    (root / "docs" / "planning").mkdir(parents=True, exist_ok=True)
+    (root / "docs" / "planning" / "ROADMAP.md").write_text(roadmap or "# Lộ trình\n\nDùng `src/gate_like.py`.\n", encoding="utf-8")
     return root
 
 

@@ -64,7 +64,7 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def load_old_chunks() -> dict[int, dict]:
-    spec = importlib.util.spec_from_file_location("btd_b1", str(ROOT / "tools" / "build_training_data.py"))
+    spec = importlib.util.spec_from_file_location("btd_b1", str(ROOT / "tools" / "train" / "build_training_data.py"))
     module = importlib.util.module_from_spec(spec)
     sys.modules["btd_b1"] = module
     spec.loader.exec_module(module)

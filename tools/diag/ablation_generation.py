@@ -99,7 +99,7 @@ def load_chunks() -> dict[int, dict]:
     """chunk_id -> chunk (nguyên văn qua build_training_data.load_chunks, cùng nguồn
     mà testset.py đã dùng để neo bằng chứng)."""
     spec = importlib.util.spec_from_file_location(
-        "btd_diag", str(ROOT / "tools" / "build_training_data.py")
+        "btd_diag", str(ROOT / "tools" / "train" / "build_training_data.py")
     )
     module = importlib.util.module_from_spec(spec)
     sys.modules["btd_diag"] = module  # dataclass trong module cần tra cứu sys.modules

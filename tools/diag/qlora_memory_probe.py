@@ -5,7 +5,7 @@
 không dataset, không checkpoint, không cập nhật trọng số nào được giữ lại. Mục tiêu là trả lời
 bằng số (đã kiểm chứng trên chính card 4 GB này) thay bằng ước lượng:
 
-* dòng SFT thật dài ~1.400 token (đo bằng tokenizer ở `tools/build_sft_from_round.py`,
+* dòng SFT thật dài ~1.400 token (đo bằng tokenizer ở `tools/train/build_sft_from_round.py`,
   median 1.439) trong khi trần `max_length` đã chốt cho GPU 4 GB là 768 — vậy cần bao nhiêu VRAM
   khi nâng trần lên 1.768?
 * bật/tắt gradient checkpointing tiết kiệm được bao nhiêu?

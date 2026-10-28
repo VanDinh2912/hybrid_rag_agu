@@ -3,7 +3,7 @@
 
 Bộ test này KHÔNG train, KHÔNG nạp model, KHÔNG gọi mạng. Nó kiểm hai lớp:
 
-* **Bộ sinh** (`tools/build_sft_from_round.py` → `triage.build_rows`): dòng giả thiếu căn cứ
+* **Bộ sinh** (`tools/train/build_sft_from_round.py` → `triage.build_rows`): dòng giả thiếu căn cứ
   phải bị loại và đếm vào `skip_sft_target_not_in_context`; item `split=test` bị chặn.
 * **Bộ kiểm** (`tools/diag/check_sft_invariants.py`): phát hiện đúng các vi phạm — kể cả
   những vi phạm bộ sinh hiện hành CÒN mắc (luật 2/N ở PA-28), nên test ghi rõ trạng thái
@@ -30,7 +30,7 @@ import pytest
 
 from src.generator import REFUSAL_TEXT
 from src.text_utils import fold
-from tools.build_sft_from_round import collect
+from tools.train.build_sft_from_round import collect
 from tools.diag.check_sft_invariants import (
     DEFAULT_ARTIFACT,
     DEFAULT_MAX_LENGTH,

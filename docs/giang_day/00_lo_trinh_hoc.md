@@ -26,7 +26,7 @@ truy vấn con.
 
 | Thực nghiệm | Câu hỏi nghiên cứu | Nơi đo |
 |---|---|---|
-| Chunking | Chia nhỏ văn bản theo Điều/Khoản có tốt hơn cắt 512 token? | `benchmark_chunking.py` |
+| Chunking | Chia nhỏ văn bản theo Điều/Khoản có tốt hơn cắt 512 token? | `scripts/benchmark_chunking.py` |
 | Phân loại | Qwen 1.5B có đủ tin để gán 14 chủ đề × 4 loại? | `src/evaluate_classifier.py` |
 | Router + tầng phụ | Bật classifier/router có làm truy xuất tốt hơn không? | A/B `--with-classifier` |
 | Chống ảo giác | Tỉ lệ từ chối đúng và trích dẫn đúng là bao nhiêu? | `src/evaluation.py` |
@@ -60,7 +60,7 @@ NGƯỜI DÙNG
 [6] Sinh câu trả lời         src/generator.py
    │  prompt grounded + cache + Gemini/Qwen + trích dẫn
    ▼
-[7] Trả kết quả              main.py / demo_streamlit.py / evaluation.py
+[7] Trả kết quả              main.py / ui/demo_streamlit.py / evaluation.py
 ```
 
 Mỗi mũi tên là một **hợp đồng dữ liệu**. Khi debug, câu hỏi đầu tiên luôn là:
@@ -75,9 +75,9 @@ Mỗi mũi tên là một **hợp đồng dữ liệu**. Khi debug, câu hỏi �
 | `python ingest.py` | Nạp corpus → chunk → nhúng → ChromaDB | Không | Có (xóa và tạo lại) |
 | `python main.py "câu hỏi"` | Hỏi–đáp thật | Có (hoặc Qwen nếu `USE_QWEN_GENERATOR=1`) | Không |
 | `python evaluation.py` | Chạy benchmark 100 câu, ghi JSON/Markdown | Có (Generator + Judge) | Không (đọc DB) |
-| `python learn.py` | Test & học có trọng tài, lưu cặp sửa | Có | Có (rebuild index) |
-| `python benchmark_chunking.py` | So sánh 3 chiến lược chunking | Có (hoặc Qwen) | Có (3 DB riêng) |
-| `streamlit run demo_streamlit.py` | UI so sánh 3 chiến lược | Tùy chọn | Có (DB demo) |
+| `python scripts/learn.py` | Test & học có trọng tài, lưu cặp sửa | Có | Có (rebuild index) |
+| `python scripts/benchmark_chunking.py` | So sánh 3 chiến lược chunking | Có (hoặc Qwen) | Có (3 DB riêng) |
+| `streamlit run ui/demo_streamlit.py` | UI so sánh 3 chiến lược | Tùy chọn | Có (DB demo) |
 
 Điểm cần nhớ: **`main.py` không index lại corpus**. Nó nối ChromaDB đã persist và chỉ
 nhúng **câu hỏi**. Nếu sửa `data/corpus/`, phải chạy lại `ingest.py`, nếu không
@@ -157,9 +157,9 @@ này thường ghi luôn *lý do thiết kế* và *số liệu thực nghiệm*
 | Tài liệu | Dùng khi |
 |---|---|
 | `README.md` (gốc) | Cài đặt, lệnh chạy, tính năng |
-| `SYSTEM_ARCHITECTURE.md` | Sơ đồ kiến trúc chi tiết, công thức |
-| `TAXONOMY.md` | 14 chủ đề, 4 loại câu hỏi, luật phân giải |
-| `ROADMAP.md` | Mã P1–P4 tương ứng giai đoạn nào |
+| `docs/architecture/SYSTEM_ARCHITECTURE.md` | Sơ đồ kiến trúc chi tiết, công thức |
+| `docs/spec/TAXONOMY.md` | 14 chủ đề, 4 loại câu hỏi, luật phân giải |
+| `docs/planning/ROADMAP.md` | Mã P1–P4 tương ứng giai đoạn nào |
 | `docs/BAO_CAO_*.md` | Bản báo cáo học thuật, số liệu gốc |
 | `data/training/README.md` | Dataset huấn luyện sinh từ repo |
 | `outputs/ab_comparison.md` | Bảng A/B — nguồn của mọi con số “tăng bao nhiêu” |

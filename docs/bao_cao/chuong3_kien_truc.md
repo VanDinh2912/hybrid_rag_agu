@@ -1,8 +1,8 @@
 # Chương 3 — Kiến trúc hệ thống Hybrid RAG phân loại câu hỏi
 
-> Bản nháp chương báo cáo (P5.3). Sơ đồ và đặc tả chép từ `SYSTEM_ARCHITECTURE.md`
-> (đã duyệt cổng P5.2); taxonomy từ `TAXONOMY.md` (cổng P1.1); tên đề tài và phạm
-> vi từ `ROADMAP.md` (cổng P0.1). Mỗi phần kèm ghi chú nguồn; không có số liệu tự sinh.
+> Bản nháp chương báo cáo (P5.3). Sơ đồ và đặc tả chép từ `docs/architecture/SYSTEM_ARCHITECTURE.md`
+> (đã duyệt cổng P5.2); taxonomy từ `docs/spec/TAXONOMY.md` (cổng P1.1); tên đề tài và phạm
+> vi từ `docs/planning/ROADMAP.md` (cổng P0.1). Mỗi phần kèm ghi chú nguồn; không có số liệu tự sinh.
 
 ## 3.1. Đề tài và hướng làm mới
 
@@ -15,7 +15,7 @@ Tên đề tài: **"Ứng dụng kiến trúc RAG phân loại câu hỏi và h�
 
 Toàn bộ bổ sung nằm sau một công tắc an toàn `ENABLE_CLASSIFIER`: khi `0`, pipeline chạy y hệt hành vi cũ từng bước; khi `1`, tầng phân loại + router + tách truy vấn con + prompt biến thể được kích hoạt.
 
-*Nguồn: ROADMAP.md mục 1, mục 4.*
+*Nguồn: docs/planning/ROADMAP.md mục 1, mục 4.*
 
 ### 3.1.1. Ba câu hỏi nghiên cứu
 
@@ -23,7 +23,7 @@ Toàn bộ bổ sung nằm sau một công tắc an toàn `ENABLE_CLASSIFIER`: k
 2. Router truy xuất theo lớp câu hỏi cải thiện Hit@K/MRR ở những nhóm câu nào so với cấu hình truy xuất chung?
 3. Bật tầng phân loại có tốt hơn tắt trên tổng thể hay không, và có làm tụt chất lượng ở nhóm câu nào không?
 
-*Nguồn: ROADMAP.md mục 2.*
+*Nguồn: docs/planning/ROADMAP.md mục 2.*
 
 ## 3.2. Kiến trúc 6 tầng
 
@@ -86,7 +86,7 @@ Luồng xử lý một câu hỏi khi `ENABLE_CLASSIFIER=1` (khớp thứ tự t
             CÂU TRẢ LỜI CÓ TRÍCH DẪN (Điều X, Khoản Y — Văn bản)
 ```
 
-*Sơ đồ đầy đủ (kèm ví dụ minh họa từng tầng) xem `SYSTEM_ARCHITECTURE.md` mục 5; đặc tả chi tiết tầng phân loại/router ở mục 6 cùng file.*
+*Sơ đồ đầy đủ (kèm ví dụ minh họa từng tầng) xem `docs/architecture/SYSTEM_ARCHITECTURE.md` mục 5; đặc tả chi tiết tầng phân loại/router ở mục 6 cùng file.*
 
 ## 3.3. Taxonomy: 14 chủ đề + 4 loại câu hỏi
 
@@ -110,7 +110,7 @@ Luồng xử lý một câu hỏi khi `ENABLE_CLASSIFIER=1` (khớp thứ tự t
 | hành chính sinh viên | Mẫu đơn xác nhận hoàn cảnh khó khăn, thẩm quyền xác nhận. | 1 |
 | **Tổng** | | **100** |
 
-*Nguồn: TAXONOMY.md mục A (đếm từ `benchmark_100_questions_v2.json`); phân bố giữ nguyên ở benchmark v3.*
+*Nguồn: docs/spec/TAXONOMY.md mục A (đếm từ `benchmark_100_questions_v2.json`); phân bố giữ nguyên ở benchmark v3.*
 
 ### 3.3.2. 4 loại câu hỏi (`question_type`)
 
@@ -132,7 +132,7 @@ Thứ tự xét cố định, dừng ở điều kiện đầu tiên thỏa:
 
 Chú giải "ghép nhiều nơi": tính khi cần đối chiếu ≥ 2 Điều/Khoản, ≥ 2 văn bản, hoặc nhiều mốc/đối tượng. **Không** tính việc liệt kê nhiều thuộc tính của cùng một đối tượng (mã môn + tín chỉ + học kỳ của một môn) — trường hợp đó là `TRA_CUU`.
 
-*Nguồn: TAXONOMY.md mục B, C, D.*
+*Nguồn: docs/spec/TAXONOMY.md mục B, C, D.*
 
 ## 3.4. Thiết kế bộ phân loại (classifier)
 
@@ -146,14 +146,14 @@ Module `src/classifier.py`, dùng Qwen2.5-1.5B-Instruct qua Ollama (không dùng
 Lớp 1: Qwen trả JSON hợp lệ + nhãn chuẩn → dùng luôn
        (topic chuẩn hóa không dấu qua fold(), chịu khác biệt dấu/hoa-thường)
 Lớp 2: JSON lỗi hoặc nhãn lạ → bổ sung phần nhãn hỏng bằng bảng từ khóa
-       (dấu hiệu theo TAXONOMY.md; từ khóa neo đặc thù xét trước từ khóa chung)
+       (dấu hiệu theo docs/spec/TAXONOMY.md; từ khóa neo đặc thù xét trước từ khóa chung)
 Lớp 3: từ khóa cũng không khớp → topic=None, question_type="TRA_CUU"
 Ollama chết / timeout → trả thẳng kết quả lớp 3 kèm log cảnh báo
 ```
 
 few-shot đóng băng làm phiên bản v1 — không tinh chỉnh thêm trên chính bộ 100 câu đo để tránh overfit.
 
-*Nguồn: `src/classifier.py` (docstring module + hằng số FEW_SHOT_IDS); đặc tả `SYSTEM_ARCHITECTURE.md` mục 6.1.*
+*Nguồn: `src/classifier.py` (docstring module + hằng số FEW_SHOT_IDS); đặc tả `docs/architecture/SYSTEM_ARCHITECTURE.md` mục 6.1.*
 
 ## 3.5. Thiết kế router truy xuất theo lớp
 
@@ -172,7 +172,7 @@ Module `src/router.py` — hàm thuần `get_retrieval_config(labels, base)`, kh
 
 **Bảng lọc nguồn theo chủ đề (`TOPIC_SOURCE_FILTER`)**: chỉ chủ đề có ≥ 5 câu trong benchmark VÀ ≥ 80% số câu in-corpus nằm gọn trong ≤ 2 nguồn mới được lọc — thiết kế phòng thủ vì lọc hẹp làm rơi căn cứ nằm ở văn bản phụ. Đạt ngưỡng: 8/14 chủ đề; 6 chủ đề còn lại (n = 1–3 câu) cố ý không lọc, suy giảm về cấu hình chung.
 
-*Nguồn: `src/router.py` (docstring module + hằng số); đặc tả `SYSTEM_ARCHITECTURE.md` mục 6.2.*
+*Nguồn: `src/router.py` (docstring module + hằng số); đặc tả `docs/architecture/SYSTEM_ARCHITECTURE.md` mục 6.2.*
 
 ## 3.6. Thiết kế thí nghiệm A/B
 
@@ -190,4 +190,4 @@ Lượt WITH đổi duy nhất hành vi ở 3 điểm (tất cả đều do tầ
 
 Do cùng generator, cùng benchmark, cùng tham số, chênh lệch giữa hai lượt phản ánh đúng **gói thay đổi** của tầng phân loại + router, **không phải đóng góp riêng của từng thành phần**: lượt WITH bật đồng thời chọn tham số, thu hẹp nguồn, tách truy vấn con và prompt theo loại. Phép đo tách riêng trên vòng 811 item (V2, 27-10) cho thấy thu hẹp nguồn dạng **mềm** làm **mất 18 item** gold@6 so với all-off (518 vs 536; CI cụm [−4,62; −0,69] điểm %, p=2,77e−4) và chậm 2,76 s so với 0,18 s/item, còn dạng **cứng** (r0) chỉ đạt 363/700. Vì vậy kết quả A/B dưới đây là của cả gói, không dùng để biện minh cho lọc nguồn. Giám khảo Gemini tắt ở cả hai lượt (kịch bản offline 0 quota), nên cột Faithfulness là **heuristic local** — không so sánh trực tiếp với baseline Gemini cũ, nhưng A/B nội bộ vẫn công bằng vì hai lượt dùng cùng công thức chấm.
 
-*Nguồn: `outputs/ab_results_without_classifier.json` + `outputs/ab_results_with_classifier.json` → khối `meta` (hai lượt chỉ khác `with_classifier`); ROADMAP.md mục 4.*
+*Nguồn: `outputs/ab_results_without_classifier.json` + `outputs/ab_results_with_classifier.json` → khối `meta` (hai lượt chỉ khác `with_classifier`); docs/planning/ROADMAP.md mục 4.*

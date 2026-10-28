@@ -79,7 +79,7 @@ def main():
 
     if stored == total:
         print(f"\nTHÀNH CÔNG: {stored}/{total} chunks đã lưu tại '{db_manager.persist_directory}'.")
-        print("Chạy 'python main.py' để hỏi - đáp (chạy thực) hoặc 'python learn.py' để test & học.")
+        print("Chạy 'python main.py' để hỏi - đáp (chạy thực) hoặc 'python scripts/learn.py' để test & học.")
     else:
         raise SystemExit(f"LỖI: ChromaDB chứa {stored} chunks, kỳ vọng {total}.")
 

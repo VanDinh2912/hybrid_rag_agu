@@ -1,11 +1,11 @@
-"""P5.1 — khối hiển thị "🏷️ Phân loại câu hỏi" của demo_streamlit.py.
+"""P5.1 — khối hiển thị "🏷️ Phân loại câu hỏi" của ui/demo_streamlit.py.
 
-Thuần offline: chỉ test hàm format thuần; import demo_streamlit không chạy app.
+Thuần offline: chỉ test hàm format thuần; import ui.demo_streamlit không chạy app.
 """
 
 from __future__ import annotations
 
-from demo_streamlit import format_classification_lines
+from ui.demo_streamlit import format_classification_lines
 
 
 def test_labels_none_live_shows_dash_only():

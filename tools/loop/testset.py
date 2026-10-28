@@ -51,7 +51,7 @@ RANDOM_STATE = 20261023
 
 def load_builder_module():
     spec = importlib.util.spec_from_file_location(
-        "btd", str(ROOT / "tools" / "build_training_data.py")
+        "btd", str(ROOT / "tools" / "train" / "build_training_data.py")
     )
     module = importlib.util.module_from_spec(spec)
     sys.modules["btd"] = module

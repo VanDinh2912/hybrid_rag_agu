@@ -262,7 +262,7 @@ cũng có hai nhà cung cấp.
 | Hạng mục | Giá trị | Nguồn |
 |---|---|---|
 | Tổng chunk đã index | 361 (Tầng 1: 234, Tầng 2: 50, bổ sung: 77) | `chroma_db/` |
-| Chunk còn đủ dấu (dùng được cho sinh văn bản) | 62/361 | `tools/build_training_data.py` |
+| Chunk còn đủ dấu (dùng được cho sinh văn bản) | 62/361 | `tools/train/build_training_data.py` |
 | Benchmark đánh giá | 100 câu v3 | `data/evaluation/` |
 | Phân bố question_type v3 | 87 TRA_CUU / 5 SO_SANH / 5 THU_TUC / 3 NGOAI_PHAM_VI | benchmark |
 | Chủ đề | 14 | `src/classifier.py:48` |

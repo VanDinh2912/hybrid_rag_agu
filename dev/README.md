@@ -7,9 +7,11 @@
 
 Đường dẫn cũ trong tài liệu lịch sử (đặc biệt `dev/prompts/archive/**`) được giữ nguyên văn —
 đó là bản ghi nhiệm vụ đã chạy, không phải hướng dẫn hiện hành. Khi dẫn lại, dùng đường dẫn mới
-trong `README.md` / `ROADMAP.md`.
+trong `README.md` / `docs/planning/ROADMAP.md`.
 
 `SYSTEM_ARCHITECTURE.txt`/`.docx` không còn trong kho: sinh lại bằng
-`python export_architecture.py` khi cần nộp kèm. Hai script `learn.py` và
-`benchmark_chunking.py` **vẫn ở thư mục gốc** — phương án chuyển vào `tools/` bị chặn bởi
-bất biến #7 trên dữ liệu train (74 dòng code-QA trích theo đường dẫn gốc), xem PA-43.
+`python scripts/export_architecture.py` (ghi vào `docs/architecture/`) khi cần nộp kèm. Hai script
+`scripts/learn.py` và `scripts/benchmark_chunking.py` được chuyển xuống `scripts/` trong đợt tái cấu
+trúc 28-10 (ánh xạ cũ → mới: `docs/RESTRUCTURE_MAP.md`). Lưu ý PA-43: 74 dòng code-QA trong dữ liệu
+train cũ trích theo **đường dẫn gốc thời điểm đó**; dữ liệu đã sinh không đổi, nhưng mọi lượt tái sinh
+data-train sau này phải map đường dẫn nếu không muốn lệch bất biến #7.

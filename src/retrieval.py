@@ -15,15 +15,15 @@ Vai trò trong kiến trúc Hybrid RAG:
 Thuật toán liên quan:
 - BM25 (Lexical Search): Tìm kiếm từ khóa chính xác dựa trên TF-IDF
   Công thức: score(D, Q) = Σ IDF(qi) * (f(qi, D) * (k1 + 1)) / (f(qi, D) + k1 * (1 - b + b * |D| / avgdl))
-  Xem chi tiết: SYSTEM_ARCHITECTURE.md - Section 2.1
+  Xem chi tiết: docs/architecture/SYSTEM_ARCHITECTURE.md - Section 2.1
 
 - BGE-M3 (Vector Search): Embedding đa ngôn ngữ với Cosine Similarity
   Công thức: similarity(q, d) = (q · d) / (||q|| * ||d||)
-  Xem chi tiết: SYSTEM_ARCHITECTURE.md - Section 2.2
+  Xem chi tiết: docs/architecture/SYSTEM_ARCHITECTURE.md - Section 2.2
 
 - RRF (Reciprocal Rank Fusion): Dung hợp kết quả BM25 + ChromaDB
   Công thức: RRF_score(d) = Σ (k / (rank_i(d) + k)), với k = 60
-  Xem chi tiết: SYSTEM_ARCHITECTURE.md - Section 2.3
+  Xem chi tiết: docs/architecture/SYSTEM_ARCHITECTURE.md - Section 2.3
 """
 
 import re
@@ -111,7 +111,7 @@ def expand_query_with_synonyms(normalized_query: str) -> str:
 
     Xem chi tiết:
         - Từ điển: SYNONYM_DICTIONARY (gần 50 cặp ánh xạ)
-        - Kiến trúc: SYSTEM_ARCHITECTURE.md - Section 2.3 (RRF)
+        - Kiến trúc: docs/architecture/SYSTEM_ARCHITECTURE.md - Section 2.3 (RRF)
     """
     if not isinstance(normalized_query, str):
         return "" if normalized_query is None else str(normalized_query)

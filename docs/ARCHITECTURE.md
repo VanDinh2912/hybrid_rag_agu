@@ -31,7 +31,7 @@ Hai cơ chế xuyên suốt: `fold()` bỏ dấu thanh dùng chung cho truy xu�
 | Cấu hình | `src/config.py` | điểm đọc env đã gom cho 9 module, cache theo ảnh chụp env |
 | Đánh giá tĩnh | `src/evaluation.py`, `src/evaluate_classifier.py`, `src/analyze_ab.py` | Hit@K/MRR, Citation, Faithfulness, accuracy classifier, A/B |
 | Vòng lặp đo | `tools/loop/` | testset 811 item, trọng tài deterministic, cổng, quy lỗi theo tầng |
-| Giao diện | `main.py`, `ui/app.py`, `demo_streamlit.py` | CLI, GUI Tkinter 3 tab, demo so sánh 3 chiến lược |
+| Giao diện | `main.py`, `ui/app.py`, `ui/demo_streamlit.py` | CLI, GUI Tkinter 3 tab, demo so sánh 3 chiến lược |
 
 ## Hai đường đo
 
@@ -85,7 +85,7 @@ người đọc không phải phát hiện lại; mọi đề xuất sửa đi q
 ### 1. Mã đánh giá nằm trong `src/`, cạnh mã sản xuất
 
 `src/evaluation.py` (1.184 dòng), `src/evaluate_classifier.py`, `src/analyze_ab.py` là thư viện:
-`benchmark_chunking.py`, `demo_streamlit.py` và các test import trực tiếp. Chúng cũng là **nguồn
+`scripts/benchmark_chunking.py`, `ui/demo_streamlit.py` và các test import trực tiếp. Chúng cũng là **nguồn
 của dòng train**: `data/training/sft_train.jsonl` có 80 dòng và `sft_val.jsonl` có 3 dòng mang
 `metadata.file` trỏ đúng ba tệp này (55 + 20 + 5 và 2 + 1). Dời sang `tools/` làm máy kiểm dữ liệu
 train báo trỏ hụt — đúng cơ chế đã khiến bước con B2 bị cắt (PA-43).

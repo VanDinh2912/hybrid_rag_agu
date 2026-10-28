@@ -72,7 +72,7 @@ Mức độ: **C** = cao (ảnh hưởng kết luận hoặc trải nghiệm), *
 | L10 | Hit@K đo **mức tài liệu**, không phải mức chunk/đáp án | `evaluation.py` + ví dụ Q02 | C | “Hit@3 77% không có nghĩa 77% câu trả lời đúng.” |
 | L11 | Evaluation truyền `retrieve_k` vào `top_k` của pipeline | `evaluation.py:471` | C | “Với `-k 4`, generator vẫn nhận 6 chunk; Hit@4 chỉ xét 4 đầu của cửa sổ 12. Cửa sổ thực khác khai báo.” |
 | L12 | Resume thiếu khóa `top_k`, generator, model | `load_resumable_entries` | T | “Chạy lại với cấu hình khác có thể tái dùng entry cũ — phải xóa output hoặc sửa khóa.” |
-| L13 | `benchmark_chunking.py` so marker có dấu với answer đã fold | dòng 413 | T | “`refusal_rate = 0.0` không dùng được; sửa `fold(REFUSAL_MARKER)`.” |
+| L13 | `scripts/benchmark_chunking.py` so marker có dấu với answer đã fold | dòng 413 | T | “`refusal_rate = 0.0` không dùng được; sửa `fold(REFUSAL_MARKER)`.” |
 | L14 | Repeat-check classifier gộp chung topic/type vào một dict | `evaluate_classifier.py` | B | “Hai cột ‘ổn định’ luôn bằng nhau; không phải bằng chứng độc lập.” |
 | L15 | kNN là leave-one-out trên chính 100 câu | `run_embedding_baseline` | T | “Chỉ là baseline tham khảo, không phải train/test sạch.” |
 | L16 | Latency 2.30s → 7.79s có cache, đo trên CPU | A/B meta + log | T | “Chênh lệch phản ánh chi phí classifier/subquery, không phải SLA production.” |
@@ -297,7 +297,7 @@ docstring, tên biến hay báo cáo cũ.
 ### Bài học 2 — Một phép so khớp, một nguồn chân lý
 
 **Chuyện đã xảy ra:** `fold()` được dùng ở retrieval, nhưng
-`benchmark_chunking.py` lại so `REFUSAL_MARKER` có dấu với `answer` đã bỏ dấu.
+`scripts/benchmark_chunking.py` lại so `REFUSAL_MARKER` có dấu với `answer` đã bỏ dấu.
 Kết quả: `refusal_rate = 0.0` dù có câu từ chối.
 
 **Quy tắc:** mọi so khớp văn bản tiếng Việt đi qua `fold()` ở **cả hai phía**.
@@ -711,7 +711,7 @@ Bốn số phải nhớ: **97, 77,3, 10,1, 50,5**.
 |---|---|---|---|---|
 | P0 | Sửa `citation_scores` (nhánh rỗng) + extractor Điều/Khoản | Mọi so sánh citation đang sai | 0,5–1 ngày | Unit test câu rỗng → 0; tính lại 32 câu |
 | P0 | Sửa `evaluate_question` truyền `top_k` | Cửa sổ sinh khác khai báo | 0,5 ngày | Log `contexts` = top_k; Hit@4 với `-k 4` |
-| P0 | Sửa marker trong `benchmark_chunking.py` | `refusal_rate` vô nghĩa | 15 phút | Chạy 5 câu có/không từ chối |
+| P0 | Sửa marker trong `scripts/benchmark_chunking.py` | `refusal_rate` vô nghĩa | 15 phút | Chạy 5 câu có/không từ chối |
 | P0 | Đo lại từ chối oan, join với Hit@K | 50% là vấn đề lớn nhất | 1–2 ngày | Bảng “từ chối oan có hit / không hit” |
 | P0 | Thêm mẫu số + config hash vào resume | Tránh trộn cấu hình | 0,5 ngày | Chạy lại khác `top_k` phải từ chối resume |
 | P1 | Judge Gemini 30–50 câu, so heuristic | Cần faithfulness độc lập | 1 ngày + quota | Tương quan heuristic vs judge |

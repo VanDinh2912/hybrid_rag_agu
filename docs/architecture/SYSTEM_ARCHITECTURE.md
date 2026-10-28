@@ -438,7 +438,7 @@ END IF
 ### 6.1 Classifier hai nhãn — `src/classifier.py`
 
 **Vai trò**: gán cho câu hỏi THÔ hai nhãn trước khi hệ thống chạm vào bất kỳ tầng
-truy xuất nào — `topic` (1 trong 14 chủ đề của TAXONOMY.md, hoặc `null` nếu
+truy xuất nào — `topic` (1 trong 14 chủ đề của docs/spec/TAXONOMY.md, hoặc `null` nếu
 không thuộc nhóm nào) và `question_type` (1 trong 4 nhãn `TRA_CUU` / `SO_SANH`
 / `THU_TUC` / `NGOAI_PHAM_VI`).
 
@@ -459,7 +459,7 @@ không thuộc nhóm nào) và `question_type` (1 trong 4 nhãn `TRA_CUU` / `SO_
 Lớp 1: Qwen trả JSON hợp lệ + nhãn chuẩn → dùng luôn
        (topic chuẩn hóa không dấu qua fold(), chịu khác biệt dấu/hoa-thường)
 Lớp 2: JSON lỗi hoặc nhãn lạ → bổ sung phần nhãn hỏng bằng bảng từ khóa
-       (dấu hiệu theo TAXONOMY.md; từ khóa neo đặc thù xét TRƯỚC từ khóa chung)
+       (dấu hiệu theo docs/spec/TAXONOMY.md; từ khóa neo đặc thù xét TRƯỚC từ khóa chung)
 Lớp 3: từ khóa cũng không khớp → topic=None, question_type="TRA_CUU"
        (router hiểu topic=None là không lọc, dùng cấu hình chung)
 ```
@@ -626,13 +626,13 @@ hybrid_rag_agu/
 ├── chroma_db/               # ChromaDB persistent storage
 ├── .generation_cache/       # Response cache
 ├── ingest.py                # Script ingest main
-├── learn.py                 # Script active learning
+├── scripts/learn.py                 # Script active learning
 ├── main.py                  # CLI interface
 ├── ui/
 │   └── app.py               # GUI (Tkinter)
 ├── requirements.txt
 ├── .env.example
-└── SYSTEM_ARCHITECTURE.md   # File này
+└── docs/architecture/SYSTEM_ARCHITECTURE.md   # File này
 ```
 
 ---

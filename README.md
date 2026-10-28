@@ -9,10 +9,10 @@ Dự án có **năm giao diện sử dụng**:
 | CLI tương tác | `main.py` | Hỏi đáp hàng ngày, test nhanh |
 | GUI desktop 3 tab (Tkinter) | `ui/app.py` | Tra cứu + nạp dữ liệu + gắn nhãn học |
 | Đánh giá định lượng | `src/evaluation.py` | Đo Hit@K / MRR / Citation / Faithfulness trên benchmark |
-| **Demo so sánh 3 chiến lược chunking (Streamlit)** | `demo_streamlit.py` | Trình diễn thực nghiệm cho bài báo |
+| **Demo so sánh 3 chiến lược chunking (Streamlit)** | `ui/demo_streamlit.py` | Trình diễn thực nghiệm cho bài báo |
 | Đánh giá bộ phân loại | `src/evaluate_classifier.py` | Đo accuracy 2 nhãn (chủ đề + loại câu hỏi) trên benchmark v3 |
 
-Kèm các công cụ thực nghiệm: **`benchmark_chunking.py`** (chạy benchmark đầy đủ 3 chiến lược cắt đoạn, xuất báo cáo so sánh), **`src/evaluation.py`** (chạy benchmark truy xuất/generation, có cờ `--with-classifier` cho lượt A/B) và **`src/analyze_ab.py`** (phân tích 2 JSON A/B → bảng so sánh + biểu đồ).
+Kèm các công cụ thực nghiệm: **`scripts/benchmark_chunking.py`** (chạy benchmark đầy đủ 3 chiến lược cắt đoạn, xuất báo cáo so sánh), **`src/evaluation.py`** (chạy benchmark truy xuất/generation, có cờ `--with-classifier` cho lượt A/B) và **`src/analyze_ab.py`** (phân tích 2 JSON A/B → bảng so sánh + biểu đồ).
 
 ---
 
@@ -68,7 +68,7 @@ Hai cơ chế xuyên suốt các tầng:
 - **`fold()`** (`src/text_utils.py`) — bỏ dấu thanh dùng chung cho mọi tầng: câu hỏi có dấu vẫn khớp được chunk OCR mất dấu ở tầng truy xuất và tầng đánh giá.
 - **Oversampling** — mỗi lượt truy xuất lấy về `top_k × 2` ứng viên; chỉ `top_k` đứng đầu theo thứ hạng RRF được đưa vào generator, phần còn lại phục vụ đo Hit@K.
 
-Đặc tả chi tiết (công thức BM25/cosine/RRF, sơ đồ 6 tầng, đặc tả classifier/router/sub-query/prompt biến thể ở mục 6, bảng biến môi trường): xem `SYSTEM_ARCHITECTURE.md` (`.txt`/`.docx` sinh lại bằng `export_architecture.py` khi cần nộp kèm).
+Đặc tả chi tiết (công thức BM25/cosine/RRF, sơ đồ 6 tầng, đặc tả classifier/router/sub-query/prompt biến thể ở mục 6, bảng biến môi trường): xem `docs/architecture/SYSTEM_ARCHITECTURE.md` (`.txt`/`.docx` sinh lại bằng `scripts/export_architecture.py` khi cần nộp kèm).
 
 ---
 
@@ -89,7 +89,7 @@ hybrid_rag_agu/
 │   │   │                                    #   benchmark chính thức của lượt A/B (P4)
 │   │   ├── benchmark_100_questions_v2.json  # 100 câu v2 — MẶC ĐỊNH của src/evaluation.py
 │   │   ├── benchmark_100_questions.json     # 100 câu v1
-│   │   ├── benchmark_50_questions.json/.md  # 50 câu (mặc định của benchmark_chunking.py)
+│   │   ├── benchmark_50_questions.json/.md  # 50 câu (mặc định của scripts/benchmark_chunking.py)
 │   │   ├── benchmark_15_questions.json/.md  # bộ 15 câu đầu tiên
 │   │   ├── benchmark_questions.json         # 15 câu GUI tự sinh (schema 10 khóa cũ)
 │   │   └── reference/       # File quy chế mẫu (không index — chỉ dùng đối chiếu)
@@ -135,7 +135,8 @@ hybrid_rag_agu/
 │   └── analyze_ab.py           # Phân tích 2 JSON A/B → outputs/ab_comparison.md + figures/
 │
 ├── ui/
-│   └── app.py               # GUI 3 tab: Tra cứu / Nạp dữ liệu / Vừa test vừa học
+│   ├── app.py               # GUI 3 tab: Tra cứu / Nạp dữ liệu / Vừa test vừa học
+│   └── demo_streamlit.py    # Demo Streamlit so sánh 3 chiến lược chunking (chạy: streamlit run ui/demo_streamlit.py)
 │
 ├── tests/                   # 1.549 unit test pass + 5 skipped (lượt postflight r21b 28-10)
 │                            #   — offline hoàn toàn (chunking, pipeline, classifier, router,
@@ -148,12 +149,17 @@ hybrid_rag_agu/
 │   │                        #   report_metrics.py, real_questions.jsonl
 │   ├── diag/                # ~40 script chẩn đoán/tái kiểm chỉ-đọc (artifact_manifest,
 │   │                        #   evidence_pack_check, final_number_audit, rescore_rounds_v2, reocr_vie…)
-│   ├── train/               # Huấn luyện local: classifier baseline v1–v3, retrieval baseline,
-│   │                        #   train_sft_lora.py + evaluate_sft_adapter.py (venv_train, CUDA)
-│   └── build_sft_from_round.py · build_training_data.py · validate_training_data.py
+│   ├── train/               # Huấn luyện + sinh dữ liệu: classifier baseline v1–v3, retrieval
+│   │                        #   baseline, train_sft_lora.py (venv_train, CUDA),
+│   │                        #   build_sft_from_round.py · build_training_data.py · validate_training_data.py
+│
+├── scripts/                 # Công cụ phụ chạy từ dòng lệnh (mọi lệnh chạy từ gốc repo)
+│   ├── learn.py             # Chế độ test & học qua CLI: sai thì dạy lại, ghi log logs/learning/
+│   ├── benchmark_chunking.py# Benchmark 3 chiến lược chunking → logs/benchmark/
+│   └── export_architecture.py # Xuất docs/architecture/SYSTEM_ARCHITECTURE.md sang .txt/.docx (biên nhận logs/export/)
 │
 ├── logs/                    # MỌI file tự sinh khi chạy — quy ước chi tiết ở logs/README.md
-│   ├── benchmark/           # Output của benchmark_chunking.py (log, results_all.json, chroma_*/) — xóa được
+│   ├── benchmark/           # Output của scripts/benchmark_chunking.py (log, results_all.json, chroma_*/) — xóa được
 │   ├── classifier/          # Output của src/evaluate_classifier.py (accuracy_report.md,
 │   │                        #   results.json, 2 ma trận nhầm lẫn CSV)
 │   ├── export/              # Biên nhận export SYSTEM_ARCHITECTURE — xóa được
@@ -185,13 +191,6 @@ hybrid_rag_agu/
 │
 ├── main.py                  # Chế độ chạy thực: CLI tương tác, hỏi liên tục
 ├── ingest.py                # Script nạp corpus vào ChromaDB (chạy trước main.py)
-├── learn.py                 # Chế độ test & học qua CLI: sai thì dạy lại, ghi log logs/learning/
-├── benchmark_chunking.py    # Benchmark 3 chiến lược chunking → logs/benchmark/
-├── demo_streamlit.py        # Demo Streamlit so sánh 3 chiến lược chunking
-├── export_architecture.py   # Xuất SYSTEM_ARCHITECTURE.md sang .txt/.docx (báo cáo ghi logs/export/)
-│
-├── TAXONOMY.md              # Bộ nhãn câu hỏi: 14 chủ đề + 4 loại + luật gán (cổng P1.1)
-├── ROADMAP.md               # Định hướng làm lại đồ án + 3 câu hỏi nghiên cứu + GATE
 ├── ARTIFACT_MANIFEST.json   # Manifest ghim SHA-256 artifact round — kiểm bằng tools/diag/artifact_manifest.py --check
 ├── docs/
 │   ├── EXPERIMENTS.md       # Bảng A (kết quả khoa học) + Bảng B (quy trình/dụng cụ), 7 cột có chữ ký trọng tài
@@ -200,15 +199,16 @@ hybrid_rag_agu/
 │   ├── PA_TRIAGE.md         # Hàng đợi đề xuất PA chờ duyệt
 │   ├── REPRODUCE.md         # Lệnh tái lập kết quả đã công bố
 │   ├── ARCHITECTURE.md      # Kiến trúc cập nhật theo vòng lặp P5
+│   ├── RESTRUCTURE_MAP.md   # Bảng ánh xạ đường dẫn cũ → mới (đợt tái cấu trúc 28-10)
+│   ├── architecture/        # SYSTEM_ARCHITECTURE.md — đặc tả kiến trúc 6 tầng (nguồn duy nhất)
+│   ├── spec/                # TAXONOMY.md — 14 chủ đề + 4 loại + luật gán (cổng P1.1)
+│   ├── planning/            # ROADMAP.md — định hướng làm lại đồ án + 3 câu hỏi nghiên cứu + GATE
+│   ├── guides/              # NORMALIZATION_ACTIVE_LEARNING · TROUBLESHOOTING_GUI · LAYOUT_OPTIMIZATION
 │   ├── archive/             # Báo cáo lịch sử (test_final.md, AUTONOMY_LOG, MORNING_REPORT...)
 │   ├── giang_day/           # 11 bài giảng nội bộ theo từng tầng pipeline
 │   └── bao_cao/             # Bản nháp chương báo cáo (chương 3 kiến trúc, chương 4 thực nghiệm,
 │                            #   outline chương 1/2/5) — mọi số liệu có nguồn ở outputs//logs/
 │
-├── SYSTEM_ARCHITECTURE.md   # Đặc tả kiến trúc 6 tầng (nguồn duy nhất; .txt/.docx sinh lại bằng export_architecture.py)
-├── NORMALIZATION_ACTIVE_LEARNING.md  # Cơ chế học chuẩn hóa từ phản hồi người dùng
-├── TROUBLESHOOTING_GUI.md   # Xử lý sự cố thường gặp của GUI
-├── LAYOUT_OPTIMIZATION.md   # Ghi chú tối ưu layout Tab 3
 ├── .env.example             # File mẫu khai báo biến môi trường (API Key)
 ├── requirements.txt         # Danh sách các thư viện Python cần thiết
 └── requirements-lock.txt    # Ghim phiên bản đã kiểm chứng
@@ -312,7 +312,7 @@ OCR_CACHE_DIR=./.ocr_cache
 Vài giá trị cần lưu ý khi viết phần thực nghiệm:
 
 - `GEMINI_MAX_TOKENS=4096` — `gemini-2.5-flash` là model "thinking": token suy luận nội bộ bị trừ **vào cùng** ngân sách `max_output_tokens`. Đo thực tế một lượt trả lời tốn 763 token thinking + 73 token trả lời, nên đặt 1024 sẽ làm câu trả lời **bị cắt giữa chừng**. Thư viện `google-generativeai` 0.8.6 chưa có `thinking_config` để tách riêng ngân sách, chỉ còn cách đặt lớn. `generator.py` vẫn in cảnh báo nếu `finish_reason = MAX_TOKENS`.
-- `RAG_TOP_K=4` — số chunk ngữ cảnh mỗi lượt hỏi của `main.py`; flag `-k/--top-k` ghi đè giá trị này, và nếu `.env` không khai báo thì `main.py` dùng mặc định 6. `src/evaluation.py` và `benchmark_chunking.py` có cờ `--top-k` riêng (mặc định 6 và 3).
+- `RAG_TOP_K=4` — số chunk ngữ cảnh mỗi lượt hỏi của `main.py`; flag `-k/--top-k` ghi đè giá trị này, và nếu `.env` không khai báo thì `main.py` dùng mặc định 6. `src/evaluation.py` và `scripts/benchmark_chunking.py` có cờ `--top-k` riêng (mặc định 6 và 3).
 - `ENABLE_HYBRID_SEARCH` / `ENABLE_QUERY_EXPANSION` — hai công tắc của True Hybrid Search, mặc định **bật**; đặt `0` để lùi về vector search thuần (tiện so sánh có/không hybrid trong phần thực nghiệm). `BM25_WEIGHT` / `CHROMA_WEIGHT` là trọng số RRF của hai nhánh truy xuất.
 - `ENABLE_CLASSIFIER` / `CLASSIFIER_MODEL` / `CLASSIFIER_TIMEOUT` — công tắc tầng phân loại câu hỏi (2 nhãn) + router truy xuất, mặc định `ENABLE_CLASSIFIER=0` (pipeline chạy đúng hành vi cũ 100%, không tốn thêm lần gọi Ollama nào). `1` = bật phân loại: router chọn cấu hình truy xuất theo nhãn, tách truy vấn con cho câu `SO_SANH`, prompt biến thể theo loại; mọi lỗi phân loại suy giảm mềm về cấu hình chung. `CLASSIFIER_MODEL` để trống thì dùng chung `OLLAMA_MODEL`; `CLASSIFIER_TIMEOUT` là timeout gọi Ollama, mặc định 20 giây.
 
@@ -329,7 +329,7 @@ PDF dạng scan ảnh thì loader **tự động OCR** mà không cần cài ph�
 - **Render trang → ảnh:** `pypdfium2` (PDFium đóng gói sẵn trong wheel). Không dùng `pdf2image` vì thư viện đó bắt buộc cài **Poppler** ở cấp hệ thống, trái ràng buộc "chỉ cần pip".
 - **Nhận diện ký tự:** `rapidocr-onnxruntime` — model PP-OCR dạng ONNX kèm sẵn trong package, chạy bằng `onnxruntime` trên CPU, không cần Tesseract. Engine được nạp một lần cho cả tiến trình.
 - **Điều kiện kích hoạt — xét theo từng trang, không theo từng file:** trang nào `pypdf` trích ra dưới `OCR_MIN_CHARS_PER_PAGE` ký tự (mặc định 50) thì trang đó được OCR. Nhờ vậy PDF vừa có trang text vừa có trang chụp ảnh chỉ bị OCR đúng phần scan.
-- **Cache:** kết quả OCR ghi vào `.ocr_cache/<tên_file>__<hash>.json`, khóa theo (kích thước, mtime, dpi, ngưỡng) nên sửa file PDF là cache tự hỏng. Bắt buộc phải có vì `learn.py` rebuild collection sau mỗi bài học — không cache thì mỗi lần học lại phải OCR lại toàn bộ. Xóa thư mục này để OCR lại từ đầu.
+- **Cache:** kết quả OCR ghi vào `.ocr_cache/<tên_file>__<hash>.json`, khóa theo (kích thước, mtime, dpi, ngưỡng) nên sửa file PDF là cache tự hỏng. Bắt buộc phải có vì `scripts/learn.py` rebuild collection sau mỗi bài học — không cache thì mỗi lần học lại phải OCR lại toàn bộ. Xóa thư mục này để OCR lại từ đầu.
 - **Tùy chọn trong `.env`:** `OCR_ENABLED` (`0` = tắt, file scan sẽ bị bỏ qua kèm cảnh báo), `OCR_DPI` (mặc định 200), `OCR_MIN_CHARS_PER_PAGE` (50), `OCR_CACHE_DIR` (`.//.ocr_cache`).
 
 **Giới hạn chất lượng (cần ghi vào phần thực nghiệm của đề tài):** model PP-OCR kèm `rapidocr-onnxruntime` bắt đúng bố cục và chữ quốc ngữ nhưng **làm mất phần lớn dấu thanh** — "Điều 4. Hệ thống tổ chức" thành "Dieu 4. He thong to chuc". Hệ quả và cách xử lý trong mã nguồn:
@@ -361,7 +361,7 @@ vector_db.similarity_search(query, k=5, filter={"tier": "Tầng 2"})
 
 Mọi chunk đều mang tiền tố `[Tên văn bản]` (và `- [Điều N.]` nếu có) để giữ ngữ cảnh khi truy xuất.
 
-**Lớp 2 — ba chiến lược cắt đoạn cho thực nghiệm (API `chunk_with_strategy`):** dùng chung bởi `benchmark_chunking.py` và `demo_streamlit.py`, cho phép so sánh công bằng trên cùng một tokenizer:
+**Lớp 2 — ba chiến lược cắt đoạn cho thực nghiệm (API `chunk_with_strategy`):** dùng chung bởi `scripts/benchmark_chunking.py` và `ui/demo_streamlit.py`, cho phép so sánh công bằng trên cùng một tokenizer:
 
 | Khóa | Tên | Cách cắt |
 |---|---|---|
@@ -423,7 +423,7 @@ Các lệnh trong vòng lặp: `help`/`h`/`?` (in hướng dẫn), `exit`/`quit`
 
 - **Response caching:** trước khi gọi API, `generate_answer` tính SHA-1 của `{model, temperature, prompt}` và tra `./.generation_cache/<sha1>.json` — trúng thì trả lời ngay, tốn **0 request quota**. Key bám theo nội dung prompt nên thêm/sửa tài liệu rồi ingest lại là cache cũ tự vô hiệu, không cần dọn tay. Chỉ câu trả lời **nguồn Gemini** được cache; muốn đo latency thật (không tính thời gian đọc cache) hoặc ép sinh lại thì đặt `GENERATION_CACHE=0` trong `.env` hoặc xóa thư mục `.generation_cache/`.
 - **Fallback Local Qwen:** Gemini trả về 429/hết quota ngày/phút hay sự cố 5xx, `generate_answer` **không văng lỗi** mà chuyển câu hỏi + các chunk ngữ cảnh sang Qwen trên Ollama (num_ctx 8192 để không bị cắt ngữ cảnh), gắn nhãn đầu câu trả lời `[Cảnh báo: Gemini đã hết quota — câu trả lời này được tổng hợp tạm thời bằng Local Qwen ...]` để người nghe demo phân biệt ngay. Câu fallback **không được cache** để lượt chạy sau vẫn được thử lại Gemini thật. Cả Ollama cũng chết thì mới ném `GeneratorError` — `main.py` đã bắt nên vòng lặp vẫn sống. Tắt cơ chế này bằng `QWEN_FALLBACK=0`.
-- Trong `src/evaluation.py` và `benchmark_chunking.py`, fallback bị **tắt bắt buộc** khi chạy chế độ Gemini (`qwen_fallback = False`): nếu để bật, câu trả lời Qwen sẽ làm nhiễu các chỉ số Citation/Faithfulness vốn đang đo chất lượng pipeline Gemini.
+- Trong `src/evaluation.py` và `scripts/benchmark_chunking.py`, fallback bị **tắt bắt buộc** khi chạy chế độ Gemini (`qwen_fallback = False`): nếu để bật, câu trả lời Qwen sẽ làm nhiễu các chỉ số Citation/Faithfulness vốn đang đo chất lượng pipeline Gemini.
 
 ### 5.3. Giao diện đồ họa (GUI — `ui/app.py`)
 
@@ -446,14 +446,14 @@ Luồng lưu khi bấm "Sai" ở Tab 3:
 3. Nếu có câu chuẩn hóa (auto-fill từ kết quả, sửa được trước khi lưu): thêm cặp (câu gốc → câu chuẩn hóa) vào `data/normalization_pairs.json` — Qwen tự học ở các lượt sau (active learning).
 4. Nếu tick "học ngay": ghi bài học vào `data/corpus/ghi_chu_hoc_them.txt`, rebuild ChromaDB tại chỗ và ghi log vào `logs/learning/learning_log.csv`.
 
-Chi tiết cơ chế học chuẩn hóa: `NORMALIZATION_ACTIVE_LEARNING.md`; sự cố thường gặp của GUI: `TROUBLESHOOTING_GUI.md`; ghi chú tối ưu layout Tab 3: `LAYOUT_OPTIMIZATION.md`.
+Chi tiết cơ chế học chuẩn hóa: `docs/guides/NORMALIZATION_ACTIVE_LEARNING.md`; sự cố thường gặp của GUI: `docs/guides/TROUBLESHOOTING_GUI.md`; ghi chú tối ưu layout Tab 3: `docs/guides/LAYOUT_OPTIMIZATION.md`.
 
-### 5.4. Chế độ test & học (learn — `learn.py`)
+### 5.4. Chế độ test & học (learn — `scripts/learn.py`)
 
 Vòng lặp hỏi - đáp với người làm trọng tài (bản CLI của Tab 3):
 
 ```bash
-python learn.py
+python scripts/learn.py
 ```
 
 Luồng hoạt động: nhập câu hỏi → hệ thống trả lời → bạn đánh giá (`Enter`/`y` = đúng, `n` = sai). Nếu sai, dán thông tin đúng (kết thúc bằng một dòng trống); hệ thống sẽ:
@@ -514,7 +514,7 @@ Lưu ý khi đọc bảng này: generator là Local Qwen 1.5B nên tầng trích
 **Lưu ý quota** (free tier Gemini giới hạn **theo từng model**, ví dụ gemini-2.5-flash: ~5 request/phút và ~20 request/ngày):
 
 - Mỗi câu tốn 2 lần gọi (generator + giám khảo), trừ câu trả lời dạng từ chối chỉ tốn 1 → lượt đánh giá đầy đủ 100 câu tốn ~200 request. Đặt `GEMINI_JUDGE_MODEL` trong `.env` (hoặc cờ `--judge-model`) sang một model khác, ví dụ `gemini-3.5-flash-lite`, để giám khảo dùng ngân sách riêng — generator giữ trọn quota của mình. Các lần chạy thử nên dùng `--use-qwen-generator` hoặc `--limit` để giữ quota cho lượt chính thức.
-- Trước một lượt đánh giá đầy đủ, hạn chế chạy thử `main.py`/`learn.py` trong cùng ngày vì cùng xài chung quota model generator.
+- Trước một lượt đánh giá đầy đủ, hạn chế chạy thử `main.py`/`scripts/learn.py` trong cùng ngày vì cùng xài chung quota model generator.
 - **Caching làm các lần chạy lại gần như miễn phí:** câu nào đã trả lời thành công bằng Gemini một lần thì các lượt đánh giá sau lấy thẳng từ `.generation_cache/`, chỉ tốn quota cho câu mới và các câu giám khảo. Nếu lượt trước chết giữa chừng vì hết quota ngày, chỉ cần chạy lại đúng lệnh sau khi quota reset — không mất công trả lời lại từ đầu.
 - Faithfulness phụ thuộc giám khảo nên khi viết bài cần ghi rõ model giám khảo và prompt (hằng `JUDGE_PROMPT` trong `src/evaluation.py`) vào phần thực nghiệm.
 
@@ -557,18 +557,18 @@ Cờ `--with-classifier` đặt `ENABLE_CLASSIFIER=1` cho pipeline; **không tru
 
 Kết quả A/B chốt và bảng so sánh đầy đủ: xem mục 8 (Ghi chú) hoặc thẳng `outputs/ab_comparison.md`.
 
-### 5.8. Benchmark 3 chiến lược chunking (`benchmark_chunking.py`)
+### 5.8. Benchmark 3 chiến lược chunking (`scripts/benchmark_chunking.py`)
 
 Công cụ thực nghiệm trung tâm của đề tài: với **MỖI chiến lược chunking** (fixed / recursive / structure), script chạy trọn vòng trên cùng một testbed — nạp corpus → cắt chunk theo chiến lược đó → dựng một ChromaDB **độc lập** → chạy đúng pipeline sản xuất (Qwen chuẩn hóa → BM25 + bge-m3 RRF → generator, temperature 0) qua từng câu benchmark → đo Hit@3/5/6, MRR, Citation P/R/F1, Latency, dung lượng index → xuất log chi tiết từng câu + ma trận so sánh 3 chiến lược. Mọi hàm chấm điểm được **tái sử dụng** từ `src/evaluation.py` nên số liệu so sánh trực tiếp được với `outputs/evaluation_summary.md`.
 
 ```bash
-python benchmark_chunking.py                        # đủ 3 chiến lược × 50 câu, Gemini
-python benchmark_chunking.py --limit 2              # smoke test nhanh 2 câu
-python benchmark_chunking.py --strategies structure # chỉ một chiến lược
-python benchmark_chunking.py --generator qwen       # 100% offline, không tốn quota
-python benchmark_chunking.py --no-cache             # tắt cache để đo Latency trung thực
-python benchmark_chunking.py --device cuda          # Colab GPU T4
-python benchmark_chunking.py --benchmark data/evaluation/benchmark_100_questions_v2.json
+python scripts/benchmark_chunking.py                        # đủ 3 chiến lược × 50 câu, Gemini
+python scripts/benchmark_chunking.py --limit 2              # smoke test nhanh 2 câu
+python scripts/benchmark_chunking.py --strategies structure # chỉ một chiến lược
+python scripts/benchmark_chunking.py --generator qwen       # 100% offline, không tốn quota
+python scripts/benchmark_chunking.py --no-cache             # tắt cache để đo Latency trung thực
+python scripts/benchmark_chunking.py --device cuda          # Colab GPU T4
+python scripts/benchmark_chunking.py --benchmark data/evaluation/benchmark_100_questions_v2.json
 ```
 
 Mặc định chạy trên `benchmark_50_questions.json` với `--top-k 3` (generator nhận 3 chunk, cửa sổ đo Hit@K rộng 6 nhờ oversampling ×2). Đầu ra nằm ở **`logs/benchmark/`**:
@@ -582,13 +582,13 @@ Mặc định chạy trên `benchmark_50_questions.json` với `--top-k 3` (gene
 
 Lưu ý quota: 50 câu × 3 chiến lược = 150 lần gọi Gemini nếu dùng generator mặc định — hãy chạy thử `--limit 2` trước, hoặc dùng `--generator qwen`, hoặc chạy rải từng chiến lược một. Script tự dừng sớm (vẫn ghi báo cáo phần đã chạy) khi phát hiện lỗi quota ngày, và **tự gộp kết quả các lượt trước** có cùng tham số trong `results_all.json` nên chạy tách từng chiến lược bằng nhiều lệnh riêng vẫn ra đủ ma trận 3 dòng.
 
-### 5.9. Demo Streamlit so sánh 3 chiến lược (`demo_streamlit.py`)
+### 5.9. Demo Streamlit so sánh 3 chiến lược (`ui/demo_streamlit.py`)
 
 Lớp trình bày thuần túy cho phần thực nghiệm — **không cài lại bất kỳ logic backend nào**, chỉ gọi API có sẵn của `src/`:
 
 ```bash
 # Cần cài thêm: pip install streamlit pandas
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m streamlit run demo_streamlit.py --server.fileWatcherType none
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m streamlit run ui/demo_streamlit.py --server.fileWatcherType none
 ```
 
 > ⚠️ **Bắt buộc kèm `--server.fileWatcherType none`** (hoặc `none` trong `.streamlit/config.toml`): watcher mặc định của Streamlit dò toàn bộ module `transformers` đã nạp và làm tiến trình chết im lặng giữa lượt chạy nặng.
@@ -604,7 +604,7 @@ Cấu trúc màn hình:
 
 **Nguồn index của từng chiến lược** (theo thứ tự ưu tiên): index có sẵn của benchmark ở `logs/benchmark/chroma_<strategy>/` (tên collection `bench_<strategy>`) → vị trí cũ `benchmark_logs/` → **tự dựng mới** vào `logs/demo_chroma_<strategy>/` kèm thông báo tiến độ (lần đầu mất vài phút nhúng corpus, các lần sau tải từ đĩa ngay).
 
-**Chế độ demo nhanh (replay):** nếu `logs/benchmark/results_all.json` có entry của câu đang chọn và khớp tham số (`top_k`, generator trong meta), app dùng **số liệu đã đo** thay vì chạy live — demo tức thì không cần Ollama; nhãn trạng thái hiện rõ `📅 Replay từ lượt benchmark <timestamp>` hay `⚡ Live` cho từng chiến lược. Chưa có file này thì app vẫn chạy live và hiển thị gợi ý lệnh `python benchmark_chunking.py --generator qwen` để tạo dữ liệu replay.
+**Chế độ demo nhanh (replay):** nếu `logs/benchmark/results_all.json` có entry của câu đang chọn và khớp tham số (`top_k`, generator trong meta), app dùng **số liệu đã đo** thay vì chạy live — demo tức thì không cần Ollama; nhãn trạng thái hiện rõ `📅 Replay từ lượt benchmark <timestamp>` hay `⚡ Live` cho từng chiến lược. Chưa có file này thì app vẫn chạy live và hiển thị gợi ý lệnh `python scripts/benchmark_chunking.py --generator qwen` để tạo dữ liệu replay.
 
 ### 5.10. Vòng lặp đo P5 — chạy lại một round hoặc cả chuỗi round
 
@@ -662,10 +662,10 @@ Quy ước của repo (chi tiết ở `logs/README.md`): **mọi file tự sinh 
 
 | Thư mục | Sinh ra bởi | Ý nghĩa | Xóa được không |
 |---|---|---|---|
-| `logs/benchmark/` | `benchmark_chunking.py` | Log benchmark 3 chiến lược + index tạm | ✅ Xóa được — chạy lại là có lại |
+| `logs/benchmark/` | `scripts/benchmark_chunking.py` | Log benchmark 3 chiến lược + index tạm | ✅ Xóa được — chạy lại là có lại |
 | `logs/classifier/` | `src/evaluate_classifier.py` | `accuracy_report.md`, `results.json`, 2 ma trận nhầm lẫn CSV | ⚠️ Giữ — là số liệu chốt P2.3 (chạy lại bị ghi đè) |
-| `logs/export/` | `export_architecture.py` | Biên nhận lần xuất `SYSTEM_ARCHITECTURE` | ✅ Xóa được |
-| `logs/learning/` | `learn.py` và GUI Tab 3 | `learning_log.csv` — lịch sử mỗi lần hệ thống trả lời sai và được "học thêm" | ❌ **KHÔNG xóa** — là lịch sử dữ liệu |
+| `logs/export/` | `scripts/export_architecture.py` | Biên nhận lần xuất `SYSTEM_ARCHITECTURE` | ✅ Xóa được |
+| `logs/learning/` | `scripts/learn.py` và GUI Tab 3 | `learning_log.csv` — lịch sử mỗi lần hệ thống trả lời sai và được "học thêm" | ❌ **KHÔNG xóa** — là lịch sử dữ liệu |
 | `logs/feedback/` | GUI Tab 3 | `user_feedback.json` — toàn bộ lượt đánh giá đúng/sai của người dùng | ❌ **KHÔNG xóa** |
 
 `.gitignore` bỏ qua `logs/*` **trừ** `logs/README.md`, `logs/learning/` và `logs/feedback/` (hai thư mục dữ liệu lịch sử được git track để không bao giờ mất khi dọn dẹp). Riêng `outputs/` là nơi chứa **kết quả chốt** dùng cho báo cáo (`evaluation_results.json`, `evaluation_summary.md`) và được git track đầy đủ.
@@ -680,10 +680,10 @@ Repo được bảo trì song song bởi các agent AI chia theo 4 nhóm trách 
 
 | Playbook | Nhóm | Phạm vi sở hữu |
 |---|---|---|
-| `01_du_lieu_chi_muc.md` | Dữ liệu & Chỉ mục | `data/corpus/`, `ingest.py`, `src/loader|chunking|vector_db.py`, `chroma_db/`, `learn.py`, `logs/learning/` |
+| `01_du_lieu_chi_muc.md` | Dữ liệu & Chỉ mục | `data/corpus/`, `ingest.py`, `src/loader|chunking|vector_db.py`, `chroma_db/`, `scripts/learn.py`, `logs/learning/` |
 | `02_tri_tue_rag.md` | Trí tuệ RAG | `src/retrieval|query_normalizer|text_utils|generator|local_slm|pipeline|classifier|router.py`, `main.py`, `.generation_cache/` |
-| `03_giao_dien_tai_lieu.md` | Giao diện & Tài liệu | `ui/app.py`, `README.md`, `SYSTEM_ARCHITECTURE.*`, `export_architecture.py`, `logs/feedback/`, `logs/export/` |
-| `04_kiem_chung_cau_hinh.md` | Kiểm chứng & Cấu hình | `data/evaluation/`, `src/evaluation.py`, `src/evaluate_classifier.py`, `src/analyze_ab.py`, `benchmark_chunking.py`, `tests/`, `.env*`, `logs/benchmark/`, `logs/classifier/`, `outputs/` |
+| `03_giao_dien_tai_lieu.md` | Giao diện & Tài liệu | `ui/app.py`, `README.md`, `docs/architecture/SYSTEM_ARCHITECTURE.*`, `scripts/export_architecture.py`, `logs/feedback/`, `logs/export/` |
+| `04_kiem_chung_cau_hinh.md` | Kiểm chứng & Cấu hình | `data/evaluation/`, `src/evaluation.py`, `src/evaluate_classifier.py`, `src/analyze_ab.py`, `scripts/benchmark_chunking.py`, `tests/`, `.env*`, `logs/benchmark/`, `logs/classifier/`, `outputs/` |
 
 Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ được nằm trong `tmp/` và phải xóa sạch trước khi kết thúc phiên; **mọi log tự sinh khi chạy phải nằm trong `logs/` đúng ý nghĩa ở `logs/README.md`**; ghi file luôn bằng Python với `encoding='utf-8'` (cấm chuyển hướng `>` của PowerShell — ghi UTF-16 làm hỏng JSON); chỉ được sửa file trong phạm vi group mình; báo cáo bắt buộc kèm kết quả verify.
 
@@ -693,7 +693,7 @@ Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ đư�
 
 - Mô hình embedding `bge-m3` và mô hình `Qwen2.5:1.5b-instruct` đều chạy cục bộ (không tốn phí API); chỉ **Gemini API** là dịch vụ trên mây.
 - Để có kết quả ổn định, Generator sử dụng `Temperature = 0.0` và luôn kèm trích dẫn Điều/Khoản từ ngữ cảnh.
-- `main.py` và `demo_streamlit.py` tự đặt `sys.stdout.reconfigure(encoding="utf-8")` nên tiếng Việt in đúng trên console Windows; nếu gọi Python thủ công thì chạy kèm `PYTHONUTF8=1` hoặc `PYTHONIOENCODING=utf-8`.
+- `main.py` và `ui/demo_streamlit.py` tự đặt `sys.stdout.reconfigure(encoding="utf-8")` nên tiếng Việt in đúng trên console Windows; nếu gọi Python thủ công thì chạy kèm `PYTHONUTF8=1` hoặc `PYTHONIOENCODING=utf-8`.
 - Mỗi lần chạy sẽ thấy một `FutureWarning` của `google-generativeai` — gói này đã bị Google khai tử nhưng vẫn hoạt động (0.8.6). Không phải lỗi; migrate sang `google-genai` là việc về sau, và lưu ý `google-genai` đổi cả tên model lẫn cách truyền `thinking_config`.
 - **Hiện trạng corpus và index:** 29 tài liệu (24 PDF + 5 DOCX, không còn `.doc` legacy) ở 3 tầng — 3 PDF thêm 28-10 **chưa ingest**; index sản xuất `chroma_db/` = **361 chunks** cắt bằng `DocumentChunker` (structure-aware cho văn bản có Điều, fallback theo đoạn cho văn bản thường). Ba index thực nghiệm của demo: fixed = 182, recursive = 189, structure = 378 chunks.
 - **Hiện trạng tầng phân loại + kết quả A/B chốt (P2.3–P4.3, 2026-10-21):** index 361 chunks **không đổi** — tầng phân loại là lớp phía trên pipeline, không rebuild index. Độ chính xác bộ phân loại: chủ đề 85,0% / loại câu hỏi 81,0% (`logs/classifier/accuracy_report.md`). Kết quả A/B trên benchmark v3 100 câu (generator Local Qwen `qwen2.5:1.5b-instruct`, top_k=6, giám khảo tắt — nguồn `outputs/ab_comparison.md`):
@@ -707,8 +707,8 @@ Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ đư�
 
 Nhóm tăng rõ nhất: chương trình đào tạo Hit@3 45,5% → 90,9% (n=22); `SO_SANH` MRR 0,4333 → 0,8286 (n=5, nhờ tách truy vấn con). Đây là chênh lệch của **cả gói thay đổi** ở lượt WITH (chọn tham số + thu hẹp nguồn + tách truy vấn con + prompt), **không tách riêng được lọc nguồn**: trên vòng 811 item (V2, 27-10) lọc mềm so all-off **−18 item** (518 vs 536; CI cụm [−4,62; −0,69] điểm %, p=2,77e−4) và chậm 2,76 s vs 0,18 s/item; lọc cứng (r0) chỉ đạt 363/700. GATE P4.3 **ĐẠT**: không chỉ số truy xuất nào giảm quá 5% tương đối. Lưu ý khi đọc: generator là Qwen 1.5B offline nên số tuyệt đối của tầng trích dẫn chỉ mang tính so sánh nội bộ giữa 2 lượt; điểm giảm trung thực cần nhắc: number support −3,05 pp, đánh giá rèn luyện Hit@3 −18,2 pp (n=11).
 - **Bộ unit test (1.124 test, 25-10):** chạy bằng `python -m pytest` — hoàn toàn offline (fake Qwen/ChromaDB/Gemini, monkeypatch), không tốn quota; gồm test 3 chiến lược chunking, pipeline (fold-query + oversampling), classifier + router (few-shot, guardrail, ánh xạ cấu hình), tách truy vấn con, prompt biến thể, guardrail Local SLM, các hàm đánh giá và cờ GUI/CLI, bộ test vòng lặp P5 (`tests/test_loop_*.py`, `test_run_chain.py`, `test_cache_policy.py`), bộ test T4 (`test_t4_sft_invariants.py`, `test_t4_generator_contract.py`; phần GPU `test_t4_gpu_slow.py` cần `T4_RUN_SLOW=1` nên mặc định được skip) và bộ test T5 (`test_t5_reranker_contract.py`, `test_t5_contextual_header.py`) và bộ test T6 (`test_t6_gate_refusal_and_regression.py`, `test_t6_referee_validation.py`, `test_t6_real_questions_and_metrics.py` — 60 test, trong đó cổng refusal chỉ chạy trên **bản đề xuất**, `gate.py` chưa đổi). Con số này là của **working tree**; xem PA-26 về khoảng trống giữa HEAD và cây đã test.
-- **Bộ benchmark:** 5 file trong `data/evaluation/` — 15 câu GUI tự sinh (schema 10 khóa cũ), **50 câu** và **100 câu v1/v2** (đúng 12 khóa, do các agent sinh theo playbook); benchmark mặc định của `src/evaluation.py` là 100 câu v2, của `benchmark_chunking.py` và demo là 50 câu. Ngoài ra `data/evaluation/manual_test_checklist.md` có **34 câu kiểm tra tay chia 7 nhóm tài liệu** (kèm nhóm câu ngoài corpus để thử hành vi từ chối) — dùng để đánh giá thủ công sau mỗi lần đổi pipeline.
-- **Benchmark v3 (2026-10-20):** `data/evaluation/benchmark_100_questions_v3.json` — 100 câu, 13 khóa (12 khóa v2 + `question_type` theo [TAXONOMY.md](TAXONOMY.md)), nhãn đã duyệt; phân bố `TRA_CUU`=87 / `SO_SANH`=5 / `THU_TUC`=5 / `NGOAI_PHAM_VI`=3. Mặc định của `src/evaluation.py` vẫn là 100 câu v2; **lượt A/B chính thức dùng `--benchmark ...v3.json`** (mục 5.7).
+- **Bộ benchmark:** 5 file trong `data/evaluation/` — 15 câu GUI tự sinh (schema 10 khóa cũ), **50 câu** và **100 câu v1/v2** (đúng 12 khóa, do các agent sinh theo playbook); benchmark mặc định của `src/evaluation.py` là 100 câu v2, của `scripts/benchmark_chunking.py` và demo là 50 câu. Ngoài ra `data/evaluation/manual_test_checklist.md` có **34 câu kiểm tra tay chia 7 nhóm tài liệu** (kèm nhóm câu ngoài corpus để thử hành vi từ chối) — dùng để đánh giá thủ công sau mỗi lần đổi pipeline.
+- **Benchmark v3 (2026-10-20):** `data/evaluation/benchmark_100_questions_v3.json` — 100 câu, 13 khóa (12 khóa v2 + `question_type` theo [TAXONOMY.md](docs/spec/TAXONOMY.md)), nhãn đã duyệt; phân bố `TRA_CUU`=87 / `SO_SANH`=5 / `THU_TUC`=5 / `NGOAI_PHAM_VI`=3. Mặc định của `src/evaluation.py` vẫn là 100 câu v2; **lượt A/B chính thức dùng `--benchmark ...v3.json`** (mục 5.7).
 - **Hành vi cần lưu ý của Qwen2.5-1.5B (tầng chuẩn hóa):** khi câu hỏi nằm ngoài phân bố few-shot, model có xu hướng **tự trả lời** thay vì viết lại câu hỏi, sinh ra nhận định không có căn cứ. Các lớp chặn hiện có: (1) system prompt chống bịa + few-shot của `src/query_normalizer.py` — đường đi chính trong pipeline, kèm active learning từ phản hồi người dùng; (2) `is_acceptable()` (4 điều kiện: không rỗng, ≤ 300 ký tự, phải có dấu `?`, không chứa mẫu lạc đề) và `guardrail_violation()` (bảo toàn con số + tỉ lệ token trùng với câu gốc ≥ 30%) trong `src/local_slm.py` — dùng khi chuẩn hóa trực tiếp qua wrapper `LocalSLM`, có test riêng trong `tests/test_local_slm.py`. Mọi đường đều suy giảm mềm: nghi ngờ là dùng lại câu hỏi gốc để truy xuất.
 - **Lịch sử xử lý lỗi chất lượng:** file mẫu `quy_che_dao_tao_mau.txt` từng xếp hạng #1 cho một câu hỏi quy chế thật và được Gemini dùng làm căn cứ — đã chuyển sang `data/evaluation/reference/` nên không còn bị index. Điểm yếu còn lại của truy xuất nằm ở các chủ đề ít từ khóa trùng lặp (xem cột Hit@6 và MRR trong `outputs/evaluation_summary.md` để theo dõi sau mỗi lần cải tiến chunking/retrieval).
 
