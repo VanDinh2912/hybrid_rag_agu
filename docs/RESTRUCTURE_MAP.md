@@ -5,8 +5,9 @@
 > đã chuyển; cấm sửa logic, định dạng lại, xóa dữ liệu. Một move đòi hỏi đổi logic hoặc
 > sửa dữ liệu đã công bố thì **hoãn và báo cáo** (mục 4).
 >
-> Ngày thực hiện: 28-10-2026 · Nhánh: `chore/restructure` · Commit Phase 1: `4b981b0`
-> · Commit Phase 2 (cache OCR): xem §5 · Snapshot baseline: `24e5c9a` (trạng thái
+> Ngày thực hiện: 28-10 → sáng 29-10-2026 · Nhánh: `chore/restructure`
+> · Commit Phase 1: `4b981b0` · Báo cáo: `35f4c53` · Phase 2 cache: `a085716`
+> · Phase 2b indexes: `83b3bc3` · Snapshot baseline: `24e5c9a` (trạng thái
 > `auto/overnight` tại `c8c2408`).
 
 ---
@@ -200,6 +201,16 @@ Trong khi chờ, drift 36 mục **là tín hiệu có chủ đích**, không ph�
    đã làm một phần ở Phase 1; phần còn lại là thêm cờ `--help` vào `ingest.py`,
    `scripts/learn.py`, `ui/app.py`, `ui/demo_streamlit.py` (5 cảnh báo T7 hiện hữu)
    → thuộc PA đã ghi trong `docs/PA_TRIAGE.md`, KHÔNG tự thêm.
+
+### 5.5 Bảng ánh xạ đường dẫn Phase 2 (4 thư mục, 36 tệp)
+
+| Cũ (gốc repo) | Mới | Tệp | Tổng byte | Ghi chú |
+|---|---|---|---|---|
+| `.ocr_cache/` | `.cache/ocr/rapidocr/` | 13 | 220.617 | cache rapidocr gốc |
+| `.ocr_cache_vie/` | `.cache/ocr/easyocr_vie/` | 13 | 282.966 | cache EasyOCR `vi` lượt re-OCR 24-10 |
+| `chroma_db_vie/` | `indexes/experimental/chroma_db_vie/` | 5 | 6.232.228 | 342 chunk, chưa kích hoạt (PA-17) |
+| `chroma_db_headers_old/` | `indexes/experimental/chroma_db_headers_old/` | 5 | 5.937.316 | snapshot nền đo r13 |
+| `chroma_db/` | **không đổi** | 5 | 5.937.316 | index sản xuất, mặc định `CHROMA_PERSIST_DIR` |
 
 ## 6. Phase 3 — ĐỀ XUẤT (không làm)
 
