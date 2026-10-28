@@ -1,4 +1,4 @@
-# Phân loại PA-1…PA-47 (27-10)
+# Phân loại PA-1…PA-48 (27-10; PA-48 thêm 28-10)
 
 Mục đích: một bảng để quyết định việc duyệt tiếp theo, **không** áp PA nào. Ba nhóm:
 
@@ -62,6 +62,7 @@ PA-26, re-anchor) trước khi làm.
 | PA-45 | Tách 3 tệp đánh giá khỏi `src/` | c | **đóng** | khuyến nghị giữ nguyên (bất biến #7 + import thư viện) |
 | PA-46 | Tách `generator.py` + `negative_results` | c | **duyệt (a)** | chỉ tạo `experiments/negative_results/README.md`; (b)–(d) hoãn |
 | PA-47 | Manifest ghim byte container Chroma | b | **đóng** | C1 đã cô lập test + sinh lại manifest; index digest hoãn |
+| PA-48 | Re-anchor manifest cho cache OCR sau Phase 2 | b | **duyệt** | `artifact_manifest.py::_scope_dirs()` glob `.ocr_cache*` không còn khớp (cache đã dời `.cache/ocr/`, 28-10) ⇒ `--check` báo THÊM THIẾU 26 mục. Cần: nối `.cache/ocr/*` vào scope rồi sinh lại manifest, đối chiếu 26 hash cũ↔mới khớp byte trước commit. KHÔNG tự sửa glob/manifest khi chờ duyệt — xem `docs/RESTRUCTURE_MAP.md` §5.3 |
 
 **Thứ tự rẻ trước (nếu duyệt một lượt):** PA-41, PA-30, PA-29, PA-33, PA-16, PA-40 — toàn bộ là
 môi trường/tài liệu, không đụng số đo. PA-42 cũng rẻ (chỉ `git add` hai tệp byte-nguyên) nhưng xếp (a)

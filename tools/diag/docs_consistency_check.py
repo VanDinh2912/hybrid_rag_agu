@@ -42,11 +42,11 @@ DOC_FILES = ("README.md", "docs/planning/ROADMAP.md")
 
 # Tiền tố đường dẫn repo — chỉ những cái này mới bị kiểm tồn tại.
 REPO_TOP = ("src/", "tools/", "tests/", "data/", "docs/", "ui/", "models/", "outputs/", "logs/", "scripts/",
-            "chroma_db", ".ocr_cache", "tmp/")
+            "chroma_db", ".cache", ".ocr_cache", "tmp/")
 
 # Nhưng **chỉ** nhóm được commit/quản lý có kỳ vọng tồn tại. `logs/`, `tmp/`, `chroma_db*`,
-# `.ocr_cache`, `.generation_cache` là thư mục **sinh ra lúc chạy** — bắt tồn tại trong bản clone
-# mới là đòi hỏi sai (và sẽ đỏ ngay trên máy chưa chạy lần nào).
+# `.cache`, `.ocr_cache` (layout cũ), `.generation_cache` là thư mục **sinh ra lúc chạy** — bắt tồn tại
+# trong bản clone mới là đòi hỏi sai (và sẽ đỏ ngay trên máy chưa chạy lần nào).
 CHECK_TOP = ("src/", "tools/", "tests/", "data/", "docs/", "ui/", "models/", "outputs/", "scripts/")
 CHECK_EXACT = {"README.md", "docs/planning/ROADMAP.md", "docs/spec/TAXONOMY.md", "requirements.txt", ".env.example"}
 

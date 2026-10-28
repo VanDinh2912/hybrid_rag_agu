@@ -91,11 +91,11 @@ OCR toàn bộ Tầng 1 mất khoảng 10 phút. Cache key gồm:
 đường_dẫn_tương_đối | size | mtime | dpi | min_chars_per_page
 ```
 
-→ SHA-1 16 ký tự → `.ocr_cache/<tên_file>__<hash>.json`. Sửa file hoặc đổi dpi là
+→ SHA-1 16 ký tự → `.cache/ocr/rapidocr/<tên_file>__<hash>.json`. Sửa file hoặc đổi dpi là
 hash đổi, cache tự hỏng. `_cache_load` còn kiểm tra **tập trang scan khớp chính xác**;
 nếu file đổi số trang, cache bị bỏ.
 
-> ⚠️ Cache không lưu ảnh, chỉ lưu text. Xóa `.ocr_cache/` an toàn nhưng lần ingest sau
+> ⚠️ Cache không lưu ảnh, chỉ lưu text. Xóa `.cache/ocr/rapidocr/` an toàn nhưng lần ingest sau
 > sẽ OCR lại từ đầu.
 
 ### 2.4. Lỗi được ghi nhận, không bị nuốt

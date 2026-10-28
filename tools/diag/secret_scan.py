@@ -47,8 +47,8 @@ for _dong in (sys.stdout, sys.stderr):
 
 
 SKIPPED_PARTS = {"venv", "venv_gpu", "venv_train", "node_modules", "__pycache__", ".git",
-                 "chroma_db", "chroma_db_vie", "chroma_db_headers_old", ".ocr_cache",
-                 ".ocr_cache_vie", ".generation_cache", "models", "tmp"}
+                 "chroma_db", "chroma_db_vie", "chroma_db_headers_old", ".cache",
+                 ".ocr_cache", ".ocr_cache_vie", ".generation_cache", "models", "tmp"}
 TEXT_EXT = {".py", ".md", ".json", ".jsonl", ".txt", ".csv", ".yaml", ".yml", ".toml",
             ".example", ".env", ".ini", ".cfg", ".tsv", ".html", ".sql", ".lock", ".sh", ".ps1"}
 

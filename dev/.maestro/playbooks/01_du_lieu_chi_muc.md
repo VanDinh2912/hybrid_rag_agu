@@ -7,7 +7,7 @@
 
 - `data/corpus/**` (các tầng `Tầng 1`, `Tầng 2`, `cac_file_bo_xung_khac`)
 - `ingest.py`, `src/loader.py`, `src/chunking.py`, `src/vector_db.py`
-- `chroma_db/` (ghi DUY NHẤT qua quy trình ingest/rebuild), `.ocr_cache/`
+- `chroma_db/` (ghi DUY NHẤT qua quy trình ingest/rebuild), `.cache/ocr/` (cache OCR, layout mới 28-10 — tên cũ `.ocr_cache/`)
 - `scripts/learn.py`, `data/corpus/ghi_chu_hoc_them.txt`, `logs/learning/learning_log.csv`
 - `tmp/` cho mọi script trung gian (chuyển đổi .doc, extract thử, dry-run)
 

@@ -181,8 +181,8 @@ hybrid_rag_agu/
 ├── chroma_db_vie/           # Index thực nghiệm re-OCR tiếng Việt, 342 chunk — CHƯA kích hoạt
 │                            #   (mất neo vàng 48,81%, chờ PA-17 re-anchor — gitignored)
 ├── chroma_db_headers_old/   # Snapshot index cho phép đo header r13 (gitignored)
-├── .ocr_cache/              # Cache kết quả OCR (tự sinh, xóa được — lần nạp sau sẽ OCR lại)
-├── .ocr_cache_vie/          # Cache OCR EasyOCR `vi` lượt re-OCR 24-10 (13 tệp/124 trang — gitignored)
+├── .cache/ocr/rapidocr/     # Cache kết quả OCR (tự sinh, xóa được — lần nạp sau sẽ OCR lại)
+├── .cache/ocr/easyocr_vie/  # Cache OCR EasyOCR `vi` lượt re-OCR 24-10 (13 tệp/124 trang — gitignored)
 ├── .generation_cache/       # Cache câu trả lời Gemini (tự sinh, xóa được — lượt sau sẽ gọi API lại)
 ├── models/                  # Trọng số train local: classifier_baseline{,_v2,_v3}, retrieval_baseline,
 │                            #   qwen25_05b_sft_adapter (mô tả trong models/README.md)
@@ -306,7 +306,7 @@ QWEN_FALLBACK=1
 OCR_ENABLED=1
 OCR_DPI=200
 OCR_MIN_CHARS_PER_PAGE=50
-OCR_CACHE_DIR=./.ocr_cache
+OCR_CACHE_DIR=./.cache/ocr/rapidocr
 ```
 
 Vài giá trị cần lưu ý khi viết phần thực nghiệm:
@@ -329,8 +329,8 @@ PDF dạng scan ảnh thì loader **tự động OCR** mà không cần cài ph�
 - **Render trang → ảnh:** `pypdfium2` (PDFium đóng gói sẵn trong wheel). Không dùng `pdf2image` vì thư viện đó bắt buộc cài **Poppler** ở cấp hệ thống, trái ràng buộc "chỉ cần pip".
 - **Nhận diện ký tự:** `rapidocr-onnxruntime` — model PP-OCR dạng ONNX kèm sẵn trong package, chạy bằng `onnxruntime` trên CPU, không cần Tesseract. Engine được nạp một lần cho cả tiến trình.
 - **Điều kiện kích hoạt — xét theo từng trang, không theo từng file:** trang nào `pypdf` trích ra dưới `OCR_MIN_CHARS_PER_PAGE` ký tự (mặc định 50) thì trang đó được OCR. Nhờ vậy PDF vừa có trang text vừa có trang chụp ảnh chỉ bị OCR đúng phần scan.
-- **Cache:** kết quả OCR ghi vào `.ocr_cache/<tên_file>__<hash>.json`, khóa theo (kích thước, mtime, dpi, ngưỡng) nên sửa file PDF là cache tự hỏng. Bắt buộc phải có vì `scripts/learn.py` rebuild collection sau mỗi bài học — không cache thì mỗi lần học lại phải OCR lại toàn bộ. Xóa thư mục này để OCR lại từ đầu.
-- **Tùy chọn trong `.env`:** `OCR_ENABLED` (`0` = tắt, file scan sẽ bị bỏ qua kèm cảnh báo), `OCR_DPI` (mặc định 200), `OCR_MIN_CHARS_PER_PAGE` (50), `OCR_CACHE_DIR` (`.//.ocr_cache`).
+- **Cache:** kết quả OCR ghi vào `.cache/ocr/rapidocr/<tên_file>__<hash>.json`, khóa theo (kích thước, mtime, dpi, ngưỡng) nên sửa file PDF là cache tự hỏng. Bắt buộc phải có vì `scripts/learn.py` rebuild collection sau mỗi bài học — không cache thì mỗi lần học lại phải OCR lại toàn bộ. Xóa thư mục này để OCR lại từ đầu.
+- **Tùy chọn trong `.env`:** `OCR_ENABLED` (`0` = tắt, file scan sẽ bị bỏ qua kèm cảnh báo), `OCR_DPI` (mặc định 200), `OCR_MIN_CHARS_PER_PAGE` (50), `OCR_CACHE_DIR` (`./.cache/ocr/rapidocr`).
 
 **Giới hạn chất lượng (cần ghi vào phần thực nghiệm của đề tài):** model PP-OCR kèm `rapidocr-onnxruntime` bắt đúng bố cục và chữ quốc ngữ nhưng **làm mất phần lớn dấu thanh** — "Điều 4. Hệ thống tổ chức" thành "Dieu 4. He thong to chuc". Hệ quả và cách xử lý trong mã nguồn:
 
@@ -670,7 +670,7 @@ Quy ước của repo (chi tiết ở `logs/README.md`): **mọi file tự sinh 
 
 `.gitignore` bỏ qua `logs/*` **trừ** `logs/README.md`, `logs/learning/` và `logs/feedback/` (hai thư mục dữ liệu lịch sử được git track để không bao giờ mất khi dọn dẹp). Riêng `outputs/` là nơi chứa **kết quả chốt** dùng cho báo cáo (`evaluation_results.json`, `evaluation_summary.md`) và được git track đầy đủ.
 
-Ba thư mục cache ẩn khác cũng tự sinh nhưng **không phải log**: `chroma_db/` (index sản xuất — xóa là phải ingest lại từ đầu), `.ocr_cache/` (kết quả OCR — xóa là phải OCR lại), `.generation_cache/` (cache câu trả lời Gemini — xóa là tốn lại quota).
+Ba thư mục cache ẩn khác cũng tự sinh nhưng **không phải log**: `chroma_db/` (index sản xuất — xóa là phải ingest lại từ đầu), `.cache/ocr/` (kết quả OCR — xóa là phải OCR lại), `.generation_cache/` (cache câu trả lời Gemini — xóa là tốn lại quota).
 
 ---
 

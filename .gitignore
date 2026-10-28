@@ -13,7 +13,7 @@ ENV/
 
 # ===== Cache / dữ liệu tự sinh (xóa được, tái tạo lại được) =====
 .generation_cache/
-.ocr_cache/
+.cache/
 chroma_db/
 __pycache__/
 *.py[cod]
@@ -56,6 +56,7 @@ models/*adapter*/
 models/qwen25_05b_sft_smoke/
 
 # ChromaDB / cache OCR: mọi biến thể (_vie, _headers_old, …)
+# Bản giữ tương thích ngược: máy còn `.ocr_cache*` từ layout cũ (cache nay ở `.cache/ocr/`).
 chroma_db*/
 .ocr_cache*/
 

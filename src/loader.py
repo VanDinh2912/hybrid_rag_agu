@@ -5,7 +5,7 @@ pypdfium2 render từng trang thành ảnh -> rapidocr-onnxruntime nhận diện
 Không phải cài phần mềm hệ thống (Tesseract/Poppler).
 
 Kết quả OCR được cache theo (đường dẫn, kích thước, mtime, dpi, ngưỡng) ra
-./.ocr_cache/ vì một lần OCR toàn bộ Tầng 1 mất ~10 phút, trong khi scripts/learn.py
+./.cache/ocr/rapidocr/ vì một lần OCR toàn bộ Tầng 1 mất ~10 phút, trong khi scripts/learn.py
 rebuild lại collection sau mỗi bài học.
 """
 
@@ -29,7 +29,7 @@ DEFAULT_MIN_CHARS_PER_PAGE = 50
 # 200 dpi đo trên corpus thật cho chất lượng ngang 300 dpi (model OCR là nút thắt,
 # không phải độ phân giải) nhưng nhanh hơn ~15%.
 DEFAULT_OCR_DPI = 200
-DEFAULT_CACHE_DIR = "./.ocr_cache"
+DEFAULT_CACHE_DIR = "./.cache/ocr/rapidocr"
 OCR_INSTALL_HINT = "pip install pypdfium2 rapidocr-onnxruntime Pillow"
 
 # Nạp model ONNX một lần cho cả tiến trình: dựng engine mất ~1s và 13 file scan

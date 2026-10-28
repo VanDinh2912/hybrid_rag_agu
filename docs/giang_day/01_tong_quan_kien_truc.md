@@ -37,7 +37,7 @@ hỏi bằng SLM local**, và **đo lường có thể chạy lại**.
  data/corpus/*.pdf|docx|txt                                                                      │
         │ DocumentLoader (src/loader.py)                                                       │
         │  ├─ PDF text: pypdf                                                                  │
-        │  ├─ trang scan: pypdfium2 render → RapidOCR → cache .ocr_cache/                      │
+        │  ├─ trang scan: pypdfium2 render → RapidOCR → cache .cache/ocr/rapidocr/          │
         │  └─ metadata tier = tên thư mục cấp 1                                                │
         ▼                                                                                      │
  DocumentChunker (src/chunking.py)                                                             │

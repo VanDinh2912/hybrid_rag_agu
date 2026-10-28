@@ -6,7 +6,8 @@
 > sửa dữ liệu đã công bố thì **hoãn và báo cáo** (mục 4).
 >
 > Ngày thực hiện: 28-10-2026 · Nhánh: `chore/restructure` · Commit Phase 1: `4b981b0`
-> · Snapshot baseline: `24e5c9a` (trạng thái `auto/overnight` tại `c8c2408`).
+> · Commit Phase 2 (cache OCR): xem §5 · Snapshot baseline: `24e5c9a` (trạng thái
+> `auto/overnight` tại `c8c2408`).
 
 ---
 
@@ -92,23 +93,89 @@ nhưng không gitignore** — bản vá 496 citation nằm trên đĩa, không v
 | `tmp/b*.py`, `tmp/clone_*`, script phiên cũ trỏ path cũ | Artifact phiên làm việc đã ghi trong `docs/EXPERIMENTS.md` — phạm vi lịch sử, không sửa. |
 | Phase 2, Phase 3 | Theo đề bài: **chỉ LẬP KẾ HOẠCH / CHỈ ĐỀ XUẤT** (mục 5, 6). |
 
-## 5. Phase 2 — KẾ HOẠCH (chưa thực hiện, cần duyệt)
+## 5. Phase 2 — cache OCR: ĐÃ THỰC HIỆN (28-10, sau khi user duyệt); indexes: HOÃN
 
-Mỗi mục: tệp nguồn phải sửa · biến env liên quan · rủi ro đo lường.
+User duyệt Phase 2 ngày 28-10 ("Chuyển sang Phase 2 xử lý indexes và cache"). Kết quả:
+**mục 2 (cache) làm xong; mục 1 (indexes) HOÃN** vì ba coupling không thuộc loại "sửa chuỗi
+đường dẫn" — chi tiết dưới đây.
 
-1. **`chroma_db_vie/` + `chroma_db_headers_old/` → `indexes/experimental/…`**
-   - Sửa: mọi chỗ tham chiếu thư mục (`docs/EXPERIMENTS.md` là HISTORY nên miễn; chỗ ACTIVE: README, `docs/giang_day/02`, `tools/diag/*` có đường dẫn literal).
-   - Env: `CHROMA_PERSIST_DIR`.
-   - Rủi ro: `chroma_db_vie` (342 chunk) gắn với số neo vàng 48,81% đang chờ PA-17; đổi đường dẫn làm **mất ngữ cảnh đường-dẫn-trong-bằng-chứng** (EXPERIMENTS trích đường dẫn này). CHỈ nên làm sau PA-17.
-2. **`.ocr_cache/` + `.ocr_cache_vie/` → `.cache/ocr/…`**
-   - Sửa: `src/loader.py` (mặc định cache), script re-OCR trong `tools/diag/`, `.gitignore`.
-   - Env: `OCR_CACHE_DIR`.
-   - Rủi ro: cache là input đo lại OCR; tên cache xuất hiện trong manifest scope `ocr_cache` (13+13 mục) → **đổi tên = re-anchor manifest** (PA mới), không được làm im lặng.
-3. **`data/normalization_pairs.json` → `data/learning/normalization_pairs.json`**
+### 5.1 Đã làm — `.ocr_cache/` → `.cache/ocr/rapidocr/`, `.ocr_cache_vie/` → `.cache/ocr/easyocr_vie/`
+
+| Thành phần | Thay đổi |
+|---|---|
+| Thư mục | `shutil.move` (cả hai đều untracked + gitignored ⇒ không dùng `git mv`). 13 + 13 tệp. |
+| `src/loader.py` | `DEFAULT_CACHE_DIR = "./.cache/ocr/rapidocr"` (L32) + docstring L8. Tên biến `OCR_CACHE_DIR` giữ nguyên. |
+| `.env.example` | `OCR_CACHE_DIR=./.cache/ocr/rapidocr` (L63). |
+| `.gitignore` | Thêm `.cache/` vào khối cache (L17); **giữ** rule cũ `.ocr_cache*/` (L60) để máy còn thư mục layout cũ không bị lộ tệp — đã ghi chú lý do ngay trong file. |
+| `tools/diag/secret_scan.py` | `SKIPPED_PARTS` thêm `".cache"` (giữ `.ocr_cache`, `.ocr_cache_vie` làm tương thích ngược). |
+| `tools/diag/docs_consistency_check.py` | `REPO_TOP` thêm `".cache"` + comment. Không đổi tập kiểm. |
+| Docs ACTIVE | `README.md` (cây thư mục, ví dụ `.env`, mục Cache, mục "ba thư mục cache ẩn"), `docs/giang_day/01` (đã cân lại ô khung), `docs/giang_day/02` (2 chỗ), `dev/.maestro/playbooks/01_du_lieu_chi_muc.md` (phạm vi group). |
+
+**Không chạm (có chủ đích)**: `tools/diag/corpus_diacritics.py` (docstring L11 và chuỗi
+provenance `"OCR doc tu .ocr_cache qua loader"` L274 **đi vào JSON đầu ra** — sửa là đổi bản
+chứng minh đã công bố); `tools/diag/quality_check_vie.py` + `tools/diag/reocr_vie.py` (hai công
+cụ một lần của lượt re-OCR 24-10, đường dẫn literal là nội dung đo); `docs/EXPERIMENTS.md`,
+`docs/DECISION_LOG.md`, `docs/CLEANUP_REPORT.md`, `docs/archive/*` (lịch sử); `logs/README.md`
+(ghim byte); `tools/diag/artifact_manifest.py` (dụng cụ đo — xem 5.3).
+
+**Bằng chứng không đổi hành vi**:
+
+| Cổng | Trước | Sau |
+|---|---|---|
+| `tmp/restructure/phase2_verify.py` (băm từng tệp, map tiền tố cũ→mới) | — | **26 tệp đổi đường dẫn KHỚP BYTE, lệch 0, thiếu 0** |
+| `tmp/restructure/cache_hit_probe.py` (chỉ đọc, dùng đúng `_cache_file` của loader) | 24 PDF quét, 13 resolve, 11 không | **13 resolve, 11 không** — danh sách tên cache giống hệt |
+| pytest | 1549 passed / 5 skipped | **1549 passed / 5 skipped** |
+| `evidence_pack_check.py --check` | KHỚP (84 tệp) | **KHỚP** |
+| `protected_hash_check.py` | 491 tệp, ĐỔI 0 / MẤT 0 | **protected=491 ĐỔI=0 MẤT=0** |
+| `run_chain.py … --dry-run` | baseline | **diff = 0 dòng** |
+| `docs_consistency_check.py` | SẠCH LỖI (5 cảnh báo cũ) | **SẠCH LỖI** (110 đường dẫn, 5 cảnh báo cũ) |
+| `secret_scan.py` | SECRET_COTHAT 0, PII 165 dòng/9 tệp | **SECRET_COTHAT 0, PII 165 dòng/9 tệp** (cache không được quét trước hay sau) |
+| Chữ ký trọng tài | `2911c69f740d` | **`2911c69f740d`** |
+
+### 5.2 HOÃN — `chroma_db_vie/` + `chroma_db_headers_old/` → `indexes/experimental/…`
+
+Ba coupling vượt phạm vi "chỉ di chuyển + sửa tham chiếu" (dừng theo điều khoản
+"move đòi hỏi đổi logic/dữ liệu thì hoãn và báo cáo"):
+
+1. **Chốt an toàn thao tác trên dữ liệu lớn.** `src/contextual_header.py::PROTECTED_INDEX_DIRS
+   = ("chroma_db", "chroma_db_vie")` và `ensure_separate_index_target()` phân giải tên
+   **theo gốc repo** (`root / name`). Di chuyển xong, chốt chỉ bảo vệ `./chroma_db_vie` (đã
+   không còn) và **mất tác dụng với index thật nằm ở `indexes/experimental/…`** — tức là phải
+   sửa logic một chốt an toàn, không phải sửa chuỗi trỏ tới file đã chuyển.
+2. **Test đọc index THẬT theo đường dẫn.** `tests/test_t5_contextual_header.py` có
+   `REAL_INDEXES = {"chroma_db": 361, "chroma_db_vie": 342}` và fixture `real_index_copy` mở
+   `REPO_ROOT / db_name`; thư mục vắng mặt ⇒ test **tự `pytest.skip`** (đỏ thành vàng = nới
+   cổng đo). `tools/diag/check_corpus.py --new-db` mặc định `ROOT/"chroma_db_vie"`,
+   `tools/diag/ablation_c_prime.py::NEW_INDEX` cũng literal.
+3. **Thay đúng điều kiện "CHỈ làm sau PA-17" đã ghi ở kế hoạch.** `chroma_db_vie` (342 chunk)
+   mang số mất neo vàng 48,81% đang chờ PA-17; `docs/REPRODUCE.md` L34 và
+   `docs/PA_TRIAGE.md` PA-1 trích đường dẫn này làm danh tính bằng chứng.
+
+Số hóa lại: 5 + 5 tệp, tổng 12.169.544 B, đã băm trong `tmp/restructure/phase2_hashes.json`;
+khi PA-17 xong và user duyệt lại, move chỉ còn cần (a) cập nhật `PROTECTED_INDEX_DIRS` kèm test
+chốt, (b) cập nhật `REAL_INDEXES`/fixture, (c) re-anchor manifest.
+
+### 5.3 Việc còn treo do Phase 2 — **cần user duyệt, ĐÃ ĐĂNG KÝ PA-48**
+
+`tools/diag/artifact_manifest.py::_scope_dirs()` sinh scope bằng `ROOT.glob("chroma_db*")` và
+`ROOT.glob(".ocr_cache*")` (chỉ quét gốc repo). Cache đã đổi chỗ nên glob thứ hai không còn
+khớp ⇒ `--check` hiện báo thêm **THIẾU (26)**: `cũ 158 tệp/390.961.924 B → nay 132 tệp/390.458.341 B`,
+kèm đúng 3 mục ĐỔI chroma cũ. **Không tự sửa glob, không regenerate manifest**: manifest là
+dụng cụ ghim byte, re-anchor phải là một commit có chủ đích. PA-48 (`docs/PA_TRIAGE.md`) đăng
+ký: thêm `(".cache/ocr", p)` cho các thư mục trong `.cache/ocr/*` vào `_scope_dirs()` rồi
+chạy lại `artifact_manifest.py` sinh manifest mới, đối chiếu 26 hash cũ↔mới bằng
+`tmp/restructure/phase2_verify.py` trước khi commit. Trong khi chờ, drift 26 mục **là tín hiệu
+có chủ đích**, không phải hỏng.
+
+### 5.4 Các mục khác của kế hoạch (giữ nguyên như đã duyệt)
+
+1. **`data/normalization_pairs.json` → `data/learning/normalization_pairs.json`** — **CHƯA làm**:
+   đợt duyệt 28-10 giới hạn ở "indexes và cache"; mục này rủi ro thấp nhưng nằm ngoài phạm vi
+   được giao, chờ user yêu cầu tiếp.
    - Sửa: `ui/app.py` (`NORMALIZATION_PAIRS_PATH`), docs/guides/NORMALIZATION_ACTIVE_LEARNING.md, `tools/diag/docs_consistency_check.py::RUNTIME_GENERATED`.
    - Env: không.
    - Rủi ro: thấp (tệp tự sinh lúc chạy; chưa từng có số công bố).
-4. **Đồng bộ cách gọi lệnh trong README/REPRODUCE sau khi chuyển `scripts/`** —
+2. **Đồng bộ cách gọi lệnh trong README/REPRODUCE sau khi chuyển `scripts/`** —
    đã làm một phần ở Phase 1; phần còn lại là thêm cờ `--help` vào `ingest.py`,
    `scripts/learn.py`, `ui/app.py`, `ui/demo_streamlit.py` (5 cảnh báo T7 hiện hữu)
    → thuộc PA đã ghi trong `docs/PA_TRIAGE.md`, KHÔNG tự thêm.
@@ -149,6 +216,10 @@ Hiện trạng giữ nguyên là an toàn nhất.
 
 ## 9. Dọn dẹp cuối
 
-Khi người dùng xác nhận nghiệm thu: xóa `tmp/restructure/` (chứa 2 script tái lập
-cổng: `protected_hash_check.py`, `update_citations.py` + các log baseline/after).
+Khi người dùng xác nhận nghiệm thu: xóa `tmp/restructure/` (chứa các script tái lập
+cổng: `protected_hash_check.py`, `update_citations.py`, `phase2_baseline.py`,
+`phase2_verify.py`, `cache_hit_probe.py` + các log baseline/after).
 Không dọn `tmp/` nói chung (nhiều artifact được `docs/EXPERIMENTS.md` trích nguồn).
+
+Riêng `phase2_hashes.json` + `phase2_verify.py` là **bằng chứng re-anchor cho PA-48** — giữ
+đến khi PA-48 được commit (dùng để đối chiếu 26 hash cache cũ↔mới trước khi sinh manifest mới).
