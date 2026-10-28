@@ -1,0 +1,154 @@
+# RESTRUCTURE_MAP — tái cấu trúc thư mục `hybrid_rag_agu`
+
+> Nhiệm vụ: **chỉ di chuyển file, KHÔNG đổi hành vi**. Quy tắc vàng đã áp dụng suốt
+> Phase 1: được phép (1) di chuyển file và (2) sửa chuỗi đường dẫn/import trỏ tới file
+> đã chuyển; cấm sửa logic, định dạng lại, xóa dữ liệu. Một move đòi hỏi đổi logic hoặc
+> sửa dữ liệu đã công bố thì **hoãn và báo cáo** (mục 4).
+>
+> Ngày thực hiện: 28-10-2026 · Nhánh: `chore/restructure` · Commit Phase 1: `4b981b0`
+> · Snapshot baseline: `24e5c9a` (trạng thái `auto/overnight` tại `c8c2408`).
+
+---
+
+## 1. Kết quả cổng nghiệm thu (baseline → sau Phase 1)
+
+| Cổng | Lệnh | Baseline (`24e5c9a`) | Sau Phase 1 (`4b981b0`) | Kết luận |
+|---|---|---|---|---|
+| pytest | `python -m pytest tests -q` | 1549 passed / 5 skipped | **1549 passed / 5 skipped** | ĐẠT — bằng từng con số |
+| Manifest artifact | `tools/diag/artifact_manifest.py --check` | rc=1, ĐỔI (3): `chroma_db/0bde6463…/data_level0.bin`, `…/length.bin`, `chroma.sqlite3` | rc=1, **ĐỔI (3) đúng 3 mục cũ** | ĐẠT — drift chroma có trước, không do tái cấu trúc |
+| Gói bằng chứng | `tools/diag/evidence_pack_check.py --check` | rc=0, KHỚP (84 tệp / 4.041.502 B) | rc=0, **KHỚP** | ĐẠT |
+| Vùng bảo vệ (tự chụp) | `tmp/restructure/protected_hash_check.py` | 491 tệp (data 468 + outputs 22 + manifest 1) | **ĐỔI 0 / MẤT 0** | ĐẠT — không byte artifact nào lay động |
+| Chuỗi P5 DryRun | `tools/loop/run_chain.py --chain tools/loop/chains/t5a_reranker.json --dry-run` | rc=0, 14 dòng | rc=0, **diff = 0 dòng** | ĐẠT — lệnh/env/argv giống hệt |
+| Không xóa file | `git diff --name-only --diff-filter=D` | — | **rỗng** (chỉ 13 rename) | ĐẠT |
+| Đồng nhất tài liệu | `tools/diag/docs_consistency_check.py` | SẠCH LỖI | **SẠCH LỖI** (110 đường dẫn, 5 cảnh báo cũ) | ĐẠT |
+| Chữ ký trọng tài | `REFEREE_FILES` = verify.py + src/answer_guard.py + src/text_utils.py | `2911c69f740d` | **cả 3 tệp không bị chạm** ⇒ chữ ký giữ nguyên | ĐẠT |
+
+Ghi chú vận hành (đã kiểm buổi tối 28-10): chạy pytest toàn repo bằng `python -m pytest`
+KHÔNG kèm đường dẫn sẽ quét cả `tmp/t3_baseline_head/tests/` (bản sao snapshot) và dừng
+ở 152 lỗi collection; lệnh chuẩn của cổng là `python -m pytest tests -q`.
+
+## 2. Bảng ánh xạ 13 move (Phase 1 — đã commit)
+
+Tất cả 13 move đều `git mv`, không file nào bị xóa. Cột "sửa tham chiếu" liệt kê nơi
+chuỗi đường dẫn/import trỏ tới tệp đó đã được cập nhật.
+
+| # | Cũ | Mới | Sửa tham chiếu |
+|---|---|---|---|
+| 1 | `learn.py` | `scripts/learn.py` | `ui/app.py` (import → `scripts.learn`), `tools/diag/env_flag_audit.py` (SCAN_FILES), `main.py` + `ingest.py` (chuỗi hint lệnh), `tools/train/build_training_data.py` (2 danh sách tệp nguồn), docstring `scripts/learn.py` (bootstrap `sys.path` + import `ingest`), README, docs |
+| 2 | `benchmark_chunking.py` | `scripts/benchmark_chunking.py` | bootstrap `sys.path`, `tools/train/build_training_data.py`, README, `logs/` mô tả trong docs đang hoạt động |
+| 3 | `export_architecture.py` | `scripts/export_architecture.py` | đường dẫn `docs/architecture/SYSTEM_ARCHITECTURE.{md,txt,docx}` trong script, README |
+| 4 | `demo_streamlit.py` | `ui/demo_streamlit.py` | `tests/test_demo_streamlit_display.py` (import package `ui`), `env_flag_audit.py`, `build_training_data.py`, README |
+| 5 | `SYSTEM_ARCHITECTURE.md` | `docs/architecture/SYSTEM_ARCHITECTURE.md` | `scripts/export_architecture.py`, `src/generator.py` docstring, `docs/ARCHITECTURE.md`, README, docs/REPRODUCE, giáo trình, 104 citation `metadata.file` |
+| 6 | `TAXONOMY.md` | `docs/spec/TAXONOMY.md` | `src/classifier.py` (6 docstring/comment), `docs_consistency_check.py` (CHECK_EXACT), docs, 16 citation |
+| 7 | `ROADMAP.md` | `docs/planning/ROADMAP.md` | `docs_consistency_check.py` (DOC_FILES + CHECK_EXACT), `tests/test_t7_docs_consistency.py` (fixture cây giả), docs/README link tương đối, 36 citation |
+| 8 | `NORMALIZATION_ACTIVE_LEARNING.md` | `docs/guides/NORMALIZATION_ACTIVE_LEARNING.md` | README, docs/giang_day |
+| 9 | `TROUBLESHOOTING_GUI.md` | `docs/guides/TROUBLESHOOTING_GUI.md` | README, docs/giang_day, 8 citation |
+| 10 | `LAYOUT_OPTIMIZATION.md` | `docs/guides/LAYOUT_OPTIMIZATION.md` | README |
+| 11 | `tools/build_sft_from_round.py` | `tools/train/build_sft_from_round.py` | `ROOT = parents[3]`, field `"tool"` trong manifest sinh ra, `tests/test_build_sft_from_round.py`, `tests/test_t4_sft_invariants.py`, `tools/diag/qlora_memory_probe.py` (comment), docs |
+| 12 | `tools/build_training_data.py` | `tools/train/build_training_data.py` | `ROOT = parents[3]`, `tools/loop/testset.py` L54 + `tools/diag/ablation_c_prime.py` L67 + `ablation_generation.py` L102 (đường dẫn importlib), `tests/test_ablation_generation.py`, docs |
+| 13 | `tools/validate_training_data.py` | `tools/train/validate_training_data.py` | `ROOT = parents[3]`, docs |
+
+5 README mới (3–5 dòng định vị thư mục): `scripts/README.md`, `docs/architecture/README.md`,
+`docs/spec/README.md`, `docs/planning/README.md`, `docs/guides/README.md`.
+
+## 3. Sửa citation trong bộ dữ liệu train đã công bố (quyết định có duyệt)
+
+Sự thật phát hiện khi chạy cổng: `data/training/*.jsonl` (bộ train sinh 23-10 bởi
+`build_training_data.py`) ghi `metadata.file` bằng **đường dẫn gốc cũ** của 7 tệp đã
+chuyển → `tools/diag/train_data_audit.py` (dụng cụ đo, KHÔNG sửa) báo `file_thieu` ~496
+dòng ⇒ pytest đỏ đúng 1 test (`test_final_train_data_audit.py::…code_qa`).
+
+Lựa chọn đã trình người dùng 28-10 và được duyệt: **cập nhật citation, giữ 13 move**
+(vì đây đúng phạm vi (2) "sửa chuỗi đường dẫn trỏ tới file đã chuyển"; số dòng giữ
+nguyên nên mọi neo dòng/`co_trich_file=1049`/`dinh_danh_kiem_tra=890` không đổi;
+`models/`+`outputs/` pin riêng, không liên quan).
+
+| `metadata.file` cũ | Mới | Số citation |
+|---|---|---|
+| `demo_streamlit.py` | `ui/demo_streamlit.py` | 180 |
+| `benchmark_chunking.py` | `scripts/benchmark_chunking.py` | 148 |
+| `SYSTEM_ARCHITECTURE.md` | `docs/architecture/SYSTEM_ARCHITECTURE.md` | 104 |
+| `ROADMAP.md` | `docs/planning/ROADMAP.md` | 36 |
+| `TAXONOMY.md` | `docs/spec/TAXONOMY.md` | 16 |
+| `TROUBLESHOOTING_GUI.md` | `docs/guides/TROUBLESHOOTING_GUI.md` | 8 |
+| `learn.py` | `scripts/learn.py` | 4 |
+| **Tổng** | | **496** (sft_train 162 + sft_val 8, nhân đôi ở bản mirror `_alpaca`; chỉ key `file`, không đổi `line`/messages) |
+
+Công cụ: `tmp/restructure/list_citations.py` (liệt kê) + `update_citations.py` (thay có
+anchor `"file": "<bare>"`, assert số dòng trước/sau từng tệp). Không còn citation trần
+nào sót (kiểm bằng grep). **Lưu ý reproducibility:** `data/training/` là tệp **untracked
+nhưng không gitignore** — bản vá 496 citation nằm trên đĩa, không vào commit; generator
+đã được cập nhật để nếu build lại sẽ sinh đúng đường dẫn mới.
+
+## 4. Hoãn / không làm (kèm lý do)
+
+| Hạng mục | Lý do hoãn |
+|---|---|
+| Sửa path cũ bên trong `logs/README.md` | Tệp **bị ghim byte trong ARTIFACT_MANIFEST** (scope `logs`, sha `7e2ec94e…`, 1955 B). Edit đầu tiên đã gây ĐỔI thứ 4 ở manifest; đã **khôi phục đúng byte** (chú ý: `git checkout --` một mình KHÔNG đủ — repo có `core.autocrlf=true` nên blob LF phải ghi ra đĩa dạng LF khớp manifest). Tài liệu này giữ đường dẫn cũ `benchmark_chunking.py`/`learn.py` cho tới khi có PA re-anchor manifest. |
+| Sửa mọi đường dẫn trong tệp ghim khác (evidence 84 / manifest 158) | Như trên — chạm byte là gãy cổng đã công bố. |
+| `evaluation.py` trong `env_flag_audit.SCAN_FILES` | ĐÃ hỏng từ TRƯỚC tái cấu trúc (không có tệp gốc nào tên vậy; `src/evaluation.py` đã nằm trong SCAN_DIRS). Không đụng — ghi ở mục 6. |
+| Comment trần: `ingest.py` docstring (2 chỗ "learn.py gọi…"), `scripts/learn.py:56` (nội dung ghi vào `ghi_chu_hoc_them.txt`), `tools/diag/train_data_audit.py:10` ("sinh 23-10 bởi `tools/build_training_data.py`" — mô tả lịch sử), `build_training_data.py:1566` (mô tả nguồn trong manifest) | Là văn mô tả/mô tả lịch sử, không phải đường dẫn dùng lúc chạy; sửa `scripts/learn.py:56` còn đổi cả văn bản sinh ra khi học. |
+| Dọn `__pycache__` cũ (`.pyc` mang tên module cũ) | Quy tắc "không xóa file"; tự sinh, không ảnh hưởng import. |
+| `tmp/b*.py`, `tmp/clone_*`, script phiên cũ trỏ path cũ | Artifact phiên làm việc đã ghi trong `docs/EXPERIMENTS.md` — phạm vi lịch sử, không sửa. |
+| Phase 2, Phase 3 | Theo đề bài: **chỉ LẬP KẾ HOẠCH / CHỈ ĐỀ XUẤT** (mục 5, 6). |
+
+## 5. Phase 2 — KẾ HOẠCH (chưa thực hiện, cần duyệt)
+
+Mỗi mục: tệp nguồn phải sửa · biến env liên quan · rủi ro đo lường.
+
+1. **`chroma_db_vie/` + `chroma_db_headers_old/` → `indexes/experimental/…`**
+   - Sửa: mọi chỗ tham chiếu thư mục (`docs/EXPERIMENTS.md` là HISTORY nên miễn; chỗ ACTIVE: README, `docs/giang_day/02`, `tools/diag/*` có đường dẫn literal).
+   - Env: `CHROMA_PERSIST_DIR`.
+   - Rủi ro: `chroma_db_vie` (342 chunk) gắn với số neo vàng 48,81% đang chờ PA-17; đổi đường dẫn làm **mất ngữ cảnh đường-dẫn-trong-bằng-chứng** (EXPERIMENTS trích đường dẫn này). CHỈ nên làm sau PA-17.
+2. **`.ocr_cache/` + `.ocr_cache_vie/` → `.cache/ocr/…`**
+   - Sửa: `src/loader.py` (mặc định cache), script re-OCR trong `tools/diag/`, `.gitignore`.
+   - Env: `OCR_CACHE_DIR`.
+   - Rủi ro: cache là input đo lại OCR; tên cache xuất hiện trong manifest scope `ocr_cache` (13+13 mục) → **đổi tên = re-anchor manifest** (PA mới), không được làm im lặng.
+3. **`data/normalization_pairs.json` → `data/learning/normalization_pairs.json`**
+   - Sửa: `ui/app.py` (`NORMALIZATION_PAIRS_PATH`), docs/guides/NORMALIZATION_ACTIVE_LEARNING.md, `tools/diag/docs_consistency_check.py::RUNTIME_GENERATED`.
+   - Env: không.
+   - Rủi ro: thấp (tệp tự sinh lúc chạy; chưa từng có số công bố).
+4. **Đồng bộ cách gọi lệnh trong README/REPRODUCE sau khi chuyển `scripts/`** —
+   đã làm một phần ở Phase 1; phần còn lại là thêm cờ `--help` vào `ingest.py`,
+   `scripts/learn.py`, `ui/app.py`, `ui/demo_streamlit.py` (5 cảnh báo T7 hiện hữu)
+   → thuộc PA đã ghi trong `docs/PA_TRIAGE.md`, KHÔNG tự thêm.
+
+## 6. Phase 3 — ĐỀ XUẤT (không làm)
+
+Gom `src/` (16 module phẳng) thành gói có `__init__.py` với subpackage `indexing/`
+(loader, chunking, contextual_header), `retrieval/` (retrieval, vector_db, reranker,
+router), `generation/` (generator, local_slm, answer_guard, refusal_policy,
+evidence_selection) và `core/` (pipeline, text_utils, classifier, query_normalizer).
+Đề xuất này **đổi toàn bộ import string** (`src.x` → tên gói) và có khả năng đổi thứ
+tự side-effect lúc import — tức VƯỢT quy tắc vàng "chỉ di chuyển + sửa tham chiếu".
+Điều kiện làm: sau khi chốt báo cáo, có một vòng kiểm chứng riêng (baseline + lại chữ
+ký trọng tài trên cây mới) vì `verify.py` tự ký theo **đường dẫn** `src/answer_guard.py`
+và `src/text_utils.py` — đổi đường dẫn 2 tệp này là đổi luôn cách kiểm chữ ký.
+Hiện trạng giữ nguyên là an toàn nhất.
+
+## 7. Mẫu thuẫn phát hiện — ghi lại, KHÔNG tự sửa
+
+- `README.md` (§1) ghi "1.124 test" ở một đoạn trong khi cây hiện chạy **1.549 passed /
+  5 skipped** (đã cập nhật ở §2 của README; con số 1.124 cũ ở đoạn khác, chưa sửa vì đề
+  bài nghiêm sửa số liệu — chờ người dùng duyệt).
+- **Hai chữ ký trọng tài cùng xuất hiện**: `9f1179ccab74` (mô tả trong ký ức vòng P5,
+  `data/loop` README) và `2911c69f740d` (PA-2+PA-20 áp 26-10). Phase 1 không chạm cả 3
+  tệp tạo vân tay nên cả hai vẫn nguyên giá trị lịch sử.
+- `docs/PA_TRIAGE.md`, `docs/CLEANUP_*` (PA-43 từng "cắt bước con chuyển `learn.py`/
+  `benchmark_chunking.py`") là **bản ghi lịch sử quyết định** — Phase 1 làm lại bước đó
+  theo yêu cầu mới, không viết lại lịch sử.
+- `env_flag_audit.py` có sẵn 1 mục chết `evaluation.py` từ trước (không do tái cấu trúc).
+
+## 8. Rollback
+
+- `auto/overnight` **không đổi** (đầu tại `c8c2408`); mọi thứ Phase 1 nằm trên
+  `chore/restructure`: `24e5c9a` (snapshot) → `4b981b0` (Phase 1). Lùi = bỏ nhánh.
+- Backup toàn cây trước khi bắt đầu: `D:\DoAn\hybrid_rag_agu_backup_2026-10-28.zip`
+  (3.648 tệp / 613.454.237 B thô).
+- Log cổng + ảnh chụp baseline trong `tmp/restructure/` (xóa khi nghiệm thu xong — mục 9).
+
+## 9. Dọn dẹp cuối
+
+Khi người dùng xác nhận nghiệm thu: xóa `tmp/restructure/` (chứa 2 script tái lập
+cổng: `protected_hash_check.py`, `update_citations.py` + các log baseline/after).
+Không dọn `tmp/` nói chung (nhiều artifact được `docs/EXPERIMENTS.md` trích nguồn).
