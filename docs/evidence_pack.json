@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-27T22:19:28",
+ "generated_at": "2026-10-28T12:59:51",
  "algorithm": "sha256",
  "root": ".",
  "note": "sha256 trên byte thô, không chuẩn hoá EOL; artifact nặng không commit",
@@ -728,7 +728,7 @@
    "path": "tools/loop/verify.py",
    "bytes": 14960,
    "sha256": "137ee884af3ce3108a99e84635079b73961f31a8f91debae239cbab265cef32c",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "tools/diag/rescore_retrieval_round_v2.py",

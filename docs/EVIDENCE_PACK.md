@@ -1,9 +1,21 @@
-# Gói bằng chứng cho `EXPERIMENTS.md` (27-10)
+# Gói bằng chứng cho `EXPERIMENTS.md` (27-10, phạm vi cập nhật 28-10)
 
 Bảng [EXPERIMENTS.md](EXPERIMENTS.md) có 25 dòng D-01…D-42 (đánh số không liên tục, giữ nguyên
 theo [DECISION_LOG.md](DECISION_LOG.md)). Mỗi dòng trích số từ một artifact nằm trong `data/loop/`,
 `docs/` hoặc `tmp/`. Tệp này ghim `(path, bytes, sha256)` cho **mọi** tệp cần để đọc lại số đó, và
 kiểm lại được bằng một lệnh — **không** chép artifact nặng vào git (PA-33, [PA_TRIAGE.md](PA_TRIAGE.md)).
+
+**Phạm vi thực tế của gói (đính chính 28-10, tự công bố điểm mù):** hàng đợi của dụng cụ
+`tools/diag/evidence_pack_check.py` là **25 dòng D-01…D-42 cứng trong mã**, được chốt trước khi
+EXPERIMENTS.md tái cấu trúc thành **Bảng A (khoa học) + Bảng B (quy trình)**. Vì vậy gói này **chưa** ghim
+bằng chứng cho các dòng mới của EXPERIMENTS.md: `C1…C6`, `C2b`, `T0`, `V1`, `V2`, `r17`, `P5`, `Q4`, `Q5`,
+`Oracle (a)`, `Oracle (c)`, `r20`, `r21` — và **vẫn còn** dòng `D-16` (tổng điểm trọng số 7,2), thứ từ
+28-10 chỉ nằm trong [DECISION_LOG.md](DECISION_LOG.md) chứ **không** còn là một dòng thí nghiệm.
+Hai hệ quả phải đọc kèm mọi lần chạy gói này: (i) "`--check` mã 0" chỉ chứng minh 25 dòng cũ còn tái lập
+được, **không** chứng minh toàn bộ EXPERIMENTS.md có bằng chứng; (ii) đường dẫn của các dòng mới được kiểm
+bằng **script chỉ-đọc riêng** (`tmp/experiments_e_20261028/experiments_source_audit.py` — tồn tại từng tệp
++ chữ số đối chiếu artifact), không bằng cách sửa hàng đợi của dụng cụ. Việc mở rộng hàng đợi thuộc quyền
+user (dụng cụ đo không được sửa trong ca tài liệu), nên ở đây chỉ ghi rõ khoảng trống.
 
 ## 1. Ba lệnh
 
@@ -106,7 +118,7 @@ cùng dòng (mốc baseline, cổng so sánh, nhật ký đếm); `neo` = neo đ
 | D-42 | phụ | `tmp/final_number_audit.json` | 12054 | `53f4767f518a` | chưa |
 | D-42 | phụ | `tmp/final_number_audit_table.md` | 7240 | `3478c9dca8ba` | chưa |
 | neo | neo | `docs/CLEANUP_ANCHORS.md` | 10957 | `8c47b8480d9a` | tracked |
-| neo | neo | `tools/loop/verify.py` | 14960 | `137ee884af3c` | chưa |
+| neo | neo | `tools/loop/verify.py` | 14960 | `137ee884af3c` | tracked |
 | neo | neo | `tools/diag/rescore_retrieval_round_v2.py` | 10027 | `1d5d8af50053` | tracked |
 | neo | neo | `data/loop/rounds/r11/verdicts_retrieval.jsonl` | 697158 | `d0a1b08dd096` | chưa |
 | neo | neo | `data/loop/rounds/r11/round_summary_retrieval.json` | 7896 | `00e114c09afe` | chưa |

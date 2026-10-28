@@ -78,10 +78,11 @@ Hai cơ chế xuyên suốt các tầng:
 hybrid_rag_agu/
 │
 ├── data/
-│   ├── corpus/              # 26 tài liệu ở 3 tầng (21 PDF + 5 DOCX), nguồn xây Vector DB
+│   ├── corpus/              # 29 tài liệu ở 3 tầng (24 PDF + 5 DOCX), nguồn xây Vector DB
 │   │   ├── Tầng 1/          # Quy chế/quyết định chính thức (6 PDF)
 │   │   ├── Tầng 2/          # Kế hoạch, thông báo ngày (6 PDF)
-│   │   ├── cac_file_bo_xung_khac/   # Thông báo học phí, CTĐT, khảo sát... (13 file + 1 DOCX)
+│   │   ├── cac_file_bo_xung_khac/   # Thông báo học phí, CTĐT, khảo sát... (12 PDF + 5 DOCX;
+│   │   │                        #   3 PDF mới commit 28-10 CHƯA ingest/index)
 │   │   └── ghi_chu_hoc_them.txt     # Bài học tự sinh khi dùng chế độ test & học
 │   ├── evaluation/          # Bộ benchmark + checklist kiểm tra tay
 │   │   ├── benchmark_100_questions_v3.json  # 100 câu v3 — 13 khóa (12 khóa v2 + question_type),
@@ -92,6 +93,16 @@ hybrid_rag_agu/
 │   │   ├── benchmark_15_questions.json/.md  # bộ 15 câu đầu tiên
 │   │   ├── benchmark_questions.json         # 15 câu GUI tự sinh (schema 10 khóa cũ)
 │   │   └── reference/       # File quy chế mẫu (không index — chỉ dùng đối chiếu)
+│   ├── loop/                # Vòng lặp P5 tự kiểm chứng (sổ đăng ký round ở data/loop/README.md)
+│   │   ├── testset_v1.jsonl # 811 item đo chốt (câu + gold chunk + nguồn) + testset_v1_manifest.json
+│   │   ├── README.md        # Đăng ký TRƯỚC từng round + luật quyết định (r0 → r21/r21b)
+│   │   ├── rounds/          # r0…r21b_B: full.jsonl, verdicts_full.jsonl, round_summary, env_sidecar
+│   │   ├── rounds_v2/       # Artifact chấm lại bằng trọng tài v2 `2911c69f740d`:
+│   │                        #   1.000 verdict full (10 round), rescore truy xuất, r16 + gate của nó
+│   │   ├── diag/            # Chẩn đoán từng phép đo (reranker_paired, corpus_diagnostics, b1_cprime…)
+│   │   └── noise_floor.json # Băng nhiễu lịch sử ±3 item/100 (pha sinh)
+│   ├── training/            # Dữ liệu huấn luyện local: classifier/retrieval baseline, SFT (Alpaca),
+│   │                        #   probe bộ nhớ t4b_* — mô tả trong data/training/README.md
 │   └── normalization_pairs.json   # Cặp (câu gốc → câu chuẩn hóa) cho Qwen học — GUI tự sinh
 │
 ├── src/
@@ -107,6 +118,12 @@ hybrid_rag_agu/
 │   │                        #   Qwen few-shot + guardrail 3 lớp, suy giảm mềm khi lỗi
 │   ├── router.py            # Ánh xạ nhãn → cấu hình truy xuất (top_k, trọng số RRF,
 │   │                        #   lọc nguồn theo chủ đề); mặc định = cấu hình chung
+│   ├── answer_guard.py      # Guard đáp án: phát hiện bịa/leak theo grounding + token overlap
+│   │                        #   (cờ ENABLE_ANSWER_GUARD / NORMALIZE_SANITY_GUARD)
+│   ├── reranker.py          # Cross-encoder bge-reranker-v2-m3 pool 20→top-k (ENABLE_RERANKER, mặc định TẮT)
+│   ├── contextual_header.py # Gắn header Chương/Điều/Khoản vào chunk (ENABLE_CONTEXTUAL_HEADER, TẮT)
+│   ├── evidence_selection.py# Cửa sổ bằng chứng 3–5 câu thay full-context (ENABLE_EVIDENCE_SELECTION, TẮT)
+│   ├── refusal_policy.py    # Chính sách từ chối: soft refusal + biến thể decoupled (mặc định TẮT)
 │   ├── retrieval.py         # Tầng 2: từ điển đồng nghĩa + expand_query_with_synonyms()
 │   │                        #   + split_comparison_query() tách truy vấn con cho SO_SANH
 │   ├── generator.py         # Sinh câu trả lời: Gemini + cache + fallback Qwen + Soft Refusal
@@ -120,8 +137,20 @@ hybrid_rag_agu/
 ├── ui/
 │   └── app.py               # GUI 3 tab: Tra cứu / Nạp dữ liệu / Vừa test vừa học
 │
-├── tests/                   # 319 unit test (chunking, pipeline, classifier, router, local_slm,
-│                            #   evaluation, GUI flag...) — offline hoàn toàn
+├── tests/                   # 1.549 unit test pass + 5 skipped (lượt postflight r21b 28-10)
+│                            #   — offline hoàn toàn (chunking, pipeline, classifier, router,
+│                            #   local_slm, evaluation, gate/verify vòng lặp, GUI flag...)
+│
+├── tools/
+│   ├── loop/                # Máy chạy vòng P5: run_round.py, gate.py, verify.py (trọng tài
+│   │                        #   deterministic, chữ ký `2911c69f740d`), testset.py, attribute.py, chains/
+│   ├── eval/                # Khung câu hỏi thật: classify_real_questions.py, score_real_questions.py,
+│   │                        #   report_metrics.py, real_questions.jsonl
+│   ├── diag/                # ~40 script chẩn đoán/tái kiểm chỉ-đọc (artifact_manifest,
+│   │                        #   evidence_pack_check, final_number_audit, rescore_rounds_v2, reocr_vie…)
+│   ├── train/               # Huấn luyện local: classifier baseline v1–v3, retrieval baseline,
+│   │                        #   train_sft_lora.py + evaluate_sft_adapter.py (venv_train, CUDA)
+│   └── build_sft_from_round.py · build_training_data.py · validate_training_data.py
 │
 ├── logs/                    # MỌI file tự sinh khi chạy — quy ước chi tiết ở logs/README.md
 │   ├── benchmark/           # Output của benchmark_chunking.py (log, results_all.json, chroma_*/) — xóa được
@@ -142,9 +171,17 @@ hybrid_rag_agu/
 │   ├── .maestro/playbooks/  # Quy tắc cộng tác đa-agent (4 group + base_prompt) — xem mục 7
 │   └── prompts/             # Playbook nhiệm vụ P0→P5 + PROGRESS (lịch sử)
 │
-├── chroma_db/               # ChromaDB đã persist (ingest.py tự sinh — gitignored)
+├── chroma_db/               # ChromaDB đã persist — index SẢN XUẤT 361 chunk (ingest.py tự sinh — gitignored)
+├── chroma_db_vie/           # Index thực nghiệm re-OCR tiếng Việt, 342 chunk — CHƯA kích hoạt
+│                            #   (mất neo vàng 48,81%, chờ PA-17 re-anchor — gitignored)
+├── chroma_db_headers_old/   # Snapshot index cho phép đo header r13 (gitignored)
 ├── .ocr_cache/              # Cache kết quả OCR (tự sinh, xóa được — lần nạp sau sẽ OCR lại)
+├── .ocr_cache_vie/          # Cache OCR EasyOCR `vi` lượt re-OCR 24-10 (13 tệp/124 trang — gitignored)
 ├── .generation_cache/       # Cache câu trả lời Gemini (tự sinh, xóa được — lượt sau sẽ gọi API lại)
+├── models/                  # Trọng số train local: classifier_baseline{,_v2,_v3}, retrieval_baseline,
+│                            #   qwen25_05b_sft_adapter (mô tả trong models/README.md)
+├── tmp/                     # Artifact phiên làm việc (controller, sidecar, log, bản sao index A/B)
+│                            #   — một số tệp được docs/EXPERIMENTS.md trích làm nguồn, không xóa chúng
 │
 ├── main.py                  # Chế độ chạy thực: CLI tương tác, hỏi liên tục
 ├── ingest.py                # Script nạp corpus vào ChromaDB (chạy trước main.py)
@@ -155,7 +192,16 @@ hybrid_rag_agu/
 │
 ├── TAXONOMY.md              # Bộ nhãn câu hỏi: 14 chủ đề + 4 loại + luật gán (cổng P1.1)
 ├── ROADMAP.md               # Định hướng làm lại đồ án + 3 câu hỏi nghiên cứu + GATE
+├── ARTIFACT_MANIFEST.json   # Manifest ghim SHA-256 artifact round — kiểm bằng tools/diag/artifact_manifest.py --check
 ├── docs/
+│   ├── EXPERIMENTS.md       # Bảng A (kết quả khoa học) + Bảng B (quy trình/dụng cụ), 7 cột có chữ ký trọng tài
+│   ├── DECISION_LOG.md      # Sổ quyết định đầy đủ: ngữ cảnh, giả thuyết đăng ký trước, PA-1…PA-51
+│   ├── EVIDENCE_PACK.md     # + evidence_pack.json — gói bằng chứng ghim byte (kiểm: evidence_pack_check.py)
+│   ├── PA_TRIAGE.md         # Hàng đợi đề xuất PA chờ duyệt
+│   ├── REPRODUCE.md         # Lệnh tái lập kết quả đã công bố
+│   ├── ARCHITECTURE.md      # Kiến trúc cập nhật theo vòng lặp P5
+│   ├── archive/             # Báo cáo lịch sử (test_final.md, AUTONOMY_LOG, MORNING_REPORT...)
+│   ├── giang_day/           # 11 bài giảng nội bộ theo từng tầng pipeline
 │   └── bao_cao/             # Bản nháp chương báo cáo (chương 3 kiến trúc, chương 4 thực nghiệm,
 │                            #   outline chương 1/2/5) — mọi số liệu có nguồn ở outputs//logs/
 │
@@ -276,7 +322,7 @@ Vài giá trị cần lưu ý khi viết phần thực nghiệm:
 
 ### 4.1. Đưa tài liệu vào thư mục `data/corpus/`
 
-Loader (`src/loader.py`) quét đệ quy thư mục `data/corpus/`, hỗ trợ `.txt` (utf-8), `.pdf` (pypdf) và `.docx` (python-docx). Hiện trạng corpus: **26 file (21 PDF + 5 DOCX), không còn file `.doc` legacy**. File `.doc` (Word 97-2003) không trích xuất được — hãy `Save As` sang `.docx`.
+Loader (`src/loader.py`) quét đệ quy thư mục `data/corpus/`, hỗ trợ `.txt` (utf-8), `.pdf` (pypdf) và `.docx` (python-docx). Hiện trạng corpus: **29 file (24 PDF + 5 DOCX), không còn file `.doc` legacy** — 3 PDF commit 28-10 (`dh24-ky`, `qd-1543-BGDDT`, `so-tay-sktt`) chưa ingest, index sản xuất vẫn 361 chunk. File `.doc` (Word 97-2003) không trích xuất được — hãy `Save As` sang `.docx`.
 
 PDF dạng scan ảnh thì loader **tự động OCR** mà không cần cài phần mềm hệ thống:
 
@@ -325,7 +371,7 @@ Mọi chunk đều mang tiền tố `[Tên văn bản]` (và `- [Điều N.]` n�
 
 Đặc điểm chung của cả 3 chiến lược: mốc `DEFAULT_MAX_TOKENS = 512`, đếm token bằng tokenizer HuggingFace của chính bge-m3 (`get_token_counter("BAAI/bge-m3")`, lỗi thì lùi về đếm từ), và **khóa nguyên khối bảng Markdown** (`lock_markdown_tables=True`) — bảng dài hơn ngưỡng vẫn giữ thành 1 chunk thay vì cắt làm hai, vì hàng tách khỏi tiêu đề cột thì embedding vô nghĩa.
 
-Trên corpus hiện tại (26 tài liệu), 3 chiến lược cho 3 index khác nhau: **fixed = 182 chunks, recursive = 189, structure = 378** (lượt dựng 16/10/2026 — chính là số liệu so sánh của demo).
+Trên corpus tại lượt dựng 16/10/2026 (26 tài liệu), 3 chiến lược cho 3 index khác nhau: **fixed = 182 chunks, recursive = 189, structure = 378** (chính là số liệu so sánh của demo; 3 PDF thêm 28-10 chưa dựng lại).
 
 ---
 
@@ -649,7 +695,7 @@ Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ đư�
 - Để có kết quả ổn định, Generator sử dụng `Temperature = 0.0` và luôn kèm trích dẫn Điều/Khoản từ ngữ cảnh.
 - `main.py` và `demo_streamlit.py` tự đặt `sys.stdout.reconfigure(encoding="utf-8")` nên tiếng Việt in đúng trên console Windows; nếu gọi Python thủ công thì chạy kèm `PYTHONUTF8=1` hoặc `PYTHONIOENCODING=utf-8`.
 - Mỗi lần chạy sẽ thấy một `FutureWarning` của `google-generativeai` — gói này đã bị Google khai tử nhưng vẫn hoạt động (0.8.6). Không phải lỗi; migrate sang `google-genai` là việc về sau, và lưu ý `google-genai` đổi cả tên model lẫn cách truyền `thinking_config`.
-- **Hiện trạng corpus và index:** 26 tài liệu (21 PDF + 5 DOCX, không còn `.doc` legacy) ở 3 tầng; index sản xuất `chroma_db/` = **361 chunks** cắt bằng `DocumentChunker` (structure-aware cho văn bản có Điều, fallback theo đoạn cho văn bản thường). Ba index thực nghiệm của demo: fixed = 182, recursive = 189, structure = 378 chunks.
+- **Hiện trạng corpus và index:** 29 tài liệu (24 PDF + 5 DOCX, không còn `.doc` legacy) ở 3 tầng — 3 PDF thêm 28-10 **chưa ingest**; index sản xuất `chroma_db/` = **361 chunks** cắt bằng `DocumentChunker` (structure-aware cho văn bản có Điều, fallback theo đoạn cho văn bản thường). Ba index thực nghiệm của demo: fixed = 182, recursive = 189, structure = 378 chunks.
 - **Hiện trạng tầng phân loại + kết quả A/B chốt (P2.3–P4.3, 2026-10-21):** index 361 chunks **không đổi** — tầng phân loại là lớp phía trên pipeline, không rebuild index. Độ chính xác bộ phân loại: chủ đề 85,0% / loại câu hỏi 81,0% (`logs/classifier/accuracy_report.md`). Kết quả A/B trên benchmark v3 100 câu (generator Local Qwen `qwen2.5:1.5b-instruct`, top_k=6, giám khảo tắt — nguồn `outputs/ab_comparison.md`):
 
 | Chỉ số | WITHOUT (tắt phân loại) | WITH (bật phân loại) | Chênh lệch |

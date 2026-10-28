@@ -1167,3 +1167,230 @@ round nào đã công bố.
 **Kết quả & phán quyết:** ghi `tmp/r18_router_raw_2026-10-27.json` + log cùng tên,
 và (nếu đường B) `data/loop/rounds/r18/`. Tên mới, không ghi đè artifact đã công bố.
 Mọi thay đổi mặc định sau r18 phải qua PA riêng.
+
+## Q2 — ĐĂNG KÝ TRƯỚC r20 (viết 27-10, TRƯỚC khi chạy)
+
+**Câu hỏi.** Khi bật `ENABLE_DENSE_ORIGINAL_QUERY=1` trên đúng cấu hình pha sinh của r5,
+chất lượng đầu-cuối có đổi không — và đổi theo chiều nào? Đây là điều kiện "kiểm ở pha
+sinh" đã ghi trong PA-49; r17 chỉ đo pha truy xuất.
+
+**Cấu hình = r5, đúng MỘT biến.** n = 100 item, `--pin-subset-from r5` (cùng 100 id),
+`--phase full --split all --limit 100 --only-retrieved`, `--generator offline_qwen`,
+`ENABLE_CLASSIFIER=1`, `ENABLE_ANSWER_GUARD=1`, `ROUTER_SOFT_FILTER=1`,
+`ROUTER_FILTER_RANK_BONUS=3`, `ROUTER_SOURCE_QUOTA=0`, `ENABLE_ANSWER_RESCUE=1`,
+`RESCUE_MIN_SCORE=0.8`, cache **mới** `GENERATION_CACHE_DIR=tmp/loop_gen_cache_r20`.
+Biến duy nhất: `ENABLE_DENSE_ORIGINAL_QUERY=1` (r5 chạy với cờ TẮT).
+
+**Hệ quả phải ghi, không được quy công:** cờ này đổi **cả** truy vấn đưa vào dense
+retriever **và** ngữ cảnh mà generator nhìn thấy. Vì vậy r20 đo **hệ thống**, không đo
+riêng "tầng sinh"; mọi khác biệt về `gold_in_top_k`/`FAIL_RETRIEVAL` là một phần của can thiệp.
+
+**Đối chứng.** `data/loop/rounds_v2/r5/verdicts_full.jsonl` — chính 100 item đó, chấm lại
+bằng trọng tài hiện hành `2911c69f740d`. Không chạy lại r5, không đổi mẫu số.
+
+**Điểm cuối chính:** `PASS_CORRECT` ghép cặp theo `id`.
+
+**Luật quyết định (chốt trước, không sửa sau khi thấy số):**
+
+- (a) McNemar chính xác hai phía trên số cặp bất đồng, p ≤ 0,05;
+- (b) bootstrap cụm theo `source_document` (10.000 lần, seed `20261027`, CI percentile 95%)
+  không chứa 0;
+- (c) |Δ| ≥ **3 item / 100** (băng nhiễu ±3 item đã đo ở pha sinh).
+- Đủ cả ba ⇒ "có tín hiệu" (ghi chiều). Thiếu một ⇒ **"không kết luận"**.
+- **Veto an toàn:** nếu `FAIL_HALLUCINATED_ON_UNANSWERABLE` hoặc `FAIL_FABRICATED` **tăng**
+  so với r5 thì dù `PASS_CORRECT` tăng cũng **không** được đề xuất bật cờ làm mặc định.
+- Không tuyên bố theo family (n < 8, cụm < 20 đối với hầu hết family); chỉ in số thăm dò.
+
+**Báo cáo bắt buộc:** `PASS_CORRECT`, `PASS_REFUSAL`, `FAIL_OVERREFUSAL`, `FAIL_RETRIEVAL`,
+`FAIL_HALLUCINATED_ON_UNANSWERABLE`, `FAIL_FABRICATED`, `FAIL_INCOMPLETE`; `refusal_rate`;
+`fabrication_rate_on_answered`; tỉ lệ `gold_in_top_k` (cơ chế); latency median/p95.
+
+**Điều kiện công cụ đã biết (không được giấu):** `tools/loop/run_round.py` **không ghi**
+`ENABLE_DENSE_ORIGINAL_QUERY` vào `settings` (PA-51 chưa duyệt). Vì vậy sau lượt chạy phải
+ghi sidecar `data/loop/rounds/r20/env_sidecar.json` (biến môi trường thật + lệnh chạy) và
+coi sidecar là bản tự ký bổ sung; manifest của runner một mình **không đủ** để chứng minh
+cấu hình. Không sửa runner trong lượt này.
+
+**Chi phí dự kiến:** ~100 lượt classifier Ollama + 100 lượt sinh (~16 s/item ở r5) ⇒
+khoảng 30–45 phút; 0 Gemini; không đổi index/`k`/trọng số.
+
+**Artifact:** `data/loop/rounds/r20/` (thư mục mới), `tmp/r20_paired_2026-10-27.json` + `.log`.
+Không ghi đè round nào đã công bố.
+
+## Q4 — ĐĂNG KÝ TRƯỚC phép thử căng cho PA-49 (viết 27-10, TRƯỚC khi chạy)
+
+**Câu hỏi.** Nếu **mọi** câu hỏi đã bị `fold` từ đầu (đầu vào mất dấu — kịch bản xấu nhất),
+cờ `ENABLE_DENSE_ORIGINAL_QUERY` còn tạo khác biệt nào không?
+
+**Thiết kế.** 811 item, cùng bản sao index 361 chunk, mọi cờ khác TẮT (nền r17-T). Mỗi item
+dùng `q' = fold(raw_query)` cho cả hai lượt; cờ BẬT và TẮT; `k` nhánh = 12, top-6. Đo trên
+700 item có gold (gold@6) và 97 item HUMAN (nguồn đúng còn trong top-6).
+
+**Kỳ vọng đăng ký trước (để phát hiện lỗi triển khai, không phải giả thuyết cần chứng minh):**
+vì `fold` idempotent (đã kiểm 811/811 ở r17), nhánh dense nhận **cùng một chuỗi** ở cả hai cờ
+⇒ hai lượt phải trùng **từng item** (tập và thứ tự top-6). Lệch 1 item ⇒ lỗi triển khai, dừng.
+
+**Cách đọc số:** nếu trùng, gold@6 và neo HUMAN của **cả hai** cờ bằng mức nền all-off
+(536/700 và 75/97 theo r17); nghĩa là lợi ích +45 của r17 **biến mất** khi đầu vào không còn
+dấu. Đây là **giới hạn phạm vi** của PA-49 (production giả định câu hỏi tiếng Việt có dấu),
+không phải bằng chứng chống bật cờ. Không đổi ngưỡng nào.
+
+**Artifact:** `tmp/q4_fold_stress_2026-10-27.json` + `.log` (tên mới).
+
+## Q5 — KẾ HOẠCH THĂM DÒ index cũ/mới trên 606 item đã neo (viết 27-10, TRƯỚC khi chạy)
+
+Đây là **thăm dò**, không mở cổng, không thay r19: r19 vẫn đóng vì điều kiện ≥90% neo chưa đạt
+(58,14% V3 + 199 neo mục = 606/700 = 86,57%). Phạm vi đúng 606 item đã neo; **94 item chưa neo
+bị loại** (đo trên chúng là đo một tập khác).
+
+- **Neo:** 407 item có `target_ids` từ V3 (`tmp/vie_anchored.json`) + 199 item neo theo
+  `nguồn + tiêu đề mục` (P6). Item có nhiều chunk đích được tính "trúng" nếu **bất kỳ** chunk
+  đích nào vào top-6; vì vậy phải in kèm phân bố số đích (trung bình, tối đa, % item > 1 đích)
+  — không được đọc con số hit@6 như thể mỗi item có một đáp án duy nhất.
+- **Hai lượt:** cùng một câu hỏi **nguyên văn**, mọi cờ TẮT (nền r17-T), chỉ khác index
+  (bản sao `chroma_db` vs bản sao `chroma_db_vie`), `k`=12, top-6.
+- **Số báo:** hit@6 ghép cặp trên 606 (McNemar chính xác + bootstrap cụm `source_document`,
+  10k, seed `20261027`), theo family chỉ khi n≥8 (thăm dò); latency; phân bố số đích.
+- **Xuất để duyệt tay:** 30 neo tự động (phân tầng theo `anchor_kind` và family, seed cố định),
+  mỗi dòng có câu hỏi, nguồn, mục, chunk cũ, (các) chunk mới, bằng chứng khớp, số đích →
+  `tmp/q5_anchor_review_30.md`. Không tuyên bố 30/30 đạt thay người duyệt.
+- **Không** ghi đè `tmp/vie_anchored.json`, không sửa `chroma_db*`, không sinh testset mới.
+
+## r21 — ĐĂNG KÝ TRƯỚC xác nhận độc lập (28-10-2026, TRƯỚC chọn mẫu và chạy)
+
+**Phạm vi được duyệt:** tự trị, không hỏi, không tạo PA mới, 0 Gemini. Hai nhánh pha full
+trên cùng 300 item mới có `gold_chunk_id`, loại TOÀN BỘ 100 id r5 (kể cả id không có gold).
+Không sửa `src/`, runner, trọng tài, ngưỡng, index thật hoặc artifact đã công bố.
+
+**Làm rõ cấu hình trước khi thấy số:** r5 lịch sử bật classifier/answer_guard/soft_filter/rescue,
+nhưng yêu cầu r21 ghi rõ “mọi cờ TẮT”. Ưu tiên yêu cầu all-off: A giữ model/cửa sổ/trọng số của
+r5 nhưng TẮT classifier, answer_guard, rescue, soft_filter, query expansion và mọi lever khác;
+B = A với duy nhất `ENABLE_DENSE_ORIGINAL_QUERY=1`. r21 vì vậy là xác nhận hiệu ứng dense raw
+trên nền all-off, KHÔNG phải sao lặp đúng cấu hình r20. Không nhập nhằng hai nền khi pooled.
+`ENABLE_HYBRID_SEARCH=1` là đường truy xuất nền BM25+dense cần kiểm, không phải lever can thiệp.
+Chuẩn hóa LocalSLM tiền xử lý vẫn theo pipeline hiện hành (không có cờ tắt, không sửa code).
+
+**Mẫu cố định:** lấy pool gold của `testset_v1.jsonl`, bỏ 100 id ở `rounds/r5/full.jsonl`;
+phân tầng theo family, quota tỷ lệ kích thước family theo Hamilton (largest remainder), bảo đảm
+ít nhất 1 item/family nếu còn item; trong mỗi family sắp id rồi dùng RNG Python seed `20261028`
+để lấy mẫu không hoàn lại. Xáo thứ tự 300 item một lần với cùng RNG, hai nhánh dùng đúng thứ tự.
+Lưu TRƯỚC khi gọi pipeline: `tmp/r21_20261028/ids.json`, `items.jsonl`, quota, danh sách id r5
+bị loại, hash testset/input và snapshot nguyên byte mục đăng ký này. Không chọn mẫu theo recall,
+verdict hay câu trả lời; không `--only-retrieved` vì sẽ làm co mẫu số theo can thiệp.
+
+**Cấu hình chung A/B (ký sidecar trước mỗi nhánh):**
+
+- `--phase full --split all --strategy all --limit 300 --top-k 6 --generator offline_qwen`
+  với `--testset tmp/r21_20261028/items.jsonl`; không lọc lại family hoặc recall.
+- Qwen `qwen2.5:1.5b-instruct`, temperature 0,1, num_ctx 8192, num_predict 512, prompt v1.3;
+  Ollama cùng host/model/digest cho hai nhánh; embedding BAAI/bge-m3 CPU.
+- Hybrid BM25/dense 0,5/0,5, RRF c=60, oversampling=2 (12 ứng viên, top-6 cho generator).
+- TẮT: `ENABLE_CLASSIFIER`, `ENABLE_ANSWER_GUARD`, `ENABLE_ANSWER_RESCUE`,
+  `ROUTER_SOFT_FILTER`, `NORMALIZE_SANITY_GUARD`, `ENABLE_DECOUPLED_REFUSAL`,
+  `ENABLE_EVIDENCE_SELECTION`, `ENABLE_RERANKER`, `ENABLE_CONTEXTUAL_HEADER`,
+  `ENABLE_QUERY_EXPANSION`, `RERANKER_KEEP_CANDIDATES`, `RERANKER_FALLBACK`;
+  `ROUTER_SOURCE_QUOTA=0`. `ROUTER_FILTER_RANK_BONUS=3`, `RESCUE_MIN_SCORE=0.8`
+  giữ nguyên nhưng không hoạt động khi classifier/rescue TẮT.
+- `GENERATION_CACHE=0`; thư mục cache mới riêng A/B, không tái dùng câu trả lời của r5/r20.
+  A `ENABLE_DENSE_ORIGINAL_QUERY=0`; B `=1`; ngoài cờ này chỉ đường dẫn output/cache/index-copy
+  khác để cách ly, không khác nội dung index/model/input.
+- Copy index cũ thành hai bản mới dưới `tmp/r21_20261028/`, kiểm tên collection
+  `agu_regulations` và count=361; lệch thì dừng. Không mở `chroma_db`/`chroma_db_vie` thật.
+- Chạy tuần tự A rồi B, không tranh GPU; ký model digest trước mỗi nhánh. Seed chỉ ghim mẫu và
+  bootstrap; sampling sinh temperature 0,1 theo pipeline cũ, KHÔNG giả vờ đã ghim RNG Ollama.
+
+**Trọng tài:** `2911c69f740d` hiện hành, chấm bằng `score_item`/runner hiện có. Hash nguyên byte
+runner/trọng tài/pipeline trước-sau; sai chữ ký, khác id, lỗi hệ thống hoặc nhánh thiếu item ⇒
+phép thử không đủ điều kiện kết luận, giữ nguyên số đã đo và lý do.
+
+**Điểm cuối chính:** `PASS_CORRECT` ghép cặp theo id, CHỈ 300 item mới.
+Gọi b = A sai/B đúng, c = A đúng/B sai, delta = B−A = b−c (item).
+
+**LUẬT QUYẾT ĐỊNH CHỐT TRƯỚC:** McNemar chính xác hai phía **p < 0,05** VÀ
+**|delta| >= 3 item** VÀ veto an toàn không kích hoạt (số `FAIL_FABRICATED` và
+`FAIL_HALLUCINATED_ON_UNANSWERABLE` ở B KHÔNG tăng so A) ⇒ **“xác nhận”**, ghi rõ chiều.
+Nếu xác nhận chiều âm thì là xác nhận suy giảm, KHÔNG phải ủng hộ bật cờ. Ngược lại ⇒
+**“không xác nhận”**. CI bootstrap chỉ báo bổ sung, KHÔNG thêm điều kiện CI vào luật này.
+Ngưỡng p nghiêm ngặt `<` (khác r20 `<=`); |delta| tính bằng item, không đổi thành phần trăm.
+Không sửa luật hoặc đổi mẫu sau khi thấy số.
+
+**Báo bắt buộc:** PASS_CORRECT từng nhánh, bảng mọi verdict, refusal (số và tỷ lệ), bịa (số
+FAIL_FABRICATED, tỷ lệ unsupported trên answered), hallucinated, gold-in-context, latency;
+McNemar b/c/p; bảng theo family là thăm dò (không dùng để kết luận, không hiệu chỉnh ngưỡng
+riêng để “cứu” kết quả). Bootstrap paired theo cụm `source_document`, 10.000 lần,
+seed `20261028`, CI percentile 95% cho delta-rate; in số cụm.
+
+**Noise floor:** mốc lịch sử ±3 item/100 của pha sinh, KHÔNG phải đo nhiễu trên mẫu r21.
+Báo mốc này kèm kết quả; quy đổi tỷ lệ mô tả ±3 điểm % tương đương ±9/300 nhưng KHÔNG coi
+đây là ước lượng noise floor đã kiểm ở n=300, không thay ngưỡng |delta|>=3 của yêu cầu.
+Không phát sinh nhánh lặp noise-control ngoài hai nhánh được duyệt.
+
+**Pooled mô tả:** r21 300 + r20/r5-v2 100 = 400 cặp không trùng id; chỉ cộng PASS_CORRECT,
+refusal/verdict và delta mô tả. Ghi rõ 100 cặp cũ chứa 20 item không gold và cấu hình khác;
+KHÔNG dùng pooled p/CI để kết luận “xác nhận”.
+
+**Hạn chót cứng:** thứ Năm **29-10-2026 22:00:00 +07:00 (Asia/Ho_Chi_Minh)**.
+Controller tính thời gian còn lại cho từng subprocess; đến hạn dừng nhánh đang chạy và
+không mở nhánh mới. Ghi số dòng hoàn thành/dở từng nhánh, chấm chỉ-đọc phần có sẵn, trạng thái
+“DỞ — không đủ 300 cặp, không kết luận”; không ngoại suy hoặc đổi tiêu chí để lấp phần thiếu.
+Ước tính người dùng ~2,7 giờ máy là dự kiến, không phải ngân sách cho phép đổi mẫu.
+
+**Artifact mới:** `data/loop/rounds/r21_A/`, `r21_B/`,
+`tmp/r21_20261028/{ids.json,items.jsonl,preregistration.txt,status.json,paired_analysis.json,report.md}`.
+Không ghi đè nếu đường dẫn tồn tại; không commit, không tạo PA mới, không tự bật mặc định.
+Manifest hiện có đã đỏ 3 tệp container sau r20: ghi delta trước-sau, không sinh lại để làm xanh giả.
+
+## r21 nhãn lại — KHÔNG HỢP LỆ (đăng ký 28-10, SAU khi có status; không phải sửa số)
+
+r21 lần 1 mang nhãn **`INVALID_ANCHOR_DRIFT`**: controller ghi
+`anchor_files_changed = [tools/eval/classify_real_questions.py]` — runner D3 (ca kiểm classifier,
+phiên trước) tạo tệp lúc **12:01:53**, rơi vào cửa sổ nhánh B (B chạy 11:15:18–12:17:48). Hai nhánh
+vẫn COMPLETE 300/300, 0 lỗi hệ thống, model/index-copy nguyên vẹn; `eligible_primary=false` nên
+không kết luận. **Giữ nguyên mọi số mô tả** của lần 1 (`tmp/r21_20261028/{paired_analysis.json,report.md}`,
+`data/loop/rounds/r21_A|B/`): không xóa, không chỉnh, không dùng làm bằng chứng xác nhận.
+Bài học đăng ký: không thêm/sửa tệp trong cây mã khóa (theo `snapshot_files` cũ gồm toàn bộ `tools/**/*.py`)
+trong khung giờ hai nhánh của paired round.
+
+## r21b — ĐĂNG KÝ (bản sao lặp, KHÔNG mù) xác nhận tái lập r21 (28-10, trước khi chạy r21b)
+
+**Bản chất, ghi nhận trung thực:** kết quả r21 lần 1 đã thấy (dù không hợp lệ để kết luận), nên
+r21b **không phải kiểm định độc lập mù**; đây là **bản sao lặp xác nhận** — mục tiêu là tái lập
+hành vi hai nhánh và đo **nhiễu thực của cấu hình** (verdict đổi chỗ giữa lần chạy 1 và 2),
+không phải cơ hội sửa kết luận. Luật, mẫu, cấu hình giữ NGUYÊN văn bản mục r21 ở trên.
+
+**Chạy lại:** hai nhánh tuần tự A (all-off) rồi B (`ENABLE_DENSE_ORIGINAL_QUERY=1`), trên **ĐÚNG
+300 id đã đóng băng** trong `tmp/r21_20261028/ids.json` (hash `ids_sha256` từ `prelaunch_lock.json`
+lần 1 được chép sang làm mốc; không chọn mẫu mới, không đổi seed). Round mới
+`data/loop/rounds/r21b_A/`, `r21b_B/`; thư mục làm việc riêng `tmp/r21b_20261028/`
+(không đụng artifact r21 lần 1, **không dùng lại** `tmp/r21_20261028/prelaunch_lock.json` —
+lock mới tự sinh, controller mới từ chối chạy nếu status/round đã tồn tại).
+
+**LUẬT QUYẾT ĐỊNH GIỮ NGUYÊN, không đổi sau khi thấy số:** McNemar chính xác hai phía **p < 0,05**
+VÀ **|Δ| >= 3 item** VÀ `FAIL_FABRICATED_B <= A` VÀ
+`FAIL_HALLUCINATED_ON_UNANSWERABLE_B <= A` ⇒ “xác nhận” (ghi rõ chiều); ngược lại “không xác nhận”.
+CI bootstrap bổ sung mô tả, không thêm điều kiện. Family: thăm dò.
+
+**Thu hẹp danh sách tệp neo của controller r21b (thay đổi dụng cụ, khai báo minh bạch):** neo =
+**chỉ các tệp nằm trên đường chạy** — `src/**/*.py` và `tools/loop/**/*.py` (mọi tệp run_round.py
+import trực tiếp/gián tiếp; đã kiểm AST/grep 28-10: `src.*` + `tools.loop.verify`). **Lý do thu
+hẹp:** `snapshot_files()` của r21 ghim cả `tools/**/*.py`, `README`, manifest, `docs/evidence_pack.json`,
+chroma — nên một tệp ngoài đường chạy (`tools/eval/classify_real_questions.py`, chưa từng được
+run_round import) vẫn làm trôi neo và giết round hợp lệ về mặt khoa học. Ghi nhận trung thực chiều
+ngược: neo rộng có giá trị phát hiện can thiệp ngoài đường chạy; r21b đánh đổi giá trị đó lấy việc
+round không chết vì tài liệu. Các kiểm soát độc lập vẫn giữ NGUYÊN và không bỏ: `check_lock`
+(sha256 của ids/items/testset/prereg/controller/analysis), fingerprint trọng tài
+`2911c69f740d` trước/sau mỗi nhánh, model digest, index-copy digest, auxiliary hashes.
+Không thêm/bớt tệp nào khác khỏi phạm vi đo.
+
+**Watchdog (mới, một chiều chỉ phát hiện):** trong lúc chạy, một luồng poll mỗi ≤60s tính
+sha256+mtime mọi tệp neo đường chạy; nếu lệch: ghi `tmp/r21b_20261028/drift_log.txt` (tệp + giờ +
+hash trước/sau), dừng nhánh đang chạy, trạng thái `DRIFT_STOPPED`, **không kết luận, không tự chạy lại**.
+
+**Hạn chót cứng:** 29-10-2026 22:00 +07:00 (như r21); chưa xong ⇒ dừng, ghi dở, chấm chỉ-đọc phần có sẵn.
+
+**Phân tích sau chạy (đăng ký trước):** (1) luật ở trên; (2) so run1↔run2 **từng nhánh**
+(A1-A2, B1-B2): số verdict đổi chỗ + McNemar ghép cặp — mô tả nhiễu thực, KHÔNG pool với r20 để
+kết luận; (3) hậu nghiệm, gắn nhãn rõ: danh sách ca `FAIL_FABRICATED` của B lần 2 (câu hỏi, thực thể
+không căn cứ, `answer_guard` hiện hành có chặn không — chạy trên văn bản đã lưu, 0 gọi model);
+(4) xác nhận fingerprint/pytest/`ARTIFACT_MANIFEST --check`, đỏ do container Chroma tự ghi lại thì
+ghi nguyên nhân, không sinh manifest giả xanh. Báo cáo: `tmp/r21b_report.md`. Không mục “Ngã rẽ”.

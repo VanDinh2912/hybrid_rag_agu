@@ -1342,6 +1342,13 @@ trong đợt dọn này. Nếu duyệt (a) kèm `-text` cho `text_utils.py`, ph�
 **Hoàn tác nếu bị từ chối.** Không có gì phải hoàn tác: B1 chỉ đọc và ghi tài liệu, không sửa byte
 của ba file referee.
 
+**Cập nhật 27-10 (Q1, PA-42a ĐÃ ÁP).** Đã commit `tools/loop/verify.py` + `src/answer_guard.py`
+nguyên byte và thêm `.gitattributes` `-text` cho đúng ba `REFEREE_FILES`; `src/text_utils.py` được
+`git add --renormalize` để blob trong kho giữ CRLF. Worktree **không đổi byte**. Kiểm trên clone mới
+tại `f098a58`: `referee_fingerprint()` = `2911c69f740d` (trước khi có `-text` là `cc45972b72df`).
+Hai test ghim trạng thái git được cập nhật có chủ đích (`tracked-sach`). Hoàn tác: `git revert`
+`83843bf` (và `f098a58` nếu muốn trả mốc PII).
+
 ## PA-43 — Chuyển `learn.py` + `benchmark_chunking.py` vào `tools/` (B2 đợt dọn repo, 26-10 chiều)
 
 **Việc đề xuất.** B2 muốn đưa hai script công cụ từ gốc repo vào `tools/` (cùng chỗ với các script
@@ -1761,6 +1768,19 @@ biến chứng minh). r18/r19 vẫn chỉ là kế hoạch. Fingerprint hiện t
   có lượt này, chỉ được bật cho `--phase retrieval`.
 - **Không làm trong phiên này.**
 
+**Cập nhật 27-10 (Q2 + Q4, đo trước khi bật mặc định).**
+
+- **r20** (`data/loop/rounds/r20/`, n = 100 đúng id r5, cấu hình r5 + `ENABLE_DENSE_ORIGINAL_QUERY=1`,
+  sidecar `env_sidecar.json` vì PA-51 chưa sửa runner): PASS_CORRECT **21 vs 13**, b = 11 / c = 3,
+  McNemar chính xác **p = 0,05737**, CI cụm [+0,0115; +0,1636], |Δ| = 8 item. Đủ (b)+(c), **trượt (a)**
+  ⇒ theo luật đăng ký trước: **KHÔNG KẾT LUẬN** (chiều dương). Veto an toàn không kích hoạt
+  (hallucinated 2 = 2, fabricated 1 = 1). Refusal 0,64 vs 0,69; gold_in_top_k 0,7875 vs 0,7375.
+- **Q4** (thử căng): mọi query đã `fold`, cờ BẬT vs TẮT ⇒ **0/811 khác biệt top-6**, gold 536 = 536,
+  HUMAN 75 = 75. Lợi ích +45/700 của r17 **biến mất** khi đầu vào mất dấu ⇒ PA-49 chỉ có phạm vi
+  "câu hỏi tiếng Việt có dấu".
+- **Trạng thái:** vẫn **TẮT** (không đủ bằng chứng pha sinh để đổi mặc định). Muốn kết luận cần cặp
+  round mở rộng n (xem Q3 trong báo cáo); chưa chạy.
+
 ### PA-50 — Kế hoạch thực thi PA-21: sinh `testset_vie1` bằng neo CẤU TRÚC (đo khả thi xong, **CHƯA sinh**)
 
 **Mục tiêu.** Có bộ đo trên `chroma_db_vie` (342 chunk, 26 nguồn) giữ nguyên 700 item có gold +
@@ -1801,6 +1821,15 @@ theo đúng định nghĩa này. Phải neo tay **ít nhất 24/94** item còn l
 
 **Chi phí:** 0 Gemini; ~1–2 giờ máy (đã đo xong phần tự động) + công duyệt tay 94 + 20 đoạn.
 
+**Cập nhật 27-10 (Q5, thăm dò — KHÔNG mở cổng).** So index cũ vs `chroma_db_vie` trên **606 item
+đã neo** (407 V3 + 199 nguồn+mục; 94 item chưa neo bị loại), cùng câu hỏi nguyên văn, mọi cờ TẮT:
+hit@6 **505 → 504** (Δ = −1; b = 27, c = 28; McNemar p = 1,0; CI cụm 95% [−0,0330; +0,0242]).
+Theo kiểu neo: V3 348 → 352; nguồn+mục 157 → 152. **Thổi hit:** mean 2,183 đích/item, max 11,
+217/606 item >1 đích; nếu chỉ tính đích đầu tiên cho 407 item V3 thì hit mới = **337** (so với 348)
+⇒ chênh lệch **đổi dấu** theo định nghĩa hit. Kết luận: **không có tín hiệu** index mới tốt/xấu hơn
+trên tập neo được; chưa đủ cơ sở sinh `testset_vie1`. 30 neo xuất `tmp/q5_anchor_review_30.md`
+(seed `20261027`, phân tầng kiểu neo × family) **chờ duyệt tay**; chưa dòng nào được chấm ĐẠT.
+
 ### PA-51 — Ghi `ENABLE_DENSE_ORIGINAL_QUERY` vào manifest của `run_round` (đề xuất, **CHƯA sửa**)
 
 - **Vấn đề:** `tools/loop/run_round.py` liệt kê `settings` bằng tay; cờ mới **không** có trong
@@ -1811,3 +1840,40 @@ theo đúng định nghĩa này. Phải neo tay **ít nhất 24/94** item còn l
   đổi trọng tài, không đổi ngưỡng cổng, không đổi danh sách khóa so khớp của `gate.compatibility()`
   (cờ là lever nên thuộc diện "manifest tự ký", giống `retrieval_reranker`).
 - **Vì sao cần duyệt riêng:** đây là sửa dụng cụ đo; luật hiện hành cấm sửa dụng cụ đo ngoài PA.
+
+**Cập nhật 27-10 (Q2, đã có ca chạy thật).** r20 chạy qua runner với cờ BẬT; `settings` của manifest
+**không** có khóa này (đúng như dự đoán). Đã bù bằng sidecar `data/loop/rounds/r20/env_sidecar.json`
+ghi biến môi trường + lệnh dựng lại + đối chiếu settings; báo cáo ghi rõ "manifest một mình không đủ".
+Runner vẫn **chưa sửa**. Khi duyệt PA-51 nên thêm khóa này và cân nhắc thêm `argv`/`env` tự ký cho
+mọi round (nguồn gốc của lỗ "manifest trông như cùng cấu hình").
+
+### PA-52 — `ARTIFACT_MANIFEST` đỏ sau mỗi lượt **chạy round thật** (Q1, 27-10)
+
+- **Hiện tượng:** sau r20, `tools/diag/artifact_manifest.py --check` báo ĐỔI 3 tệp container
+  `chroma_db/chroma.sqlite3`, `.../data_level0.bin`, `.../length.bin` (tổng vẫn 158 tệp /
+  390.961.924 B). mtime `chroma.sqlite3` = 22:32, đúng lúc r20 chạy.
+- **Khác PA-47:** PA-47 là test pytest mở index thật (đã cô lập ở C1). Đây là **runner production**
+  mở index thật — không thể tránh nếu chạy round trên index production.
+- **Bằng chứng nội dung không đổi:** mở sqlite `immutable=1` (chỉ đọc) so cây thật với bản sao:
+  chỉ bảng `acquire_write` khác (247 vs 258 dòng — bộ đếm khoá); `embeddings` 361,
+  `embedding_metadata` 1.444, FTS 361, `collections` 1, `segments` 2 đều trùng khít
+  (`tmp/q1_chroma_logical_*_2026-10-27.json`).
+- **Đề xuất:** (a) sinh lại manifest **đúng một lần** sau mỗi lượt có mở index thật, ghi rõ lý do; và
+  (b) thay 3 tệp container bằng **digest nội dung** (sha ma trận embedding + tập id + số dòng bảng)
+  để `--check` miễn nhiễm với container. Không áp (a)/(b) trong phiên này vì luật "không ghi đè
+  artifact đã công bố" và không sửa dụng cụ đo ngoài PA.
+- **Trạng thái:** CHỜ DUYỆT. Neo `--check` hiện **ĐỎ**, đã báo trong báo cáo đợt 3.
+
+### PA-53 — Clone tái lập sai SHA `tools/loop/gate.py` (Q1, 27-10)
+
+- **Hiện tượng:** trong clone sạch tại `f098a58`, `tests/test_final_council_scripts.py:444` đỏ:
+  `sha256(gate.py)[:24]` = `01fc03d6099b404f706f20f0` (CRLF, 24.365 B) thay vì
+  `bf4bda89d8a360abbba25742` (LF, 23.857 B) đã ghim.
+- **Nguyên nhân:** `core.autocrlf=true` chuyển LF→CRLF khi checkout; `.gitattributes` hiện chỉ ghim
+  `-text` cho **ba tệp REFEREE_FILES** (PA-42a). `gate.py` không nằm trong danh sách nhưng SHA của
+  nó lại là neo trong test và trong `tools/diag/final_number_audit.py`.
+- **Đề xuất:** thêm `-text` cho **mọi tệp có SHA được test/dụng cụ ghim** (tối thiểu
+  `tools/loop/gate.py`; rà thêm `tools/loop/verify.py`, `src/answer_guard.py`, `src/text_utils.py`
+  đã có). Chỉ đổi thuộc tính checkout, **không đổi byte worktree** và **không đổi chữ ký trọng tài**;
+  phải chạy lại clone + `referee_fingerprint()` + test ghim SHA để chứng minh.
+- **Trạng thái:** CHỜ DUYỆT. Chưa sửa `.gitattributes` ngoài phạm vi PA-42a.
