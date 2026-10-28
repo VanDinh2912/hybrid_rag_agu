@@ -1480,3 +1480,99 @@ chưa xong ⇒ dừng, ghi dở, chấm chỉ-đọc phần có sẵn. Báo cáo
 `docs/PA_TRIAGE.md`, `docs/archive/`) không thấy mục đăng ký hay luật nào cho "r22". Theo quy ước
 "luật phải đăng ký trước khi đo", r21c **không** tự đặt nội dung cho r22. Nếu còn cửa sổ thời gian
 sau khi r21c xong, bước tiếp theo sẽ được đăng ký thành mục riêng **trước** khi chạy.
+## r23 — ĐĂNG KÝ (29-10, TRƯỚC khi chạy): dense nguyên văn × answer_guard, MẪU MỚI
+
+Lệnh nguồn: lệnh ngày 29-10 mục S2. Chữ ký trọng tài khi đăng ký: `2911c69f740d`
+(`tools/loop/verify.py` + `src/answer_guard.py` + `src/text_utils.py`, cả ba vẫn ở đường dẫn gốc
+sau Phase 1–3). Cây chạy = nhánh `chore/restructure`, layout đã đóng gói (`src/**` subpackage,
+`.cache/`, `indexes/`, `data/learning/`).
+
+**Vì sao r23 tồn tại (nguồn gốc giả thuyết, KHÔNG phát sinh từ round này).** r21b đo
+`ENABLE_DENSE_ORIGINAL_QUERY` với guard **TẮT**: theo luật giữ nguyên, kết quả là
+**KHÔNG XÁC NHẬN** — p = 0,0021, Δ = +22 item (PASS_CORRECT 34→56) nhưng veto
+FAIL_FABRICATED_B = 9 > 3 (nhánh A = 3) nên cờ vẫn TẮT. Hậu nghiệm 9/9 ca bịa ở nhánh B2 cho
+thấy `answer_guard` hiện hành **can thiệp ở bước 1 cả 9 ca** (fabricated=True; grounding_score
+0,14–0,95, 8/9 ≥ 0,6 nhưng `unsupported ≠ rỗng` ⇒ chặn theo `guard_qwen_answer`). Từ đó phát sinh
+**giả thuyết tổ hợp**: dense-raw + guard bật = vẫn lấy được lợi ích retrieval (+22) mà không phải
+trả giá bịa. Giả thuyết này **chưa từng được đăng ký**; mục này là lần đăng ký đầu tiên.
+
+**r21b và r21c không bị cứu, không bị đo lại.** r21b giữ nguyên nhãn "KHÔNG XÁC NHẬN" và toàn bộ
+artifact đã công bố (`tmp/r21b_20261028/*`, `tmp/r21b_report.md`, `data/loop/rounds/r21b_A|B`) —
+controller r23 **ghim sha-256** của các artifact đó và chỉ đọc. r21c (đăng ký ở mục trên) là bản
+sao lặp dụng cụ trên cây đã đóng gói, dùng **cùng 300 id** và **cùng luật** với r21b; r23 là round
+KHÁC về hai điểm: (1) mẫu mới, (2) cả hai nhánh đều bật guard nên không so trực tiếp 1-1 được —
+vì vậy phần "so với r21b" chỉ là **mô tả chi phí của guard**, không pool dữ liệu.
+
+**Mẫu — thuật toán tất định, đăng ký trước khi rút.** Nguồn: `data/loop/testset_v1.jsonl`
+(811 dòng, sha-256 `202ca508b764…c82a43`, đã kiểm). Pool = item có `gold_chunk_id` khác `None`
+(700 item), TRỪ id đã dùng ở r5 (`data/loop/rounds/r5/full.jsonl`, 100 id) và id đã dùng ở
+r21/r21b/r21c (cùng **một** registry 300 id đóng băng trong `tmp/r21_20261028/ids.json`; controller
+r23 assert ba registry r21/r21b/r21c trùng nhau nên tổng loại trừ = 400, trùng lặp r5∩r21 = 0).
+Kích thước **|pool| = 320**, rút **n = min(300, |pool|) = 300**. Quy tắc dừng đã đăng ký:
+nếu |pool| < 200 ⇒ **dừng, báo, không chạy round** (320 ≥ 200 nên được phép chạy).
+Phân tầng family theo tỷ lệ Hamilton làm tròn, tối thiểu 1 câu/family (hàm `quotas()` chép nguyên
+từ `tmp/r21_controller_20261028.py`); ngẫu nhiên `random.Random(20261029)`, rút không hoàn lại
+trong bucket id đã sắp xếp, sau đó xáo trộn thứ tự. Dụng cụ: `tmp/r23_select_20261029.py`
+(chế độ khô in trước, `--commit` ghi `tmp/r23_20261029/ids.json` + `items.jsonl` mode "x",
+**TRƯỚC khi round chạy**; tự kiểm tất định: rút hai lần cùng seed ⇒ cùng mẫu).
+
+| Family | Pool | Suất mẫu |
+|---|---:|---:|
+| CLOZE | 72 | 67 |
+| CLOZE_OCR | 99 | 93 |
+| EXACT | 23 | 22 |
+| NUMERIC | 53 | 50 |
+| REVERSE_LEGAL | 1 | 1 |
+| SOURCE_LOOKUP | 46 | 43 |
+| TRAP | 9 | 8 |
+| TRAP_OCR | 7 | 7 |
+| YESNO_FACT | 10 | 9 |
+| **Tổng** | **320** | **300** |
+
+**Cấu hình hai nhánh (một biến duy nhất giữa A và B là dense-raw).**
+- A = mọi cờ lever TẮT **ngoại trừ** `ENABLE_ANSWER_GUARD=1`.
+- B = A **+** `ENABLE_DENSE_ORIGINAL_QUERY=1`.
+- Nền chung giống r21b/r21c từng chữ một: `ENABLE_HYBRID_SEARCH=1`, `ROUTER_SOURCE_QUOTA=0`,
+  `ROUTER_FILTER_RANK_BONUS=3`, `RESCUE_MIN_SCORE=0.8`, `BM25_WEIGHT=0.5`, `CHROMA_WEIGHT=0.5`,
+  `GENERATION_CACHE=0`, router/classifier TẮT, `ENABLE_RERANKER=0`, `ENABLE_CONTEXTUAL_HEADER=0`,
+  `ENABLE_QUERY_EXPANSION=0`, `NORMALIZE_SANITY_GUARD=0`, `ENABLE_DECOUPLED_REFUSAL=0`,
+  `ENABLE_EVIDENCE_SELECTION=0`, `ENABLE_ANSWER_RESCUE=0`, `RERANKER_KEEP_CANDIDATES=0`,
+  `RERANKER_FALLBACK=0`; gỡ `GEMINI_API_KEY`/`GOOGLE_API_KEY` (0 lời gọi Gemini).
+- Sinh: `--generator offline_qwen --top-k 6 --phase full --split all --limit 300 --strategy all`,
+  `OLLAMA_MODEL=qwen2.5:1.5b-instruct`, `num_ctx=8192`, `temperature=0.1` (mặc định
+  `QWEN_FALLBACK_*` trong `src/generator.py`, không truyền cờ) — **giữ y như r21b**.
+- `ANSWER_GUARD_MIN_SCORE=0.6`, `ANSWER_GUARD_MAX_UNSUPPORTED=1` (mặc định mã nguồn, không đặt cờ).
+- Index: mỗi nhánh mở **bản sao** `chroma_db` trong `tmp/r23_20261029/index_A|B` qua
+  `CHROMA_PERSIST_DIR`; `chroma_db/` gốc không đụng.
+
+**Luật quyết định — VIẾT TRƯỚC, GIỮ NGUYÊN, không đổi sau khi thấy số.** r23 ĐẠT (xác nhận
+giả thuyết dense-raw × guard) khi và chỉ khi **cả bốn** điều kiện trên 300 item ghép cặp:
+1. McNemar chính xác hai phía trên PASS_CORRECT: **p < 0,05**;
+2. |Δ PASS_CORRECT (B − A)| **≥ 3 item**;
+3. **không thoái hóa** FAIL_FABRICATED: `FAIL_FABRICATED_B ≤ FAIL_FABRICATED_A`;
+4. **không thoái hóa** FAIL_HALLUCINATED: `FAIL_HALLUCINATED_B ≤ FAIL_HALLUCINATED_A`.
+Điều kiện nào không đạt thì kết luận **KHÔNG XÁC NHẬN** (giữ nguyên văn như r21/r21b/r21c), dù
+Δ dương hay p nhỏ. Nếu Δ dương nhưng gần ngưỡng (ví dụ |Δ| = 3–5) vẫn **áp đúng luật như đã viết**
+và kèm CI; không hạ ngưỡng, không diễn giải lại thành "có xu hướng đạt".
+
+**Báo thêm (mô tả, không tham gia quyết định).** Với **từng** nhánh: PASS_CORRECT,
+PASS_REFUSAL (tỷ lệ từ chối), unsupported-on-answered; chia theo **family**; CI 95% bootstrap cụm
+`source_document` (10.000 lượt, seed **20261029**); và **đối chiếu với nhánh tương ứng của r21b**
+(A↔A, B↔B) để thấy **chi phí của guard** — so sánh mô tả giữa hai round khác mẫu, **không pool**
+dữ liệu, không dùng làm điều kiện đạt. Mọi phân tích độ nhạy (đổi mẫu số, document-macro,
+đổi ngưỡng) gắn nhãn **HẬU NGHIỆM**.
+
+**Vận hành.** Round `r23_A` rồi `r23_B` trong `data/loop/rounds/` (từ chối ghi đè);
+WORK `tmp/r23_20261029/` (khóa `prelaunch_lock.json` **mới**, không dùng lại khóa r21/r21b/r21c);
+controller `tmp/r23_controller_20261029.py`, phân tích `tmp/r23_analysis_20261029.py` (chỉ đọc).
+Neo = `src/**/*.py` + `tools/loop/**/*.py` (33 tệp, đường dẫn mới theo `docs/RESTRUCTURE_MAP.md`
+mục 6.2) với watchdog sha256+mtime_ns mỗi 15 s; **bất kỳ tệp neo nào đổi trong khung giờ hai nhánh
+⇒ `DRIFT_STOPPED`/`INVALID_ANCHOR_DRIFT`** (bài học r21). Trong lúc chạy **cấm** sửa/thêm tệp
+nguồn. Hạn chót cứng **29-10-2026 22:00 +07**; chưa xong ⇒ dừng, ghi dở, chấm chỉ-đọc phần có
+sẵn. Báo cáo: `tmp/r23_report.md`.
+
+**Tính mù:** KHÔNG mù — đã thấy số của r21/r21b (và r21c nếu xong trước); giá trị của round nằm
+ở phép thử giả thuyết tổ hợp, không phải ở tính mù.
+
+**Quyền ưu tiên thời gian:** r21c (đang chạy, cùng một Ollama) chạy xong trước; r23 khởi động sau
+khi `tmp/r21c_20261029/status.json` chuyển trạng thái cuối; r22 (đăng ký mục tiếp theo) chạy sau r23.
