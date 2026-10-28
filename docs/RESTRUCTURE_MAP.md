@@ -7,8 +7,8 @@
 >
 > Ngày thực hiện: 28-10 → sáng 29-10-2026 · Nhánh: `chore/restructure`
 > · Commit Phase 1: `4b981b0` · Báo cáo: `35f4c53` · Phase 2 cache: `a085716`
-> · Phase 2b indexes: `83b3bc3` · Snapshot baseline: `24e5c9a` (trạng thái
-> `auto/overnight` tại `c8c2408`).
+> · Phase 2b indexes: `83b3bc3` · Phase 2c `data/learning/`: `591d183` · Snapshot baseline:
+> `24e5c9a` (trạng thái `auto/overnight` tại `c8c2408`).
 
 ---
 
@@ -293,7 +293,9 @@ Hiện trạng giữ nguyên là an toàn nhất.
 ## 8. Rollback
 
 - `auto/overnight` **không đổi** (đầu tại `c8c2408`); mọi thứ Phase 1 nằm trên
-  `chore/restructure`: `24e5c9a` (snapshot) → `4b981b0` (Phase 1). Lùi = bỏ nhánh.
+  `chore/restructure`: `24e5c9a` (snapshot) → `4b981b0` (Phase 1) → `35f4c53` (báo cáo)
+  → `a085716` (Phase 2 cache) → `83b3bc3` (Phase 2b indexes) → `5a69d70` (báo cáo Phase 2)
+  → `591d183` (Phase 2c `data/learning/`) → docs ghi lại hash này. Lùi = bỏ nhánh.
 - Backup toàn cây trước khi bắt đầu: `D:\DoAn\hybrid_rag_agu_backup_2026-10-28.zip`
   (3.648 tệp / 613.454.237 B thô).
 - Log cổng + ảnh chụp baseline trong `tmp/restructure/` (xóa khi nghiệm thu xong — mục 9).
