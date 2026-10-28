@@ -11,8 +11,11 @@ Câu hỏi kiểu "Khoản 2 Điều 8 quy định gì" vì thế chỉ khớp �
 Phạm vi module này (viết trước, CHƯA build index — chờ PA-1 chốt corpus)
 ----------------------------------------------------------------------
 Đây là hàm THUẦN, không đọc/ghi đĩa, không gọi model. Build thật chỉ được phép ghi vào
-thư mục khác `chroma_db/` và `chroma_db_vie/`; `ensure_separate_index_target()` là chốt
-chặn cho việc đó. Thiết kế đã đăng ký trước (data/loop/README.md, mục T5/5b).
+thư mục khác `chroma_db/` và `chroma_db_vie/` (bản thực nghiệm từ 28-10 nằm ở
+`indexes/experimental/chroma_db_vie/` — đường dẫn mới đã được nối vào `PROTECTED_INDEX_DIRS`
+vì chốt so theo đường dẫn resolve, không theo tên cuối);
+`ensure_separate_index_target()` là chốt chặn cho việc đó. Thiết kế đã đăng ký trước
+(data/loop/README.md, mục T5/5b).
 
 Hai quyết định phải nói rõ vì đề bài kiểm thử hỏi thẳng
 -------------------------------------------------------
@@ -56,7 +59,20 @@ FALLBACK_APPENDIX = "Phụ lục"
 FALLBACK_WHOLE = "Toàn văn"
 
 #: Index đang được pipeline sản xuất dùng; TUYỆT ĐỐI không ghi đè.
-PROTECTED_INDEX_DIRS = ("chroma_db", "chroma_db_vie")
+#: `ensure_separate_index_target()` giải mỗi mục theo GỐC REPO (`root / name`) rồi so đường
+#: dẫn đã resolve — khớp theo TÊN CUỐI không đủ, nên khi index dời chỗ phải NỐI đường dẫn
+#: mới, nếu không chốt lỏng ngay trên chính dữ liệu mà nó bảo vệ (probe:
+#: `tmp/restructure/guard_probe_phase2b.py`). Tên cũ giữ lại cho máy chưa dời thư mục.
+#: Hệ quả CÓ CHỦ ĐÍCH của mục `indexes/experimental/…`: chốt cũng từ chối mọi đích là THƯ
+#: MỤC CHA của index được bảo vệ, nên `indexes/` và `indexes/experimental/` không còn là
+#: đích build hợp lệ — build index mới vẫn phải là thư mục con phía trong
+#: (`indexes/experimental/<tên_mới>`), tức chỉ CHẶT hơn, không lỏng hơn.
+PROTECTED_INDEX_DIRS = (
+    "chroma_db",
+    "chroma_db_vie",
+    "indexes/experimental/chroma_db_vie",
+    "indexes/experimental/chroma_db_headers_old",
+)
 
 # Dòng đầu của chunk production:
 #   "[tên văn bản] - [Điều 8.] \n ..."

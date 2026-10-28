@@ -59,6 +59,15 @@ from src.vector_db import bm25_tokenize
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REAL_INDEXES = {"chroma_db": 361, "chroma_db_vie": 342}
 
+#: Đường dẫn thật của từng index đo được (tái cấu trúc 28-10: bản thực nghiệm dời vào
+#: `indexes/experimental/`, index sản xuất vẫn ở gốc). Tên khoá = tên param test để id
+#: collection KHÔNG đổi; số chunk trong REAL_INDEXES giữ nguyên — đây chỉ là sửa
+#: đường dẫn trỏ tới thư mục đã di chuyển, không phải nới kỳ vọng đo.
+REAL_INDEX_PATHS = {
+    "chroma_db": "chroma_db",
+    "chroma_db_vie": "indexes/experimental/chroma_db_vie",
+}
+
 HEADER_ENVS = (
     ENABLE_CONTEXTUAL_HEADER_ENV,
     "ENABLE_RERANKER",
@@ -88,10 +97,11 @@ def real_index_copy(tmp_path):
     """
 
     def _copy(db_name: str) -> Path:
-        src = REPO_ROOT / db_name
+        rel = REAL_INDEX_PATHS.get(db_name, db_name)
+        src = REPO_ROOT / rel
         if not src.exists():
-            pytest.skip(f"không có {db_name}")
-        dst = tmp_path / db_name
+            pytest.skip(f"không có {rel}")
+        dst = tmp_path / Path(rel).name  # bản sao giữ tên cuối để chốt PROTECTED còn khớp
         shutil.copytree(src, dst)
         return dst
 

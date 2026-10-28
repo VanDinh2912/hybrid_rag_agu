@@ -19,7 +19,7 @@ Nguyên tắc:
 
 Chạy thật (mục 7–10):
     PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/check_corpus.py
-Tuỳ chọn: --old-db ./chroma_db --new-db ./chroma_db_vie --fail-on-red (exit!=1 khi ĐỎ).
+Tuỳ chọn: --old-db ./chroma_db --new-db ./indexes/experimental/chroma_db_vie --fail-on-red (exit!=1 khi ĐỎ).
 """
 
 from __future__ import annotations
@@ -459,7 +459,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="T2 kiểm định corpus rebuild (chỉ đọc).")
     ap.add_argument("--corpus", default=str(ROOT / "data" / "corpus"))
     ap.add_argument("--old-db", default=str(ROOT / "chroma_db"))
-    ap.add_argument("--new-db", default=str(ROOT / "chroma_db_vie"))
+    ap.add_argument("--new-db", default=str(ROOT / "indexes" / "experimental" / "chroma_db_vie"))
     ap.add_argument("--testset", default=str(ROOT / "data" / "loop" / "testset_v1.jsonl"))
     ap.add_argument("--out", default=str(ROOT / "data" / "loop" / "diag" / "corpus_check"))
     ap.add_argument("--fail-on-red", action="store_true")

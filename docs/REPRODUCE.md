@@ -31,8 +31,9 @@ PYTHONIOENCODING=utf-8 venv/Scripts/python.exe ingest.py
 
 Cảnh báo (D-29): `ingest.py` **xoá collection** trong `CHROMA_PERSIST_DIR` (mặc định `./chroma_db`)
 trước khi index. Muốn giữ index đang chạy, đặt `CHROMA_PERSIST_DIR` sang thư mục mới trước khi chạy.
-Index sản xuất hiện có 361 chunk; `chroma_db_vie/` (342 chunk) là index re-OCR **chưa kích hoạt**
-(PA-17).
+Index sản xuất hiện có 361 chunk (gốc repo, `./chroma_db`);
+`indexes/experimental/chroma_db_vie/` (342 chunk — đường dẫn cũ `chroma_db_vie/`, đổi 28-10)
+là index re-OCR **chưa kích hoạt** (PA-17).
 
 ## 2. Chạy thử
 

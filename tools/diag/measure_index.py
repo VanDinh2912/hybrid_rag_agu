@@ -5,7 +5,7 @@ thay vì đo trên tệp nguồn — vì chunking có thể thêm/bớt văn b�
 
 Cách chạy:
     PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/measure_index.py --db ./chroma_db     --out data/loop/diag/corpus_diagnostics/index_before.json
-    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/measure_index.py --db ./chroma_db_vie --out data/loop/diag/corpus_diagnostics/index_after.json
+    PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe tools/diag/measure_index.py --db ./indexes/experimental/chroma_db_vie --out data/loop/diag/corpus_diagnostics/index_after.json
 
 Không ghi vào DB, không xoá gì cả; file JSON xuất là sản phẩm duy nhất.
 """

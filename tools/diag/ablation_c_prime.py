@@ -55,7 +55,7 @@ ROUNDS_DIR = ROOT / "data" / "loop" / "rounds"
 DIAG_DIR = ROOT / "data" / "loop" / "diag"
 OUT_DIR = DIAG_DIR / "b1_cprime"
 TESTSET = ROOT / "data" / "loop" / "testset_v1.jsonl"
-NEW_INDEX = ROOT / "chroma_db_vie"
+NEW_INDEX = ROOT / "indexes" / "experimental" / "chroma_db_vie"  # path cũ `chroma_db_vie/` (dời 28-10, cùng byte)
 EXPECTED_REFEREE = "9f1179ccab74"  # trọng tài v1 — bản đã chấm (a) gốc
 
 

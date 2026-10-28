@@ -15,7 +15,7 @@ PA-26, re-anchor) trước khi làm.
 
 | PA | Việc | Nhóm | Khuyến nghị | Lý do ngắn |
 |---|---|---|---|---|
-| PA-1 | Kích hoạt `chroma_db_vie` + chấm lại r0–r5 | a | **hoãn** | phải re-anchor trước (PA-17/PA-21), nếu không mất 48,81% neo |
+| PA-1 | Kích hoạt `indexes/experimental/chroma_db_vie` (path cũ `chroma_db_vie/`, đổi 28-10) + chấm lại r0–r5 | a | **hoãn** | phải re-anchor trước (PA-17/PA-21), nếu không mất 48,81% neo |
 | PA-2 | Nới luật "Theo Bản" trong `answer_guard` | a | **đóng** | đã áp ở trọng tài v2 `2911c69f740d` |
 | PA-3 | Sửa cổng #23 refusal tương đối + veto family | a | **hoãn** | là dụng cụ đo; phải đăng ký round mới trước khi sửa |
 | PA-4 | Resume (b) đủ 30 id Gemini | a | **hoãn** | chỉ chạy khi có quota; hiện 25/30 nên chưa kết luận |
@@ -62,7 +62,7 @@ PA-26, re-anchor) trước khi làm.
 | PA-45 | Tách 3 tệp đánh giá khỏi `src/` | c | **đóng** | khuyến nghị giữ nguyên (bất biến #7 + import thư viện) |
 | PA-46 | Tách `generator.py` + `negative_results` | c | **duyệt (a)** | chỉ tạo `experiments/negative_results/README.md`; (b)–(d) hoãn |
 | PA-47 | Manifest ghim byte container Chroma | b | **đóng** | C1 đã cô lập test + sinh lại manifest; index digest hoãn |
-| PA-48 | Re-anchor manifest cho cache OCR sau Phase 2 | b | **duyệt** | `artifact_manifest.py::_scope_dirs()` glob `.ocr_cache*` không còn khớp (cache đã dời `.cache/ocr/`, 28-10) ⇒ `--check` báo THÊM THIẾU 26 mục. Cần: nối `.cache/ocr/*` vào scope rồi sinh lại manifest, đối chiếu 26 hash cũ↔mới khớp byte trước commit. KHÔNG tự sửa glob/manifest khi chờ duyệt — xem `docs/RESTRUCTURE_MAP.md` §5.3 |
+| PA-48 | Re-anchor manifest + ghim chốt an toàn cho layout `indexes/`+`.cache/` | b | **duyệt** | `_scope_dirs()` glob `chroma_db*` và `.ocr_cache*` **chỉ ở gốc repo** ⇒ sau Phase 2 `--check` báo THÊM **THIẾU 36** (26 cache + 10 index, 158→122 tệp). Cần: (1) nối `.cache/ocr/*` + `indexes/experimental/*` vào scope rồi sinh lại manifest, đối chiếu 36 hash cũ↔mới khớp byte trước commit; (2) thêm test ghim `PROTECTED_INDEX_DIRS` bản đường dẫn mới (test hiện tại chỉ khai tên cũ). KHÔNG tự sửa glob/manifest khi chờ duyệt — xem `docs/RESTRUCTURE_MAP.md` §5.3 |
 
 **Thứ tự rẻ trước (nếu duyệt một lượt):** PA-41, PA-30, PA-29, PA-33, PA-16, PA-40 — toàn bộ là
 môi trường/tài liệu, không đụng số đo. PA-42 cũng rẻ (chỉ `git add` hai tệp byte-nguyên) nhưng xếp (a)

@@ -178,9 +178,11 @@ hybrid_rag_agu/
 │   └── prompts/             # Playbook nhiệm vụ P0→P5 + PROGRESS (lịch sử)
 │
 ├── chroma_db/               # ChromaDB đã persist — index SẢN XUẤT 361 chunk (ingest.py tự sinh — gitignored)
-├── chroma_db_vie/           # Index thực nghiệm re-OCR tiếng Việt, 342 chunk — CHƯA kích hoạt
-│                            #   (mất neo vàng 48,81%, chờ PA-17 re-anchor — gitignored)
-├── chroma_db_headers_old/   # Snapshot index cho phép đo header r13 (gitignored)
+│                            #   (đường dẫn production `./chroma_db`, đặt qua CHROMA_PERSIST_DIR)
+├── indexes/experimental/    # Các index thực nghiệm, KHÔNG phải đích production (gitignored)
+│   ├── chroma_db_vie/       #   re-OCR tiếng Việt, 342 chunk — CHƯA kích hoạt
+│   │                        #     (mất neo vàng 48,81%, chờ PA-17 re-anchor)
+│   └── chroma_db_headers_old/  # Snapshot index cho phép đo header r13
 ├── .cache/ocr/rapidocr/     # Cache kết quả OCR (tự sinh, xóa được — lần nạp sau sẽ OCR lại)
 ├── .cache/ocr/easyocr_vie/  # Cache OCR EasyOCR `vi` lượt re-OCR 24-10 (13 tệp/124 trang — gitignored)
 ├── .generation_cache/       # Cache câu trả lời Gemini (tự sinh, xóa được — lượt sau sẽ gọi API lại)

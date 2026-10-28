@@ -73,8 +73,10 @@ runner đo, `reranker`) vẫn đọc env trực tiếp; gom nốt là PA-44.
 
 - `data/corpus/` — 26 tài liệu (21 PDF + 5 DOCX) ở 3 tầng.
 - `chroma_db/` — index sản xuất (361 chunk) do `ingest.py` dựng.
-- `chroma_db_vie/` — index re-OCR tiếng Việt (342 chunk): chất lượng dấu tốt hơn nhưng **chưa
-  kích hoạt** vì mất neo vàng 389/797 = 48,81% (PA-17 re-anchor).
+- `indexes/experimental/chroma_db_vie/` — index re-OCR tiếng Việt (342 chunk): chất lượng dấu tốt
+  hơn nhưng **chưa kích hoạt** vì mất neo vàng 389/797 = 48,81% (PA-17 re-anchor). Đường dẫn cũ
+  `chroma_db_vie/`, dời 28-10 trong đợt tái cấu trúc (`docs/RESTRUCTURE_MAP.md` §5.2); cùng byte.
+- `indexes/experimental/chroma_db_headers_old/` — snapshot nền phép đo header r13 (T5, kết luận ÂM).
 - `data/loop/testset_v1.jsonl` — bộ đo 811 item cố định dùng cho mọi round.
 
 ## Hạn chế đã biết

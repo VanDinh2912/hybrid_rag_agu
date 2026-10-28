@@ -3,14 +3,14 @@
 Vì sao làm từ index có sẵn thay vì chạy lại `ingest.py`
 ------------------------------------------------------
 T5b chỉ được đổi **chuỗi đem đi embed + BM25**, không được đổi ranh giới chunk.
-Đọc đúng bộ chunk đã persist (`chroma_db/` hoặc `chroma_db_vie/`), giữ nguyên
-`chunk_id`/`source`/`tier`, chỉ thay `page_content` bằng bản có header — nhờ vậy
+Đọc đúng bộ chunk đã persist (`chroma_db/` hoặc `indexes/experimental/chroma_db_vie/`), giữ
+nguyên `chunk_id`/`source`/`tier`, chỉ thay `page_content` bằng bản có header — nhờ vậy
 so sánh với round nền là "một biến" (header), không lẫn chunking/OCR.
 
 An toàn
 -------
 - Đích bắt buộc qua `ensure_separate_index_target()`: không bao giờ ghi
-  `chroma_db/` hay `chroma_db_vie/`.
+  `chroma_db/` hay `chroma_db_vie/` (kể cả bản đã dời vào `indexes/experimental/`).
 - Đích đã tồn tại và có tệp ⇒ từ chối, KHÔNG xoá/ghi đè.
 - Chỉ đọc index nguồn; báo cáo kèm SHA-256 của cây nguồn trước/sau để chứng minh.
 - Cờ `ENABLE_CONTEXTUAL_HEADER=1` là điều kiện bắt buộc: công cụ này không được

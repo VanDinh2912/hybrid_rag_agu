@@ -56,6 +56,7 @@ PROTECTED_PREFIXES = (
     "data/training",
     "chroma_db",
     "chroma_db_vie",
+    "indexes",  # 28-10: index thực nghiệm dời vào `indexes/experimental/…` — vẫn là dữ liệu, không phải rác tmp/
     "models",
     ".git",
     ".venv",
