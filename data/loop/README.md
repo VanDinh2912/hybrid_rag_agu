@@ -1576,3 +1576,65 @@ sẵn. Báo cáo: `tmp/r23_report.md`.
 
 **Quyền ưu tiên thời gian:** r21c (đang chạy, cùng một Ollama) chạy xong trước; r23 khởi động sau
 khi `tmp/r21c_20261029/status.json` chuyển trạng thái cuối; r22 (đăng ký mục tiếp theo) chạy sau r23.
+
+
+## r22 — ĐĂNG KÝ (29-10, TRƯỚC khi chạy): reranker cross-encoder trên nền r17-T, retrieval-only
+
+**Câu hỏi**: `ENABLE_RERANKER=1` (pool 20, câu hỏi NGUYÊN VĂN) có nâng gold@6 trên nền r17-T
+đủ để vượt ngưỡng đã đăng ký, mà không làm mất neo HUMAN?
+
+**Nền (giữ nguyên như r17 treatment)**: `ENABLE_DENSE_ORIGINAL_QUERY=1`; mọi cờ lever khác TẮT
+(`ENABLE_CLASSIFIER`, `ENABLE_ANSWER_GUARD`, `ENABLE_ANSWER_RESCUE`, `ROUTER_SOFT_FILTER`,
+`NORMALIZE_SANITY_GUARD`, `ENABLE_DECOUPLED_REFUSAL`, `ENABLE_EVIDENCE_SELECTION`,
+`ENABLE_CONTEXTUAL_HEADER`, `ENABLE_QUERY_EXPANSION`, `ROUTER_SOURCE_QUOTA` = 0);
+`ENABLE_HYBRID_SEARCH=1`, `BM25_WEIGHT=CHROMA_WEIGHT=0.5`, `ROUTER_FILTER_RANK_BONUS=3`.
+**Một biến duy nhất**: `ENABLE_RERANKER` 0 → 1 với `RERANKER_MODEL=BAAI/bge-reranker-v2-m3`,
+`RERANKER_DEVICE=cpu`, `RERANKER_CANDIDATE_POOL=20`, `RERANKER_KEEP_CANDIDATES=0`,
+`RERANKER_FALLBACK=0`; qui ước chấm điểm PA-25 (query nguyên văn, passage nguyên văn,
+sắp xếp ổn định theo (-điểm, hạng RRF+bonus)).
+
+**Cách đo**: 811 item `data/loop/testset_v1.jsonl`; `pipeline.retrieve(raw_query, k=12,
+fallback_query=raw_query)` — câu hỏi nguyên văn, không chuẩn hoá; cửa sổ đo 6; khi reranker
+BẬT thì pipeline tự quét `leg_k = max(12, pool 20) = 20` (mặc định TẮT thì `leg_k = 12`
+y như r17). **retrieval-only: 0 sinh văn bản, 0 lời gọi Gemini, không dùng Ollama.**
+Index mở từ BẢN SAO `tmp/r22_20261029/index_copy` (361 chunk, có sha nội dung); `chroma_db/`
+gốc không bị mở và không bị ghi.
+
+**Ghép cặp (đăng ký trước, không đổi sau khi thấy số)**: hai nhánh `ctrl` (reranker=0) và
+`trt` (reranker=1) đo TRONG CÙNG MỘT PHIÊN trên cùng bản sao index. Phép thử một biến dùng
+cặp (ctrl, trt) của phiên này. Nhánh `ctrl` đồng thời là kiểm tra tái lập r17-T: so từng item
+với `tmp/r17_dense_orig_2026-10-27.json` (`on_gold_rank`, `on_gold_top6`, `on_human_anchor`,
+tổng 581/700 và 77/97). Nếu ctrl LỆCH bản lưu (cây đã qua Phase 1–3 + PA-48), số lệch được
+ghi nguyên văn và Δ so với bản lưu chỉ là con số PHỤ để đối chiếu D-37 — không diễn giải
+Δ của `trt` thành "so với 27-10".
+
+**Luật quyết định**: ĐẠT ⇔ (1) McNemar exact hai phía trên gold@6 của 700 item có neo
+p < 0,05, VÀ (2) Δ = trt − ctrl >= +11 item (ngưỡng r17, mẫu số 700), VÀ (3) veto neo HUMAN
+theo **CÂU HỎI DUY NHẤT** không kích hoạt. **Định nghĩa đã khoá ở S0 (lệnh hợp nhất 29-10)**:
+khoá câu hỏi = chuẩn hoá NFC → chữ thường → gộp khoảng trắng; mỗi nhóm trùng tính 1 đơn vị.
+S1/H1–H5 đo trên chính 97 item HUMAN: 97 nhóm độc nhất ở CẢ BỐN mức (raw / fold /
+fold+bỏ dấu câu / fold+dính khoảng), 0 cặp gần trùng Jaccard ≥ 0,8 ⇒ "theo câu hỏi duy nhất"
+TRÙNG "theo item" (mẫu số vẫn 97); r22 vẫn tính tử số theo nhóm câu hỏi và báo cả hai số làm
+kiểm nhất quán. **Veto = ĐỎ khi số câu hỏi đạt giảm quá 5% tương đối so với r17-T đã lưu
+(77/97 ⇒ an toàn ≥ 74, veto ≤ 73) HOẶC so với nhánh ctrl đo cùng phiên ⇒ lấy phép CHẶT HƠN**
+(veto kích hoạt nếu MỘT trong hai mốc bị vượt; nếu hai mốc mâu thuẫn nhau thì ghi nguyên văn,
+không chọn mốc có lợi).
+
+**Chốt chặn "lever có cháy thật"** (đăng ký trước): trước khi phán quyết, phiên đo phải thoả
+`reranker_status().enabled` và `.loaded` đúng, `model_error` rỗng, `RERANKER_FALLBACK` không
+được dùng, và có ÍT NHẤT MỘT item đổi top-6. Không đạt bất kỳ điều nào ⇒ round ghi
+`r22-invalid-lever-not-fired/v1` và DỪNG — KHÔNG phán quyết ĐẠT/KHÔNG ĐẠT (bài học r9/r12:
+reranker lùi thầm về bi-encoder hoặc về thứ tự RRF tạo ra số đo giả).
+
+**Báo thêm (mô tả, không gate)**: phân rã family + EXACT/NUMERIC, CI bootstrap 95% của
+delta-rate theo cụm `source_document` (10.000 lượt, seed 20261029), số item tốt lên/xấu đi,
+giây mỗi câu hai nhánh, hạng trung bình của chunk vàng, trạng thái reranker tự ký.
+
+**Đầu ra**: `tmp/r22_reranker_20261029.py` (dụng cụ), `tmp/r22_reranker_20261029.json`
+(artifact), `tmp/r22_report.md` (báo cáo). Round retrieval-only nên KHÔNG tạo
+`data/loop/rounds/r22` — khuôn như r17; không ghi đè r16/r17.
+
+**Thứ tự & thời gian**: chạy SAU r23 (S2 ưu tiên trước), trong hạn chót 22:00 ngày 29-10;
+chưa xong thì dừng và ghi dở. **Blindness: KHÔNG mù** — đã thấy r12/r16 (reranker từng đo
+Δ −0,0714 và gold@6 0,8357) và r17-T; round này đo lại một biến trên đúng một nền, nên mọi
+kết luận ĐẠT phải kèm điều kiện vetline và chốt chặn lever ở trên.
