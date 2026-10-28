@@ -215,7 +215,7 @@ class TestRengCuaDungCu:
 
     def test_khong_goi_model_trong_dong_lai(self, round_env, monkeypatch):
         """0 lượt sinh: chặn mọi đường gọi model ở tầng pipeline/generator."""
-        import src.pipeline as pipeline_module
+        import src.core.pipeline as pipeline_module
 
         def explode(*a, **k):
             raise AssertionError("chấm lại offline mà chạm pipeline.run/retrieve")

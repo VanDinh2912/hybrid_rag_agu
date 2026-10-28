@@ -25,7 +25,7 @@ PHẦN MỞ RỘNG (nửa sau file) — bộ chunking thực nghiệm đếm the
 import re
 from typing import Callable, Sequence
 
-from src.config import settings
+from src.core.config import settings
 
 # "Điều N." phải nằm ở đầu dòng: một thông báo có câu trích dẫn "...theo Điều 5."
 # không phải văn bản cấu trúc Điều/Khoản; nhận nhầm sẽ mất toàn bộ nội dung trước đó.

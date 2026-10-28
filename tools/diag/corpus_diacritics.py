@@ -7,7 +7,7 @@ Mục đích: với mỗi tệp trong ./data/corpus, trả về
   - chẩn đoán nguyên nhân mất dấu: font cũ TCVN3/VNI/ABC, ToUnicode hỏng, hay OCR.
 
 Script không sửa gì: không đụng corpus, không ghi đè chroma_db, không gọi model.
-Nó tái dùng đúng cách phân loại trang của src.loader (min_chars_per_page) và đọc
+Nó tái dùng đúng cách phân loại trang của src.indexing.loader (min_chars_per_page) và đọc
 kết quả OCR từ ./​.ocr_cache qua chính DocumentLoader._cache_load, nên số đo phản ánh
 đúng văn bản đang nằm trong corpus hiện hành.
 
@@ -29,7 +29,7 @@ sys.path.insert(0, str(ROOT))
 
 from pypdf import PdfReader  # noqa: E402
 
-from src.loader import (  # noqa: E402
+from src.indexing.loader import (  # noqa: E402
     DEFAULT_MIN_CHARS_PER_PAGE,
     DocumentLoader,
 )
@@ -271,7 +271,7 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     payload = {
         "method": "word-diacritic = (số token whitespace chứa >=1 chu cai co dau Viet) / (so token chua chu cai); "
-                  "phan loai trang theo src.loader.DEFAULT_MIN_CHARS_PER_PAGE; OCR doc tu .ocr_cache qua loader",
+                  "phan loai trang theo src.indexing.loader.DEFAULT_MIN_CHARS_PER_PAGE; OCR doc tu .ocr_cache qua loader",
         "min_chars_per_page": DEFAULT_MIN_CHARS_PER_PAGE,
         "corpus_word_ratio": corpus_ratio,
         "corpus_words": tot_words,

@@ -9,7 +9,7 @@ import importlib
 
 import pytest
 
-from src.evidence_selection import (
+from src.generation.evidence_selection import (
     Reranker,
     TIER_KEYWORDS,
     TIER_SOURCE_NAME,
@@ -61,7 +61,7 @@ def _no_model_downloads(monkeypatch):
     import sys
     import types
 
-    import src.evidence_selection as es
+    import src.generation.evidence_selection as es
 
     broken = types.ModuleType("sentence_transformers")
 
@@ -256,7 +256,7 @@ def test_cross_encoder_path_used_when_available(monkeypatch):
 # --------------------------------------------------------------------- chống rò đáp án
 def test_module_does_not_read_answer_side_fields():
     """Bất biến #6: runtime không được chạm `gold_*`/`required_entities`/`primary_entity`."""
-    from src import evidence_selection
+    from src.generation import evidence_selection
 
     source = importlib.import_module(evidence_selection.__name__).__doc__ or ""
     import pathlib
@@ -314,7 +314,7 @@ class RecordingGenerator:
 
 
 def make_pipeline():
-    from src.pipeline import HybridRAGPipeline
+    from src.core.pipeline import HybridRAGPipeline
 
     fused = docs()
     ensemble = FakeEnsemble([FakeLeg(fused), FakeLeg(fused)], fused)

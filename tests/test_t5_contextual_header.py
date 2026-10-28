@@ -34,7 +34,7 @@ import pytest
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 
-from src.contextual_header import (
+from src.indexing.contextual_header import (
     DEFAULT_TITLE,
     ENABLE_CONTEXTUAL_HEADER_ENV,
     FALLBACK_APPENDIX,
@@ -53,8 +53,8 @@ from src.contextual_header import (
     looks_like_table,
     parse_chunk,
 )
-from src.pipeline import HybridRAGPipeline, describe_document
-from src.vector_db import bm25_tokenize
+from src.core.pipeline import HybridRAGPipeline, describe_document
+from src.retrieval.vector_db import bm25_tokenize
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REAL_INDEXES = {"chroma_db": 361, "chroma_db_vie": 342}

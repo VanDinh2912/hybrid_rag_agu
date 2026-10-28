@@ -31,8 +31,8 @@ from typing import Optional
 
 from dotenv import load_dotenv
 
-from src.config import settings
-from src.local_slm import LocalSLM
+from src.core.config import settings
+from src.generation.local_slm import LocalSLM
 from src.text_utils import fold
 
 load_dotenv()

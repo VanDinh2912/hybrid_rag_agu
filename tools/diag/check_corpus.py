@@ -41,7 +41,7 @@ if str(ROOT) not in sys.path:
 
 # --- Tái dùng định nghĩa đã có (KHÔNG định nghĩa lại thang đo) ------------------
 from src.answer_guard import CODE_RE, DATE_RE, LEGAL_REF_RE, NUMBER_RE  # noqa: E402
-from src.chunking import DocumentChunker  # noqa: E402
+from src.indexing.chunking import DocumentChunker  # noqa: E402
 from src.text_utils import fold  # noqa: E402 (chỉ dùng cho khớp gold_sentence, KHÔNG dùng so thực thể)
 from tools.loop import verify  # noqa: E402 (chữ ký trọng tài — chỉ đọc)
 

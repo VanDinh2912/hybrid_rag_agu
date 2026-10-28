@@ -72,7 +72,7 @@ Trong đó:
 - `df(qi)`: số tài liệu chứa từ khóa qi
 
 **Triển khai trong hệ thống**:
-- File: `src/vector_db.py` - hàm `bm25_tokenize()`
+- File: `src/retrieval/vector_db.py` - hàm `bm25_tokenize()`
 - Tokenization: Tiếng Việt với bỏ dấu thanh (fold) để khớp OCR mất dấu
 - Tham số: k1=1.5, b=0.75 (mặc định của LangChain BM25Retriever)
 
@@ -136,8 +136,8 @@ Trong đó:
 - Kết quả: X > Y (dù Y đứng đầu Chroma, nhưng X đứng cao hơn BM25)
 
 **Triển khai trong hệ thống**:
-- File: `src/pipeline.py` - class `EnsembleRetriever` từ LangChain
-- Tham số: c = 60 (DEFAULT_RRF_C trong `src/vector_db.py`)
+- File: `src/core/pipeline.py` - class `EnsembleRetriever` từ LangChain
+- Tham số: c = 60 (DEFAULT_RRF_C trong `src/retrieval/vector_db.py`)
 - Trọng số: BM25 weight = 0.5, Chroma weight = 0.5 (có thể điều chỉnh qua biến môi trường)
 
 ---
@@ -218,7 +218,7 @@ Hit@K = (số câu hỏi có hit trong Top-K) / (tổng số câu hỏi)
 
 **Giá trị K trong hệ thống**: K = 3, 5, 6
 
-**Triển khai**: File `src/evaluation.py` - hàm `compute_hit_at_k()`
+**Triển khai**: File `src/assessment/evaluation.py` - hàm `compute_hit_at_k()`
 
 ---
 
@@ -243,7 +243,7 @@ Trong đó:
 - Câu 3: không có chunk đúng → 0
 - MRR = (0.5 + 1.0 + 0) / 3 = 0.5
 
-**Triển khai**: File `src/evaluation.py` - hàm `compute_mrr()`
+**Triển khai**: File `src/assessment/evaluation.py` - hàm `compute_mrr()`
 
 ---
 
@@ -260,7 +260,7 @@ Faithfulness = (số khẳng định được hỗ trợ) / (tổng số khẳng
 **Chỉ số phụ**:
 - `number_support`: Tỉ lệ con số trong câu trả lời xuất hiện trong ngữ cảnh
 
-**Triển khai**: File `src/evaluation.py` - hàm `judge_faithfulness()`
+**Triển khai**: File `src/assessment/evaluation.py` - hàm `judge_faithfulness()`
 
 ---
 
@@ -286,7 +286,7 @@ F1 = 2 * (Precision * Recall) / (Precision + Recall)
 
 **Citation Exact Match**: Trích dẫn hoàn toàn khớp (Điều + Khoản)
 
-**Triển khai**: File `src/evaluation.py` - hàm `compute_citation_metrics()`
+**Triển khai**: File `src/assessment/evaluation.py` - hàm `compute_citation_metrics()`
 
 ---
 
@@ -296,9 +296,9 @@ F1 = 2 * (Precision * Recall) / (Precision + Recall)
 
 | Vai trò | Mô tả | File |
 |--------|-------|------|
-| **Chuẩn hóa câu hỏi** | Chuyển đổi câu hỏi thông tục → thuật ngữ chuẩn quy chế | `src/query_normalizer.py` |
+| **Chuẩn hóa câu hỏi** | Chuyển đổi câu hỏi thông tục → thuật ngữ chuẩn quy chế | `src/core/query_normalizer.py` |
 | **Fallback Generator** | Sinh câu trả lời khi Gemini hết quota/sự cố | `src/generator.py` - `_qwen_answer()` |
-| **LLM-Judge (tùy chọn)** | Đánh giá faithfulness nếu không dùng Gemini | `src/evaluation.py` |
+| **LLM-Judge (tùy chọn)** | Đánh giá faithfulness nếu không dùng Gemini | `src/assessment/evaluation.py` |
 
 **Đặc điểm:**
 - Chạy 100% offline trên máy local
@@ -314,7 +314,7 @@ F1 = 2 * (Precision * Recall) / (Precision + Recall)
 | Vai trò | Mô tả | File |
 |--------|-------|------|
 | **Generator chính** | Sinh câu trả lời với trích dẫn và chống ảo giác | `src/generator.py` - `GeminiGenerator` |
-| **LLM-Judge chính** | Đánh giá faithfulness của câu trả lời | `src/evaluation.py` - `judge_faithfulness()` |
+| **LLM-Judge chính** | Đánh giá faithfulness của câu trả lời | `src/assessment/evaluation.py` - `judge_faithfulness()` |
 
 **Đặc điểm:**
 - Chạy trên cloud (Google Generative AI)
@@ -351,10 +351,10 @@ END IF
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │      LAYER 0: PHÂN LOẠI CÂU HỎI + ROUTER (Qwen local)          │
-│  - src/classifier.py: gán 2 nhãn cho câu hỏi THÔ:              │
+│  - src/core/classifier.py: gán 2 nhãn cho câu hỏi THÔ:              │
 │      topic = "đánh giá rèn luyện" (1/14 chủ đề)                │
 │      question_type = "TRA_CUU" (1/4 loại)                      │
-│  - src/router.py: nhãn → cấu hình truy xuất theo lớp           │
+│  - src/retrieval/router.py: nhãn → cấu hình truy xuất theo lớp           │
 │      TRA_CUU giữ base; SO_SANH top_k+2 + tách truy vấn con;    │
 │      THU_TUC BM25 0.6/Chroma 0.4; topic → lọc nguồn (nếu đủ    │
 │      bằng chứng: "đánh giá rèn luyện" → 1059-qd-dhag-…pdf)     │
@@ -384,7 +384,7 @@ END IF
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │   LAYER 3: TÁCH TRUY VẤN CON (chỉ câu SO_SANH — P3.3)          │
-│  - src/retrieval.py: split_comparison_query() tách câu so       │
+│  - src/retrieval/retrieval.py: split_comparison_query() tách câu so       │
 │    sánh thành 2–3 mệnh đề con độc lập (Qwen local)              │
 │  - Guardrail chống tách dở: số dòng ngoài 2–3, truy vấn con     │
 │    >200 ký tự, cặp trùng >80% token → lùi về đường đơn          │
@@ -401,7 +401,7 @@ END IF
 │   └─────────────────────────────────────────────────────────┘   │
 │  - Tham số từng lượt hỏi do LAYER 0 quyết định: top_k           │
 │    (SO_SANH +2), trọng số BM25/Chroma (THU_TUC 0.6/0.4),        │
-│    lọc nguồn theo chủ đề (src/router.py)                        │
+│    lọc nguồn theo chủ đề (src/retrieval/router.py)                        │
 │  - Đường đa nhánh: truy xuất TỪNG truy vấn con rồi gộp          │
 │    (dedup theo chunk_id, giữ rank tốt nhất)                     │
 │  - Output: Top-K chunks với metadata (source, tier, chunk_id) │
@@ -435,7 +435,7 @@ END IF
 
 ## 6. Phân loại câu hỏi & Truy xuất theo lớp (P3.1–P3.4)
 
-### 6.1 Classifier hai nhãn — `src/classifier.py`
+### 6.1 Classifier hai nhãn — `src/core/classifier.py`
 
 **Vai trò**: gán cho câu hỏi THÔ hai nhãn trước khi hệ thống chạm vào bất kỳ tầng
 truy xuất nào — `topic` (1 trong 14 chủ đề của docs/spec/TAXONOMY.md, hoặc `null` nếu
@@ -473,7 +473,7 @@ hiếm, biên mơ giữa TTTN-vs-CTĐT và SV Giỏi-vs-SV5T.
 
 ---
 
-### 6.2 Router truy xuất theo lớp — `src/router.py`
+### 6.2 Router truy xuất theo lớp — `src/retrieval/router.py`
 
 **Nguyên tắc thiết kế**: *mặc định = cấu hình hiện tại của hệ thống* (top_k từ
 `RAG_TOP_K`, BM25 0.5 / Chroma 0.5, không lọc nguồn). Nhãn chỉ **điều chỉnh**,
@@ -500,7 +500,7 @@ phòng thủ — lọc hẹp làm rơi căn cứ nằm ở văn bản phụ). Đ
 
 ---
 
-### 6.3 Tách truy vấn con cho SO_SANH — `split_comparison_query()` trong `src/retrieval.py`
+### 6.3 Tách truy vấn con cho SO_SANH — `split_comparison_query()` trong `src/retrieval/retrieval.py`
 
 **Điều kiện kích hoạt** (pipeline P3.3): router bật `enable_subquery` VÀ nhãn
 `question_type = SO_SANH`. Tách thực hiện trên câu **đã chuẩn hóa nhưng chưa

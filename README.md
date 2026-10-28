@@ -8,11 +8,11 @@ Dự án có **năm giao diện sử dụng**:
 |---|---|---|
 | CLI tương tác | `main.py` | Hỏi đáp hàng ngày, test nhanh |
 | GUI desktop 3 tab (Tkinter) | `ui/app.py` | Tra cứu + nạp dữ liệu + gắn nhãn học |
-| Đánh giá định lượng | `src/evaluation.py` | Đo Hit@K / MRR / Citation / Faithfulness trên benchmark |
+| Đánh giá định lượng | `src/assessment/evaluation.py` | Đo Hit@K / MRR / Citation / Faithfulness trên benchmark |
 | **Demo so sánh 3 chiến lược chunking (Streamlit)** | `ui/demo_streamlit.py` | Trình diễn thực nghiệm cho bài báo |
-| Đánh giá bộ phân loại | `src/evaluate_classifier.py` | Đo accuracy 2 nhãn (chủ đề + loại câu hỏi) trên benchmark v3 |
+| Đánh giá bộ phân loại | `src/assessment/evaluate_classifier.py` | Đo accuracy 2 nhãn (chủ đề + loại câu hỏi) trên benchmark v3 |
 
-Kèm các công cụ thực nghiệm: **`scripts/benchmark_chunking.py`** (chạy benchmark đầy đủ 3 chiến lược cắt đoạn, xuất báo cáo so sánh), **`src/evaluation.py`** (chạy benchmark truy xuất/generation, có cờ `--with-classifier` cho lượt A/B) và **`src/analyze_ab.py`** (phân tích 2 JSON A/B → bảng so sánh + biểu đồ).
+Kèm các công cụ thực nghiệm: **`scripts/benchmark_chunking.py`** (chạy benchmark đầy đủ 3 chiến lược cắt đoạn, xuất báo cáo so sánh), **`src/assessment/evaluation.py`** (chạy benchmark truy xuất/generation, có cờ `--with-classifier` cho lượt A/B) và **`src/assessment/analyze_ab.py`** (phân tích 2 JSON A/B → bảng so sánh + biểu đồ).
 
 ---
 
@@ -60,8 +60,8 @@ Câu hỏi thô
 
 Về tầng phân loại ([0]) và tách truy vấn con ([3]):
 
-- **Công tắc `ENABLE_CLASSIFIER`** (biến môi trường, mặc định `0`): `0` = bỏ qua tầng [0] và [3], pipeline chạy đúng hành vi cũ 100%; `1` = phân loại chạy **trước** chuẩn hóa, router (`src/router.py`) ánh xạ cặp nhãn → cấu hình truy xuất (số chunk, trọng số RRF, lọc nguồn theo chủ đề) và generator đổi prompt theo loại câu hỏi. Nguyên tắc an toàn: cấu hình mặc định của router trùng cấu hình chung, nhãn `NGOAI_PHAM_VI` **không** bỏ qua truy xuất (chỉ đổi prompt khuyến khích từ chối) nên không có đường nào "giết" pipeline — mọi lỗi phân loại suy giảm mềm về cấu hình chung.
-- **Tách truy vấn con** (`split_comparison_query` trong `src/retrieval.py`): chỉ chạy cho câu được gán nhãn `SO_SANH`, tách trên câu đã chuẩn hóa (chưa mở rộng), tối đa 3 nhánh; kết quả truy xuất của các nhánh được gộp theo thứ hạng RRF trước khi dựng ngữ cảnh.
+- **Công tắc `ENABLE_CLASSIFIER`** (biến môi trường, mặc định `0`): `0` = bỏ qua tầng [0] và [3], pipeline chạy đúng hành vi cũ 100%; `1` = phân loại chạy **trước** chuẩn hóa, router (`src/retrieval/router.py`) ánh xạ cặp nhãn → cấu hình truy xuất (số chunk, trọng số RRF, lọc nguồn theo chủ đề) và generator đổi prompt theo loại câu hỏi. Nguyên tắc an toàn: cấu hình mặc định của router trùng cấu hình chung, nhãn `NGOAI_PHAM_VI` **không** bỏ qua truy xuất (chỉ đổi prompt khuyến khích từ chối) nên không có đường nào "giết" pipeline — mọi lỗi phân loại suy giảm mềm về cấu hình chung.
+- **Tách truy vấn con** (`split_comparison_query` trong `src/retrieval/retrieval.py`): chỉ chạy cho câu được gán nhãn `SO_SANH`, tách trên câu đã chuẩn hóa (chưa mở rộng), tối đa 3 nhánh; kết quả truy xuất của các nhánh được gộp theo thứ hạng RRF trước khi dựng ngữ cảnh.
 
 Hai cơ chế xuyên suốt các tầng:
 
@@ -87,7 +87,7 @@ hybrid_rag_agu/
 │   ├── evaluation/          # Bộ benchmark + checklist kiểm tra tay
 │   │   ├── benchmark_100_questions_v3.json  # 100 câu v3 — 13 khóa (12 khóa v2 + question_type),
 │   │   │                                    #   benchmark chính thức của lượt A/B (P4)
-│   │   ├── benchmark_100_questions_v2.json  # 100 câu v2 — MẶC ĐỊNH của src/evaluation.py
+│   │   ├── benchmark_100_questions_v2.json  # 100 câu v2 — MẶC ĐỊNH của src/assessment/evaluation.py
 │   │   ├── benchmark_100_questions.json     # 100 câu v1
 │   │   ├── benchmark_50_questions.json/.md  # 50 câu (mặc định của scripts/benchmark_chunking.py)
 │   │   ├── benchmark_15_questions.json/.md  # bộ 15 câu đầu tiên
@@ -106,34 +106,44 @@ hybrid_rag_agu/
 │   └── learning/                # Cặp (câu gốc → câu chuẩn hóa) cho Qwen học — GUI tự sinh
 │       └── normalization_pairs.json   #   (28-10: path cũ data/normalization_pairs.json)
 │
-├── src/
+├── src/                     # 29-10 Phase 3: 19 module dời vào 5 subpackage, 4 tệp ở lại gốc
+│                            #   (bảng old→new: docs/RESTRUCTURE_MAP.md mục 5.7)
 │   ├── __init__.py
-│   ├── chunking.py          # Cắt đoạn: DocumentChunker (ingest) + 3 chiến lược thực nghiệm
-│   │                        #   fixed / recursive / structure-aware qua chunk_with_strategy()
-│   ├── loader.py            # Đọc đệ quy .txt/.pdf/.docx + OCR PDF scan, gắn metadata tier
 │   ├── text_utils.py        # fold() — bỏ dấu thanh dùng chung (OCR ↔ truy vấn có dấu)
-│   ├── vector_db.py         # bge-m3 + ChromaDB; BM25 tokenizer; EnsembleRetriever (RRF)
-│   ├── query_normalizer.py  # Tầng 1: chuẩn hóa câu hỏi bằng Qwen + active learning
-│   ├── local_slm.py         # Wrapper Ollama + guardrail chống lệch nghĩa khi chuẩn hóa
-│   ├── classifier.py        # Tầng 0: phân loại câu hỏi 2 nhãn (14 chủ đề + 4 loại) —
-│   │                        #   Qwen few-shot + guardrail 3 lớp, suy giảm mềm khi lỗi
-│   ├── router.py            # Ánh xạ nhãn → cấu hình truy xuất (top_k, trọng số RRF,
-│   │                        #   lọc nguồn theo chủ đề); mặc định = cấu hình chung
 │   ├── answer_guard.py      # Guard đáp án: phát hiện bịa/leak theo grounding + token overlap
 │   │                        #   (cờ ENABLE_ANSWER_GUARD / NORMALIZE_SANITY_GUARD)
-│   ├── reranker.py          # Cross-encoder bge-reranker-v2-m3 pool 20→top-k (ENABLE_RERANKER, mặc định TẮT)
-│   ├── contextual_header.py # Gắn header Chương/Điều/Khoản vào chunk (ENABLE_CONTEXTUAL_HEADER, TẮT)
-│   ├── evidence_selection.py# Cửa sổ bằng chứng 3–5 câu thay full-context (ENABLE_EVIDENCE_SELECTION, TẮT)
-│   ├── refusal_policy.py    # Chính sách từ chối: soft refusal + biến thể decoupled (mặc định TẮT)
-│   ├── retrieval.py         # Tầng 2: từ điển đồng nghĩa + expand_query_with_synonyms()
-│   │                        #   + split_comparison_query() tách truy vấn con cho SO_SANH
 │   ├── generator.py         # Sinh câu trả lời: Gemini + cache + fallback Qwen + Soft Refusal
 │   │                        #   + prompt biến thể theo loại câu hỏi
-│   ├── pipeline.py          # Nối các tầng, oversampling, tự lùi về vector search khi BM25 lỗi
-│   ├── evaluation.py        # Đánh giá định lượng: Hit@K, MRR, Citation F1, Faithfulness...
-│   │                        #   (+ cờ --with-classifier và thống kê A/B)
-│   ├── evaluate_classifier.py  # Đo accuracy bộ phân loại trên benchmark v3 → logs/classifier/
-│   └── analyze_ab.py           # Phân tích 2 JSON A/B → outputs/ab_comparison.md + figures/
+│   │                        #   (ở lại gốc: `answer_guard` import `REFUSAL_TEXT` lúc chạy)
+│   ├── core/                # Tầng vào đề bài + điều phối
+│   │   ├── pipeline.py      # Nối các tầng, oversampling, tự lùi về vector search khi BM25 lỗi
+│   │   ├── classifier.py    # Tầng 0: phân loại câu hỏi 2 nhãn (14 chủ đề + 4 loại) —
+│   │   │                    #   Qwen few-shot + guardrail 3 lớp, suy giảm mềm khi lỗi
+│   │   ├── query_normalizer.py  # Tầng 1: chuẩn hóa câu hỏi bằng Qwen + active learning
+│   │   ├── config.py        # Điểm đọc biến môi trường duy nhất của `src/` (danh sách TRACKED_ENV)
+│   │   ├── cache_policy.py  # Khóa `policy` cho cache tầng sinh — chỉ thêm khi ngưỡng lệch mặc định
+│   │   └── faithfulness_heuristic.py  # Faith heuristic token-overlap (không cần LLM judge)
+│   ├── indexing/            # Nạp corpus → cắt đoạn → chỉ mục
+│   │   ├── loader.py        # Đọc đệ quy .txt/.pdf/.docx + OCR PDF scan, gắn metadata tier
+│   │   ├── chunking.py      # Cắt đoạn: DocumentChunker (ingest) + 3 chiến lược thực nghiệm
+│   │   │                    #   fixed / recursive / structure-aware qua chunk_with_strategy()
+│   │   └── contextual_header.py  # Gắn header Chương/Điều/Khoản (ENABLE_CONTEXTUAL_HEADER, TẮT)
+│   ├── retrieval/           # Truy xuất Hybrid + xếp hạng lại
+│   │   ├── vector_db.py     # bge-m3 + ChromaDB; BM25 tokenizer; EnsembleRetriever (RRF)
+│   │   ├── retrieval.py     # Tầng 2: từ điển đồng nghĩa + expand_query_with_synonyms()
+│   │   │                    #   + split_comparison_query() tách truy vấn con cho SO_SANH
+│   │   ├── router.py        # Ánh xạ nhãn → cấu hình truy xuất (top_k, trọng số RRF,
+│   │   │                    #   lọc nguồn theo chủ đề); mặc định = cấu hình chung
+│   │   └── reranker.py      # Cross-encoder bge-reranker-v2-m3 pool 20→top-k (ENABLE_RERANKER, mặc định TẮT)
+│   ├── generation/          # Tầng sinh + chính sách từ chối
+│   │   ├── local_slm.py     # Wrapper Ollama + guardrail chống lệch nghĩa khi chuẩn hóa
+│   │   ├── refusal_policy.py  # Chính sách từ chối: soft refusal + biến thể decoupled (mặc định TẮT)
+│   │   └── evidence_selection.py  # Cửa sổ bằng chứng 3–5 câu thay full-context (ENABLE_EVIDENCE_SELECTION, TẮT)
+│   └── assessment/          # Đo lường & kiểm chứng
+│       ├── evaluation.py    # Đánh giá định lượng: Hit@K, MRR, Citation F1, Faithfulness...
+│       │                    #   (+ cờ --with-classifier và thống kê A/B)
+│       ├── evaluate_classifier.py  # Đo accuracy bộ phân loại trên benchmark v3 → logs/classifier/
+│       └── analyze_ab.py    # Phân tích 2 JSON A/B → outputs/ab_comparison.md + figures/
 │
 ├── ui/
 │   ├── app.py               # GUI 3 tab: Tra cứu / Nạp dữ liệu / Vừa test vừa học
@@ -161,7 +171,7 @@ hybrid_rag_agu/
 │
 ├── logs/                    # MỌI file tự sinh khi chạy — quy ước chi tiết ở logs/README.md
 │   ├── benchmark/           # Output của scripts/benchmark_chunking.py (log, results_all.json, chroma_*/) — xóa được
-│   ├── classifier/          # Output của src/evaluate_classifier.py (accuracy_report.md,
+│   ├── classifier/          # Output của src/assessment/evaluate_classifier.py (accuracy_report.md,
 │   │                        #   results.json, 2 ma trận nhầm lẫn CSV)
 │   ├── export/              # Biên nhận export SYSTEM_ARCHITECTURE — xóa được
 │   ├── learning/            # learning_log.csv — lịch sử "học thêm" (GIỮ, được git track)
@@ -277,7 +287,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 # Có giá trị mặc định — chỉ khai báo khi muốn đổi
 GEMINI_MODEL=gemini-2.5-flash
-GEMINI_JUDGE_MODEL=              # model giám khảo Faithfulness của src/evaluation.py
+GEMINI_JUDGE_MODEL=              # model giám khảo Faithfulness của src/assessment/evaluation.py
                                  # (trống = dùng chung GEMINI_MODEL; nên đặt model khác
                                  #  vd gemini-3.5-flash-lite để tách ngân sách quota)
 GEMINI_TEMPERATURE=0.0
@@ -315,7 +325,7 @@ OCR_CACHE_DIR=./.cache/ocr/rapidocr
 Vài giá trị cần lưu ý khi viết phần thực nghiệm:
 
 - `GEMINI_MAX_TOKENS=4096` — `gemini-2.5-flash` là model "thinking": token suy luận nội bộ bị trừ **vào cùng** ngân sách `max_output_tokens`. Đo thực tế một lượt trả lời tốn 763 token thinking + 73 token trả lời, nên đặt 1024 sẽ làm câu trả lời **bị cắt giữa chừng**. Thư viện `google-generativeai` 0.8.6 chưa có `thinking_config` để tách riêng ngân sách, chỉ còn cách đặt lớn. `generator.py` vẫn in cảnh báo nếu `finish_reason = MAX_TOKENS`.
-- `RAG_TOP_K=4` — số chunk ngữ cảnh mỗi lượt hỏi của `main.py`; flag `-k/--top-k` ghi đè giá trị này, và nếu `.env` không khai báo thì `main.py` dùng mặc định 6. `src/evaluation.py` và `scripts/benchmark_chunking.py` có cờ `--top-k` riêng (mặc định 6 và 3).
+- `RAG_TOP_K=4` — số chunk ngữ cảnh mỗi lượt hỏi của `main.py`; flag `-k/--top-k` ghi đè giá trị này, và nếu `.env` không khai báo thì `main.py` dùng mặc định 6. `src/assessment/evaluation.py` và `scripts/benchmark_chunking.py` có cờ `--top-k` riêng (mặc định 6 và 3).
 - `ENABLE_HYBRID_SEARCH` / `ENABLE_QUERY_EXPANSION` — hai công tắc của True Hybrid Search, mặc định **bật**; đặt `0` để lùi về vector search thuần (tiện so sánh có/không hybrid trong phần thực nghiệm). `BM25_WEIGHT` / `CHROMA_WEIGHT` là trọng số RRF của hai nhánh truy xuất.
 - `ENABLE_CLASSIFIER` / `CLASSIFIER_MODEL` / `CLASSIFIER_TIMEOUT` — công tắc tầng phân loại câu hỏi (2 nhãn) + router truy xuất, mặc định `ENABLE_CLASSIFIER=0` (pipeline chạy đúng hành vi cũ 100%, không tốn thêm lần gọi Ollama nào). `1` = bật phân loại: router chọn cấu hình truy xuất theo nhãn, tách truy vấn con cho câu `SO_SANH`, prompt biến thể theo loại; mọi lỗi phân loại suy giảm mềm về cấu hình chung. `CLASSIFIER_MODEL` để trống thì dùng chung `OLLAMA_MODEL`; `CLASSIFIER_TIMEOUT` là timeout gọi Ollama, mặc định 20 giây.
 
@@ -325,7 +335,7 @@ Vài giá trị cần lưu ý khi viết phần thực nghiệm:
 
 ### 4.1. Đưa tài liệu vào thư mục `data/corpus/`
 
-Loader (`src/loader.py`) quét đệ quy thư mục `data/corpus/`, hỗ trợ `.txt` (utf-8), `.pdf` (pypdf) và `.docx` (python-docx). Hiện trạng corpus: **29 file (24 PDF + 5 DOCX), không còn file `.doc` legacy** — 3 PDF commit 28-10 (`dh24-ky`, `qd-1543-BGDDT`, `so-tay-sktt`) chưa ingest, index sản xuất vẫn 361 chunk. File `.doc` (Word 97-2003) không trích xuất được — hãy `Save As` sang `.docx`.
+Loader (`src/indexing/loader.py`) quét đệ quy thư mục `data/corpus/`, hỗ trợ `.txt` (utf-8), `.pdf` (pypdf) và `.docx` (python-docx). Hiện trạng corpus: **29 file (24 PDF + 5 DOCX), không còn file `.doc` legacy** — 3 PDF commit 28-10 (`dh24-ky`, `qd-1543-BGDDT`, `so-tay-sktt`) chưa ingest, index sản xuất vẫn 361 chunk. File `.doc` (Word 97-2003) không trích xuất được — hãy `Save As` sang `.docx`.
 
 PDF dạng scan ảnh thì loader **tự động OCR** mà không cần cài phần mềm hệ thống:
 
@@ -339,7 +349,7 @@ PDF dạng scan ảnh thì loader **tự động OCR** mà không cần cài ph�
 
 | Ảnh hưởng | Xử lý |
 |---|---|
-| Mốc `Điều N.` không khớp regex → tài liệu rơi xuống fallback, mất cấu trúc Điều/Khoản | `ARTICLE_HEADING_RE` (`src/chunking.py`) nhận cả dạng mất dấu (`Dieu 4.`) và dạng lỗi font PDF (`Ðiều 4.`); `canonical_article()` trả tiêu đề chunk về đúng chính tả `Điều N.` |
+| Mốc `Điều N.` không khớp regex → tài liệu rơi xuống fallback, mất cấu trúc Điều/Khoản | `ARTICLE_HEADING_RE` (`src/indexing/chunking.py`) nhận cả dạng mất dấu (`Dieu 4.`) và dạng lỗi font PDF (`Ðiều 4.`); `canonical_article()` trả tiêu đề chunk về đúng chính tả `Điều N.` |
 | Trích dẫn sinh ra từ ngữ cảnh không dấu có thể sai chính tả | Tiêu đề chunk đã được chuẩn hóa thành `Điều N.` nên Generator trích dẫn đúng |
 | Câu hỏi có dấu đầy đủ khó khớp chunk mất dấu khi truy xuất | Mọi truy vấn được `fold()` bỏ dấu trước khi so khớp/embed, và BM25 tokenizer sinh song song token nguyên văn + token bỏ dấu. Đo nhanh offline trên 7 câu hỏi khớp tài liệu OCR: Hit@5 từ 0/7 lên 7/7, top-1 đúng cả 7 |
 
@@ -353,7 +363,7 @@ Tăng `OCR_DPI` **không** cải thiện dấu: đo trên cùng một trang củ
 vector_db.similarity_search(query, k=5, filter={"tier": "Tầng 2"})
 ```
 
-`src/chunking.py` hiện có **hai lớp API** phục vụ hai mục đích khác nhau:
+`src/indexing/chunking.py` hiện có **hai lớp API** phục vụ hai mục đích khác nhau:
 
 **Lớp 1 — `DocumentChunker` (đường sản xuất, `ingest.py` dùng):** tự chọn chiến lược theo nội dung từng văn bản qua `has_article_structure()`:
 
@@ -426,7 +436,7 @@ Các lệnh trong vòng lặp: `help`/`h`/`?` (in hướng dẫn), `exit`/`quit`
 
 - **Response caching:** trước khi gọi API, `generate_answer` tính SHA-1 của `{model, temperature, prompt}` và tra `./.generation_cache/<sha1>.json` — trúng thì trả lời ngay, tốn **0 request quota**. Key bám theo nội dung prompt nên thêm/sửa tài liệu rồi ingest lại là cache cũ tự vô hiệu, không cần dọn tay. Chỉ câu trả lời **nguồn Gemini** được cache; muốn đo latency thật (không tính thời gian đọc cache) hoặc ép sinh lại thì đặt `GENERATION_CACHE=0` trong `.env` hoặc xóa thư mục `.generation_cache/`.
 - **Fallback Local Qwen:** Gemini trả về 429/hết quota ngày/phút hay sự cố 5xx, `generate_answer` **không văng lỗi** mà chuyển câu hỏi + các chunk ngữ cảnh sang Qwen trên Ollama (num_ctx 8192 để không bị cắt ngữ cảnh), gắn nhãn đầu câu trả lời `[Cảnh báo: Gemini đã hết quota — câu trả lời này được tổng hợp tạm thời bằng Local Qwen ...]` để người nghe demo phân biệt ngay. Câu fallback **không được cache** để lượt chạy sau vẫn được thử lại Gemini thật. Cả Ollama cũng chết thì mới ném `GeneratorError` — `main.py` đã bắt nên vòng lặp vẫn sống. Tắt cơ chế này bằng `QWEN_FALLBACK=0`.
-- Trong `src/evaluation.py` và `scripts/benchmark_chunking.py`, fallback bị **tắt bắt buộc** khi chạy chế độ Gemini (`qwen_fallback = False`): nếu để bật, câu trả lời Qwen sẽ làm nhiễu các chỉ số Citation/Faithfulness vốn đang đo chất lượng pipeline Gemini.
+- Trong `src/assessment/evaluation.py` và `scripts/benchmark_chunking.py`, fallback bị **tắt bắt buộc** khi chạy chế độ Gemini (`qwen_fallback = False`): nếu để bật, câu trả lời Qwen sẽ làm nhiễu các chỉ số Citation/Faithfulness vốn đang đo chất lượng pipeline Gemini.
 
 ### 5.3. Giao diện đồ họa (GUI — `ui/app.py`)
 
@@ -467,7 +477,7 @@ Luồng hoạt động: nhập câu hỏi → hệ thống trả lời → bạn
 
 Cả `ingest.py` và learn mode đều xóa collection cũ trước khi index, nên chạy lại nhiều lần không bao giờ nhân đôi chunks. Muốn dọn các mục đã học, sửa tay `ghi_chu_hoc_them.txt` rồi chạy lại `python ingest.py`.
 
-### 5.5. Đánh giá định lượng (`src/evaluation.py`)
+### 5.5. Đánh giá định lượng (`src/assessment/evaluation.py`)
 
 Chạy đúng pipeline sản xuất (phân loại → Qwen chuẩn hóa → mở rộng truy vấn → True Hybrid Search → Generator → giám khảo) trên từng câu của bộ benchmark — **mặc định là `data/evaluation/benchmark_100_questions_v2.json` (100 câu)**, đổi bằng cờ `--benchmark`. Mỗi câu hỏi v2 đúng 12 khóa: `id, category, tier, in_corpus, source_document, raw_query, normalized_query, expected_answer, expected_citations, ground_truth_answer, ground_truth_citation, supplement_if_wrong`; benchmark v3 có thêm khóa thứ 13 `question_type` (xem mục 5.7).
 
@@ -482,15 +492,15 @@ Hệ thống đo ba tầng chỉ số:
 Câu có `in_corpus=false` kiểm tra hành vi từ chối: hệ thống phải trả lời bằng câu chứa `REFUSAL_MARKER`, trả lời ra nội dung thì bị tính là **ảo giác ngoài corpus**. Trường `normalized_query` trong benchmark cho phép đo thêm chỉ số khắt khe `normalization_accuracy` (so khớp chuỗi chính xác); chỉ số chính hiện dùng là **`normalization_preservation`**: tỉ lệ thực thể (số Điều/Khoản, con số) trong câu hỏi gốc còn nguyên sau chuẩn hóa — so khớp regex không dấu, bỏ qua văn phong, khách quan hơn so khớp chuỗi.
 
 ```bash
-python src/evaluation.py                        # benchmark 100 câu v2, top_k=6, có giám khảo Gemini
-python src/evaluation.py --use-qwen-generator   # offline 100%: Local Qwen sinh câu trả lời (không tốn quota)
-python src/evaluation.py --no-judge             # bỏ tầng giám khảo Faithfulness
-python src/evaluation.py --limit 2              # chạy thử nhanh 2 câu đầu, tiết kiệm quota
-python src/evaluation.py --judge-model gemini-3.5-flash-lite
+python src/assessment/evaluation.py                        # benchmark 100 câu v2, top_k=6, có giám khảo Gemini
+python src/assessment/evaluation.py --use-qwen-generator   # offline 100%: Local Qwen sinh câu trả lời (không tốn quota)
+python src/assessment/evaluation.py --no-judge             # bỏ tầng giám khảo Faithfulness
+python src/assessment/evaluation.py --limit 2              # chạy thử nhanh 2 câu đầu, tiết kiệm quota
+python src/assessment/evaluation.py --judge-model gemini-3.5-flash-lite
                                                 # giám khảo dùng model khác, tách ngân sách quota
-python src/evaluation.py --benchmark data/evaluation/benchmark_50_questions.json
-python src/evaluation.py --output outputs/custom_results.json
-python src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json \
+python src/assessment/evaluation.py --benchmark data/evaluation/benchmark_50_questions.json
+python src/assessment/evaluation.py --output outputs/custom_results.json
+python src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json \
     --with-classifier --use-qwen-generator --no-judge \
     --output outputs/ab_results_with_classifier.json \
     --summary-output outputs/ab_summary_with_classifier.md
@@ -519,50 +529,50 @@ Lưu ý khi đọc bảng này: generator là Local Qwen 1.5B nên tầng trích
 - Mỗi câu tốn 2 lần gọi (generator + giám khảo), trừ câu trả lời dạng từ chối chỉ tốn 1 → lượt đánh giá đầy đủ 100 câu tốn ~200 request. Đặt `GEMINI_JUDGE_MODEL` trong `.env` (hoặc cờ `--judge-model`) sang một model khác, ví dụ `gemini-3.5-flash-lite`, để giám khảo dùng ngân sách riêng — generator giữ trọn quota của mình. Các lần chạy thử nên dùng `--use-qwen-generator` hoặc `--limit` để giữ quota cho lượt chính thức.
 - Trước một lượt đánh giá đầy đủ, hạn chế chạy thử `main.py`/`scripts/learn.py` trong cùng ngày vì cùng xài chung quota model generator.
 - **Caching làm các lần chạy lại gần như miễn phí:** câu nào đã trả lời thành công bằng Gemini một lần thì các lượt đánh giá sau lấy thẳng từ `.generation_cache/`, chỉ tốn quota cho câu mới và các câu giám khảo. Nếu lượt trước chết giữa chừng vì hết quota ngày, chỉ cần chạy lại đúng lệnh sau khi quota reset — không mất công trả lời lại từ đầu.
-- Faithfulness phụ thuộc giám khảo nên khi viết bài cần ghi rõ model giám khảo và prompt (hằng `JUDGE_PROMPT` trong `src/evaluation.py`) vào phần thực nghiệm.
+- Faithfulness phụ thuộc giám khảo nên khi viết bài cần ghi rõ model giám khảo và prompt (hằng `JUDGE_PROMPT` trong `src/assessment/evaluation.py`) vào phần thực nghiệm.
 
-### 5.6. Đánh giá bộ phân loại (`src/evaluate_classifier.py`)
+### 5.6. Đánh giá bộ phân loại (`src/assessment/evaluate_classifier.py`)
 
 Đo accuracy hai nhãn của tầng phân loại trên **100 câu benchmark v3**, dùng `raw_query` thô — đúng đầu vào của pipeline thật. Chạy 100% offline bằng Qwen local qua Ollama, không tốn quota Gemini:
 
 ```bash
-python src/evaluate_classifier.py             # 100 câu, 1 lượt — xuất 4 file vào logs/classifier/
-python src/evaluate_classifier.py --runs 2    # 2 lượt kiểm tra ổn định (temperature=0 kỳ vọng giống hệt)
-python src/evaluate_classifier.py --limit 5   # smoke 5 câu đầu
+python src/assessment/evaluate_classifier.py             # 100 câu, 1 lượt — xuất 4 file vào logs/classifier/
+python src/assessment/evaluate_classifier.py --runs 2    # 2 lượt kiểm tra ổn định (temperature=0 kỳ vọng giống hệt)
+python src/assessment/evaluate_classifier.py --limit 5   # smoke 5 câu đầu
 ```
 
 Đầu ra `logs/classifier/`: `accuracy_report.md` (accuracy 2 nhãn, per-class precision/recall/F1, macro-F1, bảng lỗi từng câu, phần GT-verify), `results.json` (chi tiết từng câu) và 2 ma trận nhầm lẫn CSV (14 chủ đề, 4 loại câu hỏi). Lưu ý: lượt chạy mới **ghi đè** 4 file này — muốn giữ số liệu đã chốt thì sao chép ra chỗ khác trước.
 
 **Kết quả chốt P2.3 (2026-10-20 — nguồn `logs/classifier/accuracy_report.md`):** accuracy chủ đề **85,0%** (85/100), loại câu hỏi **81,0%** (81/100), macro-F1 69,4%; recall từng lớp thiểu số `SO_SANH` / `THU_TUC` / `NGOAI_PHAM_VI` đều 100% (precision 33,3% / 100% / 25,0% — model khuynh hướng over-predict lớp hiếm, tác hại thực tế được lượng hóa bằng "tỉ lệ từ chối oan" ở lượt A/B); chạy lại 2 lượt trùng nhãn 100/100 câu.
 
-### 5.7. Đánh giá A/B có/không tầng phân loại (`--with-classifier` + `src/analyze_ab.py`)
+### 5.7. Đánh giá A/B có/không tầng phân loại (`--with-classifier` + `src/assessment/analyze_ab.py`)
 
 Hai lượt trên cùng benchmark v3, cùng generator, chỉ khác một biến `ENABLE_CLASSIFIER`:
 
 ```bash
 # Lượt WITHOUT — ép ENABLE_CLASSIFIER=0, hành vi pipeline cũ 100%
-python src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json \
+python src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json \
     --use-qwen-generator --no-judge \
     --output outputs/ab_results_without_classifier.json \
     --summary-output outputs/ab_summary_without_classifier.md
 
 # Lượt WITH — bật ENABLE_CLASSIFIER=1 (router + tách truy vấn con + prompt theo loại)
-python src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json \
+python src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json \
     --with-classifier --use-qwen-generator --no-judge \
     --output outputs/ab_results_with_classifier.json \
     --summary-output outputs/ab_summary_with_classifier.md
 
 # Phân tích so sánh + vẽ 3 biểu đồ (chỉ đọc 2 JSON trên, không gọi API)
-python src/analyze_ab.py
+python src/assessment/analyze_ab.py
 ```
 
-Cờ `--with-classifier` đặt `ENABLE_CLASSIFIER=1` cho pipeline; **không truyền cờ thì evaluation ép `ENABLE_CLASSIFIER=0`** nên không bao giờ dính cấu hình lệch từ `.env`. `src/analyze_ab.py` đọc cứng 2 đường dẫn `outputs/ab_results_{without,with}_classifier.json`, xuất `outputs/ab_comparison.md` và 3 PNG vào `outputs/figures/` (ghi đè — sao chép trước nếu cần giữ lượt cũ).
+Cờ `--with-classifier` đặt `ENABLE_CLASSIFIER=1` cho pipeline; **không truyền cờ thì evaluation ép `ENABLE_CLASSIFIER=0`** nên không bao giờ dính cấu hình lệch từ `.env`. `src/assessment/analyze_ab.py` đọc cứng 2 đường dẫn `outputs/ab_results_{without,with}_classifier.json`, xuất `outputs/ab_comparison.md` và 3 PNG vào `outputs/figures/` (ghi đè — sao chép trước nếu cần giữ lượt cũ).
 
 Kết quả A/B chốt và bảng so sánh đầy đủ: xem mục 8 (Ghi chú) hoặc thẳng `outputs/ab_comparison.md`.
 
 ### 5.8. Benchmark 3 chiến lược chunking (`scripts/benchmark_chunking.py`)
 
-Công cụ thực nghiệm trung tâm của đề tài: với **MỖI chiến lược chunking** (fixed / recursive / structure), script chạy trọn vòng trên cùng một testbed — nạp corpus → cắt chunk theo chiến lược đó → dựng một ChromaDB **độc lập** → chạy đúng pipeline sản xuất (Qwen chuẩn hóa → BM25 + bge-m3 RRF → generator, temperature 0) qua từng câu benchmark → đo Hit@3/5/6, MRR, Citation P/R/F1, Latency, dung lượng index → xuất log chi tiết từng câu + ma trận so sánh 3 chiến lược. Mọi hàm chấm điểm được **tái sử dụng** từ `src/evaluation.py` nên số liệu so sánh trực tiếp được với `outputs/evaluation_summary.md`.
+Công cụ thực nghiệm trung tâm của đề tài: với **MỖI chiến lược chunking** (fixed / recursive / structure), script chạy trọn vòng trên cùng một testbed — nạp corpus → cắt chunk theo chiến lược đó → dựng một ChromaDB **độc lập** → chạy đúng pipeline sản xuất (Qwen chuẩn hóa → BM25 + bge-m3 RRF → generator, temperature 0) qua từng câu benchmark → đo Hit@3/5/6, MRR, Citation P/R/F1, Latency, dung lượng index → xuất log chi tiết từng câu + ma trận so sánh 3 chiến lược. Mọi hàm chấm điểm được **tái sử dụng** từ `src/assessment/evaluation.py` nên số liệu so sánh trực tiếp được với `outputs/evaluation_summary.md`.
 
 ```bash
 python scripts/benchmark_chunking.py                        # đủ 3 chiến lược × 50 câu, Gemini
@@ -646,14 +656,14 @@ Spec chuỗi là JSON (`tools/loop/chains/*.json`): biến môi trường mặc 
   đường dẫn tương đối, không timestamp ⇒ hai lần dry-run so được bằng `diff`.
 
 **Cache sinh và khóa chính sách.** Từ T7, khóa cache của cả `GeminiGenerator` và `QwenGenerator`
-(`src/cache_policy.py`) mang thêm trường `policy` **khi và chỉ khi** ngưỡng cứu/từ chối/guard/chọn câu
+(`src/core/cache_policy.py`) mang thêm trường `policy` **khi và chỉ khi** ngưỡng cứu/từ chối/guard/chọn câu
 bằng chứng/chuẩn hóa lệch mặc định đã đăng ký (mốc `DEFAULT_CACHE_TOKEN`, test tính lại dưới env rỗng).
 Thể chế mặc định giữ nguyên công thức cũ từng byte nên cache cũ vẫn dùng được; đổi một ngưỡng là mọi
 câu trả lời của thể chế cũ bị tách khỏi cache mới. Đánh đổi có chủ đích: đổi ngưỡng hậu xử lý sẽ tốn
 lại lượt sinh — thà tốn lượt hơn trộn hai thể chế vào một phép đo.
 
-> Trạng thái đóng gói: các file `tools/loop/*`, `src/answer_guard.py`, `src/reranker.py`,
-> `src/cache_policy.py` và nhiều test hiện **chưa được commit** (xem PA-26 trong
+> Trạng thái đóng gói: các file `tools/loop/*`, `src/answer_guard.py`, `src/retrieval/reranker.py`,
+> `src/core/cache_policy.py` và nhiều test hiện **chưa được commit** (xem PA-26 trong
 > `docs/archive/PENDING_APPROVAL.md`). Trong working tree hiện tại, `pytest tests -q` = **1.124 passed, 2 skipped**
 > (2 skipped là hai test T4 **slow**; chạy riêng bằng `T4_RUN_SLOW=1`).
 
@@ -666,7 +676,7 @@ Quy ước của repo (chi tiết ở `logs/README.md`): **mọi file tự sinh 
 | Thư mục | Sinh ra bởi | Ý nghĩa | Xóa được không |
 |---|---|---|---|
 | `logs/benchmark/` | `scripts/benchmark_chunking.py` | Log benchmark 3 chiến lược + index tạm | ✅ Xóa được — chạy lại là có lại |
-| `logs/classifier/` | `src/evaluate_classifier.py` | `accuracy_report.md`, `results.json`, 2 ma trận nhầm lẫn CSV | ⚠️ Giữ — là số liệu chốt P2.3 (chạy lại bị ghi đè) |
+| `logs/classifier/` | `src/assessment/evaluate_classifier.py` | `accuracy_report.md`, `results.json`, 2 ma trận nhầm lẫn CSV | ⚠️ Giữ — là số liệu chốt P2.3 (chạy lại bị ghi đè) |
 | `logs/export/` | `scripts/export_architecture.py` | Biên nhận lần xuất `SYSTEM_ARCHITECTURE` | ✅ Xóa được |
 | `logs/learning/` | `scripts/learn.py` và GUI Tab 3 | `learning_log.csv` — lịch sử mỗi lần hệ thống trả lời sai và được "học thêm" | ❌ **KHÔNG xóa** — là lịch sử dữ liệu |
 | `logs/feedback/` | GUI Tab 3 | `user_feedback.json` — toàn bộ lượt đánh giá đúng/sai của người dùng | ❌ **KHÔNG xóa** |
@@ -683,10 +693,10 @@ Repo được bảo trì song song bởi các agent AI chia theo 4 nhóm trách 
 
 | Playbook | Nhóm | Phạm vi sở hữu |
 |---|---|---|
-| `01_du_lieu_chi_muc.md` | Dữ liệu & Chỉ mục | `data/corpus/`, `ingest.py`, `src/loader|chunking|vector_db.py`, `chroma_db/`, `scripts/learn.py`, `logs/learning/` |
-| `02_tri_tue_rag.md` | Trí tuệ RAG | `src/retrieval|query_normalizer|text_utils|generator|local_slm|pipeline|classifier|router.py`, `main.py`, `.generation_cache/` |
+| `01_du_lieu_chi_muc.md` | Dữ liệu & Chỉ mục | `data/corpus/`, `ingest.py`, `src/indexing/`, `chroma_db/`, `scripts/learn.py`, `logs/learning/` |
+| `02_tri_tue_rag.md` | Trí tuệ RAG | `src/core/`, `src/retrieval/`, `src/generation/`, `src/text_utils.py`, `src/generator.py`, `main.py`, `.generation_cache/` |
 | `03_giao_dien_tai_lieu.md` | Giao diện & Tài liệu | `ui/app.py`, `README.md`, `docs/architecture/SYSTEM_ARCHITECTURE.*`, `scripts/export_architecture.py`, `logs/feedback/`, `logs/export/` |
-| `04_kiem_chung_cau_hinh.md` | Kiểm chứng & Cấu hình | `data/evaluation/`, `src/evaluation.py`, `src/evaluate_classifier.py`, `src/analyze_ab.py`, `scripts/benchmark_chunking.py`, `tests/`, `.env*`, `logs/benchmark/`, `logs/classifier/`, `outputs/` |
+| `04_kiem_chung_cau_hinh.md` | Kiểm chứng & Cấu hình | `data/evaluation/`, `src/assessment/evaluation.py`, `src/assessment/evaluate_classifier.py`, `src/assessment/analyze_ab.py`, `scripts/benchmark_chunking.py`, `tests/`, `.env*`, `logs/benchmark/`, `logs/classifier/`, `outputs/` |
 
 Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ được nằm trong `tmp/` và phải xóa sạch trước khi kết thúc phiên; **mọi log tự sinh khi chạy phải nằm trong `logs/` đúng ý nghĩa ở `logs/README.md`**; ghi file luôn bằng Python với `encoding='utf-8'` (cấm chuyển hướng `>` của PowerShell — ghi UTF-16 làm hỏng JSON); chỉ được sửa file trong phạm vi group mình; báo cáo bắt buộc kèm kết quả verify.
 
@@ -710,9 +720,9 @@ Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ đư�
 
 Nhóm tăng rõ nhất: chương trình đào tạo Hit@3 45,5% → 90,9% (n=22); `SO_SANH` MRR 0,4333 → 0,8286 (n=5, nhờ tách truy vấn con). Đây là chênh lệch của **cả gói thay đổi** ở lượt WITH (chọn tham số + thu hẹp nguồn + tách truy vấn con + prompt), **không tách riêng được lọc nguồn**: trên vòng 811 item (V2, 27-10) lọc mềm so all-off **−18 item** (518 vs 536; CI cụm [−4,62; −0,69] điểm %, p=2,77e−4) và chậm 2,76 s vs 0,18 s/item; lọc cứng (r0) chỉ đạt 363/700. GATE P4.3 **ĐẠT**: không chỉ số truy xuất nào giảm quá 5% tương đối. Lưu ý khi đọc: generator là Qwen 1.5B offline nên số tuyệt đối của tầng trích dẫn chỉ mang tính so sánh nội bộ giữa 2 lượt; điểm giảm trung thực cần nhắc: number support −3,05 pp, đánh giá rèn luyện Hit@3 −18,2 pp (n=11).
 - **Bộ unit test (1.124 test, 25-10):** chạy bằng `python -m pytest` — hoàn toàn offline (fake Qwen/ChromaDB/Gemini, monkeypatch), không tốn quota; gồm test 3 chiến lược chunking, pipeline (fold-query + oversampling), classifier + router (few-shot, guardrail, ánh xạ cấu hình), tách truy vấn con, prompt biến thể, guardrail Local SLM, các hàm đánh giá và cờ GUI/CLI, bộ test vòng lặp P5 (`tests/test_loop_*.py`, `test_run_chain.py`, `test_cache_policy.py`), bộ test T4 (`test_t4_sft_invariants.py`, `test_t4_generator_contract.py`; phần GPU `test_t4_gpu_slow.py` cần `T4_RUN_SLOW=1` nên mặc định được skip) và bộ test T5 (`test_t5_reranker_contract.py`, `test_t5_contextual_header.py`) và bộ test T6 (`test_t6_gate_refusal_and_regression.py`, `test_t6_referee_validation.py`, `test_t6_real_questions_and_metrics.py` — 60 test, trong đó cổng refusal chỉ chạy trên **bản đề xuất**, `gate.py` chưa đổi). Con số này là của **working tree**; xem PA-26 về khoảng trống giữa HEAD và cây đã test.
-- **Bộ benchmark:** 5 file trong `data/evaluation/` — 15 câu GUI tự sinh (schema 10 khóa cũ), **50 câu** và **100 câu v1/v2** (đúng 12 khóa, do các agent sinh theo playbook); benchmark mặc định của `src/evaluation.py` là 100 câu v2, của `scripts/benchmark_chunking.py` và demo là 50 câu. Ngoài ra `data/evaluation/manual_test_checklist.md` có **34 câu kiểm tra tay chia 7 nhóm tài liệu** (kèm nhóm câu ngoài corpus để thử hành vi từ chối) — dùng để đánh giá thủ công sau mỗi lần đổi pipeline.
-- **Benchmark v3 (2026-10-20):** `data/evaluation/benchmark_100_questions_v3.json` — 100 câu, 13 khóa (12 khóa v2 + `question_type` theo [TAXONOMY.md](docs/spec/TAXONOMY.md)), nhãn đã duyệt; phân bố `TRA_CUU`=87 / `SO_SANH`=5 / `THU_TUC`=5 / `NGOAI_PHAM_VI`=3. Mặc định của `src/evaluation.py` vẫn là 100 câu v2; **lượt A/B chính thức dùng `--benchmark ...v3.json`** (mục 5.7).
-- **Hành vi cần lưu ý của Qwen2.5-1.5B (tầng chuẩn hóa):** khi câu hỏi nằm ngoài phân bố few-shot, model có xu hướng **tự trả lời** thay vì viết lại câu hỏi, sinh ra nhận định không có căn cứ. Các lớp chặn hiện có: (1) system prompt chống bịa + few-shot của `src/query_normalizer.py` — đường đi chính trong pipeline, kèm active learning từ phản hồi người dùng; (2) `is_acceptable()` (4 điều kiện: không rỗng, ≤ 300 ký tự, phải có dấu `?`, không chứa mẫu lạc đề) và `guardrail_violation()` (bảo toàn con số + tỉ lệ token trùng với câu gốc ≥ 30%) trong `src/local_slm.py` — dùng khi chuẩn hóa trực tiếp qua wrapper `LocalSLM`, có test riêng trong `tests/test_local_slm.py`. Mọi đường đều suy giảm mềm: nghi ngờ là dùng lại câu hỏi gốc để truy xuất.
+- **Bộ benchmark:** 5 file trong `data/evaluation/` — 15 câu GUI tự sinh (schema 10 khóa cũ), **50 câu** và **100 câu v1/v2** (đúng 12 khóa, do các agent sinh theo playbook); benchmark mặc định của `src/assessment/evaluation.py` là 100 câu v2, của `scripts/benchmark_chunking.py` và demo là 50 câu. Ngoài ra `data/evaluation/manual_test_checklist.md` có **34 câu kiểm tra tay chia 7 nhóm tài liệu** (kèm nhóm câu ngoài corpus để thử hành vi từ chối) — dùng để đánh giá thủ công sau mỗi lần đổi pipeline.
+- **Benchmark v3 (2026-10-20):** `data/evaluation/benchmark_100_questions_v3.json` — 100 câu, 13 khóa (12 khóa v2 + `question_type` theo [TAXONOMY.md](docs/spec/TAXONOMY.md)), nhãn đã duyệt; phân bố `TRA_CUU`=87 / `SO_SANH`=5 / `THU_TUC`=5 / `NGOAI_PHAM_VI`=3. Mặc định của `src/assessment/evaluation.py` vẫn là 100 câu v2; **lượt A/B chính thức dùng `--benchmark ...v3.json`** (mục 5.7).
+- **Hành vi cần lưu ý của Qwen2.5-1.5B (tầng chuẩn hóa):** khi câu hỏi nằm ngoài phân bố few-shot, model có xu hướng **tự trả lời** thay vì viết lại câu hỏi, sinh ra nhận định không có căn cứ. Các lớp chặn hiện có: (1) system prompt chống bịa + few-shot của `src/core/query_normalizer.py` — đường đi chính trong pipeline, kèm active learning từ phản hồi người dùng; (2) `is_acceptable()` (4 điều kiện: không rỗng, ≤ 300 ký tự, phải có dấu `?`, không chứa mẫu lạc đề) và `guardrail_violation()` (bảo toàn con số + tỉ lệ token trùng với câu gốc ≥ 30%) trong `src/generation/local_slm.py` — dùng khi chuẩn hóa trực tiếp qua wrapper `LocalSLM`, có test riêng trong `tests/test_local_slm.py`. Mọi đường đều suy giảm mềm: nghi ngờ là dùng lại câu hỏi gốc để truy xuất.
 - **Lịch sử xử lý lỗi chất lượng:** file mẫu `quy_che_dao_tao_mau.txt` từng xếp hạng #1 cho một câu hỏi quy chế thật và được Gemini dùng làm căn cứ — đã chuyển sang `data/evaluation/reference/` nên không còn bị index. Điểm yếu còn lại của truy xuất nằm ở các chủ đề ít từ khóa trùng lặp (xem cột Hit@6 và MRR trong `outputs/evaluation_summary.md` để theo dõi sau mỗi lần cải tiến chunking/retrieval).
 
 ### 8.1. Giới hạn thật lòng (cập nhật 27-10, sau V1/V2)

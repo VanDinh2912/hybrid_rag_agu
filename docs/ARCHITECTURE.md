@@ -24,18 +24,18 @@ Hai cơ chế xuyên suốt: `fold()` bỏ dấu thanh dùng chung cho truy xu�
 
 | Nhóm | Tệp | Trách nhiệm |
 |---|---|---|
-| Nạp dữ liệu | `ingest.py`, `src/loader.py`, `src/chunking.py`, `src/vector_db.py` | đọc PDF/DOCX + OCR, cắt chunk theo tầng/Điều, nhúng bge-m3, dựng Chroma + BM25 |
-| Hiểu câu hỏi | `src/query_normalizer.py`, `src/local_slm.py`, `src/classifier.py`, `src/router.py`, `src/retrieval.py` | chuẩn hóa, phân loại, router cấu hình truy xuất, mở rộng/tách truy vấn |
-| Sinh câu trả lời | `src/generator.py`, `src/cache_policy.py` | prompt theo loại câu hỏi, Gemini + cache, fallback Qwen, Soft Refusal; khóa cache theo chính sách |
-| Chống ảo giác | `src/answer_guard.py`, `src/refusal_policy.py`, `src/faithfulness_heuristic.py`, `src/text_utils.py` | kiểm căn cứ/theo dõi từ chối, heuristic trung thực, `fold()` |
-| Cấu hình | `src/config.py` | điểm đọc env đã gom cho 9 module, cache theo ảnh chụp env |
-| Đánh giá tĩnh | `src/evaluation.py`, `src/evaluate_classifier.py`, `src/analyze_ab.py` | Hit@K/MRR, Citation, Faithfulness, accuracy classifier, A/B |
+| Nạp dữ liệu | `ingest.py`, `src/indexing/loader.py`, `src/indexing/chunking.py`, `src/retrieval/vector_db.py` | đọc PDF/DOCX + OCR, cắt chunk theo tầng/Điều, nhúng bge-m3, dựng Chroma + BM25 |
+| Hiểu câu hỏi | `src/core/query_normalizer.py`, `src/generation/local_slm.py`, `src/core/classifier.py`, `src/retrieval/router.py`, `src/retrieval/retrieval.py` | chuẩn hóa, phân loại, router cấu hình truy xuất, mở rộng/tách truy vấn |
+| Sinh câu trả lời | `src/generator.py`, `src/core/cache_policy.py` | prompt theo loại câu hỏi, Gemini + cache, fallback Qwen, Soft Refusal; khóa cache theo chính sách |
+| Chống ảo giác | `src/answer_guard.py`, `src/generation/refusal_policy.py`, `src/core/faithfulness_heuristic.py`, `src/text_utils.py` | kiểm căn cứ/theo dõi từ chối, heuristic trung thực, `fold()` |
+| Cấu hình | `src/core/config.py` | điểm đọc env đã gom cho 9 module, cache theo ảnh chụp env |
+| Đánh giá tĩnh | `src/assessment/evaluation.py`, `src/assessment/evaluate_classifier.py`, `src/assessment/analyze_ab.py` | Hit@K/MRR, Citation, Faithfulness, accuracy classifier, A/B |
 | Vòng lặp đo | `tools/loop/` | testset 811 item, trọng tài deterministic, cổng, quy lỗi theo tầng |
 | Giao diện | `main.py`, `ui/app.py`, `ui/demo_streamlit.py` | CLI, GUI Tkinter 3 tab, demo so sánh 3 chiến lược |
 
 ## Hai đường đo
 
-- **Đánh giá tĩnh** (`src/evaluation.py`): chạy đúng pipeline sản xuất trên benchmark có ground
+- **Đánh giá tĩnh** (`src/assessment/evaluation.py`): chạy đúng pipeline sản xuất trên benchmark có ground
   truth; đo Hit@K, MRR, Citation P/R/F1, Faithfulness (giám khảo Gemini) và độ bảo toàn thực thể
   sau chuẩn hóa.
 - **Vòng lặp tự kiểm chứng** (`tools/loop/`): bộ đo cố định `data/loop/testset_v1.jsonl` — 811
@@ -63,7 +63,7 @@ Hai cơ chế xuyên suốt: `fold()` bỏ dấu thanh dùng chung cho truy xu�
 
 ## Cấu hình
 
-`src/config.py` gom env cho **9 module** (contextual_header, evidence_selection, refusal_policy,
+`src/core/config.py` gom env cho **9 module** (contextual_header, evidence_selection, refusal_policy,
 retrieval, loader, vector_db, local_slm, classifier, chunking), cache theo ảnh chụp env và giữ
 nguyên ngữ nghĩa parse của từng site cũ. Bốn module đóng băng PA-26 (`generator`, `pipeline`,
 `query_normalizer`, `router`) và ba tệp nhạy cảm (`answer_guard` — file trọng tài, `evaluation` —
@@ -86,7 +86,7 @@ người đọc không phải phát hiện lại; mọi đề xuất sửa đi q
 
 ### 1. Mã đánh giá nằm trong `src/`, cạnh mã sản xuất
 
-`src/evaluation.py` (1.184 dòng), `src/evaluate_classifier.py`, `src/analyze_ab.py` là thư viện:
+`src/assessment/evaluation.py` (1.184 dòng), `src/assessment/evaluate_classifier.py`, `src/assessment/analyze_ab.py` là thư viện:
 `scripts/benchmark_chunking.py`, `ui/demo_streamlit.py` và các test import trực tiếp. Chúng cũng là **nguồn
 của dòng train**: `data/training/sft_train.jsonl` có 80 dòng và `sft_val.jsonl` có 3 dòng mang
 `metadata.file` trỏ đúng ba tệp này (55 + 20 + 5 và 2 + 1). Dời sang `tools/` làm máy kiểm dữ liệu

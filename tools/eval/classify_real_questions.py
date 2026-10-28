@@ -45,7 +45,7 @@ def fold(text):
 def taxonomy():
     """Đọc literal, không import module Ollama ở bước kiểm dữ liệu."""
     found = {}
-    for node in ast.parse((ROOT / 'src/classifier.py').read_text(encoding='utf-8')).body:
+    for node in ast.parse((ROOT / 'src/core/classifier.py').read_text(encoding='utf-8')).body:
         if isinstance(node, ast.Assign):
             for target in node.targets:
                 if isinstance(target, ast.Name) and target.id in ('TOPICS', 'QUESTION_TYPES'):
@@ -126,7 +126,7 @@ class CpuClassifier:
             client = ollama.Client(host=host, timeout=timeout)
         if classifier_module is None:
             sys.path.insert(0, str(ROOT))
-            from src import classifier as classifier_module
+            from src.core import classifier as classifier_module
         self.client, self.module, self.model = client, classifier_module, model
         self.last_error = None
         self.check_cpu()
@@ -272,7 +272,7 @@ def run(args, classifier_factory=CpuClassifier):
         'stop_error': stop_error,
         'backend': 'production Qwen classifier with CPU-only local transport (not sklearn v2)',
         'host': args.host, 'model': args.model, 'options': {'num_gpu': 0, 'num_thread': 1},
-        'classifier_source_sha256': hashlib.sha256((ROOT / 'src/classifier.py').read_bytes()).hexdigest(),
+        'classifier_source_sha256': hashlib.sha256((ROOT / 'src/core/classifier.py').read_bytes()).hexdigest(),
         'input_sha256': hashlib.sha256(args.in_path.read_bytes()).hexdigest(),
         'validation': validation, 'metrics': metrics}
     with (args.out_dir / 'summary.json').open('x', encoding='utf-8') as stream:

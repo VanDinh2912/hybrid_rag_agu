@@ -148,7 +148,7 @@ def pick_items(testset: list[dict], n: int, restrict: Optional[list[str]] = None
 
 # ------------------------------------------------------------------ một lượt đo
 def measure(pipeline, items: list[dict], *, pool: int, top_n: int, batch_size: int, label: str) -> dict[str, Any]:
-    from src.reranker import last_call, rerank_documents
+    from src.retrieval.reranker import last_call, rerank_documents
 
     rows: list[dict[str, Any]] = []
     for item in items:
@@ -251,7 +251,7 @@ def main() -> int:
         print(json.dumps(report, ensure_ascii=False, indent=2)[:1500])
         return 0
 
-    from src import reranker as reranker_module
+    from src.retrieval import reranker as reranker_module
     from tools.loop.run_round import build_pipeline
 
     started = time.perf_counter()

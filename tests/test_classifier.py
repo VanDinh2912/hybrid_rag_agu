@@ -1,4 +1,4 @@
-"""Unit test cho src/classifier.py — 100% offline, không Ollama, không mạng.
+"""Unit test cho src/core/classifier.py — 100% offline, không Ollama, không mạng.
 
 Phủ 6 nhóm theo prompts/P2_2_classifier_tests.md:
 1. Parser JSON: hợp lệ / bọc markdown fence / text thừa / hỏng hoàn toàn.
@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from src import classifier
-from src.classifier import (
+from src.core import classifier
+from src.core.classifier import (
     DEFAULT_MODEL,
     DEFAULT_NUM_PREDICT,
     DEFAULT_QUESTION_TYPE,
@@ -30,7 +30,7 @@ from src.classifier import (
     classify_query,
     extract_json_object,
 )
-from src.local_slm import LocalSLMError
+from src.generation.local_slm import LocalSLMError
 
 
 @pytest.fixture

@@ -67,7 +67,7 @@ PROMPT_VERSION = "v1.3"  # P3.4b: cache vẫn lưu text CHƯA inject; inject th�
 # model vẫn nói "không đủ thông tin" ở 86,25% ca; rút ngữ cảnh còn ±2 câu thì 95%. Nghi phạm
 # là CHÍNH HÀNH VI được prompt mời gọi (đầu prompt có sẵn câu "Nếu NGỮ CẢNH không đủ căn cứ,
 # trả lời đúng một câu: …"). Khi `ENABLE_DECOUPLED_REFUSAL=1`, tầng sinh chỉ còn nhiệm vụ
-# TÌM-CHÉP; phán quyết từ chối do `src/refusal_policy.py` trả bằng số deterministic.
+# TÌM-CHÉP; phán quyết từ chối do `src/generation/refusal_policy.py` trả bằng số deterministic.
 #
 # Tách không gian cache, KHÔNG làm vô hiệu cache cũ: `PROMPT_VERSION` gốc ("v1.3") vẫn là
 # version của mọi lượt chạy khi cờ TẮT, nên 351+ entry cũ còn dùng được. Lượt chạy khi cờ
@@ -78,7 +78,7 @@ EXTRACT_ONLY_PROMPT_VERSION = "v2.0-extract-only"
 
 def effective_prompt_version() -> str:
     """Phiên bản prompt đang áp cho tầng sinh Qwen — nhánh tách theo cờ T3."""
-    from src.refusal_policy import decoupled_refusal_enabled  # import trễ: tránh vòng module
+    from src.generation.refusal_policy import decoupled_refusal_enabled  # import trễ: tránh vòng module
 
     return EXTRACT_ONLY_PROMPT_VERSION if decoupled_refusal_enabled() else PROMPT_VERSION
 
@@ -650,7 +650,7 @@ class GeminiGenerator:
         )
         self.max_retries = max(0, max_retries)
 
-        # Cấu hình caching + fallback: dùng chung biến OLLAMA_* với src/local_slm.py
+        # Cấu hình caching + fallback: dùng chung biến OLLAMA_* với src/generation/local_slm.py
         # để không phải khai báo hai lần trong .env.
         self.use_cache = _env_flag("GENERATION_CACHE", True)
         self.qwen_fallback = _env_flag("QWEN_FALLBACK", True)
@@ -772,7 +772,7 @@ class GeminiGenerator:
         351+ entry cache còn dùng được). `prompt_version` là `effective_prompt_version()` để
         nhánh trích xuất thuần (T3) có không gian cache riêng.
         """
-        from src.cache_policy import cache_policy_deviation  # import trễ: tránh vòng module
+        from src.core.cache_policy import cache_policy_deviation  # import trễ: tránh vòng module
 
         payload = {
             "model": self.model_name,
@@ -1091,7 +1091,7 @@ class QwenGenerator:
         if question_type:
             type_key = fold(str(question_type)).strip().lower()
             format_line = self.QWEN_FORMAT_LINES.get(type_key, "")
-        from src.refusal_policy import decoupled_refusal_enabled  # import trễ: tránh vòng module
+        from src.generation.refusal_policy import decoupled_refusal_enabled  # import trễ: tránh vòng module
 
         if decoupled_refusal_enabled():
             # Nhánh T3: bản trích xuất thuần. Bỏ cả dòng định dạng NGOAI_PHAM_VI —
@@ -1191,7 +1191,7 @@ class QwenGenerator:
         chạy Qwen qua cache này, nên thiếu `policy` ở đây là lever mới bị cache cũ che.
         Thể chế mặc định giữ khóa cũ từng byte (bất biến #2).
         """
-        from src.cache_policy import cache_policy_deviation  # import trễ: tránh vòng module
+        from src.core.cache_policy import cache_policy_deviation  # import trễ: tránh vòng module
 
         payload = {
             "model": self.ollama_model,

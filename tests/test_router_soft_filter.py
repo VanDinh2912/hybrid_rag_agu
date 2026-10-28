@@ -8,7 +8,7 @@ Bối cảnh: vòng lặp data/loop đo được 217/308 FAIL_RETRIEVAL có chun
 import pytest
 from langchain_core.documents import Document
 
-from src.router import (
+from src.retrieval.router import (
     DEFAULT_FILTER_RANK_BONUS,
     RetrievalConfig,
     apply_source_quota,

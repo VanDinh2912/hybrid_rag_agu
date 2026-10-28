@@ -36,7 +36,7 @@ raw_query
                                                                   answer
 ```
 
-Gọi thật nằm ở `src/pipeline.py:430–432`. Ba điểm cần khắc vào đầu:
+Gọi thật nằm ở `src/core/pipeline.py:430–432`. Ba điểm cần khắc vào đầu:
 
 1. **Generator nhận câu hỏi đã chuẩn hóa**, không phải câu thô. Nếu Qwen chuẩn hóa làm
    mất ý, generator và cache đều nhận câu sai; không có đường quay lại câu thô ở tầng này.
@@ -269,7 +269,7 @@ Thêm ba hạn chế kỹ thuật của `extract_citation_from_metadata` (`:399�
 
 ### 4.4. Tầng đánh giá chỉ đếm Điều/Khoản
 
-`extract_citations` trong `src/evaluation.py:139–191` chỉ trích `dieu X [khoan Y]`, không
+`extract_citations` trong `src/assessment/evaluation.py:139–191` chỉ trích `dieu X [khoan Y]`, không
 đếm tên file. Vì vậy:
 
 - trích dẫn dạng `(quy-che.pdf)` **không đóng góp** gì cho Citation P/R/F1;

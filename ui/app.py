@@ -38,10 +38,10 @@ if hasattr(sys.stdout, "reconfigure"):
 from dotenv import load_dotenv
 load_dotenv(ROOT_DIR / ".env")
 
-from src.vector_db import VectorStoreManager
-from src.local_slm import LocalSLM
+from src.retrieval.vector_db import VectorStoreManager
+from src.generation.local_slm import LocalSLM
 from src.generator import GeminiGenerator, QwenGenerator, _env_flag, is_fallback_answer, GeneratorError
-from src.pipeline import HybridRAGPipeline
+from src.core.pipeline import HybridRAGPipeline
 from ingest import run_ingestion
 from scripts.learn import append_note, log_learning
 

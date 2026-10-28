@@ -382,7 +382,7 @@ Mọi phát biểu định lượng nên có đủ:
 
 1. **Tập đo:** “trên 97 câu in-corpus của benchmark v3”.
 2. **Mẫu số:** “75/97”.
-3. **Công cụ:** “`src/evaluation.py`, Hit mức tài liệu”.
+3. **Công cụ:** “`src/assessment/evaluation.py`, Hit mức tài liệu”.
 4. **Cấu hình:** “gói WITH classifier/router, generator Qwen 2.5 1.5B, judge tắt”.
 5. **Không nói gì:** “đây là recall tài liệu, không phải độ đúng câu trả lời”.
 
@@ -740,7 +740,7 @@ Viết lại phát biểu sau thành thẻ chứng cứ 5 thành phần:
 <summary>Đáp án gợi ý</summary>
 
 “Trên 97 câu in-corpus của benchmark v3, Hit@3 mức tài liệu là 75/97 = 77,3%,
-đo bằng `src/evaluation.py` với gói WITH classifier/router, generator Qwen 2.5
+đo bằng `src/assessment/evaluation.py` với gói WITH classifier/router, generator Qwen 2.5
 1.5B, judge tắt. Citation **không phải 25%**: sau khi sửa lỗi câu rỗng, F1 là
 10,10% trên 32 câu có ground truth trích dẫn. Hai chỉ số này không nói câu trả
 lời đúng hay sai.”

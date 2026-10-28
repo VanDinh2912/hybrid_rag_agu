@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Optional
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.generator import REFUSAL_MARKER
 from src.text_utils import fold

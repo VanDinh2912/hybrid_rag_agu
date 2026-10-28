@@ -30,7 +30,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, ROOT)
 
 from src.text_utils import fold  # noqa: E402
-from src.loader import DEFAULT_MIN_CHARS_PER_PAGE, DocumentLoader  # noqa: E402
+from src.indexing.loader import DEFAULT_MIN_CHARS_PER_PAGE, DocumentLoader  # noqa: E402
 from tools.diag.corpus_diacritics import (  # noqa: E402
     CORPUS_DIR,
     _letter_has_diacritic,

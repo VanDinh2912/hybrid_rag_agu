@@ -177,7 +177,7 @@ nghĩa hàm/class; không thuộc pipeline RAG.
 
 Chương 03. **Quy tắc:** so khớp tiếng Việt phải fold **cả hai phía**.
 
-### 2.2. `src/loader.py` — đọc file + OCR
+### 2.2. `src/indexing/loader.py` — đọc file + OCR
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -199,7 +199,7 @@ Chương 03. **Quy tắc:** so khớp tiếng Việt phải fold **cả hai phí
 
 Chương 02. ⚠ Tầng 1 OCR mất dấu; 3 `.doc` + 1 PDF lỗi chưa đọc được.
 
-### 2.3. `src/chunking.py` — production + 3 chiến lược
+### 2.3. `src/indexing/chunking.py` — production + 3 chiến lược
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -253,7 +253,7 @@ Chương 02. ⚠ Tầng 1 OCR mất dấu; 3 `.doc` + 1 PDF lỗi chưa đọc �
 Chương 02. ⚠ Production dùng `DocumentChunker` (max_chars), thực nghiệm dùng
 token; 361 chunk production vs 378 structure thực nghiệm.
 
-### 2.4. `src/vector_db.py` — bge-m3 + ChromaDB + BM25
+### 2.4. `src/retrieval/vector_db.py` — bge-m3 + ChromaDB + BM25
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -270,7 +270,7 @@ Chương 03. Mặc định thực tế `[0.5, 0.5]` (`DEFAULT_BM25_WEIGHT=0.5`,
 `DEFAULT_VECTOR_WEIGHT=0.5`); docstring cũ ghi `[0.4, 0.6]` — thêm một ví dụ
 “docstring không phải bằng chứng”. Pipeline/router có thể đổi trọng số.
 
-### 2.5. `src/retrieval.py` — mở rộng & tách truy vấn
+### 2.5. `src/retrieval/retrieval.py` — mở rộng & tách truy vấn
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -282,7 +282,7 @@ Chương 03. Mặc định thực tế `[0.5, 0.5]` (`DEFAULT_BM25_WEIGHT=0.5`,
 
 Chương 03, 05.
 
-### 2.6. `src/local_slm.py` — Qwen chuẩn hóa + guardrail
+### 2.6. `src/generation/local_slm.py` — Qwen chuẩn hóa + guardrail
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -301,7 +301,7 @@ Chương 03, 05.
 
 Chương 04. Guardrail: mất số hoặc overlap < 0.3 → fallback.
 
-### 2.7. `src/query_normalizer.py` — few-shot + active learning
+### 2.7. `src/core/query_normalizer.py` — few-shot + active learning
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -313,7 +313,7 @@ Chương 04. Guardrail: mất số hoặc overlap < 0.3 → fallback.
 Chương 04. Pipeline hiện dùng `LocalSLM.normalize_query`; module này giữ tương
 thích và logic học từ người dùng.
 
-### 2.8. `src/classifier.py` — 14 chủ đề × 4 loại
+### 2.8. `src/core/classifier.py` — 14 chủ đề × 4 loại
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -330,7 +330,7 @@ thích và logic học từ người dùng.
 
 Chương 04, 08. ⚠ Accuracy 85/81 có few-shot lấy từ benchmark.
 
-### 2.9. `src/router.py` — nhãn → cấu hình
+### 2.9. `src/retrieval/router.py` — nhãn → cấu hình
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -342,7 +342,7 @@ Chương 04, 08. ⚠ Accuracy 85/81 có few-shot lấy từ benchmark.
 
 Chương 05.
 
-### 2.10. `src/pipeline.py` — điều phối
+### 2.10. `src/core/pipeline.py` — điều phối
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -400,7 +400,7 @@ Chương 06.
 
 ## 3. Đánh giá
 
-### 3.1. `src/evaluation.py` — bộ chấm A/B
+### 3.1. `src/assessment/evaluation.py` — bộ chấm A/B
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -437,7 +437,7 @@ Chương 06.
 
 Chương 08. ⚠ Ba lỗi lớn: dòng 471, 249–259, 776.
 
-### 3.2. `src/evaluate_classifier.py` — accuracy classifier
+### 3.2. `src/assessment/evaluate_classifier.py` — accuracy classifier
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -456,7 +456,7 @@ Chương 08. ⚠ Ba lỗi lớn: dòng 471, 249–259, 776.
 Chương 08. ⚠ Dòng 426–439: một `unstable` dict dùng cho cả topic/type; dòng
 270 hard-code Qwen 85/81; chạy nhiều lần nối trùng mục.
 
-### 3.3. `src/faithfulness_heuristic.py`
+### 3.3. `src/core/faithfulness_heuristic.py`
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|
@@ -467,7 +467,7 @@ Chương 08. ⚠ Dòng 426–439: một `unstable` dict dùng cho cả topic/typ
 
 Chương 08. ⚠ Chấm hậu kiểm không cập nhật `aggregates`.
 
-### 3.4. `src/analyze_ab.py` — bảng so sánh + hình
+### 3.4. `src/assessment/analyze_ab.py` — bảng so sánh + hình
 
 | Dòng | Tên | Chữ ký rút gọn | Việc làm |
 |---:|---|---|---|

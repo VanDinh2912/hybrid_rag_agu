@@ -93,7 +93,7 @@ class FakeClient:
 
 
 def test_cpu_transport_reuses_actual_classifier_and_restores_patch():
-    from src import classifier
+    from src.core import classifier
     old_transport = classifier.LocalSLM
     client = FakeClient()
     backend = runner.CpuClassifier(runner.DEFAULT_HOST, runner.DEFAULT_MODEL, client=client, classifier_module=classifier)
@@ -110,7 +110,7 @@ def test_cpu_transport_reuses_actual_classifier_and_restores_patch():
 
 
 def test_invalid_model_json_keeps_production_keyword_fallback():
-    from src import classifier
+    from src.core import classifier
     backend = runner.CpuClassifier(runner.DEFAULT_HOST, runner.DEFAULT_MODEL,
         client=FakeClient({'response': 'not JSON'}), classifier_module=classifier)
     result = backend.predict('Học phí bao nhiêu?')
@@ -119,7 +119,7 @@ def test_invalid_model_json_keeps_production_keyword_fallback():
 
 
 def test_network_error_is_visible_despite_production_fallback():
-    from src import classifier
+    from src.core import classifier
     backend = runner.CpuClassifier(runner.DEFAULT_HOST, runner.DEFAULT_MODEL,
         client=FakeClient(error=TimeoutError('mock timeout')), classifier_module=classifier)
     result = backend.predict('Học phí bao nhiêu?')

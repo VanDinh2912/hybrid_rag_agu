@@ -1,8 +1,8 @@
-"""Unit test cho src/chunking.py — regex bóc tách Điều/Khoản và hai chiến lược cắt chunk."""
+"""Unit test cho src/indexing/chunking.py — regex bóc tách Điều/Khoản và hai chiến lược cắt chunk."""
 
 import pytest
 
-from src.chunking import (
+from src.indexing.chunking import (
     ARTICLE_HEADING_RE,
     DocumentChunker,
     HuggingFaceTokenCounter,

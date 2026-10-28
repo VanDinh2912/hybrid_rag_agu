@@ -18,7 +18,7 @@ data/corpus/
 └── Bổ sung/    # tài liệu bổ sung (nếu có)
 ```
 
-`DocumentLoader._tier_of` (`src/loader.py:115`) lấy phần tử đầu của đường dẫn tương
+`DocumentLoader._tier_of` (`src/indexing/loader.py:115`) lấy phần tử đầu của đường dẫn tương
 đối; file nằm ngay trong `data/corpus/` nhận `default_tier="Khác"`. `tier` đi theo
 chunk vào ChromaDB và cuối cùng vào prompt, nơi generator được dặn “ưu tiên Tầng 1
 khi mâu thuẫn”.
@@ -29,7 +29,7 @@ khi mâu thuẫn”.
 
 ---
 
-## 2. `src/loader.py` — từ file đến `{title, content, tier}`
+## 2. `src/indexing/loader.py` — từ file đến `{title, content, tier}`
 
 ### 2.1. Bảng hàm
 
@@ -143,7 +143,7 @@ nửa sau file là **thực nghiệm**, không được `ingest.py` gọi.
 
 > Đừng nhầm hai hàm cùng tên `structure_aware_chunking`: bản **method** của
 > `DocumentChunker` cắt theo ký tự; bản **module-level** cắt theo token. Docstring
-> `src/chunking.py:185` cảnh báo đúng điểm này.
+> `src/indexing/chunking.py:185` cảnh báo đúng điểm này.
 
 ### 4.2. Nhận diện cấu trúc Điều
 
@@ -344,7 +344,7 @@ không có chuyện “UI cắt kiểu khác benchmark”.
 
 ---
 
-## 6. `src/vector_db.py` — nhúng và lưu
+## 6. `src/retrieval/vector_db.py` — nhúng và lưu
 
 | Hàm/class | Dòng | Vai trò |
 |---|---:|---|

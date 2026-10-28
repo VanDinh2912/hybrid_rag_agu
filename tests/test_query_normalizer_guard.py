@@ -14,7 +14,7 @@ làm hai mode:
       nhận output "Mức độ hoàn thành: 9/10" — đúng cái mà System Prompt cấm
       ("không tự trả lời câu hỏi").
 
-Vì `src/pipeline.py` đưa `normalized_query` vào CẢ truy xuất lẫn sinh, item hỏng từ gốc
+Vì `src/core/pipeline.py` đưa `normalized_query` vào CẢ truy xuất lẫn sinh, item hỏng từ gốc
 thì không lever nào cứu được: 5/23 ca `FAIL_RETRIEVAL` của r1 ở pha đắt thuộc nhóm này.
 
 Test khóa ba chuyện: mặt nạ TẮT-mặc-định (hành vi cũ từng ký tự), hai mode hỏng bị bắt,
@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import pytest
 
-from src.query_normalizer import (
+from src.core.query_normalizer import (
     BASE_EXAMPLES,
     DEFAULT_NORMALIZE_MIN_CONTAINMENT,
     content_tokens,

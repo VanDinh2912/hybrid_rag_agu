@@ -5,10 +5,10 @@
 
 ## Phạm vi được đụng
 
-- `src/retrieval.py`, `src/query_normalizer.py`, `src/text_utils.py`
-- `src/generator.py`, `src/local_slm.py`, `.generation_cache/`
-- `src/pipeline.py`, `main.py`
-- `src/classifier.py`, `src/router.py` (tầng phân loại câu hỏi 2 nhãn + router truy xuất — P3.2)
+- `src/retrieval/retrieval.py`, `src/core/query_normalizer.py`, `src/text_utils.py`
+- `src/generator.py`, `src/generation/local_slm.py`, `.generation_cache/`
+- `src/core/pipeline.py`, `main.py`
+- `src/core/classifier.py`, `src/retrieval/router.py` (tầng phân loại câu hỏi 2 nhãn + router truy xuất — P3.2)
 - `tmp/` cho script smoke test trung gian
 
 ## Sản phẩm cuối
@@ -23,8 +23,8 @@
 
 - `data/corpus/`, `chroma_db/`, `data/evaluation/` (chỉ ĐỌC/kết nối)
 - `outputs/**`, `logs/**`
-- `src/loader.py`, `src/chunking.py`, `src/vector_db.py` (Group 01);
-  `src/evaluation.py`, `tests/` (Group 04); `ui/` (Group 03)
+- `src/indexing/loader.py`, `src/indexing/chunking.py`, `src/retrieval/vector_db.py` (Group 01);
+  `src/assessment/evaluation.py`, `tests/` (Group 04); `ui/` (Group 03)
 - CẤM sửa test cho pass — test fail là phát hiện bug, báo lại Group sở hữu module đó
 
 ## Verify

@@ -255,7 +255,7 @@ def _save_normalization_pair(self, raw_query: str, normalized_query: str):
 
 ---
 
-### File: `src/query_normalizer.py`
+### File: `src/core/query_normalizer.py`
 
 **Hàm load 3 nguồn:**
 ```python

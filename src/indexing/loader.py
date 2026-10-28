@@ -20,7 +20,7 @@ import pypdfium2 as pdfium
 from docx import Document as DocxDocument
 from pypdf import PdfReader
 
-from src.config import settings
+from src.core.config import settings
 
 # Trang ít ký tự hơn ngưỡng này bị coi là trang scan và đưa sang OCR: văn bản hành
 # chính một trang thường > 1.000 ký tự, trang scan trả về 0, nên ngưỡng thấp vẫn an

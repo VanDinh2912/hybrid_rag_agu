@@ -33,23 +33,23 @@ bảng đó ra terminal. Câu hỏi lỗi (hết quota, mất mạng...) đượ
 không làm chết cả lượt đánh giá; Ctrl+C giữa chừng vẫn ghi kết quả phần đã chạy.
 
 Cách chạy (từ thư mục gốc dự án):
-    python src/evaluation.py                  # đủ 8 câu, top_k=6, có giám khảo
-    python src/evaluation.py -k 4             # truy xuất Top-4 (Hit@3/Hit@5 vẫn đo được)
-    python src/evaluation.py --limit 2        # chạy thử nhanh 2 câu đầu
-    python src/evaluation.py --no-judge       # bỏ tầng giám khảo, tiết kiệm quota
-    python src/evaluation.py --judge-model gemini-3.5-flash-lite
+    python src/assessment/evaluation.py                  # đủ 8 câu, top_k=6, có giám khảo
+    python src/assessment/evaluation.py -k 4             # truy xuất Top-4 (Hit@3/Hit@5 vẫn đo được)
+    python src/assessment/evaluation.py --limit 2        # chạy thử nhanh 2 câu đầu
+    python src/assessment/evaluation.py --no-judge       # bỏ tầng giám khảo, tiết kiệm quota
+    python src/assessment/evaluation.py --judge-model gemini-3.5-flash-lite
         # giám khảo dùng model khác: free tier Gemini giới hạn quota THEO TỪNG MODEL,
         # tách model giám khảo để Generator không bị đụng ngân sách
 
 Giai đoạn 4 (P4.1) — chế độ A/B bật/tắt tầng phân loại:
-    python src/evaluation.py --dry-run --limit 2
+    python src/assessment/evaluation.py --dry-run --limit 2
         # ước lượng số request Gemini (generator + giám khảo, trừ cache-hit) TRƯỚC khi chạy
-    python src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json \
+    python src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json \
         --with-classifier --limit 2
         # lượt WITH: bật ENABLE_CLASSIFIER (router + sub-query); per-question ghi thêm
         # predicted_labels + retrieval_config; summary thêm accuracy phân loại, bảng theo
         # loại câu/chủ đề và tỉ lệ từ chối oan
-    python src/evaluation.py --limit 2
+    python src/assessment/evaluation.py --limit 2
         # lượt WITHOUT: không cờ → hành vi cũ 100% (ép ENABLE_CLASSIFIER=0)
 """
 
@@ -64,8 +64,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-if __package__ in (None, ""):  # cho phép chạy trực tiếp: python src/evaluation.py
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+if __package__ in (None, ""):  # cho phép chạy trực tiếp: python src/assessment/evaluation.py
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from dotenv import load_dotenv
 
@@ -84,10 +84,10 @@ from src.generator import (
     _env_flag,
     quota_error_kind,
 )
-from src.local_slm import LocalSLM
-from src.pipeline import HybridRAGPipeline
+from src.generation.local_slm import LocalSLM
+from src.core.pipeline import HybridRAGPipeline
 from src.text_utils import fold
-from src.vector_db import VectorStoreManager
+from src.retrieval.vector_db import VectorStoreManager
 
 BENCHMARK_PATH = Path("data/evaluation/benchmark_100_questions_v2.json")
 RESULTS_PATH = Path("outputs/evaluation_results.json")

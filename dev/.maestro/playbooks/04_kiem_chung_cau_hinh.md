@@ -7,9 +7,9 @@
 
 - `data/evaluation/**` (`benchmark_*.json`, `benchmark_*.md`, `reference/`,
   `manual_test_checklist.md`)
-- `src/evaluation.py`, `scripts/benchmark_chunking.py`, `logs/benchmark/`,
+- `src/assessment/evaluation.py`, `scripts/benchmark_chunking.py`, `logs/benchmark/`,
   `outputs/evaluation_results.json`, `outputs/evaluation_summary.md`
-- `src/evaluate_classifier.py`, `src/analyze_ab.py`, `logs/classifier/` (P2.3/P4.3:
+- `src/assessment/evaluate_classifier.py`, `src/assessment/analyze_ab.py`, `logs/classifier/` (P2.3/P4.3:
   đo accuracy phân loại + phân tích A/B), `outputs/ab_results_*.json`,
   `outputs/ab_comparison.md`, `outputs/figures/`
 - `tests/**` (kể cả `conftest.py`), `.pytest_cache/`
@@ -37,7 +37,7 @@
 
 ## Vùng cấm
 
-- `data/corpus/`, `chroma_db/` (chỉ đọc), `src/**` trừ `src/evaluation.py`, `ui/`
+- `data/corpus/`, `chroma_db/` (chỉ đọc), `src/**` trừ `src/assessment/evaluation.py`, `ui/`
 - `logs/learning/learning_log.csv` (Group 01), `logs/feedback/user_feedback.json`
   (Group 03), `README.md`/`SYSTEM_ARCHITECTURE*` (Group 03)
 - Hạ tiêu chí verify để cho qua; commit `.env` hay file chứa key thật

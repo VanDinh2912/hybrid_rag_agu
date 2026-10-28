@@ -1,7 +1,7 @@
 # `indexes/experimental/` — index ChromaDB thực nghiệm (KHÔNG phải đích production)
 
 Thư mục này chứa các index **để đo**, không cái nào được pipeline đọc: đường dẫn production
-là `./chroma_db` (đặt qua `CHROMA_PERSIST_DIR`, mặc định trong `src/vector_db.py` và `ingest.py`).
+là `./chroma_db` (đặt qua `CHROMA_PERSIST_DIR`, mặc định trong `src/retrieval/vector_db.py` và `ingest.py`).
 Toàn bộ cây do `chroma_db*` trong `.gitignore` nên **không được git track** — snapshot bên dưới
 chỉ tồn tại trên máy đã chạy lượt đo tương ứng.
 
@@ -19,7 +19,7 @@ Vì vậy mọi con số đã công bố gắn với hai index này vẫn đọc
 
 ## An toàn ghi
 
-`src/contextual_header.py::PROTECTED_INDEX_DIRS` liệt kê **cả tên cũ lẫn đường dẫn mới**
+`src/indexing/contextual_header.py::PROTECTED_INDEX_DIRS` liệt kê **cả tên cũ lẫn đường dẫn mới**
 (`indexes/experimental/chroma_db_vie`, `indexes/experimental/chroma_db_headers_old`), vì
 `ensure_separate_index_target()` so đường dẫn đã resolve theo gốc repo chứ không so tên cuối.
 Hệ quả có chủ đích: `indexes/` và `indexes/experimental/` cũng bị từ chối làm đích build

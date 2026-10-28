@@ -45,8 +45,8 @@ PYTHONIOENCODING=utf-8 venv/Scripts/python.exe ui/app.py
 ## 3. Đánh giá tĩnh (benchmark có ground truth)
 
 ```bash
-PYTHONIOENCODING=utf-8 venv/Scripts/python.exe src/evaluation.py --use-qwen-generator --no-judge --limit 2
-PYTHONIOENCODING=utf-8 venv/Scripts/python.exe src/evaluate_classifier.py --limit 5
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe src/assessment/evaluation.py --use-qwen-generator --no-judge --limit 2
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe src/assessment/evaluate_classifier.py --limit 5
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe scripts/benchmark_chunking.py --generator qwen --limit 2
 ```
 

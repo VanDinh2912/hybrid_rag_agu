@@ -1,8 +1,8 @@
-"""Unit test cho src/pipeline.py — fake 3 tầng dưới, không gọi Ollama/ChromaDB/Gemini."""
+"""Unit test cho src/core/pipeline.py — fake 3 tầng dưới, không gọi Ollama/ChromaDB/Gemini."""
 
 import pytest
 
-from src.pipeline import HybridRAGPipeline
+from src.core.pipeline import HybridRAGPipeline
 from src.text_utils import fold
 
 # Câu chuẩn hóa giả lập từ Qwen (có dấu tiếng Việt) — chỉ dùng hằng này xuyên suốt
@@ -112,7 +112,7 @@ FAKE_LABELS = {"topic": None, "question_type": "TRA_CUU", "raw_response": "raw-m
 
 
 def install_classifier(monkeypatch, labels=None, exc=None):
-    """Gắn fake classify_query vào src.pipeline; trả về list ghi nhận các lần gọi."""
+    """Gắn fake classify_query vào src.core.pipeline; trả về list ghi nhận các lần gọi."""
     calls = []
 
     def fake_classify(query):
@@ -121,7 +121,7 @@ def install_classifier(monkeypatch, labels=None, exc=None):
             raise exc
         return labels if labels is not None else dict(FAKE_LABELS)
 
-    monkeypatch.setattr("src.pipeline.classify_query", fake_classify)
+    monkeypatch.setattr("src.core.pipeline.classify_query", fake_classify)
     return calls
 
 

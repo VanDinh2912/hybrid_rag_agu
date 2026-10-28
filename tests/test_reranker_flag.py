@@ -12,9 +12,9 @@ Fake model chỉ là một đối tượng có `predict()` trả điểm cố đ
 import pytest
 from langchain_core.documents import Document
 
-from src import reranker as reranker_module
-from src.pipeline import HybridRAGPipeline
-from src.reranker import (
+from src.retrieval import reranker as reranker_module
+from src.core.pipeline import HybridRAGPipeline
+from src.retrieval.reranker import (
     DEFAULT_CANDIDATE_POOL,
     DEFAULT_RERANKER_MODEL,
     LastCall,
@@ -172,7 +172,7 @@ class TestRerankDocuments:
         assert passage == "Điều 5. Sinh viên được học lại"
 
     def test_ghi_số_liệu_lượt_cuối_vào_đối_tượng_chung(self):
-        """`src/pipeline.py` import chính đối tượng này — phải mutate tại chỗ."""
+        """`src/core/pipeline.py` import chính đối tượng này — phải mutate tại chỗ."""
         fake = FakeCrossEncoder({"chunk 2": 1.0})
         before = reranker_module.last_call
         rerank_documents("hỏi", self.DOCS, model=fake)
@@ -397,7 +397,7 @@ class TestPipelineCờBật:
 
     def test_rerank_chạy_sau_bonus_nên_không_đối_đầu_lọc_mềm(self, monkeypatch):
         """Cửa sổ 6 ô với bonus 12 đẩy chunk 11 ra; reranker kéo lại mà không đổi filter."""
-        from src.router import RetrievalConfig
+        from src.retrieval.router import RetrievalConfig
 
         monkeypatch.setenv("ENABLE_RERANKER", "1")
         fake = FakeCrossEncoder({"nội dung 11": 3.0})
@@ -418,7 +418,7 @@ class TestPipelineCờBật:
         """Reranker chỉ XẾP LẠI những gì pipeline giao cho nó. Nếu còn lọc CỨNG
         (ROUTER_SOFT_FILTER tắt) thì chunk ngoài nguồn bị xóa khỏi pool từ trước,
         reranker không có gì để kéo lại — test này chốt giới hạn đó thành chữ."""
-        from src.router import RetrievalConfig
+        from src.retrieval.router import RetrievalConfig
 
         monkeypatch.setenv("ENABLE_RERANKER", "1")
         monkeypatch.delenv("ROUTER_SOFT_FILTER", raising=False)

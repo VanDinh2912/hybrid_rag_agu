@@ -27,7 +27,7 @@ from typing import Optional
 
 import ollama
 
-from src.config import settings
+from src.core.config import settings
 from src.text_utils import fold
 
 

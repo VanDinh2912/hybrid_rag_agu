@@ -125,7 +125,7 @@ class TestCuaChecker:
         """Đột biến `M1`: site đọc env có literal mặc định "1" ⇒ LOI_MAC_DINH."""
         def fake_static(names):
             return {"ENABLE_RERANKER": [dict(
-                file="src/reranker.py", line=97, reader="getenv", default='"1"',
+                file="src/retrieval/reranker.py", line=97, reader="getenv", default='"1"',
                 via_const=None, snippet='os.getenv("ENABLE_RERANKER", "1")')]}
         monkeypatch.setattr(env_flag_audit, "scan_static", fake_static)
         row = self._one(monkeypatch)

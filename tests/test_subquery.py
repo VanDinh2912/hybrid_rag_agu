@@ -7,8 +7,8 @@ Offline hoàn toàn: fake llm_client cho split_comparison_query; fake Ensemble
 
 import pytest
 
-from src.pipeline import HybridRAGPipeline
-from src.retrieval import (
+from src.core.pipeline import HybridRAGPipeline
+from src.retrieval.retrieval import (
     _clean_subquery_lines,
     _pairwise_overlap_too_high,
     split_comparison_query,
@@ -224,7 +224,7 @@ def install_classifier(monkeypatch, labels):
     def fake_classify(query):
         return labels
 
-    monkeypatch.setattr("src.pipeline.classify_query", fake_classify)
+    monkeypatch.setattr("src.core.pipeline.classify_query", fake_classify)
 
 
 def make_so_sanh_pipeline(monkeypatch, ensemble, slm=None):

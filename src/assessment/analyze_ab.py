@@ -10,7 +10,7 @@ thẳng từ khối `aggregates` của từng JSON; số theo nhóm tính từ p
 các trường đã lưu (hit_at_*, reciprocal_rank, citations.{precision,recall,f1,exact_match},
 faithfulness.score, number_support, latency_seconds, is_refusal_answer); các đại lượng
 cần benchmark (in_corpus, expected_question_type, category) join qua id.
-KHÔNG sửa src/evaluation.py. KHÔNG bịa nhận xét — mỗi kết luận gắn số liệu/câu dẫn chứng.
+KHÔNG sửa src/assessment/evaluation.py. KHÔNG bịa nhận xét — mỗi kết luận gắn số liệu/câu dẫn chứng.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 BENCH_PATH = ROOT / "data/evaluation/benchmark_100_questions_v3.json"
 WITHOUT_PATH = ROOT / "outputs/ab_results_without_classifier.json"
 WITH_PATH = ROOT / "outputs/ab_results_with_classifier.json"

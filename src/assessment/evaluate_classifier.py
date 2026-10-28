@@ -1,6 +1,6 @@
 """Đo accuracy bộ phân loại câu hỏi (P2.3) trên 100 câu benchmark v3.
 
-Chạy `classify_query()` của `src/classifier.py` trên `raw_query` (câu THÔ — đúng
+Chạy `classify_query()` của `src/core/classifier.py` trên `raw_query` (câu THÔ — đúng
 như pipeline thật, không dùng `normalized_query`) của toàn bộ
 `data/evaluation/benchmark_100_questions_v3.json`, so kết quả không dấu qua
 `fold()` với nhãn `category` + `question_type` của benchmark.
@@ -35,12 +35,12 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))  # chạy trực tiếp từ repo gốc mà không cần cài package
 sys.stdout.reconfigure(encoding="utf-8")
 
-from src import classifier  # noqa: E402
-from src.classifier import classify_query  # noqa: E402
+from src.core import classifier  # noqa: E402
+from src.core.classifier import classify_query  # noqa: E402
 from src.text_utils import fold  # noqa: E402
 
 BENCHMARK_PATH = PROJECT_ROOT / "data" / "evaluation" / "benchmark_100_questions_v3.json"
@@ -200,7 +200,7 @@ def run_embedding_baseline(questions: list, limit: int) -> dict:
     Tái dùng đúng cấu hình embedding của repo (VectorStoreManager), chỉ đo
     thời gian encode (không tính nạp model vào thời gian/câu — ghi riêng).
     """
-    from src.vector_db import VectorStoreManager
+    from src.retrieval.vector_db import VectorStoreManager
 
     questions = questions[:limit]
     texts = [q["raw_query"] for q in questions]

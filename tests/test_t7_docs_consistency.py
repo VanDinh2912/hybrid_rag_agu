@@ -327,7 +327,7 @@ class TestRepoThatChiDoc:
         """Danh sách 5 script chưa có --help (PA đề xuất thêm CLI). Test hướng subset: thêm argparse
         thì vẫn xanh, nhưng đưa thêm script chưa-argparse vào README sẽ đỏ."""
         out = dc.check_all(ROOT)
-        da_biet = {"demo_streamlit.py", "ingest.py", "learn.py", "src/analyze_ab.py", "ui/app.py"}
+        da_biet = {"demo_streamlit.py", "ingest.py", "learn.py", "src/assessment/analyze_ab.py", "ui/app.py"}
         for w in out["command_warnings"]:
             assert any(s in w for s in da_biet), w
         assert out["help_problems"] == []

@@ -27,9 +27,9 @@ truy vấn con.
 | Thực nghiệm | Câu hỏi nghiên cứu | Nơi đo |
 |---|---|---|
 | Chunking | Chia nhỏ văn bản theo Điều/Khoản có tốt hơn cắt 512 token? | `scripts/benchmark_chunking.py` |
-| Phân loại | Qwen 1.5B có đủ tin để gán 14 chủ đề × 4 loại? | `src/evaluate_classifier.py` |
+| Phân loại | Qwen 1.5B có đủ tin để gán 14 chủ đề × 4 loại? | `src/assessment/evaluate_classifier.py` |
 | Router + tầng phụ | Bật classifier/router có làm truy xuất tốt hơn không? | A/B `--with-classifier` |
-| Chống ảo giác | Tỉ lệ từ chối đúng và trích dẫn đúng là bao nhiêu? | `src/evaluation.py` |
+| Chống ảo giác | Tỉ lệ từ chối đúng và trích dẫn đúng là bao nhiêu? | `src/assessment/evaluation.py` |
 
 Bốn câu hỏi này là xương sống khi bảo vệ. Mỗi chương sau đều quay lại một trong bốn
 cột này.
@@ -42,19 +42,19 @@ cột này.
 NGƯỜI DÙNG
    │  câu hỏi thô ("rớt môn có đc học lại k ad")
    ▼
-[1] Chuẩn hóa câu hỏi        src/local_slm.py + src/query_normalizer.py
+[1] Chuẩn hóa câu hỏi        src/generation/local_slm.py + src/core/query_normalizer.py
    │  câu học vụ + guardrail số/token
    ▼
-[2] Phân loại (tùy chọn)      src/classifier.py
+[2] Phân loại (tùy chọn)      src/core/classifier.py
    │  14 chủ đề × 4 loại
    ▼
-[3] Router (tùy chọn)         src/router.py
+[3] Router (tùy chọn)         src/retrieval/router.py
    │  top_k, trọng số BM25/Chroma, lọc nguồn, bật sub-query
    ▼
-[4] Mở rộng & tách truy vấn  src/retrieval.py
+[4] Mở rộng & tách truy vấn  src/retrieval/retrieval.py
    │  + từ đồng nghĩa; tách 2–3 vế cho câu so sánh
    ▼
-[5] Truy xuất lai            src/vector_db.py + src/pipeline.py
+[5] Truy xuất lai            src/retrieval/vector_db.py + src/core/pipeline.py
    │  BM25 + Chroma → RRF → retrieve_k ứng viên
    ▼
 [6] Sinh câu trả lời         src/generator.py

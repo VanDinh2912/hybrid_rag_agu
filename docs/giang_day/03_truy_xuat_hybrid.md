@@ -16,20 +16,20 @@ Chương này giải thích **cách chọn chunk**, không giải thích cách s
 | Thành phần | Tệp | Dòng | Nhiệm vụ |
 |---|---|---:|---|
 | `fold` | `src/text_utils.py` | 13 | bỏ dấu, chữ thường, gom khoảng trắng |
-| `SYNONYM_DICTIONARY` | `src/retrieval.py` | 40 | ~50 nhóm từ đồng nghĩa pháp lý |
-| `expand_query_with_synonyms` | `src/retrieval.py` | 79 | ghép từ đồng nghĩa vào cuối câu |
-| hằng số tách truy vấn | `src/retrieval.py` | 161–169 | 2–3 dòng, ≤200 ký tự, overlap ≤0.8 |
-| `split_comparison_query` | `src/retrieval.py` | 265 | tách câu SO_SANH bằng Qwen |
-| `_pairwise_overlap_too_high` | `src/retrieval.py` | 230 | guardrail chống tách dở |
-| `bm25_tokenize` | `src/vector_db.py` | 26 | tokenizer kép có dấu + không dấu |
-| `extract_documents_from_chroma` | `src/vector_db.py` | 40 | đọc toàn bộ chunk để dựng BM25 |
-| `VectorStoreManager` | `src/vector_db.py` | 55 | nhúng bge-m3, tạo Chroma |
-| `create_bm25_retriever` | `src/vector_db.py` | 109 | BM25 trên toàn bộ chunk |
-| `create_ensemble_retriever` | `src/vector_db.py` | 122 | ghép BM25 + Chroma bằng RRF |
-| `_init_hybrid_retriever` | `src/pipeline.py` | 114 | dựng retriever lúc khởi động |
-| `HybridRAGPipeline.retrieve` | `src/pipeline.py` | 148 | một lượt truy xuất hoàn chỉnh |
-| `_merge_subquery_branches` | `src/pipeline.py` | 271 | gộp nhiều nhánh truy vấn con |
-| `HybridRAGPipeline.run` | `src/pipeline.py` | 298 | điều phối cả pipeline |
+| `SYNONYM_DICTIONARY` | `src/retrieval/retrieval.py` | 40 | ~50 nhóm từ đồng nghĩa pháp lý |
+| `expand_query_with_synonyms` | `src/retrieval/retrieval.py` | 79 | ghép từ đồng nghĩa vào cuối câu |
+| hằng số tách truy vấn | `src/retrieval/retrieval.py` | 161–169 | 2–3 dòng, ≤200 ký tự, overlap ≤0.8 |
+| `split_comparison_query` | `src/retrieval/retrieval.py` | 265 | tách câu SO_SANH bằng Qwen |
+| `_pairwise_overlap_too_high` | `src/retrieval/retrieval.py` | 230 | guardrail chống tách dở |
+| `bm25_tokenize` | `src/retrieval/vector_db.py` | 26 | tokenizer kép có dấu + không dấu |
+| `extract_documents_from_chroma` | `src/retrieval/vector_db.py` | 40 | đọc toàn bộ chunk để dựng BM25 |
+| `VectorStoreManager` | `src/retrieval/vector_db.py` | 55 | nhúng bge-m3, tạo Chroma |
+| `create_bm25_retriever` | `src/retrieval/vector_db.py` | 109 | BM25 trên toàn bộ chunk |
+| `create_ensemble_retriever` | `src/retrieval/vector_db.py` | 122 | ghép BM25 + Chroma bằng RRF |
+| `_init_hybrid_retriever` | `src/core/pipeline.py` | 114 | dựng retriever lúc khởi động |
+| `HybridRAGPipeline.retrieve` | `src/core/pipeline.py` | 148 | một lượt truy xuất hoàn chỉnh |
+| `_merge_subquery_branches` | `src/core/pipeline.py` | 271 | gộp nhiều nhánh truy vấn con |
+| `HybridRAGPipeline.run` | `src/core/pipeline.py` | 298 | điều phối cả pipeline |
 
 Hợp đồng của `retrieve()`:
 
@@ -167,7 +167,7 @@ Query bị fold **trước khi** vào cả hai nhánh. Với BM25 điều này k
 đã có bản fold). Với Chroma, đây là quyết định thực nghiệm:
 
 > Cùng một index, cùng câu hỏi, query **có dấu** trả về 6 chunk sai nguồn; query
-> **đã fold** đưa chunk đúng lên hạng 1 (ghi chú tại `src/pipeline.py:209–213`).
+> **đã fold** đưa chunk đúng lên hạng 1 (ghi chú tại `src/core/pipeline.py:209–213`).
 
 Vì sao? bge-m3 là model đa ngữ, nhưng khi hai nửa corpus ở hai “hệ chữ” khác nhau
 (có dấu / không dấu), query có dấu sẽ nghiêng về nửa có dấu. Fold query đưa nó về
@@ -205,18 +205,18 @@ RRF(d) = Σ_i  w_i / (c + rank_i(d))
 
 - `rank_i(d)` bắt đầu từ **1**;
 - `w_i` là trọng số của nhánh thứ i;
-- `c = 60` (`DEFAULT_RRF_C`, `src/vector_db.py:23`);
+- `c = 60` (`DEFAULT_RRF_C`, `src/retrieval/vector_db.py:23`);
 - chunk không xuất hiện trong nhánh nào thì không có số hạng của nhánh đó;
 - `id_key="chunk_id"` để hai nhánh nhận ra cùng một chunk.
 
-> **Cẩn thận tài liệu:** docstring đầu `src/retrieval.py` ghi công thức
+> **Cẩn thận tài liệu:** docstring đầu `src/retrieval/retrieval.py` ghi công thức
 > `k / (rank + k)`. Đó không phải công thức code chạy. Bản đúng là
 > `weight / (c + rank)` — trọng số nhân vào tử số. Khi bảo vệ, hãy trích **code**
 > hoặc tài liệu LangChain, đừng trích docstring cũ.
 
 Tương tự, docstring `create_ensemble_retriever` nói “mặc định [0.4, 0.6]”, nhưng
 hằng số thật là `DEFAULT_BM25_WEIGHT = 0.5`, `DEFAULT_VECTOR_WEIGHT = 0.5`
-(`src/vector_db.py:21–22`). Luôn đọc hằng số.
+(`src/retrieval/vector_db.py:21–22`). Luôn đọc hằng số.
 
 ### 5.2. Tính tay một ví dụ
 
@@ -325,7 +325,7 @@ Tắt bằng biến môi trường:
 ENABLE_QUERY_EXPANSION=0
 ```
 
-`HybridRAGPipeline.__init__` đọc cờ này tại `src/pipeline.py:99`.
+`HybridRAGPipeline.__init__` đọc cờ này tại `src/core/pipeline.py:99`.
 
 ---
 
@@ -486,7 +486,7 @@ gán nhầm SO_SANH vẫn an toàn vì guardrail sẽ không tách hoặc tách 
 candidate_subs = split_comparison_query(normalized_query, llm_client=self.local_slm)
 ```
 
-Lý do (ghi tại `src/pipeline.py:379–382`): các cụm đồng nghĩa ghép ở cuối làm Qwen
+Lý do (ghi tại `src/core/pipeline.py:379–382`): các cụm đồng nghĩa ghép ở cuối làm Qwen
 1.5B “parrot” — nó nhại lại cụm mở rộng thay vì tách. Mỗi truy vấn con sau đó vẫn
 được mở rộng từ đồng nghĩa riêng trước khi truy xuất, nên recall không mất.
 
@@ -638,7 +638,7 @@ Giả sử `ENABLE_CLASSIFIER=1`, classifier trả:
 {"topic": "học phí", "question_type": "TRA_CUU"}
 ```
 
-Router (`src/router.py:158`):
+Router (`src/retrieval/router.py:158`):
 - `top_k = 6` (từ caller);
 - trọng số 0.5/0.5 (TRA_CUU giữ base);
 - `source_filter` = 2 file học phí;

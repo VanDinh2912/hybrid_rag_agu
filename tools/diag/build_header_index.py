@@ -35,7 +35,7 @@ import chromadb  # noqa: E402
 from langchain_core.documents import Document  # noqa: E402
 from langchain_core.embeddings import Embeddings  # noqa: E402
 
-from src.contextual_header import (  # noqa: E402
+from src.indexing.contextual_header import (  # noqa: E402
     ENABLE_CONTEXTUAL_HEADER_ENV,
     build_header,
     contextual_header_enabled,

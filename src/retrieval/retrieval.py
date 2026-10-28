@@ -31,7 +31,7 @@ from typing import Any, Optional
 
 import ollama
 
-from src.config import settings
+from src.core.config import settings
 from src.text_utils import fold
 
 # Từ điển ánh xạ từ khóa học vụ & từ đồng nghĩa pháp lý theo Quy chế đào tạo ĐHAG.

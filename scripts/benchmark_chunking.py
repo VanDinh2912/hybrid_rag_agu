@@ -12,7 +12,7 @@ recursive, structure-aware + khóa bảng Markdown) nó sẽ
      Hit@K, MRR, Citation Precision / Recall / F1, Latency (ms);
   5. xuất log chi tiết riêng cho từng chiến lược và một báo cáo so sánh dạng ma trận.
 
-Mọi hàm chấm điểm (Hit@K, MRR, Citation) được TÁI SỬ DỤNG từ `src/evaluation.py` để số
+Mọi hàm chấm điểm (Hit@K, MRR, Citation) được TÁI SỬ DỤNG từ `src/assessment/evaluation.py` để số
 liệu của script này so sánh trực tiếp được với `outputs/evaluation_summary.md`.
 
 ĐẦU RA (thư mục `./logs/benchmark/` tự tạo):
@@ -64,14 +64,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from src.chunking import (
+from src.indexing.chunking import (
     DEFAULT_MAX_TOKENS,
     DEFAULT_OVERLAP_TOKENS,
     WhitespaceTokenCounter,
     chunk_with_strategy,
     get_token_counter,
 )
-from src.evaluation import (
+from src.assessment.evaluation import (
     citation_scores,
     extract_citations,
     load_benchmark,
@@ -83,11 +83,11 @@ from src.generator import (
     REFUSAL_MARKER,
     is_quota_error,
 )
-from src.loader import DocumentLoader
-from src.local_slm import LocalSLM
-from src.pipeline import HybridRAGPipeline
+from src.indexing.loader import DocumentLoader
+from src.generation.local_slm import LocalSLM
+from src.core.pipeline import HybridRAGPipeline
 from src.text_utils import fold
-from src.vector_db import DEFAULT_RRF_C, VectorStoreManager
+from src.retrieval.vector_db import DEFAULT_RRF_C, VectorStoreManager
 
 try:  # pandas chỉ dùng để dựng bảng; thiếu thì script vẫn chạy bằng nhánh dự phòng
     import pandas as pd

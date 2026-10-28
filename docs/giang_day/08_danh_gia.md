@@ -22,10 +22,10 @@ tổng hợp → kết luận. Nếu không làm được chuỗi đó, con số
 | File | Vai trò | Ghi chú |
 |---|---|---|
 | `data/evaluation/benchmark_100_questions_v3.json` | Tập đo chính | 100 câu, 13 khóa/câu, có `question_type` |
-| `src/evaluation.py` | Chạy pipeline + tính metric + resume + báo cáo | File lớn nhất của tầng đo |
-| `src/faithfulness_heuristic.py` | Chấm trung thực bằng token-overlap, không cần API | Chạy **sau** lượt đánh giá |
-| `src/analyze_ab.py` | So sánh hai lượt WITH/WITHOUT, vẽ biểu đồ, kiểm GATE | Đọc 2 JSON + benchmark |
-| `src/evaluate_classifier.py` | Đo accuracy classifier và baseline kNN | Độc lập với pipeline RAG |
+| `src/assessment/evaluation.py` | Chạy pipeline + tính metric + resume + báo cáo | File lớn nhất của tầng đo |
+| `src/core/faithfulness_heuristic.py` | Chấm trung thực bằng token-overlap, không cần API | Chạy **sau** lượt đánh giá |
+| `src/assessment/analyze_ab.py` | So sánh hai lượt WITH/WITHOUT, vẽ biểu đồ, kiểm GATE | Đọc 2 JSON + benchmark |
+| `src/assessment/evaluate_classifier.py` | Đo accuracy classifier và baseline kNN | Độc lập với pipeline RAG |
 | `outputs/ab_results_*.json` | Kết quả thô từng câu của A/B | Nguồn chân lý cho mọi số A/B |
 | `outputs/ab_summary_*.md` | Bảng tóm tắt do `evaluation.py` sinh | Không phải báo cáo A/B cuối |
 | `outputs/ab_comparison.md` | Báo cáo A/B do `analyze_ab.py` sinh | Có bảng nhóm + GATE + nhận xét |
@@ -170,14 +170,14 @@ Lệnh A/B đã dùng (rút gọn):
 
 ```bash
 # WITHOUT
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py \
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/assessment/evaluation.py \
   --benchmark data/evaluation/benchmark_100_questions_v3.json \
   --output outputs/ab_results_without_classifier.json \
   --summary-output outputs/ab_summary_without_classifier.md \
   --use-qwen-generator --no-judge
 
 # WITH
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py \
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/assessment/evaluation.py \
   --benchmark data/evaluation/benchmark_100_questions_v3.json \
   --output outputs/ab_results_with_classifier.json \
   --summary-output outputs/ab_summary_with_classifier.md \
@@ -187,11 +187,11 @@ PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py \
 Sau đó chấm heuristic và so sánh:
 
 ```bash
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/faithfulness_heuristic.py \
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/core/faithfulness_heuristic.py \
   outputs/ab_results_without_classifier.json
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/faithfulness_heuristic.py \
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/core/faithfulness_heuristic.py \
   outputs/ab_results_with_classifier.json
-PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/analyze_ab.py
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/assessment/analyze_ab.py
 ```
 
 ### 3.2. Trình tự trong `main`
@@ -612,7 +612,7 @@ trong cả hai JSON. Không được trích cột này từ A/B.
 
 ### 7.5. Faithfulness heuristic — công cụ thay thế, có điều kiện
 
-`src/faithfulness_heuristic.py`:
+`src/core/faithfulness_heuristic.py`:
 
 ```python
 answer_tokens = extract_meaningful_tokens(answer)

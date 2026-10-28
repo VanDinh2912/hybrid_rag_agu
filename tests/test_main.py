@@ -3,7 +3,7 @@
 
 Mock hoàn toàn QwenGenerator/GeminiGenerator — không gọi Ollama hay Gemini thật,
 không tốn quota. Mục tiêu: chứng minh main.py đọc cờ đúng ngữ nghĩa như
-src/evaluation.py (=1 → Qwen local kèm cảnh báo OFFLINE; mặc định → Gemini).
+src/assessment/evaluation.py (=1 → Qwen local kèm cảnh báo OFFLINE; mặc định → Gemini).
 """
 
 import pytest

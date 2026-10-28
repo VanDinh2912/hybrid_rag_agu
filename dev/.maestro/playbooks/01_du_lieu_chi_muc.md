@@ -6,7 +6,7 @@
 ## Phạm vi được đụng
 
 - `data/corpus/**` (các tầng `Tầng 1`, `Tầng 2`, `cac_file_bo_xung_khac`)
-- `ingest.py`, `src/loader.py`, `src/chunking.py`, `src/vector_db.py`
+- `ingest.py`, `src/indexing/loader.py`, `src/indexing/chunking.py`, `src/retrieval/vector_db.py`
 - `chroma_db/` (ghi DUY NHẤT qua quy trình ingest/rebuild), `.cache/ocr/` (cache OCR, layout mới 28-10 — tên cũ `.ocr_cache/`)
 - `scripts/learn.py`, `data/corpus/ghi_chu_hoc_them.txt`, `logs/learning/learning_log.csv`
 - `tmp/` cho mọi script trung gian (chuyển đổi .doc, extract thử, dry-run)
@@ -26,8 +26,8 @@
 ## Vùng cấm
 
 - `data/evaluation/**`, `outputs/evaluation_results.json`, `outputs/evaluation_summary.md`
-- `src/retrieval.py`, `src/query_normalizer.py`, `src/text_utils.py`, `src/generator.py`,
-  `src/local_slm.py`, `src/pipeline.py`, `main.py` (thuộc Group 02)
+- `src/retrieval/retrieval.py`, `src/core/query_normalizer.py`, `src/text_utils.py`, `src/generator.py`,
+  `src/generation/local_slm.py`, `src/core/pipeline.py`, `main.py` (thuộc Group 02)
 - `ui/`, `tests/`, `README.md`, `SYSTEM_ARCHITECTURE*` (thuộc Group 03)
 
 ## Verify

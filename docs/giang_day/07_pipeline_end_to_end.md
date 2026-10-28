@@ -21,7 +21,7 @@ Repo có năm cửa vào, dùng chung lõi `HybridRAGPipeline`:
 | `ingest.py` | nạp corpus → chunk → nhúng → Chroma | bge-m3 (embedding) | xóa collection cũ rồi tạo mới |
 | `main.py` | CLI hỏi đáp thật | Qwen chuẩn hóa + Gemini/Qwen sinh | mặc định Gemini |
 | `scripts/learn.py` | hỏi, người chấm, ghi bài học, rebuild | Qwen + Gemini | “học” = thêm file ghi chú |
-| `src/evaluation.py` | chạy benchmark, đo chỉ số | tùy cấu hình | chương 08 |
+| `src/assessment/evaluation.py` | chạy benchmark, đo chỉ số | tùy cấu hình | chương 08 |
 | `scripts/benchmark_chunking.py` | so sánh chiến lược chunk | tokenizer, không sinh | chương 08 |
 | `streamlit run ui/app.py` | giao diện web | Qwen + Gemini | chương 09 |
 
@@ -35,7 +35,7 @@ Repo có năm cửa vào, dùng chung lõi `HybridRAGPipeline`:
 
 ### 2.1. Hàm khởi tạo
 
-`HybridRAGPipeline.__init__` (`src/pipeline.py:80–112`) nhận:
+`HybridRAGPipeline.__init__` (`src/core/pipeline.py:80–112`) nhận:
 
 ```python
 HybridRAGPipeline(

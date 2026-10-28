@@ -322,7 +322,7 @@ def score_with_cross_encoder(pairs: list[dict], *, model_id: str, device: str,
     n_pairs_scored = 0
     for p in pairs:
         # PA-25: query NGUYÊN VĂN (chỉ strip) chấm với passage nguyên văn — cùng qui ước với
-        # `src/reranker.py` sau when sửa đã duyệt; `fold()` ở đây sẽ tái tạo đúng lỗi r12.
+        # `src/retrieval/reranker.py` sau when sửa đã duyệt; `fold()` ở đây sẽ tái tạo đúng lỗi r12.
         q = (p["raw_query"] or "").strip()
         window = {}
         for which in ("pos", "neg"):

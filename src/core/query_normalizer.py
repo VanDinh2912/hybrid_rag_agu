@@ -283,7 +283,7 @@ def clean_normalized_text(text: str) -> str:
 # r0 và r3 cho `normalized_query` giống nhau 100/100, còn r1 lệch 18/100 (cùng code, cùng
 # model). Coi tỉ lệ hỏng là đặc tính TẦN SUẤT (5-6/100 mỗi lượt), đừng dựa vào một bản
 # chuẩn hóa của MỘT lượt chạy.
-# Hậu quả không dừng ở câu trả lời lệch: `src/pipeline.py:386` đưa `normalized_query` vào
+# Hậu quả không dừng ở câu trả lời lệch: `src/core/pipeline.py:386` đưa `normalized_query` vào
 # CẢ truy xuất lẫn sinh, nên item bị hỏng từ gốc — 5/23 `FAIL_RETRIEVAL` của r1 ở pha đắt
 # thuộc nhóm này, tức một phần "lỗi truy xuất" thực chất là lỗi tầng input.
 #

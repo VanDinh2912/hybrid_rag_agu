@@ -1,7 +1,7 @@
 """T2 Bước 2 — Re-OCR các PDF scan bằng EasyOCR (vi) vào CACHE MỚI, không đụng bản gốc.
 
 Bảo thủ:
-- KHÔNG sửa src/loader.py, KHÔNG ghi vào ./.ocr_cache (cache rapidocr gốc).
+- KHÔNG sửa src/indexing/loader.py, KHÔNG ghi vào ./.ocr_cache (cache rapidocr gốc).
 - Viết vào ./​.ocr_cache_vie/ theo ĐÚNG naming của DocumentLoader._cache_file, để nếu
   người dùng sau này bật qua OCR_CACHE_DIR=.ocr_cache_vie thì pipeline đọc được ngay.
 - Chỉ OCR những trang mà pipeline hiện hành coi là scan (< DEFAULT_MIN_CHARS_PER_PAGE).
@@ -29,7 +29,7 @@ import numpy as np  # noqa: E402
 import pypdfium2 as pdfium  # noqa: E402
 from pypdf import PdfReader  # noqa: E402
 
-from src.loader import DEFAULT_MIN_CHARS_PER_PAGE, DocumentLoader  # noqa: E402
+from src.indexing.loader import DEFAULT_MIN_CHARS_PER_PAGE, DocumentLoader  # noqa: E402
 
 CORPUS_DIR = os.path.join(ROOT, "data", "corpus")
 VIE_CACHE_DIR = os.path.join(ROOT, ".ocr_cache_vie")

@@ -26,9 +26,9 @@ from src.generator import (
     _env_flag,
     is_fallback_answer,
 )
-from src.local_slm import LocalSLM, LocalSLMError
-from src.pipeline import HybridRAGPipeline
-from src.vector_db import VectorStoreManager
+from src.generation.local_slm import LocalSLM, LocalSLMError
+from src.core.pipeline import HybridRAGPipeline
+from src.retrieval.vector_db import VectorStoreManager
 
 DEFAULT_TOP_K = 6
 EXIT_WORDS = {"exit", "quit", "thoat", "thoát", "q"}

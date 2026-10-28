@@ -27,7 +27,7 @@ Toàn bộ bổ sung nằm sau một công tắc an toàn `ENABLE_CLASSIFIER`: k
 
 ## 3.2. Kiến trúc 6 tầng
 
-Luồng xử lý một câu hỏi khi `ENABLE_CLASSIFIER=1` (khớp thứ tự thật trong `src/pipeline.py` — `HybridRAGPipeline.run()`):
+Luồng xử lý một câu hỏi khi `ENABLE_CLASSIFIER=1` (khớp thứ tự thật trong `src/core/pipeline.py` — `HybridRAGPipeline.run()`):
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -38,10 +38,10 @@ Luồng xử lý một câu hỏi khi `ENABLE_CLASSIFIER=1` (khớp thứ tự t
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │      LAYER 0: PHÂN LOẠI CÂU HỎI + ROUTER (Qwen local)          │
-│  - src/classifier.py: gán 2 nhãn cho câu hỏi THÔ:              │
+│  - src/core/classifier.py: gán 2 nhãn cho câu hỏi THÔ:              │
 │      topic = "đánh giá rèn luyện" (1/14 chủ đề)                │
 │      question_type = "TRA_CUU" (1/4 loại)                      │
-│  - src/router.py: nhãn → cấu hình truy xuất theo lớp           │
+│  - src/retrieval/router.py: nhãn → cấu hình truy xuất theo lớp           │
 │  - Guardrail 3 lớp, suy giảm mềm: mọi lỗi → cấu hình gốc       │
 └────────────────────────┬────────────────────────────────────────┘
                          │
@@ -136,7 +136,7 @@ Chú giải "ghép nhiều nơi": tính khi cần đối chiếu ≥ 2 Điều/K
 
 ## 3.4. Thiết kế bộ phân loại (classifier)
 
-Module `src/classifier.py`, dùng Qwen2.5-1.5B-Instruct qua Ollama (không dùng Gemini — không tốn quota), `temperature = 0.0`, tối đa 160 token output, timeout 20 giây (`CLASSIFIER_TIMEOUT`).
+Module `src/core/classifier.py`, dùng Qwen2.5-1.5B-Instruct qua Ollama (không dùng Gemini — không tốn quota), `temperature = 0.0`, tối đa 160 token output, timeout 20 giây (`CLASSIFIER_TIMEOUT`).
 
 **Prompt few-shot cố định 16 ví dụ** chọn trước từ benchmark v3: đủ 14 chủ đề (mỗi chủ đề 1 câu) cộng 2 câu ngoài corpus; nhờ vậy mỗi loại hiếm `SO_SANH` / `THU_TUC` / `NGOAI_PHAM_VI` có 3 ví dụ, `TRA_CUU` có 7. Mỗi ví dụ kèm dòng "Dấu hiệu" giúp model bám quy tắc thay vì nhại đáp án. Khối quy tắc được nhắc lại ngay trước câu hỏi (tránh model nhỏ trôi về nhãn đa số).
 
@@ -153,11 +153,11 @@ Ollama chết / timeout → trả thẳng kết quả lớp 3 kèm log cảnh b�
 
 few-shot đóng băng làm phiên bản v1 — không tinh chỉnh thêm trên chính bộ 100 câu đo để tránh overfit.
 
-*Nguồn: `src/classifier.py` (docstring module + hằng số FEW_SHOT_IDS); đặc tả `docs/architecture/SYSTEM_ARCHITECTURE.md` mục 6.1.*
+*Nguồn: `src/core/classifier.py` (docstring module + hằng số FEW_SHOT_IDS); đặc tả `docs/architecture/SYSTEM_ARCHITECTURE.md` mục 6.1.*
 
 ## 3.5. Thiết kế router truy xuất theo lớp
 
-Module `src/router.py` — hàm thuần `get_retrieval_config(labels, base)`, không I/O, không gọi model.
+Module `src/retrieval/router.py` — hàm thuần `get_retrieval_config(labels, base)`, không I/O, không gọi model.
 
 **Nguyên tắc thiết kế: "mặc định = cấu hình hiện tại".** Cấu hình nền (`base`) đọc đúng các biến môi trường pipeline cũ đang dùng (`RAG_TOP_K`, `BM25_WEIGHT`, `CHROMA_WEIGHT`); nhãn chỉ điều chỉnh, không đổi bản chất pipeline. Không có nhãn (classifier tắt / lỗi / câu tự do) → trả nguyên `base`. Không bao giờ giảm top_k dưới giá trị gốc; không bao giờ trả trọng số tổng ≤ 0.
 
@@ -172,7 +172,7 @@ Module `src/router.py` — hàm thuần `get_retrieval_config(labels, base)`, kh
 
 **Bảng lọc nguồn theo chủ đề (`TOPIC_SOURCE_FILTER`)**: chỉ chủ đề có ≥ 5 câu trong benchmark VÀ ≥ 80% số câu in-corpus nằm gọn trong ≤ 2 nguồn mới được lọc — thiết kế phòng thủ vì lọc hẹp làm rơi căn cứ nằm ở văn bản phụ. Đạt ngưỡng: 8/14 chủ đề; 6 chủ đề còn lại (n = 1–3 câu) cố ý không lọc, suy giảm về cấu hình chung.
 
-*Nguồn: `src/router.py` (docstring module + hằng số); đặc tả `docs/architecture/SYSTEM_ARCHITECTURE.md` mục 6.2.*
+*Nguồn: `src/retrieval/router.py` (docstring module + hằng số); đặc tả `docs/architecture/SYSTEM_ARCHITECTURE.md` mục 6.2.*
 
 ## 3.6. Thiết kế thí nghiệm A/B
 

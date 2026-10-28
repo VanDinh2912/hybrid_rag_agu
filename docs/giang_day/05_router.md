@@ -26,7 +26,7 @@ raw_query
                                    pipeline.retrieve(config=...)
 ```
 
-Gọi từ `src/pipeline.py:330–346`, chỉ khi `ENABLE_CLASSIFIER=1`. Nếu tắt, router không
+Gọi từ `src/core/pipeline.py:330–346`, chỉ khi `ENABLE_CLASSIFIER=1`. Nếu tắt, router không
 tồn tại trong lượt hỏi; pipeline dùng trọng số env và không lọc nguồn.
 
 Hợp đồng:
@@ -41,7 +41,7 @@ class RetrievalConfig:
     enable_subquery: bool = False
 ```
 
-(`src/router.py:100–108`)
+(`src/retrieval/router.py:100–108`)
 
 Năm trường, không hơn. Mọi thứ router làm đều phải biểu diễn được bằng năm trường này;
 nếu cần thêm hành vi, phải sửa cả pipeline — đó là lý do thiết kế giữ nó nhỏ.
@@ -68,7 +68,7 @@ Ba nơi có thể đặt `top_k`:
    nội bộ là **6** nếu env không có;
 2. `.env.example` ghi `RAG_TOP_K=4`;
 3. `pipeline.run(top_k=...)` nhận tham số caller, rồi **ghi đè** `base_config.top_k`
-   (`src/pipeline.py:336`).
+   (`src/core/pipeline.py:336`).
 
 Thứ tự thực tế:
 
@@ -144,7 +144,7 @@ Với SO_SANH, `retrieve_k = 8 × 2 = 16`; generator nhận 8. Với TRA_CUU, `r
 
 ### 4.1. Tám chủ đề được lọc
 
-`TOPIC_SOURCE_FILTER` (`src/router.py:68–95`):
+`TOPIC_SOURCE_FILTER` (`src/retrieval/router.py:68–95`):
 
 | Chủ đề | Nguồn |
 |---|---|

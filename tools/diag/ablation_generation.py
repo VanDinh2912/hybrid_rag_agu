@@ -177,7 +177,7 @@ def make_generator(config: str, cache_dir: Path):
 
 
 def build_result(row: dict, docs: list[dict], answer: str, latency: float) -> dict:
-    """Shape tối thiểu mà verify.score_item cần (theo src/pipeline.py::run)."""
+    """Shape tối thiểu mà verify.score_item cần (theo src/core/pipeline.py::run)."""
     return {
         "answer": answer,
         "contexts": [d["content"] for d in docs],

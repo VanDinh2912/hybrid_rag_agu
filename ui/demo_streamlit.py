@@ -44,13 +44,13 @@ load_dotenv()  # nạp .env (GEMINI_API_KEY, OLLAMA_*, ...) TRƯỚC khi backend
 import pandas as pd
 import streamlit as st
 
-from src.chunking import (
+from src.indexing.chunking import (
     DEFAULT_MAX_TOKENS,
     DEFAULT_OVERLAP_TOKENS,
     chunk_with_strategy,
     get_token_counter,
 )
-from src.evaluation import (
+from src.assessment.evaluation import (
     REFUSAL_MARKER,
     citation_scores,
     extract_citations,
@@ -60,11 +60,11 @@ from src.evaluation import (
     source_match,
 )
 from src.generator import GeminiGenerator, QwenGenerator
-from src.loader import DocumentLoader
-from src.local_slm import LocalSLM
-from src.pipeline import HybridRAGPipeline
+from src.indexing.loader import DocumentLoader
+from src.generation.local_slm import LocalSLM
+from src.core.pipeline import HybridRAGPipeline
 from src.text_utils import fold
-from src.vector_db import VectorStoreManager
+from src.retrieval.vector_db import VectorStoreManager
 
 # --------------------------------------------------------------------------- hằng số
 
@@ -142,7 +142,7 @@ def get_judge_model() -> tuple[Any, str | None]:
     """Dựng LLM Judge ĐỘC LẬP (không dùng generator chính) cho tầng giám khảo Faithfulness.
 
     Trả về raw `google.generativeai.GenerativeModel` đúng kiểu `judge_faithfulness`
-    trong src/evaluation.py mong đợi (object có .generate_content).
+    trong src/assessment/evaluation.py mong đợi (object có .generate_content).
     """
     api_key = (os.getenv("GEMINI_API_KEY") or "").strip()
     if not api_key or api_key in {"your_gemini_api_key_here", "<your_api_key>"}:
@@ -1164,7 +1164,7 @@ def main() -> None:
     st.title("🔬 Demo So Sánh 3 Chiến Lược Phân Đoạn Tài Liệu")
     st.caption(
         "Hybrid RAG tra cứu quy chế sinh viên ĐHAG · backend tái sử dụng nguyên vẹn từ `src/` "
-        "(chunking → bge-m3 + BM25/RRF → Qwen/Gemini · chấm điểm từ `src/evaluation.py`). "
+        "(chunking → bge-m3 + BM25/RRF → Qwen/Gemini · chấm điểm từ `src/assessment/evaluation.py`). "
         "Live mode mất khoảng 30–60 giây/câu/chiến lược với Qwen local; lần đầu chưa có index "
         "sẽ mất thêm vài phút để nhúng corpus."
     )

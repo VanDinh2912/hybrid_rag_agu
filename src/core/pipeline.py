@@ -28,18 +28,18 @@ from typing import Any, Optional
 
 from langchain_core.documents import Document
 
-from src.classifier import classify_query
-from src.config import settings
-from src.evidence_selection import evidence_selection_enabled, select_evidence
-from src.query_normalizer import normalize_user_query
-from src.refusal_policy import (
+from src.core.classifier import classify_query
+from src.core.config import settings
+from src.generation.evidence_selection import evidence_selection_enabled, select_evidence
+from src.core.query_normalizer import normalize_user_query
+from src.generation.refusal_policy import (
     decoupled_refusal_enabled,
     decide_post_generation,
     decide_pre_generation,
     log_decision,
 )
-from src.retrieval import SYNONYM_DICTIONARY, expand_query_with_synonyms, split_comparison_query
-from src.reranker import (
+from src.retrieval.retrieval import SYNONYM_DICTIONARY, expand_query_with_synonyms, split_comparison_query
+from src.retrieval.reranker import (
     RerankerUnavailable,
     last_call,
     reranker_candidate_pool,
@@ -48,7 +48,7 @@ from src.reranker import (
     reranker_keep_candidates,
     rerank_documents,
 )
-from src.router import (
+from src.retrieval.router import (
     RetrievalConfig,
     apply_source_quota,
     base_config_from_env,
@@ -59,7 +59,7 @@ from src.router import (
     router_soft_filter_enabled,
 )
 from src.text_utils import fold
-from src.vector_db import (
+from src.retrieval.vector_db import (
     DEFAULT_BM25_WEIGHT,
     DEFAULT_VECTOR_WEIGHT,
     DEFAULT_RRF_C,

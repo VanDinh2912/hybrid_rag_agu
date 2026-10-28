@@ -1,6 +1,6 @@
-"""Test guardrail chống lệch nghĩa và các hàm thuần của src/local_slm.py."""
+"""Test guardrail chống lệch nghĩa và các hàm thuần của src/generation/local_slm.py."""
 
-from src.local_slm import (
+from src.generation.local_slm import (
     LocalSLM,
     build_normalize_prompt,
     guardrail_violation,

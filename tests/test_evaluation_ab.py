@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Unit test P4.1 — thống kê chế độ A/B của src/evaluation.py (offline 100%).
+"""Unit test P4.1 — thống kê chế độ A/B của src/assessment/evaluation.py (offline 100%).
 
 Fake entries + fake pipeline: kiểm tra classification_stats (fold, bỏ expected rỗng),
 group_metrics, false_refusal_stats, is_skipped_no_gt, estimate_requests (cache tmp)
@@ -8,8 +8,8 @@ và việc evaluate_question ghi predicted_labels/retrieval_config vào per-ques
 
 import json
 
-import src.evaluation as ev
-from src.evaluation import (
+import src.assessment.evaluation as ev
+from src.assessment.evaluation import (
     classification_stats,
     estimate_requests,
     evaluate_question,

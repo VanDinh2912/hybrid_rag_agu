@@ -36,10 +36,10 @@ from pathlib import Path
 import pytest
 from langchain_core.documents import Document
 
-from src import reranker as reranker_module
-from src.pipeline import HybridRAGPipeline
-from src.router import RetrievalConfig, rescore_with_source_preference
-from src.reranker import (
+from src.retrieval import reranker as reranker_module
+from src.core.pipeline import HybridRAGPipeline
+from src.retrieval.router import RetrievalConfig, rescore_with_source_preference
+from src.retrieval.reranker import (
     DEFAULT_RERANKER_MODEL,
     RerankerUnavailable,
     last_call,

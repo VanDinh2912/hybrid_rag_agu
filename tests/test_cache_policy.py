@@ -1,4 +1,4 @@
-"""Unit test T7 — khóa CHÍNH SÁCH cho cache tầng sinh (`src/cache_policy.py`).
+"""Unit test T7 — khóa CHÍNH SÁCH cho cache tầng sinh (`src/core/cache_policy.py`).
 
 Vì sao phải có: cache sinh văn bản vốn chỉ băm `{model, temperature, prompt_version,
 prompt}`. Nhưng đổi ngưỡng cứu câu từ chối / guard / chọn câu bằng chứng thì câu trả
@@ -19,8 +19,8 @@ import re
 
 import pytest
 
-from src import evidence_selection
-from src.cache_policy import (
+from src.generation import evidence_selection
+from src.core.cache_policy import (
     DEFAULT_CACHE_TOKEN,
     POLICY_KEY_VERSION,
     cache_policy_deviation,
@@ -267,7 +267,7 @@ def test_cache_key_payload_has_policy_token_when_threshold_deviates(clean_env):
     """Lệch mặc định ⇒ payload mang thêm `policy` đúng bằng token lệch (ghim cấu trúc)."""
     import hashlib
 
-    from src.cache_policy import cache_policy_deviation, policy_cache_token
+    from src.core.cache_policy import cache_policy_deviation, policy_cache_token
     from src.generator import effective_prompt_version
 
     clean_env.setenv("RESCUE_MIN_SCORE", "0.55")

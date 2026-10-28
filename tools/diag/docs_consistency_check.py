@@ -57,7 +57,7 @@ CHECK_EXACT = {"README.md", "docs/planning/ROADMAP.md", "docs/spec/TAXONOMY.md",
 RUNTIME_GENERATED = {
     "data/learning/normalization_pairs.json",
     # Đường dẫn cũ TRƯỚC tái cấu trúc 28-10 (`data/normalization_pairs.json`): giữ lại vì
-    # tài liệu lịch sử còn trích tên đó; `ui/app.py` + `src/query_normalizer.py` chỉ đọc/ghi
+    # tài liệu lịch sử còn trích tên đó; `ui/app.py` + `src/core/query_normalizer.py` chỉ đọc/ghi
     # path mới. Không thêm tên thứ ba vào đây — mỗi mục phải là một file GUI thật tự sinh.
     "data/normalization_pairs.json",
     "data/corpus/ghi_chu_hoc_them.txt",

@@ -35,16 +35,16 @@ hỏi bằng SLM local**, và **đo lường có thể chạy lại**.
 ```
                         ┌──────────────────────────── OFFline / INDEX ───────────────────────────┐
  data/corpus/*.pdf|docx|txt                                                                      │
-        │ DocumentLoader (src/loader.py)                                                       │
+        │ DocumentLoader (src/indexing/loader.py)                                                       │
         │  ├─ PDF text: pypdf                                                                  │
         │  ├─ trang scan: pypdfium2 render → RapidOCR → cache .cache/ocr/rapidocr/          │
         │  └─ metadata tier = tên thư mục cấp 1                                                │
         ▼                                                                                      │
- DocumentChunker (src/chunking.py)                                                             │
+ DocumentChunker (src/indexing/chunking.py)                                                             │
         ├─ có "Điều N." → cắt theo Điều, tiền tố [Tên văn bản]                                │
         └─ không có → cắt đoạn/câu, gộp ≤ 1200 ký tự, overlap 150                             │
         ▼                                                                                      │
- VectorStoreManager (src/vector_db.py)                                                         │
+ VectorStoreManager (src/retrieval/vector_db.py)                                                         │
         ├─ bge-m3 nhúng từng chunk (normalize_embeddings=True)                                │
         └─ ChromaDB persist + metadata {tier, source, chunk_id}                                │
         └─ BM25 index dựng lại từ chính các chunk này khi serve                                │
@@ -52,26 +52,26 @@ hỏi bằng SLM local**, và **đo lường có thể chạy lại**.
 
  ONLINE / MỘT LƯỢT HỎI
  question thô
-   │ ① normalize_user_query (src/query_normalizer.py)
+   │ ① normalize_user_query (src/core/query_normalizer.py)
    │      Qwen 2.5-1.5B qua Ollama, temperature 0, few-shot + active learning
-   │      → câu học vụ; guardrail ở src/local_slm.py chặn mất số/bịa số/lệch chủ đề
+   │      → câu học vụ; guardrail ở src/generation/local_slm.py chặn mất số/bịa số/lệch chủ đề
    ▼
  normalized_query
-   │ ② classify_query (src/classifier.py) — chỉ khi ENABLE_CLASSIFIER=1
+   │ ② classify_query (src/core/classifier.py) — chỉ khi ENABLE_CLASSIFIER=1
    │      → {topic: 1/14 hoặc None, question_type: 1/4, raw_response}
    ▼
  labels
-   │ ③ get_retrieval_config (src/router.py)
+   │ ③ get_retrieval_config (src/retrieval/router.py)
    │      → RetrievalConfig(top_k, bm25_weight, chroma_weight, source_filter, enable_subquery)
    ▼
  config
-   │ ④ expand_query_with_synonyms (src/retrieval.py)
+   │ ④ expand_query_with_synonyms (src/retrieval/retrieval.py)
    │      "đuổi học" → + "buộc thôi học kỷ luật"
    │    nếu config.enable_subquery và nhãn SO_SANH:
    │      split_comparison_query → 2–3 truy vấn con (guardrail)
    ▼
  expanded_query (hoặc nhiều nhánh)
-   │ ⑤ HybridRAGPipeline.retrieve (src/pipeline.py:148)
+   │ ⑤ HybridRAGPipeline.retrieve (src/core/pipeline.py:148)
    │      retrieve_k = 2 × effective_top_k
    │      query được fold() trước khi vào Chroma
    │      BM25 k=retrieve_k  +  Chroma k=retrieve_k  → RRF c=60
@@ -113,13 +113,13 @@ Hai bộ truy xuất mắc hai lỗi khác nhau, và lỗi của bộ này thư�
 RRF(d) = Σ_i  w_i / (c + rank_i(d))
 ```
 
-Trong đó `c = DEFAULT_RRF_C = 60` (`src/vector_db.py:23`), `rank_i` bắt đầu từ 1,
+Trong đó `c = DEFAULT_RRF_C = 60` (`src/retrieval/vector_db.py:23`), `rank_i` bắt đầu từ 1,
 `w_i` là trọng số router. Vì chia cho hạng, tài liệu đứng đầu ở **một trong hai**
 nhánh vẫn được điểm cao dù nhánh kia không trả về nó. Đây là lý do RRF chịu được
 hai bộ truy xuất có thang điểm hoàn toàn khác nhau (BM25 score không cùng đơn vị với
 cosine similarity).
 
-> ⚠️ **Nhầm lẫn hay gặp khi bảo vệ:** công thức trong docstring `src/retrieval.py`
+> ⚠️ **Nhầm lẫn hay gặp khi bảo vệ:** công thức trong docstring `src/retrieval/retrieval.py`
 > viết `k/(rank+k)`; mã thực tế dùng `weights/(c+rank)` của LangChain. Khi được hỏi,
 > nói theo mã: “RRF có hằng số làm mượt c=60, trọng số lấy từ router”.
 
@@ -141,7 +141,7 @@ hai bộ truy xuất là tín hiệu mạnh.
 Đây là chi tiết dễ bị hỏi nhất khi bảo vệ.
 
 ```python
-# src/pipeline.py:350
+# src/core/pipeline.py:350
 retrieve_k = effective_top_k * self.oversample_factor   # mặc định ×2
 ...
 gen_docs = all_docs[:effective_top_k]   # generator chỉ thấy top_k
@@ -152,7 +152,7 @@ sources  = [describe_document(d, i) for i, d in enumerate(all_docs)]  # giữ đ
   dễ loãng.
 - **`retrieve_k`** = cửa sổ **đo** của retrieval. Hit@3/5/6 cần ít nhất 6 ứng viên,
   nên evaluation truyền `top_k=retrieve_k` vào pipeline (xem `evaluate_question`,
-  `src/evaluation.py:455`) để pipeline tự nhân oversample.
+  `src/assessment/evaluation.py:455`) để pipeline tự nhân oversample.
 
 Nếu chỉ truy xuất đúng `top_k=6` rồi đo Hit@6, bạn không phân biệt được “hệ thống
 tốt” với “hệ thống may mắn vừa đủ 6”. Oversampling tách **năng lực truy xuất** khỏi
@@ -167,7 +167,7 @@ tốt” với “hệ thống may mắn vừa đủ 6”. Oversampling tách **
 
 ## 5. Hai chế độ chạy: WITHOUT và WITH classifier
 
-`HybridRAGPipeline.__init__` đọc `ENABLE_CLASSIFIER` (`src/pipeline.py:102`). Đây là
+`HybridRAGPipeline.__init__` đọc `ENABLE_CLASSIFIER` (`src/core/pipeline.py:102`). Đây là
 công tắc A/B, không phải tính năng ẩn:
 
 | Thành phần | WITHOUT (`ENABLE_CLASSIFIER=0`) | WITH (`=1`) |
@@ -231,7 +231,7 @@ Câu thô: `"Em bị ĐTBHK dưới 1.0 thì có bị đuổi học luôn không
 
 Lưu ý bước 3–4: nếu classifier gán nhầm `NGOAI_PHAM_VI`, prompt sẽ có dòng nhắc từ
 chối; nhưng **vẫn truy xuất** nên nếu ngữ cảnh có căn cứ, model vẫn trả lời. Đây là
-lý do router cố ý không “skip retrieval” cho lớp này (`src/router.py:22`).
+lý do router cố ý không “skip retrieval” cho lớp này (`src/retrieval/router.py:22`).
 
 ---
 
@@ -265,7 +265,7 @@ cũng có hai nhà cung cấp.
 | Chunk còn đủ dấu (dùng được cho sinh văn bản) | 62/361 | `tools/train/build_training_data.py` |
 | Benchmark đánh giá | 100 câu v3 | `data/evaluation/` |
 | Phân bố question_type v3 | 87 TRA_CUU / 5 SO_SANH / 5 THU_TUC / 3 NGOAI_PHAM_VI | benchmark |
-| Chủ đề | 14 | `src/classifier.py:48` |
+| Chủ đề | 14 | `src/core/classifier.py:48` |
 | Classifier topic / type | 85% / 81% | `logs/classifier/accuracy_report.md` |
 | A/B Hit@3 | 60,8% → 77,3% | `outputs/ab_comparison.md` |
 | Từ chối oan | 47,4% → 50,5% (hạn chế) | cùng nguồn |

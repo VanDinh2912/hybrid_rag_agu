@@ -24,7 +24,7 @@ from pathlib import Path
 import pytest
 
 import src.generator as gen_module
-from src.cache_policy import (
+from src.core.cache_policy import (
     DEFAULT_CACHE_TOKEN,
     cache_policy_deviation,
     policy_cache_token,
@@ -41,7 +41,7 @@ DOCS = [
      "tier": "1", "chunk_id": 8},
 ]
 
-# Toàn bộ biến thể chế mà `src/cache_policy.py` đọc — dọn sạch để "mặc định" thật sự là mặc định.
+# Toàn bộ biến thể chế mà `src/core/cache_policy.py` đọc — dọn sạch để "mặc định" thật sự là mặc định.
 POLICY_ENV = (
     "ENABLE_ANSWER_RESCUE", "RESCUE_MIN_SCORE",
     "ENABLE_ANSWER_GUARD", "ANSWER_GUARD_MIN_SCORE", "ANSWER_GUARD_MAX_UNSUPPORTED",

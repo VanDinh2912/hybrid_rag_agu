@@ -702,7 +702,7 @@ def _format_args(node: ast.AST) -> str:
 
 
 def build_code(b: DatasetBuilder) -> None:
-    py_files = sorted((ROOT / "src").glob("*.py")) + [ROOT / "main.py", ROOT / "ui" / "demo_streamlit.py", ROOT / "scripts" / "benchmark_chunking.py", ROOT / "ingest.py", ROOT / "scripts" / "learn.py"]
+    py_files = sorted((ROOT / "src").rglob("*.py")) + [ROOT / "main.py", ROOT / "ui" / "demo_streamlit.py", ROOT / "scripts" / "benchmark_chunking.py", ROOT / "ingest.py", ROOT / "scripts" / "learn.py"]
     for path in py_files:
         rel = path.relative_to(ROOT).as_posix()
         try:
@@ -795,7 +795,7 @@ def build_code(b: DatasetBuilder) -> None:
 # C2. Mã nguồn — chỉ mục file, tham số, nơi gọi (AST, không cần LLM)
 # ---------------------------------------------------------------------------
 def _py_files() -> list[Path]:
-    files = sorted((ROOT / "src").glob("*.py"))
+    files = sorted((ROOT / "src").rglob("*.py"))
     files += [ROOT / name for name in (
         "main.py", "ui/demo_streamlit.py", "scripts/benchmark_chunking.py", "ingest.py",
         "scripts/learn.py")]
@@ -1227,7 +1227,7 @@ def build_retrieval(b: DatasetBuilder, chunks: list[dict], bench: list[dict]) ->
 # ---------------------------------------------------------------------------
 def build_router_tasks(b: DatasetBuilder, bench: list[dict]) -> None:
     try:
-        from src.router import base_config_from_env, get_retrieval_config
+        from src.retrieval.router import base_config_from_env, get_retrieval_config
     except Exception as exc:  # pragma: no cover
         print(f"[WARN] Không import được router ({exc}) — bỏ qua tác vụ router_config.")
         return
@@ -1285,11 +1285,11 @@ def build_handcrafted(b: DatasetBuilder) -> None:
         ("Hỏi một câu rồi thoát", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe main.py \"Điều kiện xét tốt nghiệp?\""),
         ("Đổi số chunk ngữ cảnh", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe main.py --top-k 6"),
         ("Chạy toàn bộ test", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -m pytest -q"),
-        ("Chạy evaluation benchmark", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json"),
-        ("Chạy evaluation A/B lượt WITHOUT", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json --output outputs/ab_results_without_classifier.json"),
-        ("Chạy evaluation A/B lượt WITH", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json --with-classifier --output outputs/ab_results_with_classifier.json"),
-        ("Ước lượng request trước khi chạy", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json --dry-run"),
-        ("Đánh giá classifier trên benchmark", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/evaluate_classifier.py"),
+        ("Chạy evaluation benchmark", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json"),
+        ("Chạy evaluation A/B lượt WITHOUT", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json --output outputs/ab_results_without_classifier.json"),
+        ("Chạy evaluation A/B lượt WITH", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json --with-classifier --output outputs/ab_results_with_classifier.json"),
+        ("Ước lượng request trước khi chạy", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_questions_v3.json --dry-run"),
+        ("Đánh giá classifier trên benchmark", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe src/assessment/evaluate_classifier.py"),
         ("Chạy benchmark 3 chiến lược chunking", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe scripts/benchmark_chunking.py"),
         ("Chạy demo Streamlit", "./venv/Scripts/python.exe -m streamlit run ui/demo_streamlit.py"),
         ("Chạy GUI Tkinter", "PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe ui/app.py"),

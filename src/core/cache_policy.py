@@ -55,8 +55,8 @@ def _hash12(payload: dict) -> str:
 def policy_snapshot() -> dict:
     """Ảnh chụp THỂ CHẾ đang chạy (chỉ cờ + ngưỡng), dùng để băm thành khóa cache."""
     # Import trễ: tránh vòng import generator → cache_policy → generator.
-    from src import answer_guard, refusal_policy
-    from src import evidence_selection, query_normalizer
+    from src import answer_guard; from src.generation import refusal_policy
+    from src.generation import evidence_selection; from src.core import query_normalizer
     from src import generator as generator_module
 
     guard_min, guard_max = answer_guard.refusal_thresholds()

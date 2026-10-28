@@ -176,7 +176,7 @@ def cache_token_clean_env() -> str:
     try:
         import importlib
 
-        import src.cache_policy as cp
+        import src.core.cache_policy as cp
 
         importlib.reload(cp)
         return f"{cp.policy_cache_token()} (deviation={cp.cache_policy_deviation()!r})"

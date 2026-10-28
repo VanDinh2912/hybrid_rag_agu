@@ -10,7 +10,7 @@ với tới nhóm này một cách miễn phí: mỗi lần nới ưu tiên ngu�
 ngoài nguồn ra khỏi cửa sổ (21 item hồi quy r1->r2, McNemar p=0,00028). Xếp hạng lại
 bằng cross-encoder là đòn bẩy ĐÚNG chỗ: nó chỉ đổi thứ tự, không đổi tập ứng viên.
 
-Tách module riêng (không sửa `src/evidence_selection.py`): cái đó chọn CÂU bằng chứng
+Tách module riêng (không sửa `src/generation/evidence_selection.py`): cái đó chọn CÂU bằng chứng
 cho tầng sinh (T3, đã bác), còn cái này xếp hạng CHUNK cho tầng truy xuất.
 
 Thiết kế đã đăng ký trước trong `data/loop/README.md` (mục T5)
@@ -27,7 +27,7 @@ Thiết kế đã đăng ký trước trong `data/loop/README.md` (mục T5)
 | `RERANKER_FALLBACK` | `0` (TẮT) | khi BẬT, lỗi/timeout được **báo cảnh báo** rồi lùi về đúng thứ tự RRF+bonus trước rerank thay vì dừng; vẫn KHÔNG rơi xuống `similarity_search` |
 
 KHÔNG CÓ PHƯƠNG ÁN LÙI THẦM: model không tải được hoặc chấm điểm lỗi ->
-`RerankerUnavailable` (kế thừa `RuntimeError`) và `src/pipeline.py` NÉM THẲNG lên
+`RerankerUnavailable` (kế thừa `RuntimeError`) và `src/core/pipeline.py` NÉM THẲNG lên
 trên, không rơi vào nhánh `except Exception` vốn đã lùi về `similarity_search`. Một
 round đo nhầm lever còn tệ hơn một round dừng lại tường minh. Lùi **tường minh** (có
 log cảnh báo + manifest `fallback_used=true`) chỉ xảy ra khi bật `RERANKER_FALLBACK=1`
@@ -37,7 +37,7 @@ là dừng loudly.
 Qui ước chấm điểm (ĐÃ ĐÍNH CHÍNH 25-10 theo PA-25 — anh Le Van Dinh duyệt)
 -----------------------------------------------------------------------
 - query đưa vào cross-encoder là **NGUYÊN VĂN** (chỉ `.strip()`), KHÔNG còn `fold`:
-  bản gốc fold(query) vì reasons của nhánh Chroma (`src/pipeline.py`: corpus Tầng 1 mất
+  bản gốc fold(query) vì reasons của nhánh Chroma (`src/core/pipeline.py`: corpus Tầng 1 mất
   dấu thanh vì OCR), nhưng reranker chấm query × passage và passage giữ nguyên văn còn
   dấu ⇒ cặp lệch dấu làm `bge-reranker-v2-m3` gần như mất tín hiệu. Bằng chứng:
   r12 gold@6 0,7400 → 0,6686 và probe 30 item 0/30 → 28/30 (`tmp/probe_r12_fold.json`),
@@ -174,7 +174,7 @@ class LastCall:
     def record(self, **values: Any) -> "LastCall":
         """Ghi đè TOÀN BỘ trường cho một lượt rerank.
 
-        Bất buộc mutate tại chỗ (không rebinding tên toàn cục) vì `src/pipeline.py`
+        Bất buộc mutate tại chỗ (không rebinding tên toàn cục) vì `src/core/pipeline.py`
         import đối tượng này bằng `from ... import last_call` — rebinding sẽ để lại
         cho pipeline một tham chiếu cũ.
         """

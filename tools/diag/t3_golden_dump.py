@@ -3,14 +3,14 @@
 Vì sao cần file này
 -------------------
 Bất biến #2 của vòng lặp P5 nói: mọi lever nằm sau cờ, và **tắt cờ thì pipeline phải
-trả lại đúng hành vi đã nghiệm thu**. T3 nối hai cờ vào `src/pipeline.py`
+trả lại đúng hành vi đã nghiệm thu**. T3 nối hai cờ vào `src/core/pipeline.py`
 (`ENABLE_DECOUPLED_REFUSAL`, `ENABLE_EVIDENCE_SELECTION`) ngay trên đường sinh, nên
 nghĩa vụ kiểm chứng nặng nhất là: 30 lượt `pipeline.run` cố định, hai cờ TẮT, phải cho
 đầu ra **byte-identical** với bản code CHƯA có đường nối đó.
 
 Cách làm (không tự lừa):
 - `git archive HEAD` dựng bản cây **trước khi wiring T3 landing** (tại HEAD,
-  `src/pipeline.py` không có dòng `decoupled_refusal_enabled()` nào — đã kiểm).
+  `src/core/pipeline.py` không có dòng `decoupled_refusal_enabled()` nào — đã kiểm).
 - Chính file này được copy vào bản cây đó và chạy ở cả hai nơi. Nó chỉ dùng API có thật
   ở CẢ HAI cây: `HybridRAGPipeline(...).run(question, top_k)`, `QwenGenerator._build_prompt`
   và `QwenGenerator._cache_key`.
@@ -203,7 +203,7 @@ def pin_env() -> None:
 # ------------------------------------------------------------------ chạy một item
 def run_item(item: dict[str, Any]) -> dict[str, Any]:
     from src.generator import QwenGenerator
-    from src.pipeline import HybridRAGPipeline
+    from src.core.pipeline import HybridRAGPipeline
 
     docs = [FakeDoc(d["content"], dict(d["metadata"])) for d in item["docs"]]
     ensemble = FakeEnsemble([FakeLeg(docs), FakeLeg(docs)], docs)

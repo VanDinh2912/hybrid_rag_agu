@@ -8,9 +8,9 @@ Hai module này đều dùng Qwen2.5-1.5B qua Ollama, nhưng giải hai bài to�
 
 | Module | Bài toán | Đầu ra | Có bật mặc định? |
 |---|---|---|---|
-| `src/query_normalizer.py` | viết lại câu hỏi cho giống văn phong quy chế | một câu hỏi | **có** (mọi lượt) |
-| `src/classifier.py` | gán chủ đề + loại câu hỏi | `{topic, question_type}` | không (`ENABLE_CLASSIFIER=1` mới bật) |
-| `src/local_slm.py` | wrapper Ollama + chuẩn hóa có guardrail | một câu hỏi | không dùng trong pipeline |
+| `src/core/query_normalizer.py` | viết lại câu hỏi cho giống văn phong quy chế | một câu hỏi | **có** (mọi lượt) |
+| `src/core/classifier.py` | gán chủ đề + loại câu hỏi | `{topic, question_type}` | không (`ENABLE_CLASSIFIER=1` mới bật) |
+| `src/generation/local_slm.py` | wrapper Ollama + chuẩn hóa có guardrail | một câu hỏi | không dùng trong pipeline |
 
 ---
 
@@ -22,10 +22,10 @@ Pipeline gọi:
 normalized_query = normalize_user_query(self.local_slm, raw_query)
 ```
 
-(`src/pipeline.py:353`)
+(`src/core/pipeline.py:353`)
 
-`normalize_user_query` nằm trong `src/query_normalizer.py`. Khi nhận một `LocalSLM`,
-nó gọi **`llm_client.generate(...)`** (`src/query_normalizer.py:338–341`), tức là đi
+`normalize_user_query` nằm trong `src/core/query_normalizer.py`. Khi nhận một `LocalSLM`,
+nó gọi **`llm_client.generate(...)`** (`src/core/query_normalizer.py:338–341`), tức là đi
 thẳng vào Ollama, **không** gọi `LocalSLM.normalize_query()`.
 
 Hệ quả:
@@ -46,7 +46,7 @@ LocalSLM.normalize_query()               ← có is_acceptable + guardrail_viola
 `LocalSLM.normalize_query` chỉ được gọi trong `tests/test_local_slm.py` và một fake
 client của test tách truy vấn; **không** nằm trên đường production. Nói cách khác,
 guardrail “bảo toàn con số + token overlap ≥ 0.3” được mô tả trong tài liệu và trong
-`src/local_slm.py` **không chạy** khi bạn hỏi qua `main.py` hay Streamlit.
+`src/generation/local_slm.py` **không chạy** khi bạn hỏi qua `main.py` hay Streamlit.
 
 > Đây là loại khác biệt chỉ phát hiện khi đọc call graph, không phát hiện khi đọc
 > docstring. Khi bảo vệ, nếu bị hỏi “guardrail chuẩn hóa nằm ở đâu?”, câu trả lời
@@ -59,7 +59,7 @@ Chương này sẽ dạy cả hai, và chỉ rõ cái nào có hiệu lực.
 
 ---
 
-## 2. `src/query_normalizer.py` — chuẩn hóa bằng prompt
+## 2. `src/core/query_normalizer.py` — chuẩn hóa bằng prompt
 
 ### 2.1. Bảng hàm
 
@@ -164,16 +164,16 @@ lý do cần guardrail, nhưng guardrail không được nối vào đường n�
 ### 2.6. Fallback
 
 Mọi exception trong `normalize_user_query` đều bị bắt và trả `raw_text`
-(`src/query_normalizer.py:380–382`). Không có retry. Nếu Ollama treo, thời gian chờ
+(`src/core/query_normalizer.py:380–382`). Không có retry. Nếu Ollama treo, thời gian chờ
 là timeout của `LocalSLM` (mặc định 90 giây), không phải timeout riêng của module.
 
 ---
 
-## 3. `src/local_slm.py` — chuẩn hóa có guardrail (không chạy trong pipeline)
+## 3. `src/generation/local_slm.py` — chuẩn hóa có guardrail (không chạy trong pipeline)
 
 ### 3.1. Ba lớp kiểm tra
 
-`LocalSLM.normalize_query` (`src/local_slm.py:290`) chạy:
+`LocalSLM.normalize_query` (`src/generation/local_slm.py:290`) chạy:
 
 ```
 generate → clean_output → is_acceptable → guardrail_violation → chấp nhận/fallback
@@ -230,7 +230,7 @@ Có hai cách, đều cần đo lại:
 
 ---
 
-## 4. `src/classifier.py` — gán hai nhãn
+## 4. `src/core/classifier.py` — gán hai nhãn
 
 ### 4.1. Hợp đồng đầu ra
 

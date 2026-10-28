@@ -1,9 +1,9 @@
-"""Unit test cho src/router.py — hàm thuần, offline 100%, không gọi model."""
+"""Unit test cho src/retrieval/router.py — hàm thuần, offline 100%, không gọi model."""
 
 import pytest
 
-from src.classifier import TOPICS
-from src.router import (
+from src.core.classifier import TOPICS
+from src.retrieval.router import (
     DEFAULT_TOP_K,
     MIN_QUESTIONS_FOR_SOURCE_FILTER,
     SO_SANH_TOP_K_BONUS,

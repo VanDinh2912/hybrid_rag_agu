@@ -40,8 +40,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Optional, Sequence
 
-from src.config import settings
-from src.refusal_policy import query_entities
+from src.core.config import settings
+from src.generation.refusal_policy import query_entities
 from src.text_utils import fold
 
 DEFAULT_MIN_SENTENCES = 3

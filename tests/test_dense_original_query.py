@@ -4,7 +4,7 @@ Bất biến phải giữ (mỗi bất biến có ít nhất một test và mộ
 `tmp/mutation_check_p3_dense_orig_2026-10-27.py`):
 
 * **TẮT (mặc định)** — pipeline gọi ĐÚNG MỘT `ensemble.invoke(fold(query))`: đường cũ
-  từng byte, khóa cache sinh không đổi (cờ không nằm trong `src/cache_policy.py`).
+  từng byte, khóa cache sinh không đổi (cờ không nằm trong `src/core/cache_policy.py`).
 * **BẬT** — BM25 nhận `fold(query)`, dense nhận `query` nguyên văn; phép hợp nhất vẫn do
   chính ensemble thực hiện (`weighted_reciprocal_rank`) với đúng thứ tự hai nhánh
   `[BM25, dense]`, đúng `weights`/`c`/`id_key`.
@@ -19,7 +19,7 @@ import os
 
 import pytest
 
-from src.pipeline import HybridRAGPipeline, dense_original_query_enabled
+from src.core.pipeline import HybridRAGPipeline, dense_original_query_enabled
 from src.text_utils import fold
 
 # Câu có dấu — `fold` phải khác nguyên văn, nếu không test sẽ "xanh vì hai chuỗi trùng nhau".
@@ -293,7 +293,7 @@ class TestKhoaCacheKhongDoiKhiTat:
         """Cờ là lever TRUY XUẤT, không nằm trong `cache_policy`; khi TẮT khóa cache cũ
         phải dùng lại được từng byte. (Khi BẬT, prompt đổi vì contexts đổi nên khóa đổi
         theo cơ chế sẵn có — không cần thêm trường policy.)"""
-        from src.cache_policy import cache_policy_deviation, policy_cache_token
+        from src.core.cache_policy import cache_policy_deviation, policy_cache_token
 
         monkeypatch.delenv("ENABLE_DENSE_ORIGINAL_QUERY", raising=False)
         truoc = policy_cache_token()

@@ -3,7 +3,7 @@
 Bốn nhóm của đề bài (24-10):
   A. Cờ TẮT — ca quan trọng nhất: 30 lượt `pipeline.run` cố định phải cho đầu ra
      **byte-identical** với golden chụp từ bản cây code TRƯỚC khi nối T3
-     (`git archive HEAD` = f492f05; tại đó `src/pipeline.py` chưa có dòng T3 nào — đã kiểm
+     (`git archive HEAD` = f492f05; tại đó `src/core/pipeline.py` chưa có dòng T3 nào — đã kiểm
      bằng grep), và cache key không đổi.
   B. Decoupled refusal: prompt mới không còn chỉ dẫn từ chối (regex có răng), câu bịa bị
      guard chặn -> trả ĐÚNG một chuỗi canonical (so `==`), câu có căn cứ thì trả lời,
@@ -41,7 +41,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from src.evidence_selection import (  # noqa: E402
+from src.generation.evidence_selection import (  # noqa: E402
     TIER_ENTITY,
     TIER_KEYWORDS,
     TIER_SOURCE_NAME,
@@ -61,7 +61,7 @@ from src.generator import (  # noqa: E402
 )
 from src.generator import build_prompt as gemini_build_prompt  # noqa: E402
 from src.generator import effective_prompt_version, looks_like_refusal  # noqa: E402
-from src.refusal_policy import (  # noqa: E402
+from src.generation.refusal_policy import (  # noqa: E402
     DEFAULT_MAX_UNSUPPORTED,
     DEFAULT_MIN_ENTITY_COVERAGE,
     DEFAULT_MIN_GROUNDING,
@@ -111,7 +111,7 @@ def _env_and_reranker_sandbox():
         RuntimeError("test môi trường: cấm tải model hàng GB")
     )
     sys.modules["sentence_transformers"] = broken
-    import src.evidence_selection as es
+    import src.generation.evidence_selection as es
 
     es._RERANKER = None
     try:
@@ -188,7 +188,7 @@ class StubGenerator:
 
 
 def make_pipeline(docs, answer="Trả lời mẫu."):
-    from src.pipeline import HybridRAGPipeline
+    from src.core.pipeline import HybridRAGPipeline
 
     fused = [FakeDoc(d["content"], dict(d["metadata"])) for d in docs]
     legs = [FakeLeg(fused), FakeLeg(fused)]
@@ -349,7 +349,7 @@ class TestOffInvariantWhenDisabledLeversConfigured:
         assert [r["qwen_cache_key"] for r in core] != [g["qwen_cache_key"] for g in golden]
 
     def test_DAC_TA_HIEN_TRANG_khoa_cache_TAT_tach_khi_env_co_nguong_lever_tat(self):
-        from src.cache_policy import cache_policy_deviation
+        from src.core.cache_policy import cache_policy_deviation
 
         assert cache_policy_deviation() is None, "env rỗng phải là thể chế mặc định đã đăng ký"
         seen = {}
@@ -503,7 +503,7 @@ class TestOuterRefusal:
         ]
         ensemble = FakeEnsemble([FakeLeg(filler + [gold]), FakeLeg(filler[:8] + [gold])], [gold])
         gen = StubGenerator(GROUNDED_ANSWER)
-        from src.pipeline import HybridRAGPipeline
+        from src.core.pipeline import HybridRAGPipeline
 
         pipeline = HybridRAGPipeline(vector_db=None, local_slm=FakeLocalSLM(Q_RETAKE),
                                      generator=gen, retriever=ensemble)
@@ -528,7 +528,7 @@ class TestOuterRefusal:
         monkeypatch.setenv("ENABLE_DECOUPLED_REFUSAL", "1")
         ensemble = FakeEnsemble([FakeLeg([]), FakeLeg([])], [])
         gen = StubGenerator("sẽ không được gọi")
-        from src.pipeline import HybridRAGPipeline
+        from src.core.pipeline import HybridRAGPipeline
 
         pipeline = HybridRAGPipeline(vector_db=None, local_slm=FakeLocalSLM(Q_RETAKE),
                                      generator=gen, retriever=ensemble)
@@ -672,7 +672,7 @@ class TestThresholdBoundaries:
         """`decide_*` phải so với `th[...]`, không có chữ số ngưỡng rải rác trong code."""
         import inspect
 
-        import src.refusal_policy as rp
+        import src.generation.refusal_policy as rp
 
         for fn in (rp.decide_pre_generation, rp.decide_post_generation):
             body = "".join(inspect.getsource(fn).splitlines(keepends=True)[1:])
@@ -705,7 +705,7 @@ class _FakeOllamaConnection:
 def qwen_pipeline(docs, ollama_answer: str, cache_dir: Path, monkeypatch):
     """Pipeline thật + QwenGenerator thật (Ollama giả) + cache thật trong tmp_path."""
     import src.generator as gen_module
-    from src.pipeline import HybridRAGPipeline
+    from src.core.pipeline import HybridRAGPipeline
 
     fake = FakeOllama(ollama_answer)
     monkeypatch.setattr(gen_module.ollama, "Client", fake)
@@ -820,7 +820,7 @@ class TestAbnormalCases:
         monkeypatch.setenv("ENABLE_DECOUPLED_REFUSAL", "1")
         ensemble = FakeEnsemble([FakeLeg([]), FakeLeg([])], [])
         gen = StubGenerator("sẽ không được gọi")
-        from src.pipeline import HybridRAGPipeline
+        from src.core.pipeline import HybridRAGPipeline
 
         pipeline = HybridRAGPipeline(vector_db=None, local_slm=FakeLocalSLM(Q_RETAKE),
                                      generator=gen, retriever=ensemble)
@@ -891,7 +891,7 @@ def window_docs():
 @pytest.fixture()
 def no_reranker():
     """Xếp hạng chỉ theo bậc thang thực thể/từ khóa -> deterministic tuyệt đối."""
-    import src.evidence_selection as es
+    import src.generation.evidence_selection as es
 
     es._RERANKER = Reranker("none")
     yield
@@ -1055,7 +1055,7 @@ class TestEvidenceDeterminismAndVerbatim:
 class TestEvidenceInPipeline:
     def test_ON_cua_so_generator_bi_cat_conh_recall_khong_doi(self, monkeypatch):
         monkeypatch.setenv("ENABLE_EVIDENCE_SELECTION", "1")
-        import src.evidence_selection as es
+        import src.generation.evidence_selection as es
 
         es._RERANKER = Reranker("none")
         docs = [

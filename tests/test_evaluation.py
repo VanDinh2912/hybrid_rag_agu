@@ -1,6 +1,6 @@
-"""Unit test cho các hàm thuần của src/evaluation.py — không gọi API, không cần ChromaDB."""
+"""Unit test cho các hàm thuần của src/assessment/evaluation.py — không gọi API, không cần ChromaDB."""
 
-from src.evaluation import (
+from src.assessment.evaluation import (
     citation_scores,
     extract_citations,
     fold,

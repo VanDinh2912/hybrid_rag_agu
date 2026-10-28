@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv() # Tự động nạp file .env (CHROMA_PERSIST_DIR, ...)
 
-from src.chunking import DocumentChunker, has_article_structure
-from src.loader import DocumentLoader
-from src.vector_db import VectorStoreManager
+from src.indexing.chunking import DocumentChunker, has_article_structure
+from src.indexing.loader import DocumentLoader
+from src.retrieval.vector_db import VectorStoreManager
 
 
 def run_ingestion(db_manager: VectorStoreManager | None = None, reset: bool = True):

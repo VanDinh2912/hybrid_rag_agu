@@ -24,7 +24,7 @@ from src.generator import (
     REFUSAL_TEXT,
     effective_prompt_version,
 )
-from src.refusal_policy import (
+from src.generation.refusal_policy import (
     REFUSAL_REASON_EMPTY,
     REFUSAL_REASON_MODEL_REFUSES,
     REFUSAL_REASON_NO_EVIDENCE,
@@ -343,7 +343,7 @@ class CountingGenerator:
 
 
 def make_pipeline(answer="Trả lời mẫu.", normalized=None, legs=None, fused=None):
-    from src.pipeline import HybridRAGPipeline
+    from src.core.pipeline import HybridRAGPipeline
 
     normalized = normalized or QUESTION
     bm25 = FakeLeg(legs[0] if legs else [FakeDoc(GOLD_CONTEXT, DOC_KW)])

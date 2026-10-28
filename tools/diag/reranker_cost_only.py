@@ -82,7 +82,7 @@ def main() -> int:
     rows = rows[: args.n_items]
     all_chunks = [c for r in load_jsonl(REPO_ROOT / "data" / "loop" / "rounds" / args.round / "retrieval.jsonl") for c in (r.get("contexts") or []) if c]
 
-    from src.reranker import get_reranker, reranker_status, score_pairs
+    from src.retrieval.reranker import get_reranker, reranker_status, score_pairs
 
     report: dict[str, Any] = {
         "kind": "BỔ SUNG — không phải probe đăng ký trước, không dùng để chốt T5a",

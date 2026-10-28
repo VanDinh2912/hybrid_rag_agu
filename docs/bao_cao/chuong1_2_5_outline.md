@@ -83,7 +83,7 @@
 
 ### 5.3. Hướng phát triển
 - **Active learning cho classifier**: thu thập câu hỏi thật từ log hệ thống, bổ sung neo âm (biên mơ TTTN-vs-CTĐT, SV Giỏi-vs-SV5T) vào few-shot/bảng từ khóa — cải thiện precision lớp hiếm thay vì tinh chỉnh trên chính bộ đo. (nguồn: `logs/classifier/accuracy_report.md` mục "Hướng cải thiện")
-- **Tách đóng góp của lọc nguồn (`source_filter`) trước khi mở rộng**: phép đo 811 item (V2, 27-10) cho thấy lọc mềm **−18 item** so với all-off, còn lọc cứng mất 244/244 item nguồn-sai ⇒ hướng đúng là đo ablation từng thành phần (router tham số / thu hẹp nguồn / tách truy vấn con), không bật thêm lọc. Hiện chỉ 8/14 chủ đề đủ bằng chứng ngưỡng (n ≥ 5, ≥ 80% trong ≤ 2 nguồn). (nguồn: `tmp/v2_rescore.json`, `src/router.py` docstring)
+- **Tách đóng góp của lọc nguồn (`source_filter`) trước khi mở rộng**: phép đo 811 item (V2, 27-10) cho thấy lọc mềm **−18 item** so với all-off, còn lọc cứng mất 244/244 item nguồn-sai ⇒ hướng đúng là đo ablation từng thành phần (router tham số / thu hẹp nguồn / tách truy vấn con), không bật thêm lọc. Hiện chỉ 8/14 chủ đề đủ bằng chứng ngưỡng (n ≥ 5, ≥ 80% trong ≤ 2 nguồn). (nguồn: `tmp/v2_rescore.json`, `src/retrieval/router.py` docstring)
 - **A/B theo tuần**: tái chạy 2 lượt 100 câu định kỳ sau mỗi lần thay đổi (prompt, guardrail, corpus) để phát hiện hồi quy sớm; chuẩn hóa kịch bản offline (generator Qwen + heuristic faithfulness) đã dùng ở P4.2 để 0 quota.
 - *(mở rộng, tùy hướng dẫn viên)*: nâng generator (Gemini hoặc Qwen lớn hơn) để giảm nền ~50% từ chối oan; LLM judge bật lại khi có quota để đo faithfulness đầy đủ.
 

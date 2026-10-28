@@ -23,9 +23,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from ingest import run_ingestion
 from src.generator import GeminiGenerator
-from src.local_slm import LocalSLM
-from src.pipeline import HybridRAGPipeline
-from src.vector_db import VectorStoreManager
+from src.generation.local_slm import LocalSLM
+from src.core.pipeline import HybridRAGPipeline
+from src.retrieval.vector_db import VectorStoreManager
 
 NOTES_PATH = os.path.join("data", "corpus", "ghi_chu_hoc_them.txt")
 LOG_PATH = os.path.join("logs", "learning", "learning_log.csv")

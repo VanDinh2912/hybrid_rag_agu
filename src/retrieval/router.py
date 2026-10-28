@@ -1,6 +1,6 @@
 """Router truy xuất theo lớp câu hỏi: nhãn phân loại → cấu hình truy xuất.
 
-Tầng này là nơi nhãn của `src/classifier.py` (chủ đề + loại câu hỏi) "đổ" vào
+Tầng này là nơi nhãn của `src/core/classifier.py` (chủ đề + loại câu hỏi) "đổ" vào
 hệ thống: `get_retrieval_config()` nhận dict nhãn và một cấu hình nền `base`,
 trả về cấu hình đã được ĐIỀU CHỈNH cho phù hợp với lớp câu hỏi. Hàm thuần,
 không I/O, không gọi model — dễ test offline.
@@ -41,9 +41,9 @@ from typing import List, Optional
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 
-from src.classifier import QUESTION_TYPES, TOPICS, _TOPIC_BY_FOLDED
+from src.core.classifier import QUESTION_TYPES, TOPICS, _TOPIC_BY_FOLDED
 from src.text_utils import fold
-from src.vector_db import DEFAULT_BM25_WEIGHT, DEFAULT_VECTOR_WEIGHT
+from src.retrieval.vector_db import DEFAULT_BM25_WEIGHT, DEFAULT_VECTOR_WEIGHT
 
 load_dotenv()
 

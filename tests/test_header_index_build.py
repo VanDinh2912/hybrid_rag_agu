@@ -16,7 +16,7 @@ import chromadb
 import pytest
 from langchain_core.embeddings import Embeddings
 
-from src.contextual_header import (
+from src.indexing.contextual_header import (
     ENABLE_CONTEXTUAL_HEADER_ENV,
     directory_digest,
     parse_chunk,

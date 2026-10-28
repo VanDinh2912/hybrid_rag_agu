@@ -30,9 +30,9 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from src.answer_guard import check_grounding  # noqa: E402
-from src.pipeline import HybridRAGPipeline  # noqa: E402
-from src.vector_db import VectorStoreManager  # noqa: E402
-from src.local_slm import LocalSLM  # noqa: E402
+from src.core.pipeline import HybridRAGPipeline  # noqa: E402
+from src.retrieval.vector_db import VectorStoreManager  # noqa: E402
+from src.generation.local_slm import LocalSLM  # noqa: E402
 from src.generator import QwenGenerator  # noqa: E402
 from tools.loop.verify import (  # noqa: E402
     aggregate,
@@ -82,7 +82,7 @@ def _dec_thresholds() -> dict:
     module chưa tồn tại ở checkout cũ.
     """
     try:
-        from src.refusal_policy import thresholds
+        from src.generation.refusal_policy import thresholds
 
         return thresholds()
     except Exception as exc:  # noqa: BLE001
@@ -97,7 +97,7 @@ def _evidence_status() -> dict:
     phải nói được điều đó sau khi round chạy xong.
     """
     try:
-        from src.evidence_selection import reranker_status
+        from src.generation.evidence_selection import reranker_status
 
         return reranker_status()
     except Exception as exc:  # noqa: BLE001
@@ -113,7 +113,7 @@ def _retrieval_reranker_status(pipeline=None) -> dict:
     rerank thật gần nhất chấm mấy ứng viên.
     """
     try:
-        from src.reranker import reranker_status
+        from src.retrieval.reranker import reranker_status
 
         status = dict(reranker_status())
     except Exception as exc:  # noqa: BLE001
@@ -130,8 +130,8 @@ def generator_model_override() -> Optional[str]:
     """T4a: slug Ollama RIÊNG cho tầng sinh (`GENERATOR_OLLAMA_MODEL`, mặc định rỗng = TẮT).
 
     Vì sao không dùng thẳng `OLLAMA_MODEL`: biến đó dẫn NĂM nơi — `src/generator.py:1050`,
-    `src/local_slm.py:232`, `src/query_normalizer.py:419`, `src/classifier.py:553` (khi
-    `CLASSIFIER_MODEL` để trống) và `src/retrieval.py:299`. Đặt `OLLAMA_MODEL` cho một round
+    `src/generation/local_slm.py:232`, `src/core/query_normalizer.py:419`, `src/core/classifier.py:553` (khi
+    `CLASSIFIER_MODEL` để trống) và `src/retrieval/retrieval.py:299`. Đặt `OLLAMA_MODEL` cho một round
     là đổi đồng thời sinh + chuẩn hóa câu hỏi + phân loại + tách câu, tức bốn biến số một lượt,
     trái quy tắc một biến đã đăng ký ở `data/loop/README.md` mục T4.
 
@@ -215,8 +215,8 @@ def run_retrieval_phase(pipeline: HybridRAGPipeline, item: dict, top_k: int, nor
     config = None
     if pipeline.enable_classifier:
         try:
-            from src.classifier import classify_query
-            from src.router import base_config_from_env, get_retrieval_config
+            from src.core.classifier import classify_query
+            from src.retrieval.router import base_config_from_env, get_retrieval_config
 
             labels = classify_query(normalized_query)
             base = base_config_from_env()

@@ -36,9 +36,9 @@ from src.answer_guard import (  # CHỈ import: answer_guard là file trọng t�
     extract_entities,
     is_enough_evidence,
 )
-from src.config import settings
+from src.core.config import settings
 from src.text_utils import fold  # import, không sửa
-from src.vector_db import DEFAULT_RRF_C
+from src.retrieval.vector_db import DEFAULT_RRF_C
 
 # --- Ngưỡng đã đăng ký trước (data/loop/README.md mục T3) ------------------------------
 DEFAULT_MIN_ENTITY_COVERAGE = 0.34

@@ -6,7 +6,7 @@ from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 
-from src.config import settings
+from src.core.config import settings
 from src.text_utils import fold
 
 try:

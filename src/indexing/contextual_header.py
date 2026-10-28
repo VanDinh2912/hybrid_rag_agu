@@ -48,7 +48,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from src.config import settings
+from src.core.config import settings
 
 ENABLE_CONTEXTUAL_HEADER_ENV = "ENABLE_CONTEXTUAL_HEADER"
 
@@ -89,7 +89,7 @@ _CHAPTER_RE = re.compile(
 )
 _APPENDIX_RE = re.compile(r"^\s*(?:PHỤ LỤC|Phụ lục|PHU LUC|Phu luc)\b", re.MULTILINE)
 
-# Cùng quy ước với `src/chunking.py` (Khoản 1-2 chữ số, Điểm một chữ cái ở đầu dòng).
+# Cùng quy ước với `src/indexing/chunking.py` (Khoản 1-2 chữ số, Điểm một chữ cái ở đầu dòng).
 _CLAUSE_LABEL_RE = re.compile(r"^[ \t]*(\d{1,2})[.)\-–—][ \t]*(?!\d)", re.MULTILINE)
 _POINT_LABEL_RE = re.compile(r"^[ \t]*([a-zA-Z])[.)][ \t]*(?![\d)])", re.MULTILINE)
 
