@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-28T12:59:51",
+ "generated_at": "2026-10-29T03:47:01",
  "algorithm": "sha256",
  "root": ".",
  "note": "sha256 trên byte thô, không chuẩn hoá EOL; artifact nặng không commit",
@@ -768,14 +768,14 @@
   },
   {
    "path": "ARTIFACT_MANIFEST.json",
-   "bytes": 36735,
-   "sha256": "f8f310702fd4ec3f7ae8a0cd6df06b7db0b9f779e6eb9229dba6061271ec1c49",
+   "bytes": 37225,
+   "sha256": "c265687e62e53b464374224769f071100f4b8aaefeabdbf323174ac03b16c1ad",
    "tracked": true
   }
  ],
  "summary": {
   "rows": 25,
   "files": 84,
-  "total_bytes": 4041502
+  "total_bytes": 4041992
  }
 }

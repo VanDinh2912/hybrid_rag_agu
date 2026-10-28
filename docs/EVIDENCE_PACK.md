@@ -125,7 +125,7 @@ cùng dòng (mốc baseline, cổng so sánh, nhật ký đếm); `neo` = neo đ
 | neo | neo | `tmp/anchor_r11_rescore_v2.json` | 657 | `cefb17a5d00c` | chưa |
 | neo | neo | `tmp/b0_golden_env_off.txt` | 3302 | `ccc8a92e1d92` | chưa |
 | neo | neo | `tmp/b0_anchor_numbers.py` | 2198 | `186fdacc8c48` | chưa |
-| neo | neo | `ARTIFACT_MANIFEST.json` | 36735 | `f8f310702fd4` | tracked |
+| neo | neo | `ARTIFACT_MANIFEST.json` | 37225 | `c265687e62e5` | tracked |
 
 <!-- evidence-table:end -->
 

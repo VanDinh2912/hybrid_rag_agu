@@ -446,6 +446,63 @@ class TestMuoiIndexRiengVaBam:
                 "data", protected=["data/chroma_db"], repo_root=tmp_path
             )
 
+    def test_protected_index_dirs_gim_duong_dan_layout_moi(self):
+        """PA-48 — chốt phải GHIM đúng đường dẫn mới.
+
+        Test cũ (`test_guard_tu_choi_ghi_de_index_cu`) chỉ khai báo tên ở gốc repo, nên sau
+        Phase 2b `PROTECTED_INDEX_DIRS` lỏng ngay trên hai index thực nghiệm mà không red test
+        nào báo (bằng chứng: `tmp/restructure/guard_probe_phase2b.py` đếm 2 LỎNG CHỐT trước khi
+        nối). Tên CŨ vẫn giữ có chủ đích cho máy chưa dời thư mục; ở đây ghim nguyên văn cả tuple
+        để mọi lần thêm/xoá mục đường dẫn phải là quyết định có người nhìn thấy.
+        """
+        assert PROTECTED_INDEX_DIRS == (
+            "chroma_db",
+            "chroma_db_vie",
+            "indexes/experimental/chroma_db_vie",
+            "indexes/experimental/chroma_db_headers_old",
+        )
+        # Mọi index Chroma thật nằm trong `indexes/experimental/` đều phải được bảo vệ.
+        exp_root = REPO_ROOT / "indexes" / "experimental"
+        on_disk = sorted(
+            p.relative_to(REPO_ROOT).as_posix()
+            for p in exp_root.glob("*")
+            if p.is_dir() and (p / "chroma.sqlite3").is_file()
+        )
+        assert on_disk, "không thấy index thực nghiệm nào trên đĩa — kiểm lại layout"
+        unprotected = [p for p in on_disk if p not in PROTECTED_INDEX_DIRS]
+        assert unprotected == [], f"index trong indexes/experimental chưa vào chốt: {unprotected}"
+
+    def test_guard_chan_layout_moi_va_lo_khi_chi_khai_ten_cu(self, tmp_path):
+        """Chứng minh hai mục đường dẫn mới CÓ TÁC DỤNG (đối chứng trong cùng test)."""
+        exp = tmp_path / "indexes" / "experimental"
+        for name in ("chroma_db_vie", "chroma_db_headers_old"):
+            (exp / name).mkdir(parents=True)
+            (exp / name / "chroma.sqlite3").write_bytes(b"du lieu index thuc nghiem")
+
+        # Với chốt hiện hành: đích trùng index mới + đích là thư mục cha của nó đều bị từ chối.
+        for target in (
+            "indexes/experimental/chroma_db_vie",
+            "indexes/experimental/chroma_db_headers_old/extra",
+            "indexes/experimental",
+        ):
+            with pytest.raises(ValueError):
+                ensure_separate_index_target(target, repo_root=tmp_path)
+
+        # Đối chứng: nếu chốt CHỈ còn tên cũ (trạng thái trước PA-48) thì chính đích đó lọt —
+        # tức hai mục mới là phần đang gánh trách nhiệm, không phải khai cho đủ.
+        legacy_only = ("chroma_db", "chroma_db_vie")
+        leaked = ensure_separate_index_target(
+            "indexes/experimental/chroma_db_vie",
+            protected=legacy_only,
+            repo_root=tmp_path,
+        )
+        assert leaked == (exp / "chroma_db_vie").resolve()
+        # Đích hợp lệ ở layout mới vẫn phải là thư mục con phía trong, chưa tồn tại.
+        accepted = ensure_separate_index_target(
+            "indexes/experimental/index_moi", repo_root=tmp_path
+        )
+        assert accepted == (exp / "index_moi").resolve()
+
     def test_index_ti_hon_ghi_vao_thu_muc_khac_index_cu_nguyen_bam(self, tmp_path):
         old_dir = tmp_path / "chroma_db"
         old_dir.mkdir()

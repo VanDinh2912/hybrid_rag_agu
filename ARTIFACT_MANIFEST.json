@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-27T18:14:59",
+ "generated_at": "2026-10-29T03:46:49",
  "root": ".",
  "algorithm": "sha256",
  "scopes": [
@@ -779,7 +779,7 @@
     {
      "path": "chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/data_level0.bin",
      "bytes": 423600,
-     "sha256": "a1f688be2ac0c51223aa4148f55efd3d8b69f1016df809510a6369b9f968f332",
+     "sha256": "d50f9087d610573a772447815813a373f7bd19a14bb8279f343dc4b2d8b7e452",
      "tracked": false
     },
     {
@@ -791,7 +791,7 @@
     {
      "path": "chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/length.bin",
      "bytes": 400,
-     "sha256": "616c792b257b9ef0c79e4ba42de535e23f804bc51b07d01e33df18f336b206e0",
+     "sha256": "6124a8a45464ecf1e741676bd2c6e0e70b68b6934d51ef18aa102fceb5aaafd9",
      "tracked": false
     },
     {
@@ -803,43 +803,43 @@
     {
      "path": "chroma_db/chroma.sqlite3",
      "bytes": 5513216,
-     "sha256": "ebb1a690568067b64031561ea842dd75e6e4413b12aa2c8fbc6d125f76739b0b",
+     "sha256": "9ef395a912bfca33234815ba96577a51d934db1fe4a03a94e59c79f6fb6c72eb",
      "tracked": false
     }
    ]
   },
   {
    "name": "chroma",
-   "dir": "chroma_db_headers_old",
+   "dir": "indexes/experimental/chroma_db_headers_old",
    "file_count": 5,
    "total_bytes": 5937316,
    "files": [
     {
-     "path": "chroma_db_headers_old/88680e4c-30dc-4943-b306-9b262b463350/data_level0.bin",
+     "path": "indexes/experimental/chroma_db_headers_old/88680e4c-30dc-4943-b306-9b262b463350/data_level0.bin",
      "bytes": 423600,
      "sha256": "d95c69e443f0641772d0b0151afebcc1a339e22592323ff336a8b8120581874c",
      "tracked": false
     },
     {
-     "path": "chroma_db_headers_old/88680e4c-30dc-4943-b306-9b262b463350/header.bin",
+     "path": "indexes/experimental/chroma_db_headers_old/88680e4c-30dc-4943-b306-9b262b463350/header.bin",
      "bytes": 100,
      "sha256": "bf12d4486518c7addf488cb4854526902c78e91951990e1e2f4e055cec814e5d",
      "tracked": false
     },
     {
-     "path": "chroma_db_headers_old/88680e4c-30dc-4943-b306-9b262b463350/length.bin",
+     "path": "indexes/experimental/chroma_db_headers_old/88680e4c-30dc-4943-b306-9b262b463350/length.bin",
      "bytes": 400,
      "sha256": "f86a2b5d3803556674cf94451cb91f5f3ada12f9f68f511ed177d3f6fbbafce5",
      "tracked": false
     },
     {
-     "path": "chroma_db_headers_old/88680e4c-30dc-4943-b306-9b262b463350/link_lists.bin",
+     "path": "indexes/experimental/chroma_db_headers_old/88680e4c-30dc-4943-b306-9b262b463350/link_lists.bin",
      "bytes": 0,
      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
      "tracked": false
     },
     {
-     "path": "chroma_db_headers_old/chroma.sqlite3",
+     "path": "indexes/experimental/chroma_db_headers_old/chroma.sqlite3",
      "bytes": 5513216,
      "sha256": "e74924a6f92c97bf2fb0742dc4810abfb0227caa09d57e92ee1e6cab4c7a900d",
      "tracked": false
@@ -848,36 +848,36 @@
   },
   {
    "name": "chroma",
-   "dir": "chroma_db_vie",
+   "dir": "indexes/experimental/chroma_db_vie",
    "file_count": 5,
    "total_bytes": 6232228,
    "files": [
     {
-     "path": "chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/data_level0.bin",
+     "path": "indexes/experimental/chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/data_level0.bin",
      "bytes": 423600,
      "sha256": "e185cdac7e90653ac8b21bbaf4d2c59963f22971286b020470b2bfe8fcead9bc",
      "tracked": false
     },
     {
-     "path": "chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/header.bin",
+     "path": "indexes/experimental/chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/header.bin",
      "bytes": 100,
      "sha256": "bf12d4486518c7addf488cb4854526902c78e91951990e1e2f4e055cec814e5d",
      "tracked": false
     },
     {
-     "path": "chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/length.bin",
+     "path": "indexes/experimental/chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/length.bin",
      "bytes": 400,
      "sha256": "43945428809ba3db6809411c2c7b70d1560f4cd33c7f55dca37ffdf49ba0e14f",
      "tracked": false
     },
     {
-     "path": "chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/link_lists.bin",
+     "path": "indexes/experimental/chroma_db_vie/1ea8b355-15b5-4fe7-8c9a-ff99ee953717/link_lists.bin",
      "bytes": 0,
      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
      "tracked": false
     },
     {
-     "path": "chroma_db_vie/chroma.sqlite3",
+     "path": "indexes/experimental/chroma_db_vie/chroma.sqlite3",
      "bytes": 5808128,
      "sha256": "dbca16743f085a8f6fe405e3f27b09424a3e1261b164b1eed8c39f4e7486b98f",
      "tracked": false
@@ -886,172 +886,172 @@
   },
   {
    "name": "ocr_cache",
-   "dir": ".ocr_cache",
+   "dir": ".cache/ocr/easyocr_vie",
    "file_count": 13,
-   "total_bytes": 220617,
+   "total_bytes": 282966,
    "files": [
     {
-     "path": ".ocr_cache/03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki__3b5a071d0cf5c203.json",
-     "bytes": 5901,
-     "sha256": "bf926b4ded41aa411984aef44718477f3d84c0d9477732445266e5607afe4600",
+     "path": ".cache/ocr/easyocr_vie/03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki__3b5a071d0cf5c203.json",
+     "bytes": 7972,
+     "sha256": "2a944c65ddc944a6561c6fb78f96bdaec8ee369e00655a84162013b6de0e2582",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-c__c814bb7c3de72688.json",
-     "bytes": 2502,
-     "sha256": "402c5465d31c75c090a3edc8eeadc0ed76825866ea801bda9c10e58bec00d4b9",
+     "path": ".cache/ocr/easyocr_vie/05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-c__c814bb7c3de72688.json",
+     "bytes": 3256,
+     "sha256": "1c00662decc992a53ea9a65fbff9e619165b16e6fc105095473d5c029180d790",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/1054-qd-dhag-2020-09-28__d66314523af140de.json",
-     "bytes": 47956,
-     "sha256": "9020edac34b5c2af2f65d531e823eaf92de704371d33673c35cda29740f4fced",
+     "path": ".cache/ocr/easyocr_vie/1054-qd-dhag-2020-09-28__d66314523af140de.json",
+     "bytes": 64444,
+     "sha256": "fa5c86f8247f8fbb84e50deb7aea85d9f83665c3e948de2ac05d1192ea141d21",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/1059-qd-dhag-2020-09-29__86b4a1804d5d268f.json",
-     "bytes": 20131,
-     "sha256": "db6057b5227e13fddcac410c5d5c899c3a3b9ecf112eea6fa78207c9f95ba4a1",
+     "path": ".cache/ocr/easyocr_vie/1059-qd-dhag-2020-09-29__86b4a1804d5d268f.json",
+     "bytes": 27027,
+     "sha256": "2b963dcfe9d8f113847a371f45e7f0721eb25cb935defe1b8c788f37ef0b60c5",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/118_QUY_CHẾ_XÉT_CHỌN_DANH_HIỆU_SINH_VIÊN_5_TỐT_TẬP_THỂ_SINH___39f49c90cc0d3596.json",
-     "bytes": 23460,
-     "sha256": "009e4b3ed99262b20cda6ab2302162b43d01c8696964d8716c939fceb0f98c92",
+     "path": ".cache/ocr/easyocr_vie/118_QUY_CHẾ_XÉT_CHỌN_DANH_HIỆU_SINH_VIÊN_5_TỐT_TẬP_THỂ_SINH___39f49c90cc0d3596.json",
+     "bytes": 30490,
+     "sha256": "a8e57a9bd44ace905a8a6b4be4e7736ce643e72efe9ae8b1ab5952e4b6cdb102",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang__b099a1118e63b686.json",
-     "bytes": 9259,
-     "sha256": "f02a468441dbe4e59ddbe73fbe4a01b3fdb09e95389d3bc787749f6870ee2b19",
+     "path": ".cache/ocr/easyocr_vie/163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang__b099a1118e63b686.json",
+     "bytes": 11908,
+     "sha256": "9709d4e361e88e9eb932e4932c9aca65a500fe194bb8c1d09f1450ad9391eff2",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sin__a43c969218790edb.json",
-     "bytes": 3042,
-     "sha256": "9b1ad42f62a47630a365fbf288312b7e7d2a7e9685044bd43306f6e3cd5fac20",
+     "path": ".cache/ocr/easyocr_vie/17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sin__a43c969218790edb.json",
+     "bytes": 3931,
+     "sha256": "b3373cb4a0ca0e4ee714ffbbe2ac088a2a1540c2d7e713afc3295f09136ade4a",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/367-QĐ-ĐU_ngay_08-4-2026__c93a6438bede95d3.json",
-     "bytes": 31035,
-     "sha256": "1d88ec5f9f2304226bb874f68a093f0beee55fc8b70a289529f53491e78a10ba",
+     "path": ".cache/ocr/easyocr_vie/367-QĐ-ĐU_ngay_08-4-2026__c93a6438bede95d3.json",
+     "bytes": 42206,
+     "sha256": "06bbbab52ac6092e93a43d46e29112db790d6b88c973a301c93b75bb85e4b888",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/888-qd-dhag-2022-08-08__5a981288d9887445.json",
-     "bytes": 35521,
-     "sha256": "15adc1366ad041735048745e6b1bc4284c81c8ccd68809f7164f6a650bdd6b5d",
+     "path": ".cache/ocr/easyocr_vie/888-qd-dhag-2022-08-08__5a981288d9887445.json",
+     "bytes": 48215,
+     "sha256": "7309cd923719dad9c728a5ff24cc1f3f1d0cef768c6ff4b032135d5df05c19d6",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/ke-hoach-ttck-kltn-dh24pm-2026__aec74a6aec72baf3.json",
-     "bytes": 9585,
-     "sha256": "cbc263ed51fe8ebe40d08310ee37a4b2bc76851653e64780b23ee23992591e43",
+     "path": ".cache/ocr/easyocr_vie/ke-hoach-ttck-kltn-dh24pm-2026__aec74a6aec72baf3.json",
+     "bytes": 6219,
+     "sha256": "80aa66e101dfd52e69149eddf08cc82472d1b4fa2b18688bc188243447e3fef9",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/ke-hoach-ttck-kltn-dh24th-2026__5b678fd66bab6bac.json",
-     "bytes": 9022,
-     "sha256": "e1b0b50b8bb9592f333279cb12965c616838fc5114b3be234f75c80bf70d1965",
+     "path": ".cache/ocr/easyocr_vie/ke-hoach-ttck-kltn-dh24th-2026__5b678fd66bab6bac.json",
+     "bytes": 6284,
+     "sha256": "72da29c1d3c215fec6368f1738a435ecb7562df19ee078d3e3c3a3a25cabac68",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26__5cb8034f5fdf5307.json",
-     "bytes": 4131,
-     "sha256": "ba3d0025576f1475085bb754fa2931de988a72c8308343510394d073371d9ba0",
+     "path": ".cache/ocr/easyocr_vie/lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26__5cb8034f5fdf5307.json",
+     "bytes": 5256,
+     "sha256": "ae46ccdef0f59fbcb2c92d52ea693fd44d23d22855729fa5c7e7cdd48bc4cad2",
      "tracked": false
     },
     {
-     "path": ".ocr_cache/QD1133_22815_VNU_ban_hanh_Quy_dinh_khen_thuong_HSSV_-1__9c09d5f44ff82468.json",
-     "bytes": 19072,
-     "sha256": "e514f24406fe82b9d8a123d1aa8139f9194c2e5a5440e96b566526ec71d35337",
+     "path": ".cache/ocr/easyocr_vie/QD1133_22815_VNU_ban_hanh_Quy_dinh_khen_thuong_HSSV_-1__9c09d5f44ff82468.json",
+     "bytes": 25758,
+     "sha256": "6d72a069fd44268964392518eb8098ce595ff250d25b1ec6f4b1dc323d093137",
      "tracked": false
     }
    ]
   },
   {
    "name": "ocr_cache",
-   "dir": ".ocr_cache_vie",
+   "dir": ".cache/ocr/rapidocr",
    "file_count": 13,
-   "total_bytes": 282966,
+   "total_bytes": 220617,
    "files": [
     {
-     "path": ".ocr_cache_vie/03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki__3b5a071d0cf5c203.json",
-     "bytes": 7972,
-     "sha256": "2a944c65ddc944a6561c6fb78f96bdaec8ee369e00655a84162013b6de0e2582",
+     "path": ".cache/ocr/rapidocr/03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki__3b5a071d0cf5c203.json",
+     "bytes": 5901,
+     "sha256": "bf926b4ded41aa411984aef44718477f3d84c0d9477732445266e5607afe4600",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-c__c814bb7c3de72688.json",
-     "bytes": 3256,
-     "sha256": "1c00662decc992a53ea9a65fbff9e619165b16e6fc105095473d5c029180d790",
+     "path": ".cache/ocr/rapidocr/05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-c__c814bb7c3de72688.json",
+     "bytes": 2502,
+     "sha256": "402c5465d31c75c090a3edc8eeadc0ed76825866ea801bda9c10e58bec00d4b9",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/1054-qd-dhag-2020-09-28__d66314523af140de.json",
-     "bytes": 64444,
-     "sha256": "fa5c86f8247f8fbb84e50deb7aea85d9f83665c3e948de2ac05d1192ea141d21",
+     "path": ".cache/ocr/rapidocr/1054-qd-dhag-2020-09-28__d66314523af140de.json",
+     "bytes": 47956,
+     "sha256": "9020edac34b5c2af2f65d531e823eaf92de704371d33673c35cda29740f4fced",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/1059-qd-dhag-2020-09-29__86b4a1804d5d268f.json",
-     "bytes": 27027,
-     "sha256": "2b963dcfe9d8f113847a371f45e7f0721eb25cb935defe1b8c788f37ef0b60c5",
+     "path": ".cache/ocr/rapidocr/1059-qd-dhag-2020-09-29__86b4a1804d5d268f.json",
+     "bytes": 20131,
+     "sha256": "db6057b5227e13fddcac410c5d5c899c3a3b9ecf112eea6fa78207c9f95ba4a1",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/118_QUY_CHẾ_XÉT_CHỌN_DANH_HIỆU_SINH_VIÊN_5_TỐT_TẬP_THỂ_SINH___39f49c90cc0d3596.json",
-     "bytes": 30490,
-     "sha256": "a8e57a9bd44ace905a8a6b4be4e7736ce643e72efe9ae8b1ab5952e4b6cdb102",
+     "path": ".cache/ocr/rapidocr/118_QUY_CHẾ_XÉT_CHỌN_DANH_HIỆU_SINH_VIÊN_5_TỐT_TẬP_THỂ_SINH___39f49c90cc0d3596.json",
+     "bytes": 23460,
+     "sha256": "009e4b3ed99262b20cda6ab2302162b43d01c8696964d8716c939fceb0f98c92",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang__b099a1118e63b686.json",
-     "bytes": 11908,
-     "sha256": "9709d4e361e88e9eb932e4932c9aca65a500fe194bb8c1d09f1450ad9391eff2",
+     "path": ".cache/ocr/rapidocr/163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang__b099a1118e63b686.json",
+     "bytes": 9259,
+     "sha256": "f02a468441dbe4e59ddbe73fbe4a01b3fdb09e95389d3bc787749f6870ee2b19",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sin__a43c969218790edb.json",
-     "bytes": 3931,
-     "sha256": "b3373cb4a0ca0e4ee714ffbbe2ac088a2a1540c2d7e713afc3295f09136ade4a",
+     "path": ".cache/ocr/rapidocr/17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sin__a43c969218790edb.json",
+     "bytes": 3042,
+     "sha256": "9b1ad42f62a47630a365fbf288312b7e7d2a7e9685044bd43306f6e3cd5fac20",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/367-QĐ-ĐU_ngay_08-4-2026__c93a6438bede95d3.json",
-     "bytes": 42206,
-     "sha256": "06bbbab52ac6092e93a43d46e29112db790d6b88c973a301c93b75bb85e4b888",
+     "path": ".cache/ocr/rapidocr/367-QĐ-ĐU_ngay_08-4-2026__c93a6438bede95d3.json",
+     "bytes": 31035,
+     "sha256": "1d88ec5f9f2304226bb874f68a093f0beee55fc8b70a289529f53491e78a10ba",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/888-qd-dhag-2022-08-08__5a981288d9887445.json",
-     "bytes": 48215,
-     "sha256": "7309cd923719dad9c728a5ff24cc1f3f1d0cef768c6ff4b032135d5df05c19d6",
+     "path": ".cache/ocr/rapidocr/888-qd-dhag-2022-08-08__5a981288d9887445.json",
+     "bytes": 35521,
+     "sha256": "15adc1366ad041735048745e6b1bc4284c81c8ccd68809f7164f6a650bdd6b5d",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/ke-hoach-ttck-kltn-dh24pm-2026__aec74a6aec72baf3.json",
-     "bytes": 6219,
-     "sha256": "80aa66e101dfd52e69149eddf08cc82472d1b4fa2b18688bc188243447e3fef9",
+     "path": ".cache/ocr/rapidocr/ke-hoach-ttck-kltn-dh24pm-2026__aec74a6aec72baf3.json",
+     "bytes": 9585,
+     "sha256": "cbc263ed51fe8ebe40d08310ee37a4b2bc76851653e64780b23ee23992591e43",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/ke-hoach-ttck-kltn-dh24th-2026__5b678fd66bab6bac.json",
-     "bytes": 6284,
-     "sha256": "72da29c1d3c215fec6368f1738a435ecb7562df19ee078d3e3c3a3a25cabac68",
+     "path": ".cache/ocr/rapidocr/ke-hoach-ttck-kltn-dh24th-2026__5b678fd66bab6bac.json",
+     "bytes": 9022,
+     "sha256": "e1b0b50b8bb9592f333279cb12965c616838fc5114b3be234f75c80bf70d1965",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26__5cb8034f5fdf5307.json",
-     "bytes": 5256,
-     "sha256": "ae46ccdef0f59fbcb2c92d52ea693fd44d23d22855729fa5c7e7cdd48bc4cad2",
+     "path": ".cache/ocr/rapidocr/lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26__5cb8034f5fdf5307.json",
+     "bytes": 4131,
+     "sha256": "ba3d0025576f1475085bb754fa2931de988a72c8308343510394d073371d9ba0",
      "tracked": false
     },
     {
-     "path": ".ocr_cache_vie/QD1133_22815_VNU_ban_hanh_Quy_dinh_khen_thuong_HSSV_-1__9c09d5f44ff82468.json",
-     "bytes": 25758,
-     "sha256": "6d72a069fd44268964392518eb8098ce595ff250d25b1ec6f4b1dc323d093137",
+     "path": ".cache/ocr/rapidocr/QD1133_22815_VNU_ban_hanh_Quy_dinh_khen_thuong_HSSV_-1__9c09d5f44ff82468.json",
+     "bytes": 19072,
+     "sha256": "e514f24406fe82b9d8a123d1aa8139f9194c2e5a5440e96b566526ec71d35337",
      "tracked": false
     }
    ]

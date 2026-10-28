@@ -16,8 +16,10 @@ Hai chế độ, mặc định chỉ đọc:
 cờ `tracked` (hai thứ hợp lệ để đổi mà không phải sửa artifact).
 
 Phạm vi (đúng B3): adapter SFT trong `models/`, toàn bộ `outputs/`, `logs/`, các thư mục
-`chroma_db*`, `.ocr_cache*`. Artifact classifier/retrieval trong `models/` cũng được ghi để manifest
-đủ bộ — chúng chưa nằm trong phạm vi ignore của B3 (xem PA-33).
+`chroma_db*`, `.ocr_cache*`. Từ PA-48 (29-10) hai vùng artifact đã đổi chỗ theo tái cấu trúc cũng
+được quét: `indexes/experimental/chroma_db*` (Phase 2b) và `.cache/ocr/*` (Phase 2) — glob cũ vẫn
+giữ nên máy còn layout cũ không mất scope. Artifact classifier/retrieval trong `models/` cũng được
+ghi để manifest đủ bộ — chúng chưa nằm trong phạm vi ignore của B3 (xem PA-33).
 """
 
 from __future__ import annotations
@@ -52,9 +54,21 @@ def _scope_dirs() -> list[tuple[str, Path]]:
     for p in sorted(ROOT.glob("chroma_db*")):
         if p.is_dir():
             scopes.append(("chroma", p))
+    # Phase 2b (PA-48): index thực nghiệm nằm ở `indexes/experimental/` — cùng glob, bố mẹ mới.
+    exp_root = ROOT / "indexes" / "experimental"
+    if exp_root.is_dir():
+        for p in sorted(exp_root.glob("chroma_db*")):
+            if p.is_dir():
+                scopes.append(("chroma", p))
     for p in sorted(ROOT.glob(".ocr_cache*")):
         if p.is_dir():
             scopes.append(("ocr_cache", p))
+    # Phase 2 (PA-48): cache OCR nằm ở `.cache/ocr/<bộ OCR>/` — giữ cả glob cũ cho máy còn layout cũ.
+    cache_root = ROOT / ".cache" / "ocr"
+    if cache_root.is_dir():
+        for p in sorted(cache_root.glob("*")):
+            if p.is_dir():
+                scopes.append(("ocr_cache", p))
     return scopes
 
 
