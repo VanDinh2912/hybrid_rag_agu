@@ -1,4 +1,6 @@
-# Phân loại PA-1…PA-48 (27-10; PA-48 thêm 28-10)
+# Phân loại PA-1…PA-48 + PA-54…PA-55 (27-10; PA-48 thêm 28-10; PA-54–55 thêm 29-10)
+
+PA-49…PA-53 không nằm trong bảng này — ghi thành mục riêng trong `docs/archive/PENDING_APPROVAL.md`.
 
 Mục đích: một bảng để quyết định việc duyệt tiếp theo, **không** áp PA nào. Ba nhóm:
 
@@ -11,7 +13,7 @@ Cột "khuyến nghị": **duyệt** = nên làm, thường rẻ và không đ�
 đã bị số đo bác, hoặc khuyến nghị giữ nguyên); **hoãn** = cần điều kiện khác (duyệt ngưỡng, quota,
 PA-26, re-anchor) trước khi làm.
 
-Đếm: (a) 26 · (b) 17 · (c) 4. Đã đóng 11: PA-2, 5, 6, 9, 10, 19, 20, 25, 34, 45, 47.
+Đếm: (a) 26 · (b) 18 · (c) 5. Đã đóng 11: PA-2, 5, 6, 9, 10, 19, 20, 25, 34, 45, 47.
 
 | PA | Việc | Nhóm | Khuyến nghị | Lý do ngắn |
 |---|---|---|---|---|
@@ -59,10 +61,12 @@ PA-26, re-anchor) trước khi làm.
 | PA-42 | Chữ ký trọng tài băm byte thô | a | **duyệt** | (a) commit 2 file untracked byte-nguyên; không chuẩn hoá EOL |
 | PA-43 | Chuyển 2 script công cụ vào `tools/` | c | **hoãn** | đỏ bất biến #7 (74 dòng train); phải đổi dữ liệu cùng lúc |
 | PA-44 | Gom 45 site đọc env còn lại | c | **hoãn** | rủi ro cao; PA-26 chưa đóng, không đổi số |
-| PA-45 | Tách 3 tệp đánh giá khỏi `src/` | c | **đóng** | khuyến nghị giữ nguyên (bất biến #7 + import thư viện) |
+| PA-45 | Tách 3 tệp đánh giá khỏi `src/` | c | **đóng** | khuyến nghị giữ nguyên (bất biến #7 + import thư viện) — **đã bị Phase 3 vượt**: commit `876e017` move cả 3 tệp vào `src/assessment/` sau khi user duyệt phạm vi đóng gói `src/`, giải #7 bằng 704 citation `metadata.file` (tiền lệ Phase 1 đã duyệt), import thư viện không đổi vì chỉ đổi path. Chi tiết + cổng: `docs/RESTRUCTURE_MAP.md` §6 |
 | PA-46 | Tách `generator.py` + `negative_results` | c | **duyệt (a)** | chỉ tạo `experiments/negative_results/README.md`; (b)–(d) hoãn |
 | PA-47 | Manifest ghim byte container Chroma | b | **đóng** | C1 đã cô lập test + sinh lại manifest; index digest hoãn |
 | PA-48 | Re-anchor manifest + ghim chốt an toàn cho layout `indexes/`+`.cache/` | b | **duyệt** | `_scope_dirs()` glob `chroma_db*` và `.ocr_cache*` **chỉ ở gốc repo** ⇒ sau Phase 2 `--check` báo THÊM **THIẾU 36** (26 cache + 10 index, 158→122 tệp). Cần: (1) nối `.cache/ocr/*` + `indexes/experimental/*` vào scope rồi sinh lại manifest, đối chiếu 36 hash cũ↔mới khớp byte trước commit; (2) thêm test ghim `PROTECTED_INDEX_DIRS` bản đường dẫn mới (test hiện tại chỉ khai tên cũ). KHÔNG tự sửa glob/manifest khi chờ duyệt — xem `docs/RESTRUCTURE_MAP.md` §5.3 |
+| PA-54 | Đóng gói nốt `src/generator.py` (và nếu muốn, 2 tệp trọng tài) vào `src/generation/` | c | **hoãn** | Điều kiện cứng: `src/answer_guard.py` import `REFUSAL_TEXT` của generator lúc chạy và là tệp bị băm trong `REFEREE_FILES`; move generator ⇒ phải đổi byte `answer_guard` ⇒ **đổi chữ ký trọng tài** `2911c69f740d` + vỡ 2 SHA-12 ghim ở `tests/test_final_council_scripts.py:446-447`. Đây là sửa dụng cụ đo ⇒ chỉ làm khi user duyệt vòng tái định chữ ký có chủ đích. Phase 3 đã thử và hoàn tác (bằng chứng `tmp/restructure/phase3_attempt1_apply.txt`) — xem `docs/RESTRUCTURE_MAP.md` §6.1 |
+| PA-55 | Xử lý 2.230 chuỗi `src/<mod>.py` cũ trong ANSWER của `data/training/sft_*.jsonl` + 293 lần trong 42 tệp tài liệu lịch sử đã track (`docs/archive/*`, `dev/prompts/*`, `data/loop/README.md`) | b | **đóng (khuyến nghị)** | Đây là **bản ghi lịch sử / nội dung dữ liệu đã sinh**, không phải citation ⇒ để nguyên là đúng luật "không sửa dữ liệu đã công bố". Nếu muốn sạch thì phải **rebuild** `data/training` (đổi bộ train đã công bố, đụng benchmark) — không tự làm. Chi tiết: `docs/RESTRUCTURE_MAP.md` §7 |
 
 **Thứ tự rẻ trước (nếu duyệt một lượt):** PA-41, PA-30, PA-29, PA-33, PA-16, PA-40 — toàn bộ là
 môi trường/tài liệu, không đụng số đo. PA-42 cũng rẻ (chỉ `git add` hai tệp byte-nguyên) nhưng xếp (a)

@@ -7,8 +7,8 @@
 >
 > Ngày thực hiện: 28-10 → sáng 29-10-2026 · Nhánh: `chore/restructure`
 > · Commit Phase 1: `4b981b0` · Báo cáo: `35f4c53` · Phase 2 cache: `a085716`
-> · Phase 2b indexes: `83b3bc3` · Phase 2c `data/learning/`: `591d183` · Snapshot baseline:
-> `24e5c9a` (trạng thái `auto/overnight` tại `c8c2408`).
+> · Phase 2b indexes: `83b3bc3` · Phase 2c `data/learning/`: `591d183` · **Phase 3 `src/`:
+> `876e017`** · Snapshot baseline: `24e5c9a` (trạng thái `auto/overnight` tại `c8c2408`).
 
 ---
 
@@ -257,18 +257,112 @@ bảng byte-identity của Phase 2 không dài thêm; thứ thay đổi là **qu
 | `git diff --diff-filter=D` | **rỗng** | bằng |
 | `py_compile` 3 tệp sửa | rc=0; `src/query_normalizer.py` **NL 495 → 495**, `ui/app.py` **NL 1014 → 1014** (không dịch số dòng mà tài liệu khác đang trích) | — |
 
-## 6. Phase 3 — ĐỀ XUẤT (không làm)
+## 6. Phase 3 — đóng gói `src/`: ĐÃ THỰC HIỆN (29-10, sau khi user duyệt phạm vi)
 
-Gom `src/` (16 module phẳng) thành gói có `__init__.py` với subpackage `indexing/`
-(loader, chunking, contextual_header), `retrieval/` (retrieval, vector_db, reranker,
-router), `generation/` (generator, local_slm, answer_guard, refusal_policy,
-evidence_selection) và `core/` (pipeline, text_utils, classifier, query_normalizer).
-Đề xuất này **đổi toàn bộ import string** (`src.x` → tên gói) và có khả năng đổi thứ
-tự side-effect lúc import — tức VƯỢT quy tắc vàng "chỉ di chuyển + sửa tham chiếu".
-Điều kiện làm: sau khi chốt báo cáo, có một vòng kiểm chứng riêng (baseline + lại chữ
-ký trọng tài trên cây mới) vì `verify.py` tự ký theo **đường dẫn** `src/answer_guard.py`
-và `src/text_utils.py` — đổi đường dẫn 2 tệp này là đổi luôn cách kiểm chữ ký.
-Hiện trạng giữ nguyên là an toàn nhất.
+Phạm vi đã duyệt qua câu hỏi phạm vi (user 29-10): **"Gói trừ 2 tệp trọng tài"** — dời các
+module vào subpackage nhưng **giữ `src/answer_guard.py` + `src/text_utils.py` tại chỗ**, vì
+`tools/loop/verify.py` tự băm hai tệp đó **theo đường dẫn** và
+`tests/test_final_council_scripts.py:446-447` ghim SHA-12 của chúng. Không sửa `verify.py`,
+không đổi byte hai tệp trọng tài ⇒ chữ ký `2911c69f740d` phải còn nguyên sau Phase 3 (đã kiểm).
+
+### 6.1 Cấu trúc mới, 4 tệp ở lại gốc, và lý do hoãn `generator.py`
+
+`src/` gốc còn 4 tệp: `__init__.py`, `answer_guard.py`, `text_utils.py`, `generator.py`.
+Subpackage: `core/`=6, `indexing/`=3, `retrieval/`=4, `generation/`=3, `assessment/`=3.
+**Không subpackage nào có `__init__.py`** (namespace package — cùng bài học với `scripts/` ở
+Phase 1; `tests/conftest.py` đã cắm repo root vào `sys.path`): tạo tệp mới KHÔNG nằm trong phép
+"di chuyển + sửa chuỗi path".
+
+`src/generator.py` là **HOÃN duy nhất**, đúng luật "move đòi hỏi đổi tệp trọng tài ⇒ hoãn":
+`src/answer_guard.py` (tệp bị băm) chạy `from src.generator import REFUSAL_TEXT` ở lúc sinh,
+và docstring của nó nêu `src/faithfulness_heuristic.py`. Muốn move `generator` thì phải đổi
+byte `answer_guard` ⇒ đổi luôn chữ ký trọng tài và làm đỏ 2 SHA-12 đã ghim. Lần apply đầu
+tiên đã thử đúng kịch bản đó: fingerprint vọt thành `e5e1c72ff5df` (bằng chứng còn ở
+`tmp/restructure/phase3_attempt1_apply.txt`), toàn bộ được hoàn tác cơ giới trước khi làm lại.
+**Hệ quả ghi nguyên:** docstring `src/answer_guard.py` vẫn nói `src/faithfulness_heuristic.py`
+(tệp này nay ở `src/core/`) — sửa nó là sửa tệp trọng tài. Đăng ký PA-54.
+
+### 6.2 Bảng ánh xạ 19 move (cũ → mới)
+
+| Nhóm mới | Cũ → Mới |
+|---|---|
+| `src/core/` (6) | `src/pipeline.py` · `src/classifier.py` · `src/query_normalizer.py` · `src/config.py` · `src/cache_policy.py` · `src/faithfulness_heuristic.py` → `src/core/<giống tên>` |
+| `src/indexing/` (3) | `src/loader.py` · `src/chunking.py` · `src/contextual_header.py` → `src/indexing/<giống tên>` |
+| `src/retrieval/` (4) | `src/retrieval.py` · `src/vector_db.py` · `src/reranker.py` · `src/router.py` → `src/retrieval/<giống tên>` |
+| `src/generation/` (3) | `src/local_slm.py` · `src/refusal_policy.py` · `src/evidence_selection.py` → `src/generation/<giống tên>` |
+| `src/assessment/` (3) | `src/evaluation.py` · `src/evaluate_classifier.py` · `src/analyze_ab.py` → `src/assessment/<giống tên>` |
+| **Ở lại gốc (4)** | `src/__init__.py` · `src/answer_guard.py` (bị băm) · `src/text_utils.py` (bị băm) · `src/generator.py` (HOÃN — §6.1) |
+
+Cả 19 move là `git mv` (18 `RM` + 1 `R` thuần — `config.py` không đổi byte);
+`git diff --name-only --diff-filter=D` **rỗng**, `src/<mod>.py` cũ **không còn** ở gốc,
+19/19 có mặt đúng đích.
+
+### 6.3 Ba loại biến đổi đã áp dụng (không có loại thứ tư)
+
+1. **Token đường dẫn** — `tmp/restructure/phase3_apply.py`: **91 tệp được viết lại, 451 lần thay
+   token** (`src/<mod>.py`, `from src.<mod>`, `import src.<mod>`, `src.<mod>` trong chuỗi env
+   probe của `env_flag_audit.py`), giới hạn ở mã nguồn + tài liệu SỐNG; `SKIP_ALWAYS` loại
+   `tests/snapshots/`, `tmp/`, `data/`, `logs/README.md`. Hard guard: **số dòng mỗi tệp phải
+   không đổi** (tài liệu đang trích số dòng, ví dụ `src/pipeline.py:268,356,386,464`).
+2. **Độ sâu đường dẫn gốc** — 4 tệp × 1 token `Path(__file__).resolve().parent.parent` →
+   `.parents[2]` (`phase3_fix_rootdepth.py`): `analyze_ab.py` (463 dòng), `evaluate_classifier.py`
+   (464), `evaluation.py` (1.184), `faithfulness_heuristic.py` (197). Đây là **đỏ thứ nhất** của
+   Phase 3: `docs_consistency_check.py` chạy `<python> <script> --help` từ repo gốc, sau khi
+   xuống cấp 2 thì bootstrap chỉ còn trỏ `src/` ⇒ `ModuleNotFoundError: No module named 'src'`.
+   Ánh xạ này đã được đăng ký TRƯỚC tại `docs/archive/PENDING_APPROVAL.md:1452` khi khảo sát
+   PA-45; tệp thứ 4 do kiểm kê `__file__` toàn `src/` tìm ra.
+3. **Citation `metadata.file` trong `data/training/*.jsonl`** — **704 dòng**
+   (`phase3_update_citations.py`): 342 `sft_train.jsonl` + 342 bản mirror `_alpaca` + 10
+   `sft_val.jsonl` + 10 mirror. Đây là **đỏ thứ hai**: bất biến #7
+   (`test_final_train_data_audit.py::…code_qa`) assert `file_thieu == []`. Cùng quyết định và
+   cùng cơ chế đã duyệt ở Phase 1 ("cập nhật citation, giữ move" — §3), và chỉ thay **key `file`**:
+   công cụ parse từng dòng, thay regex `"file": "<duong dan cu>"` rồi so sánh sâu JSON trước/sau,
+   khác đúng một khoá `metadata.file` thì mới ghi. Số dòng mỗi tệp giữ nguyên ⇒ `manifest.json`
+   đếm dòng vẫn đúng. Chuỗi `src/<mod>.py` nằm trong **đáp án** (2.230 lần, xem §7) KHÔNG sửa.
+
+Hai ngoại lệ viết tay có đăng ký trong `phase3_map.py`: 2 dòng `import` gộp của
+`src/cache_policy.py` tách bằng dấu `;` trên cùng một dòng (giữ số dòng), và
+`tools/train/build_training_data.py` đổi `glob("*.py")` → `rglob("*.py")` cho enumerate
+đủ cấp (không đổi logic chấm điểm của builder).
+
+### 6.4 Kết quả cổng nghiệm thu Phase 3 (so baseline Phase 2c)
+
+| Cổng | Lệnh | Kết quả | So baseline |
+|---|---|---|---|
+| pytest | `python -m pytest tests -q` | **1549 passed / 5 skipped / 0 failed** (78,86 s) | bằng từng con số |
+| Bằng chứng byte | `tmp/restructure/phase3_after.py` | **KHỚP BYTE 193 / LỆCH 0 / THIẾU 0** (194 tệp đích − README) | mới (Phase 3) |
+| Cây README | kiểm block trong `phase3_after.py` | block 38 dòng nằm **đúng 1 lần**, 19 module không còn ở cấp phẳng, **thuần CRLF**, 754 → 764 dòng, sha `dadfe5cd3f80` → `7dbffa022ecb` | mới |
+| Bất biến #7 | `tools/diag/train_data_audit.py` | 1.635 dòng / trích file **1.049** / định danh đã kiểm **890** / file thiếu **0** / line vượt **0** / định danh không có **0**, rc=0 | bằng đúng các mốc ghim trong test |
+| Chữ ký trọng tài | `referee_fingerprint()` | **`2911c69f740d`** — khớp; `answer_guard.py` `ab4a8a73292f` và `text_utils.py` `5f810aa52b6b` NGUYÊN byte; `verify.py` `137ee884af3c` | bằng |
+| Đột biến cổng | `phase3_mutation_probe.py` | M1 (thêm dấu cách comment) · M2 (sửa 1 ký tự code) · M3 (sửa byte `answer_guard.py`) = **3/3 BỊ BẮT**, fingerprint lệch chỉ ở M3 (`c235f8a76778`), khôi phục **ĐÚNG** byte, chạy lại rc=0 | bằng |
+| Manifest | `tools/diag/artifact_manifest.py --check` | rc=1, 158 → 122 tệp, **ĐỔI (3)** chroma cũ + **THIẾU (36)** | bằng — vẫn là drift PA-48, Phase 3 không thêm mục nào (`src/` không bị manifest pin) |
+| Vùng bảo vệ | `tmp/restructure/protected_hash_check.py` | 491 / **ĐỔI 0** / **MẤT 0** / MOI 36 | bằng (xem cảnh báo dưới: 491 KHÔNG phủ `data/training`) |
+| Gói bằng chứng | `evidence_pack_check.py --check` | **KHỚP** 84 tệp / 4.041.502 B | bằng |
+| Đồng nhất tài liệu | `tools/diag/docs_consistency_check.py` | **SẠCH LỖI**, 5 cảnh báo cũ; số đường dẫn đã kiểm **110 → 114** (thêm các token `src/<group>/…`) | bằng về số lỗi |
+| Cờ env | `tools/diag/env_flag_audit.py` | rc=0, 14 cờ đăng ký vẫn dò được sau khi đổi tên module, mặc định **TẮT** | bằng |
+| Chuỗi P5 DryRun | `run_chain.py --chain t5a_reranker --dry-run` | **diff 0 dòng** (argv + env từng ký tự) | bằng |
+| Secret/PII | `tools/diag/secret_scan.py` | SECRET_COTHAT **0**; PII **165 dòng / 9 tệp** | bằng |
+| Import smoke | `importlib` 22 module trong `src/` | **22/22 OK** | bằng |
+| Commit | `git show --stat 876e017` | **93 tệp, 457 insertions / 447 deletions** — mức chênh +10 đúng bằng phần cây README mới | — |
+
+Cảnh báo trung thực về vùng mù: `protected_hash_check.py` chụp 491 tệp **không có** tệp nào
+trong `data/training/` (18 tệp ở đó rơi vào bucket "MỚI"), nên cổng bảo vệ **không thể** thấy
+704 dòng citation vừa đổi. Vì thế bước citation mang bằng chứng riêng: sha trước/sau từng tệp
+(`002d2fd9038d`→`c1d220f4b06c`, `f0ed3c74041e`→`dc2572f54790`, `717f7e65b187`→`bfba2a239891`,
+`f8f7eda7e3fd`→`4005ed6c51aa`), bản sao byte-gốc + sha đã ghi trong `phase3_citation_backup/`,
+và hoàn tác có kiểm sha bằng `phase3_citation_undo.py --check`.
+
+### 6.5 Việc còn treo do Phase 3 — chỉ ĐĂNG KÝ, chờ user duyệt
+
+- **PA-54** — đóng gói nốt `src/generator.py` (và nếu muốn, 2 tệp trọng tài). Điều kiện bắt
+  buộc: một vòng tái định chữ ký trọng tài có chủ đích (fingerprint mới + re-ghim 2 SHA-12
+  trong `test_final_council_scripts.py` + cập nhật `REFEREE_FILES` trong `verify.py`), tức là
+  đụng dụng cụ đo — theo luật hiện hành chỉ được làm SAU khi user duyệt.
+- **PA-55** — 2.230 chuỗi `src/<mod>.py` cũ trong ANSWER của `data/training/sft_*.jsonl` và
+  293 lần trong 42 tệp tài liệu lịch sử đã track (`docs/archive/*`, `dev/prompts/*`,
+  `data/loop/README.md`). Khuyến nghị: **chấp nhận như bản ghi lịch sử**, không sửa.
+- **PA-48** (treo từ Phase 2) — re-anchor manifest 36 mục + test ghim `PROTECTED_INDEX_DIRS`
+  bản path mới; Phase 3 không làm nặng thêm (`src/` không bị pin).
 
 ## 7. Mẫu thuẫn phát hiện — ghi lại, KHÔNG tự sửa
 
@@ -289,15 +383,50 @@ Hiện trạng giữ nguyên là an toàn nhất.
   Phase 2c thay đúng 2 dòng ở đầu file (`# Đường dẫn…` + `NORMALIZATION_PAIRS_PATH`) ⇒ **không
   làm dịch số dòng** (đã kiểm: `NL 495 → 495`, các mốc 98/187/236/368 giữ nguyên); không tự sửa
   số 96 vì đề bài cấm chỉnh số liệu — ghi lại ở đây, chờ người dùng duyệt.
+- **`docs/DECISION_LOG.md` là bản ghi lịch sử NHƯNG bị đổi 7 dòng token đường dẫn** (Phase 3).
+  Đây là tình huống không có lựa chọn trung tính: `docs_consistency_check.check_source_paths()`
+  existence-check ô "nguồn" của từng dòng `| D-xx |`, nên giữ path cũ ⇒ cổng tài liệu và
+  `tests/test_t7_docs_consistency.py` **đỏ**. Đã kiểm bằng `git diff --word-diff`: 7 dòng đổi
+  ĐÚNG các token `src/<mod>.py` → `src/<group>/<mod>.py` (kể cả mốc dòng
+  `src/router.py:220` → `src/retrieval/router.py:220`, số dòng không đổi), **không có thay đổi
+  nào khác**; `phase3_map.py` liệt kê tệp này vào `LIVE_DOCS` chính vì lý do đó. Ghi ở đây để
+  người dùng duyệt cách xử lý (PA-55 nếu muốn giữ nguyên bản ghi lịch sử và nới checker).
+- **Bán kính liên kết của `data/training` từng đo sai = 0.** `phase3_blast_radius.py` loại `data/`
+  khỏi phạm vi quét (đúng theo `SKIP_ALWAYS` của bước write), nên con số "không có tham chiếu
+  nào trong `data/`" là **sai giả định**, không phải kết quả đo: thực tế 704 dòng
+  `metadata.file` trích 13 module đã move, và pytest đỏ đúng 1 test bất biến #7. Bài học đã ghi
+  ở cổng Phase 1 nay lặp lại ở pha nặng hơn ⇒ cổng mới `phase3_after.py` mục 4 kiểm trực tiếp
+  "mọi `metadata.file` trỏ `src/…` phải tồn tại".
+- **Cây `src/` trong README bỏ sót 3 module từ trước Phase 3**: `config.py`, `cache_policy.py`,
+  `faithfulness_heuristic.py` chưa từng được liệt kê. Block cây mới thêm 3 dòng này để tài liệu
+  đúng hiện trạng (không phải move, không phải số liệu) — ghi lại vì đề bài cấm "định dạng lại
+  tài liệu", người dùng có thể yêu cầu bỏ 3 dòng đó.
+- **2.230 chuỗi `src/<mod>.py` cũ vẫn nằm trong ANSWER của `data/training/sft_*.jsonl`** (và
+  293 lần trong 42 tệp tài liệu lịch sử đã track). Đó là **nội dung huấn luyện đã sinh**, không
+  phải citation ⇒ không sửa (đã đăng ký PA-55). Hệ quả: model được train trên bộ này sẽ tiếp tục
+  mô tả cây `src/` dạng phẳng.
+- **`src/answer_guard.py` giữ một docstring sai đường dẫn** (`src/faithfulness_heuristic.py` đã
+  xuống `src/core/`) vì tệp này bị băm theo byte — sửa 1 ký tự cũng đổi chữ ký trọng tài.
+  Thuộc phạm vi PA-54.
+- Hệ quả tích cực ngoài dự kiến: mục chết `evaluation.py` trong `env_flag_audit.py` (ghi ở dòng
+  trên) không còn in cảnh báo, vì probe LEVER đã trỏ `src.assessment.evaluation` và import được
+  (`14 cờ đăng ký; ĐẠT 0, THƯ_TU 14, LỖI 0`).
 
 ## 8. Rollback
 
-- `auto/overnight` **không đổi** (đầu tại `c8c2408`); mọi thứ Phase 1 nằm trên
-  `chore/restructure`: `24e5c9a` (snapshot) → `4b981b0` (Phase 1) → `35f4c53` (báo cáo)
-  → `a085716` (Phase 2 cache) → `83b3bc3` (Phase 2b indexes) → `5a69d70` (báo cáo Phase 2)
-  → `591d183` (Phase 2c `data/learning/`) → docs ghi lại hash này. Lùi = bỏ nhánh.
+- `auto/overnight` **không đổi** (đầu tại `c8c2408`); mọi thứ nằm trên `chore/restructure`:
+  `24e5c9a` (snapshot) → `4b981b0` (Phase 1) → `35f4c53` (báo cáo) → `a085716` (Phase 2 cache)
+  → `83b3bc3` (Phase 2b indexes) → `5a69d70` (báo cáo Phase 2) → `591d183` (Phase 2c
+  `data/learning/`) → `3dae09d` (docs ghi hash Phase 2c) → **`876e017` (Phase 3 `src/`)**
+  → docs ghi hash Phase 3 (commit ngay sau tài liệu này). Lùi = bỏ nhánh.
 - Backup toàn cây trước khi bắt đầu: `D:\DoAn\hybrid_rag_agu_backup_2026-10-28.zip`
   (3.648 tệp / 613.454.237 B thô).
+- **Chuỗi hoàn tác cơ giới của Phase 3** (không dùng `git restore`/`reset`/`checkout -- .`):
+  `tmp/restructure/phase3_undo.py` khôi phục 194 tệp đích về đúng byte baseline bằng
+  `revert()` — từ Phase 3 bước này cũng đảo được token độ sâu gốc vì nó đã được đăng ký
+  trong `SUBSTR_FIXES` (`phase3_map.py`); `tmp/restructure/phase3_citation_undo.py` khôi phục
+  4 tệp `data/training/*.jsonl` từ `phase3_citation_backup/` theo sha đã ghi (đã `--check`:
+  4/4 backup đúng sha). Sau bước move, `git mv` ngược 19 tệp là thủ công còn lại duy nhất.
 - Log cổng + ảnh chụp baseline trong `tmp/restructure/` (xóa khi nghiệm thu xong — mục 9).
 
 ## 9. Dọn dẹp cuối
@@ -311,3 +440,13 @@ Không dọn `tmp/` nói chung (nhiều artifact được `docs/EXPERIMENTS.md` 
 Riêng `phase2_hashes.json` + `phase2_verify.py` + `guard_probe_phase2b.py` là **bằng chứng
 re-anchor cho PA-48** — giữ đến khi PA-48 được commit (dùng để đối chiếu 36 hash cũ↔mới trước
 khi sinh manifest mới, và tái hiện phép thử "chốt lỏng trước / chặt sau khi nối đường dẫn").
+
+Bằng chứng của Phase 3 cũng nằm trong `tmp/restructure/` và **không vào commit** (theo cùng quy ước
+Phase 1: `tmp/` untracked): `phase3_map.py` (nguồn chân lý ánh xạ + biến đổi), `phase3_before.py`
++ `phase3_before.json` (snapshot 194 tệp + tự kiểm round-trip), `phase3_apply.py`,
+`phase3_after.py` (cổng byte), `phase3_fix_rootdepth.py`, `phase3_update_citations.py`,
+`phase3_citation_undo.py` + `phase3_citation_backup/` (4 tệp gốc + sha), `phase3_undo.py`,
+`phase3_mutation_probe.py` + `phase3_mutation_backup/`, `phase3_docs.py`, và các log
+`phase3_{pytest,pytest2,after*,cite_*,chain_*,manifest,evidence*,docscheck,envflags,secret,protected,train_audit*}.txt`.
+Giữ `phase3_after.py` + `phase3_before.json` + `phase3_citation_backup/` cho tới khi PA-54/PA-55
+được quyết, vì đó là cách duy nhất tái dựng lập luận "chỉ đổi đường dẫn".

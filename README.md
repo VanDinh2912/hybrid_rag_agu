@@ -107,7 +107,7 @@ hybrid_rag_agu/
 │       └── normalization_pairs.json   #   (28-10: path cũ data/normalization_pairs.json)
 │
 ├── src/                     # 29-10 Phase 3: 19 module dời vào 5 subpackage, 4 tệp ở lại gốc
-│                            #   (bảng old→new: docs/RESTRUCTURE_MAP.md mục 5.7)
+│                            #   (bảng old→new: docs/RESTRUCTURE_MAP.md mục 6.2)
 │   ├── __init__.py
 │   ├── text_utils.py        # fold() — bỏ dấu thanh dùng chung (OCR ↔ truy vấn có dấu)
 │   ├── answer_guard.py      # Guard đáp án: phát hiện bịa/leak theo grounding + token overlap
