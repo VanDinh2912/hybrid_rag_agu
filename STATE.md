@@ -94,6 +94,22 @@ Tổng kết đầy đủ, số nguyên văn từ artifact: `tmp/overnight_summa
   TRƯỚC commit nên manifest của zip ghi `tree_head = eff0c6a`, nhưng byte các tệp trùng khớp bản
   đã commit (không có nội dung nào chỉ tồn tại trong commit).
 
+### Dọn lịch sử git sau khi tách commit (29-10, HEAD `da152d5`)
+
+- Tách bản gộp `ab8030f` (3 tệp docs) + `e7f09fd` (STATE.md) thành `eb6e3bb` (EXPERIMENTS+README),
+  `d76dc0b` (evidence_pack riêng), `5723792` (STATE.md) và `da152d5` (đính chính câu "trùng khớp
+  cây"). Dùng `git reset --soft eff0c6a` rồi commit lại; `git diff e7f09fd HEAD -- docs/` **rỗng**
+  ⇒ nội dung docs không đổi một byte, chỉ STATE.md khác vì cập nhật chỗ dẫn hash.
+- Xóa dấu vết hai commit cũ ở **cả hai tầng reflog** (3 mục `HEAD`, 3 mục
+  `chore/restructure` — bản ghi của nhánh là tệp riêng, không phải HEAD) và xóa pseudo-ref
+  `ORIG_HEAD` (còn trỏ `e7f09fd` sau `reset --soft`, nếu để lại thì commit vẫn reachable).
+- `git gc --prune=now`: 2.279 → **1.687 object**, 2 → **1 pack**, `size-pack` 82,14 → **76,24 MiB**
+  (`.git` 85M → 78M); `git fsck --unreachable` còn **0**, `git fsck --strict` sạch.
+  `git cat-file -e ab8030f` / `e7f09fd` đều **ĐÃ XÓA**.
+- Tác dụng phụ đã được người dùng cho phép trước khi chạy: prune kèm 8 commit `cline checkpoint`
+  (10–18/10) và các blob/tree treo (588 object ở lượt 1, 4 object ở lượt 2) ⇒ không khôi phục được;
+  lịch sử đang dùng (từ `eff0c6a` về trước) nguyên vẹn.
+
 ### Sao lưu (ngoài repo)
 
 - `backup_r22_20261029T164007.zip` — 81.565.018 B, sha256 `47274c3c…7e5f3c`, CRC OK.
