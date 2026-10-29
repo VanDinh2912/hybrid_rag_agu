@@ -89,7 +89,8 @@ Tổng kết đầy đủ, số nguyên văn từ artifact: `tmp/overnight_summa
   ra riêng): `eb6e3bb` = EXPERIMENTS + README (+11 −5), `d76dc0b` = `docs/evidence_pack.json`
   (+1 −1, chỉ `generated_at`); HEAD cũ `eff0c6a`, artifact nặng vẫn KHÔNG commit. Hai commit gộp
   trước đó (`ab8030f`, `e7f09fd`) đã được viết lại bằng `git reset --soft` nên không còn trên nhánh
-  (chưa từng push); cây cuối phải trùng khớp cây cũ. Lưu ý: `backup_final_*` chụp cây làm việc
+  (chưa từng push); cây cuối trùng khớp cây cũ ở mọi tệp `docs/`, chỉ `STATE.md` khác vì đã cập nhật
+  chỗ dẫn hash. Lưu ý: `backup_final_*` chụp cây làm việc
   TRƯỚC commit nên manifest của zip ghi `tree_head = eff0c6a`, nhưng byte các tệp trùng khớp bản
   đã commit (không có nội dung nào chỉ tồn tại trong commit).
 
