@@ -1,0 +1,134 @@
+# STATE.md — trạng thái phiên 29-10-2026 (cập nhật 21:47 +07 — KẾT PHIÊN ở cuối tệp)
+
+Nhánh: `chore/restructure` · HEAD khi mở phiên: `d843888` · HEAD khi kết phiên: `eff0c6a` · 0 lời gọi Gemini.
+
+## Đã xong trong phiên
+
+- **PA-48 DUYỆT và ĐÃ ÁP** (`ed0fc74` + tài liệu `00bbd93`): `tools/diag/artifact_manifest.py` nối
+  scope `indexes/experimental/chroma_db*` và `.cache/ocr/*`; re-anchor manifest; **đối chiếu 36/36
+  hash cũ↔mới khớp byte TRƯỚC khi ghi** (`tmp/restructure/pa48_crosscheck.py`); thêm 2 test ghim
+  `PROTECTED_INDEX_DIRS` bản đường dẫn mới kèm đột biến điều khiển
+  (`tests/test_t5_contextual_header.py`). `ARTIFACT_MANIFEST --check` **KHỚP**; hệ quả đã ghi:
+  `evidence_pack` phải ghim lại 1 dòng, tổng 4.041.502 → **4.041.992 byte**.
+- **ĐÓNG PA-54 và PA-55** (`docs/PA_TRIAGE.md`, `docs/RESTRUCTURE_MAP.md` §6.5) — không đụng
+  `generator.py`, `answer_guard.py`, `text_utils.py`, `verify.py`; chữ ký trọng tài
+  `2911c69f740d` không đổi.
+- **Preflight (a–f) trên cây đã đóng gói**: SẠCH (`tmp/r21c_20261029/preflight_check_1.json`) —
+  0 tệp sửa chưa commit, 0 tệp mới trong vùng neo, corpus 29 tệp khớp HEAD, vùng neo vẫn **33 tệp**
+  cùng tập tên với r21b, **19 tệp đổi đường dẫn** theo `docs/RESTRUCTURE_MAP.md` mục 6.2.
+
+## Đang chạy — ĐÃ ĐÓNG (xem mục KẾT PHIÊN ở cuối tệp)
+
+- **r21c** = bản sao lặp r21b **trên cây đã đóng gói**, đúng 300 id đóng băng, luật quyết định giữ
+  nguyên văn bản đã đăng ký. Đăng ký: `data/loop/README.md` mục `## r21c — ĐĂNG KÝ` (commit
+  `d843888`, viết TRƯỚC khi chạy). Controller `tmp/r21c_controller_20261029.py` khởi động nhánh A
+  lúc **04:12**, hạn chót cứng **22:00**; trong lúc chạy chỉ ghi `tmp/r21c_20261029/` và
+  `data/loop/rounds/r21c_A|B`.
+
+## Cắt theo giờ (mục 5 của lệnh 29-10)
+
+- 04:12 < 17:30 ⇒ cửa sớm: **một round paired rồi tới round kế tiếp**.
+- **r21b KHÔNG chạy lại**: đã COMPLETE ngày 28-10 và đã công bố "KHÔNG XÁC NHẬN"
+  (`tmp/r21b_report.md`, `data/loop/rounds/r21b_A|B`); controller r21b từ chối chạy lại và quy ước
+  cấm ghi đè artifact đã công bố. Yêu cầu "cây chạy thí nghiệm = cây hiện tại" được đáp ứng bằng
+  round **mới r21c** dùng cùng mẫu/cùng luật; bốn tệp artifact r21b được ghim sha trong
+  `prelaunch_lock.json` và đối chiếu mỗi nhịp `check_lock` để chứng minh không bị chạm.
+- **r22**: không tồn tại ở bất kỳ đâu (không mục đăng ký, không luật) ⇒ **không chạy**. Nếu còn cửa
+  sổ sau khi r21c xong, bước kế tiếp sẽ được đăng ký thành mục riêng **trước** khi chạy.
+
+## Treo có chủ đích (làm SAU khi thí nghiệm xong, theo mục 3 của lệnh)
+
+- `docs/PA_TRIAGE.md`: chốt bảng đếm (50 hàng; **(a) 26 · (b) 19 · (c) 5** đã kiểm bằng máy;
+  hàng "đã đóng" thực tế **14** = 11 cũ + PA-48 + PA-54 + PA-55 — con số 12 trong lệnh là tính ở thời
+  điểm chưa có PA-48/54/55, sẽ ghi rõ trong báo cáo thay vì sửa số cho khớp).
+- `docs/README.md`: dải PA-1…PA-55, D-01…D-<số hiện có>, thêm dòng trỏ `RESTRUCTURE_MAP.md`.
+- Dọn `tmp/restructure/` — chỉ sau khi user nghiệm thu (giữ các tệp bằng chứng đã liệt kê trong
+  `docs/RESTRUCTURE_MAP.md`).
+
+## KẾT PHIÊN 29-10 (21:47 +07) — S0→S5 xong, chờ người dùng quyết
+
+Tổng kết đầy đủ, số nguyên văn từ artifact: `tmp/overnight_summary.md` (12.152 ký tự, sinh bởi
+`tmp/next_summary4_20261029.py`). Dưới đây chỉ là quyết định trạng thái.
+
+### Ba round trong phiên (luật đã đăng ký trước, không chỉnh sau khi thấy số)
+
+- **r21c** (bản sao lặp r21b trên cây đã đóng gói, 04:12→06:09): Δ **+25**, McNemar p=0,000247,
+  PASS_CORRECT 31→56, nhưng FAIL_FABRICATED 4→10 ⇒ **KHÔNG XÁC NHẬN** theo luật r21/r21b;
+  mục đích **dụng cụ ĐẠT** (gold-in-top-6 205=205, không drift, chữ ký `2911c69f740d` trước=sau).
+- **r23** (dense nguyên văn × answer_guard, mẫu MỚI 300 id, 06:13→08:11): Δ **+21**, p=0,0046013,
+  FF 1/A vs 1/B, HALL 0/0, CI cụm [0,0033; 0,16] ⇒ **XÁC NHẬN** (cả 4 điều kiện true). Mẫu rời:
+  0 id giao với r21b/r21c ⇒ không gộp. Hậu kiểm: X1 5 ca refusal→trả lời nằm ngoài veto; X2 bỏ cụm
+  lớn nhất (46 id) thì CI chứa 0 ⇒ nhãn ĐẠT không bền với riêng cụm đó (ghi nguyên, không đổi luật).
+- **r22** (`ENABLE_RERANKER` trên nền r17-T, retrieval-only 811 item, xong 16:37): gold@6 **581→612**
+  (+31, 38/7, p=**3,12e−06**, CI [0,0186;0,0771]) nhưng veto neo HUMAN kích hoạt **77→72 (−6,49%)**
+  ⇒ artifact tự phán **BỊ BÁC VETO HUMAN**; theo từ điển EXPERIMENTS = **KHÔNG ĐẠT NGƯỠNG ĐĂNG KÝ**
+  (không phải BÁC). ctrl tái lập r17-T đúng từng item (0 mismatch). Chốt chặn lever: 807/811 top-6 đổi.
+
+### Cổng + hậu kiểm
+
+- Cổng sau cả 3 round: referee `2911c69f740d` ĐẠT, pytest **1551 passed / 5 skipped**, manifest
+  `--check` **KHỚP 158 tệp / 390.961.924 B**, evidence `--check` **KHỚP 84 tệp / 4.041.992 B**
+  (manifest chỉ `--check`, KHÔNG lần nào sinh lại trong phiên).
+- Y1–Y4 (đơn vị veto HUMAN): đăng ký = **câu hỏi duy nhất**; tính lại 97 item = 97 câu hỏi độc nhất
+  ⇒ hai đơn vị TRÙNG (77/72, −6,49%, ĐỎ) ⇒ **không phải thêm mục "phán quyết theo item"** vào
+  `tmp/r22_report.md` (giữ nguyên tệp). 11 item đổi verdict: 8 rơi / 3 lấy; trùng 4 id với 11 cặp
+  D-37 (recompute 79/97→74/97): HQ23, HQ36, HQ40, HQ58 (đều rơi ở cả hai round).
+
+### S5 tài liệu (ĐÃ COMMIT `eb6e3bb`; pack ghim riêng `d76dc0b`)
+
+- `docs/EXPERIMENTS.md`: 3 dòng mới (A2 `r22`, A4 `r23`, Bảng B `r21c`) + viết lại dòng D-37 và mục
+  "Hai mục cần đo lại".
+- `docs/README.md`: "Một bảng"→"Hai bảng"; dải PA `PA-1…PA-48 + PA-54…PA-55`; thêm dòng
+  `RESTRUCTURE_MAP.md`.
+- `docs/evidence_pack.json` + `docs/EVIDENCE_PACK.md` ghim lại bằng `--write` (84 tệp / 4.041.992 B).
+- Máy kiểm: `docs_consistency_check` **SẠCH LỖI** (5 cảnh báo cũ, 42 mục sổ, 114 đường dẫn);
+  `final_number_audit.py` (venv) **2 LỆCH** = hai kỳ vọng cũ của chính máy kiểm ("100 đường dẫn"
+  so với thực tế 114; chữ ký `9f1179ccab74` so với `2911c69f740d`), rc luôn 0 ⇒ ghi nguyên, không
+  sửa số lịch sử để làm xanh.
+- **Đã được người dùng cho phép commit và ĐÃ COMMIT**, tách làm hai (yêu cầu tách `evidence_pack.json`
+  ra riêng): `eb6e3bb` = EXPERIMENTS + README (+11 −5), `d76dc0b` = `docs/evidence_pack.json`
+  (+1 −1, chỉ `generated_at`); HEAD cũ `eff0c6a`, artifact nặng vẫn KHÔNG commit. Hai commit gộp
+  trước đó (`ab8030f`, `e7f09fd`) đã được viết lại bằng `git reset --soft` nên không còn trên nhánh
+  (chưa từng push); cây cuối phải trùng khớp cây cũ. Lưu ý: `backup_final_*` chụp cây làm việc
+  TRƯỚC commit nên manifest của zip ghi `tree_head = eff0c6a`, nhưng byte các tệp trùng khớp bản
+  đã commit (không có nội dung nào chỉ tồn tại trong commit).
+
+### Sao lưu (ngoài repo)
+
+- `backup_r22_20261029T164007.zip` — 81.565.018 B, sha256 `47274c3c…7e5f3c`, CRC OK.
+- `backup_final_20261029T214551.zip` — 9.992.710 B, sha256 `a675ed34…645bdf40`, CRC OK, 142 mục
+  (141 tệp mới + manifest), chứa toàn bộ bằng chứng r21c/r23/r22 + `tmp/overnight_summary.md`.
+- `backup_generation_20261029T214712.zip` — 2.235 B, sha256 `b989efa9…dcc4d718`, CRC OK: bù tệp
+  `tmp/generation_summary_table.md` (X3) vì tiền tố `generation` không nằm trong `FINAL_PREFIXES`
+  của dụng cụ sao lưu nên bản `final` bỏ sót; `STATE.md` (chưa được git theo dõi, ở gốc repo) nằm
+  ngoài phạm vi mọi zip — nội dung quyết định đã có bản tương đương trong `tmp/overnight_summary.md`.
+- **BẤT THƯỜNG CẦN NGƯỜI DÙNG BIẾT:** hai zip của chain3 — `backup_r21c_20261029T061258.zip`
+  (sha `dc37a6ab…c473bbe7`) và `backup_r23_20261029T081402.zip` (sha `a27855e0…1263f4e89`) — đã
+  biến mất khỏi `D:/backup_thesis_20261029/` cùng phần đầu của `SHA256.txt` và `seen_sha256.json`
+  **trước 16:40** (bằng chứng: backup r22 lúc 16:40 ghi "bỏ qua vì đã có trong backup trước **0**").
+  Phiên này không xóa gì; dữ liệu không mất vì toàn bộ nội dung đã nằm trong `backup_final_*`;
+  KHÔNG tự dựng lại hai zip đó (tình huống ngoài lệnh ⇒ ghi hiện trạng, chờ người dùng quyết).
+
+### Quyết định cờ (không tự bật)
+
+- `ENABLE_DENSE_ORIGINAL_QUERY`: **TẮT** — r23 xác nhận nhưng r21b/r21c không; bật là đổi mặc định.
+- `ENABLE_RERANKER`: **TẮT** — veto HUMAN của r22; nới ngưỡng veto là việc của người dùng.
+
+### Sai lệch / giới hạn đã ghi, không tự sửa
+
+- `docs/DECISION_LOG.md` dòng D-37 vẫn mang nhãn **CHỜ ĐO LẠI** trong khi EXPERIMENTS đã có số r22
+  (sửa là đổi dòng D- đang bị evidence pack ghim — ngoài phạm vi S5).
+- `tmp/next_chain4_status.json` báo **CRASHED** dù cả 3 bước rc=0: dòng cuối là `SystemExit: 0` của
+  driver ⇒ cờ giả, giữ nguyên artifact theo luật.
+- `tmp/x123_after_r22_20261029.py` ném `NameError: X3d` ở lệnh in cuối, **sau khi** đã ghi đủ 4 tệp;
+  đã sửa lỗi chính tả trong script nhưng KHÔNG chạy lại (script từ chối ghi đè đầu ra cũ).
+
+### Việc chờ người dùng
+
+1. ~~Commit 3 tệp tài liệu S5~~ — **đã làm**, tách hai commit: `eb6e3bb` (EXPERIMENTS+README) và
+   `d76dc0b` (evidence_pack).
+2. Quyết hai cờ lever ở trên; quyết ngưỡng veto r22 (nới hay giữ).
+3. Sửa hay giữ nhãn D-37 trong `DECISION_LOG.md`.
+4. Dọn `tmp/` sau nghiệm thu (giữ `tmp/r21c_20261029/`, `tmp/r23_20261029/`, `tmp/r22_*`,
+   `tmp/overnight_summary.md`, `tmp/gates*`); có dựng lại 2 zip chain3 đã mất hay không.
+5. Duyệt hàng PA có khuyến nghị "duyệt" (12 hàng, xem `tmp/overnight_summary.md` mục cuối).
