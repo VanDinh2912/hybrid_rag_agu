@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-29T03:47:01",
+ "generated_at": "2026-10-29T21:41:42",
  "algorithm": "sha256",
  "root": ".",
  "note": "sha256 trên byte thô, không chuẩn hoá EOL; artifact nặng không commit",
