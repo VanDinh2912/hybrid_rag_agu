@@ -25,8 +25,9 @@ vòng lặp `tools/loop/` không gọi Gemini trong bất kỳ round nào.
 
 ### Cấu hình khuyến nghị (r23, 29-10)
 
-Cấu hình khuyến nghị: **`ENABLE_DENSE_ORIGINAL_QUERY=1`** và **`ENABLE_ANSWER_GUARD=1`** — khai trong
-`.env` (mục cuối `.env.example`). Đây là **khuyến nghị vận hành**, KHÔNG phải mặc định của mã: đọc
+Cấu hình khuyến nghị: **`ENABLE_DENSE_ORIGINAL_QUERY=1`** và **`ENABLE_ANSWER_GUARD=1`** — chép từ
+khối cuối `.env.example` (ở đó hai dòng đang **bị chú thích** để tệp mẫu không tự bật cờ nào; bỏ
+dấu `#` rồi đặt vào `.env`). Đây là **khuyến nghị vận hành**, KHÔNG phải mặc định của mã: đọc
 `src/core/config.py` / `src/answer_guard.py` sẽ thấy cả hai vẫn mặc định `"0"` (TẮT), và mọi artifact
 đã công bố bên dưới đều được đo với **cờ TẮT** trừ khi dòng đăng ký của round nói khác.
 
@@ -38,7 +39,8 @@ Cấu hình khuyến nghị: **`ENABLE_DENSE_ORIGINAL_QUERY=1`** và **`ENABLE_A
 
 Cái bẫy đã gặp: bật cờ bằng cách sửa giá trị mặc định trong `src/` sẽ làm mọi số neo trong
 `docs/EXPERIMENTS.md` mất hiệu lực (chúng đo với cờ TẮT). Vì vậy khuyến nghị này chỉ được ghi ở
-tầng cấu hình `.env`, không sửa mã.
+tầng cấu hình `.env`, không sửa mã; và trong `.env.example` nó nằm ở dạng chú thích để
+`tools/diag/env_flag_audit.py` vẫn báo 0 `LOI_KHAI_BAO` (một cờ BẬT trong tệp mẫu = lỗi).
 
 ## 1. Dựng index
 

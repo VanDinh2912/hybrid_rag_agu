@@ -170,12 +170,12 @@ class TestHienTrangRepo:
         for f in r["pii_by_file"]:
             assert f.startswith(("data/", "outputs/", "logs/")), f
 
-    def test_ghim_hien_trang_gitignore_chua_loai_tru_tmp_models_rounds(self, ket_qua):
-        """`git add -A` trên cây hiện tại vẫn gom artifact lớn (PA-30 chưa được duyệt).
+    def test_ghim_hien_trang_gitignore_da_loai_tru_tmp_models_rounds(self, ket_qua):
+        """PA-33 (29-10) đã áp ignore cho artifact nặng — `git add -A` không còn gom tmp/models.
 
-        Số 1972 là kết quả `git add --dry-run -A` (không đổi chỉ mục). Test chỉ yêu cầu
-        `>= 1000` để không nhạy với từng file lẻ, nhưng RED nếu ai đó thêm ignore rule đúng
-        cách (PA-30 áp dụng) — khi đó cập nhật kỳ vọng có chủ đích.
+        Trước PA-33: 1.972 mục (ảnh chụp 25-10; đo lại 29-10 là 2.655 đường dẫn / 406,6 MiB).
+        Sau PA-33: chỉ còn tệp chẩn đoán ĐÃ BIẾT chứa PII chưa được che (PA-8 cố ý không commit).
+        RED nếu ai đó gỡ ignore rule (`tmp`/`models` quay lại) hoặc một artifact nặng mới lọt vào.
         """
         dry = subprocess.run(["git", "add", "--dry-run", "-A"], cwd=str(ROOT),
                              capture_output=True, text=True,
@@ -184,8 +184,28 @@ class TestHienTrangRepo:
                              encoding="utf-8", errors="replace")
         dong = [l for l in dry.stdout.splitlines() if l.strip()]
         gom = {l.split("'")[1].split("/")[0] for l in dong if "'" in l}
-        assert len(dong) >= 1000, f"hiện trạng đã đổi: chỉ {len(dong)} mục — cập nhật PA-30"
-        assert {"tmp", "models"} <= gom, sorted(gom)[:8]
+        assert len(dong) <= 50, f"hiện trạng đã đổi: {len(dong)} mục — xem lại .gitignore (PA-33)"
+        assert not ({"tmp", "models"} & gom), sorted(gom)[:8]
+        # Bất biến thay cho con số tuyệt đối: ngoài danh sách đã biết (tệp chẩn đoán còn PII
+        # chưa che, PA-8 cố ý không commit), không mục nào được nặng quá 2 MiB.
+        con_lai = {l.split("'")[1] for l in dong if "'" in l}
+        duoc_biet = {
+            "data/loop/diag/answerability_labelset_r5.jsonl",
+            "data/loop/diag/answerability_labelset_r11_retrieval.jsonl",
+            "data/loop/diag/answerability_labelset_r12_retrieval.jsonl",
+            "data/loop/diag/b1_cprime/a_prime/rows.jsonl",
+            "data/loop/diag/b1_cprime/c_prime/rows.jsonl",
+            "data/loop/diag/b3_smoke/sm16/retrieval.jsonl",
+            "data/loop/diag/corpus_check/corpus_check.json",
+            "data/loop/diag/corpus_check/manual_20_segments_new_index.txt",
+            "data/loop/diag/corpus_check/manual_20_segments_provenance.txt",
+            # lộ `C:\Users\<tên>` trong thông điệp lỗi ⇒ không commit
+            "data/loop/diag/t4_adapter_probe.json",
+        }
+        for rel in sorted(con_lai - duoc_biet):
+            p = ROOT / rel
+            assert p.is_file(), f"{rel} không còn tồn tại (chỉ xét tệp mới/sửa)"
+            assert p.stat().st_size <= 2 * 1024 * 1024, f"{rel} nặng {p.stat().st_size:,} B"
 
     def test_ket_quat_quet_du_file_van_ban(self, ket_qua):
         mod, files, r = ket_qua
