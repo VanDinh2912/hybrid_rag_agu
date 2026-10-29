@@ -1,0 +1,12 @@
+{
+  "base_round": "r5",
+  "referee": "9f1179ccab74",
+  "env": {
+    "ENABLE_ANSWER_GUARD": "1",
+    "OLLAMA_MODEL": "qwen2.5:1.5b-instruct",
+    "GENERATION_CACHE_DIR": null
+  },
+  "n_mapped": 57,
+  "n_unmapped": 23,
+  "note": "a_prime = (a) chạy lại trên CÂY HIỆN TẠI cho đúng 57 item ghép cặp; c_prime = cùng item, nội dung là chunk vàng có dấu từ chroma_db_vie, chunk_id khai = gold id cũ (tiền lệ config c)."
+}

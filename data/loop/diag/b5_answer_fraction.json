@@ -1,0 +1,832 @@
+{
+  "generated_at": "2026-10-26T02:15:10",
+  "kind": "do tỷ lệ token đáp án THẬT bằng tokenizer (0 GPU, 0 train)",
+  "tokenizer": "Qwen/Qwen2.5-0.5B-Instruct",
+  "dang_ky": "probe dung --answer-fraction 0,15 (mặc định đăng ký); luot bo tro dung median do o day",
+  "phien_ban": "lan 2 (02:1x): mo FILES them t4b_r5r8r9r10 (bo 13 dong cua D-25) va t4b_r5r6r7 — lan 1 chi do t4b_r5 + sft_val. Van truoc moi so VRAM, chua co bat ky ket luan nao cua B5.",
+  "median_toan_bo": 0.1356,
+  "mean_toan_bo": 0.1972,
+  "min_toan_bo": 0.0199,
+  "max_toan_bo": 0.8125,
+  "files": {
+    "data/training/t4b_r5r8r9r10/sft_train.jsonl": {
+      "n_rows": 13,
+      "full_tokens": {
+        "min": 1016,
+        "median": 1439,
+        "max": 1707
+      },
+      "answer_tokens": {
+        "min": 34,
+        "median": 51,
+        "max": 161
+      },
+      "answer_fraction": {
+        "min": 0.0199,
+        "median": 0.0393,
+        "mean": 0.0457,
+        "max": 0.1075
+      },
+      "rows": [
+        {
+          "id": null,
+          "n_full_tokens": 1707,
+          "n_answer_tokens": 34,
+          "answer_fraction": 0.0199,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1228,
+          "n_answer_tokens": 72,
+          "answer_fraction": 0.0586,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1261,
+          "n_answer_tokens": 62,
+          "answer_fraction": 0.0492,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1298,
+          "n_answer_tokens": 51,
+          "answer_fraction": 0.0393,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1485,
+          "n_answer_tokens": 97,
+          "answer_fraction": 0.0653,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1601,
+          "n_answer_tokens": 61,
+          "answer_fraction": 0.0381,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1480,
+          "n_answer_tokens": 42,
+          "answer_fraction": 0.0284,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1439,
+          "n_answer_tokens": 78,
+          "answer_fraction": 0.0542,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1359,
+          "n_answer_tokens": 40,
+          "answer_fraction": 0.0294,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1586,
+          "n_answer_tokens": 49,
+          "answer_fraction": 0.0309,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1497,
+          "n_answer_tokens": 161,
+          "answer_fraction": 0.1075,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1216,
+          "n_answer_tokens": 37,
+          "answer_fraction": 0.0304,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1016,
+          "n_answer_tokens": 43,
+          "answer_fraction": 0.0423,
+          "task": "sft_extractive"
+        }
+      ]
+    },
+    "data/training/t4b_r5r8r9r10/sft_holdout.jsonl": {
+      "n_rows": 10,
+      "full_tokens": {
+        "min": 657,
+        "median": 1307.5,
+        "max": 1488
+      },
+      "answer_tokens": {
+        "min": 32,
+        "median": 36.5,
+        "max": 57
+      },
+      "answer_fraction": {
+        "min": 0.0242,
+        "median": 0.0375,
+        "mean": 0.0367,
+        "max": 0.0533
+      },
+      "rows": [
+        {
+          "id": null,
+          "n_full_tokens": 1204,
+          "n_answer_tokens": 33,
+          "answer_fraction": 0.0274,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1208,
+          "n_answer_tokens": 32,
+          "answer_fraction": 0.0265,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1317,
+          "n_answer_tokens": 49,
+          "answer_fraction": 0.0372,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1298,
+          "n_answer_tokens": 49,
+          "answer_fraction": 0.0378,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1371,
+          "n_answer_tokens": 56,
+          "answer_fraction": 0.0408,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1420,
+          "n_answer_tokens": 37,
+          "answer_fraction": 0.0261,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1488,
+          "n_answer_tokens": 36,
+          "answer_fraction": 0.0242,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1351,
+          "n_answer_tokens": 57,
+          "answer_fraction": 0.0422,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 657,
+          "n_answer_tokens": 35,
+          "answer_fraction": 0.0533,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 685,
+          "n_answer_tokens": 35,
+          "answer_fraction": 0.0511,
+          "task": "sft_extractive"
+        }
+      ]
+    },
+    "data/training/t4b_r5r6r7/sft_train.jsonl": {
+      "n_rows": 12,
+      "full_tokens": {
+        "min": 1016,
+        "median": 1429.5,
+        "max": 1707
+      },
+      "answer_tokens": {
+        "min": 32,
+        "median": 39.5,
+        "max": 97
+      },
+      "answer_fraction": {
+        "min": 0.0199,
+        "median": 0.029400000000000003,
+        "mean": 0.0354,
+        "max": 0.0653
+      },
+      "rows": [
+        {
+          "id": null,
+          "n_full_tokens": 1420,
+          "n_answer_tokens": 37,
+          "answer_fraction": 0.0261,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1488,
+          "n_answer_tokens": 36,
+          "answer_fraction": 0.0242,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1351,
+          "n_answer_tokens": 57,
+          "answer_fraction": 0.0422,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1485,
+          "n_answer_tokens": 97,
+          "answer_fraction": 0.0653,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1601,
+          "n_answer_tokens": 61,
+          "answer_fraction": 0.0381,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1204,
+          "n_answer_tokens": 33,
+          "answer_fraction": 0.0274,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1208,
+          "n_answer_tokens": 32,
+          "answer_fraction": 0.0265,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1480,
+          "n_answer_tokens": 42,
+          "answer_fraction": 0.0284,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1439,
+          "n_answer_tokens": 78,
+          "answer_fraction": 0.0542,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1707,
+          "n_answer_tokens": 34,
+          "answer_fraction": 0.0199,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1216,
+          "n_answer_tokens": 37,
+          "answer_fraction": 0.0304,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1016,
+          "n_answer_tokens": 43,
+          "answer_fraction": 0.0423,
+          "task": "sft_extractive"
+        }
+      ]
+    },
+    "data/training/t4b_r5/sft_train.jsonl": {
+      "n_rows": 9,
+      "full_tokens": {
+        "min": 1016,
+        "median": 1359,
+        "max": 1707
+      },
+      "answer_tokens": {
+        "min": 32,
+        "median": 40,
+        "max": 78
+      },
+      "answer_fraction": {
+        "min": 0.0199,
+        "median": 0.0294,
+        "mean": 0.0322,
+        "max": 0.0542
+      },
+      "rows": [
+        {
+          "id": null,
+          "n_full_tokens": 1204,
+          "n_answer_tokens": 33,
+          "answer_fraction": 0.0274,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1208,
+          "n_answer_tokens": 32,
+          "answer_fraction": 0.0265,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1480,
+          "n_answer_tokens": 42,
+          "answer_fraction": 0.0284,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1439,
+          "n_answer_tokens": 78,
+          "answer_fraction": 0.0542,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1359,
+          "n_answer_tokens": 40,
+          "answer_fraction": 0.0294,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1586,
+          "n_answer_tokens": 49,
+          "answer_fraction": 0.0309,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1707,
+          "n_answer_tokens": 34,
+          "answer_fraction": 0.0199,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1216,
+          "n_answer_tokens": 37,
+          "answer_fraction": 0.0304,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1016,
+          "n_answer_tokens": 43,
+          "answer_fraction": 0.0423,
+          "task": "sft_extractive"
+        }
+      ]
+    },
+    "data/training/t4b_r5/sft_holdout.jsonl": {
+      "n_rows": 5,
+      "full_tokens": {
+        "min": 1351,
+        "median": 1485,
+        "max": 1601
+      },
+      "answer_tokens": {
+        "min": 36,
+        "median": 57,
+        "max": 97
+      },
+      "answer_fraction": {
+        "min": 0.0242,
+        "median": 0.0381,
+        "mean": 0.0392,
+        "max": 0.0653
+      },
+      "rows": [
+        {
+          "id": null,
+          "n_full_tokens": 1420,
+          "n_answer_tokens": 37,
+          "answer_fraction": 0.0261,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1488,
+          "n_answer_tokens": 36,
+          "answer_fraction": 0.0242,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1351,
+          "n_answer_tokens": 57,
+          "answer_fraction": 0.0422,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1485,
+          "n_answer_tokens": 97,
+          "answer_fraction": 0.0653,
+          "task": "sft_extractive"
+        },
+        {
+          "id": null,
+          "n_full_tokens": 1601,
+          "n_answer_tokens": 61,
+          "answer_fraction": 0.0381,
+          "task": "sft_extractive"
+        }
+      ]
+    },
+    "data/training/sft_val.jsonl": {
+      "n_rows": 50,
+      "full_tokens": {
+        "min": 118,
+        "median": 154.5,
+        "max": 667
+      },
+      "answer_tokens": {
+        "min": 16,
+        "median": 50.0,
+        "max": 442
+      },
+      "answer_fraction": {
+        "min": 0.1356,
+        "median": 0.3205,
+        "mean": 0.3531,
+        "max": 0.8125
+      },
+      "rows": [
+        {
+          "id": "code_qa-00000",
+          "n_full_tokens": 161,
+          "n_answer_tokens": 50,
+          "answer_fraction": 0.3106,
+          "task": "code_qa"
+        },
+        {
+          "id": "docs_heading-00001",
+          "n_full_tokens": 139,
+          "n_answer_tokens": 45,
+          "answer_fraction": 0.3237,
+          "task": "docs_heading"
+        },
+        {
+          "id": "code_qa-00002",
+          "n_full_tokens": 383,
+          "n_answer_tokens": 277,
+          "answer_fraction": 0.7232,
+          "task": "code_qa"
+        },
+        {
+          "id": "code_file_index-00003",
+          "n_full_tokens": 222,
+          "n_answer_tokens": 116,
+          "answer_fraction": 0.5225,
+          "task": "code_file_index"
+        },
+        {
+          "id": "code_signature-00004",
+          "n_full_tokens": 312,
+          "n_answer_tokens": 207,
+          "answer_fraction": 0.6635,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_signature-00005",
+          "n_full_tokens": 153,
+          "n_answer_tokens": 48,
+          "answer_fraction": 0.3137,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_module-00006",
+          "n_full_tokens": 140,
+          "n_answer_tokens": 42,
+          "answer_fraction": 0.3,
+          "task": "code_module"
+        },
+        {
+          "id": "code_signature-00007",
+          "n_full_tokens": 201,
+          "n_answer_tokens": 95,
+          "answer_fraction": 0.4726,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_callsite-00008",
+          "n_full_tokens": 129,
+          "n_answer_tokens": 21,
+          "answer_fraction": 0.1628,
+          "task": "code_callsite"
+        },
+        {
+          "id": "code_tests-00009",
+          "n_full_tokens": 125,
+          "n_answer_tokens": 21,
+          "answer_fraction": 0.168,
+          "task": "code_tests"
+        },
+        {
+          "id": "code_tests-00010",
+          "n_full_tokens": 134,
+          "n_answer_tokens": 27,
+          "answer_fraction": 0.2015,
+          "task": "code_tests"
+        },
+        {
+          "id": "code_signature-00011",
+          "n_full_tokens": 156,
+          "n_answer_tokens": 50,
+          "answer_fraction": 0.3205,
+          "task": "code_signature"
+        },
+        {
+          "id": "docs_heading-00012",
+          "n_full_tokens": 196,
+          "n_answer_tokens": 93,
+          "answer_fraction": 0.4745,
+          "task": "docs_heading"
+        },
+        {
+          "id": "code_env-00013",
+          "n_full_tokens": 156,
+          "n_answer_tokens": 50,
+          "answer_fraction": 0.3205,
+          "task": "code_env"
+        },
+        {
+          "id": "code_lesson-00014",
+          "n_full_tokens": 187,
+          "n_answer_tokens": 93,
+          "answer_fraction": 0.4973,
+          "task": "code_lesson"
+        },
+        {
+          "id": "code_signature-00015",
+          "n_full_tokens": 143,
+          "n_answer_tokens": 39,
+          "answer_fraction": 0.2727,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_callsite-00016",
+          "n_full_tokens": 118,
+          "n_answer_tokens": 16,
+          "answer_fraction": 0.1356,
+          "task": "code_callsite"
+        },
+        {
+          "id": "code_params-00017",
+          "n_full_tokens": 171,
+          "n_answer_tokens": 60,
+          "answer_fraction": 0.3509,
+          "task": "code_params"
+        },
+        {
+          "id": "refusal-00018",
+          "n_full_tokens": 138,
+          "n_answer_tokens": 21,
+          "answer_fraction": 0.1522,
+          "task": "refusal"
+        },
+        {
+          "id": "docs_qa-00019",
+          "n_full_tokens": 544,
+          "n_answer_tokens": 442,
+          "answer_fraction": 0.8125,
+          "task": "docs_qa"
+        },
+        {
+          "id": "code_callsite-00020",
+          "n_full_tokens": 191,
+          "n_answer_tokens": 80,
+          "answer_fraction": 0.4188,
+          "task": "code_callsite"
+        },
+        {
+          "id": "code_callsite-00021",
+          "n_full_tokens": 160,
+          "n_answer_tokens": 55,
+          "answer_fraction": 0.3438,
+          "task": "code_callsite"
+        },
+        {
+          "id": "code_qa-00022",
+          "n_full_tokens": 279,
+          "n_answer_tokens": 170,
+          "answer_fraction": 0.6093,
+          "task": "code_qa"
+        },
+        {
+          "id": "code_tests-00023",
+          "n_full_tokens": 135,
+          "n_answer_tokens": 26,
+          "answer_fraction": 0.1926,
+          "task": "code_tests"
+        },
+        {
+          "id": "grounded_qa-00024",
+          "n_full_tokens": 667,
+          "n_answer_tokens": 279,
+          "answer_fraction": 0.4183,
+          "task": "grounded_qa"
+        },
+        {
+          "id": "code_tests-00025",
+          "n_full_tokens": 129,
+          "n_answer_tokens": 23,
+          "answer_fraction": 0.1783,
+          "task": "code_tests"
+        },
+        {
+          "id": "refusal-00026",
+          "n_full_tokens": 141,
+          "n_answer_tokens": 21,
+          "answer_fraction": 0.1489,
+          "task": "refusal"
+        },
+        {
+          "id": "code_callsite-00027",
+          "n_full_tokens": 124,
+          "n_answer_tokens": 19,
+          "answer_fraction": 0.1532,
+          "task": "code_callsite"
+        },
+        {
+          "id": "code_tests-00028",
+          "n_full_tokens": 132,
+          "n_answer_tokens": 26,
+          "answer_fraction": 0.197,
+          "task": "code_tests"
+        },
+        {
+          "id": "code_callsite-00029",
+          "n_full_tokens": 141,
+          "n_answer_tokens": 36,
+          "answer_fraction": 0.2553,
+          "task": "code_callsite"
+        },
+        {
+          "id": "code_qa-00030",
+          "n_full_tokens": 192,
+          "n_answer_tokens": 80,
+          "answer_fraction": 0.4167,
+          "task": "code_qa"
+        },
+        {
+          "id": "code_qa-00031",
+          "n_full_tokens": 199,
+          "n_answer_tokens": 88,
+          "answer_fraction": 0.4422,
+          "task": "code_qa"
+        },
+        {
+          "id": "code_callsite-00032",
+          "n_full_tokens": 122,
+          "n_answer_tokens": 18,
+          "answer_fraction": 0.1475,
+          "task": "code_callsite"
+        },
+        {
+          "id": "docs_heading-00033",
+          "n_full_tokens": 170,
+          "n_answer_tokens": 69,
+          "answer_fraction": 0.4059,
+          "task": "docs_heading"
+        },
+        {
+          "id": "code_module-00034",
+          "n_full_tokens": 144,
+          "n_answer_tokens": 44,
+          "answer_fraction": 0.3056,
+          "task": "code_module"
+        },
+        {
+          "id": "code_signature-00035",
+          "n_full_tokens": 200,
+          "n_answer_tokens": 95,
+          "answer_fraction": 0.475,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_file_index-00036",
+          "n_full_tokens": 190,
+          "n_answer_tokens": 84,
+          "answer_fraction": 0.4421,
+          "task": "code_file_index"
+        },
+        {
+          "id": "code_signature-00037",
+          "n_full_tokens": 179,
+          "n_answer_tokens": 75,
+          "answer_fraction": 0.419,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_qa-00038",
+          "n_full_tokens": 171,
+          "n_answer_tokens": 58,
+          "answer_fraction": 0.3392,
+          "task": "code_qa"
+        },
+        {
+          "id": "code_signature-00039",
+          "n_full_tokens": 146,
+          "n_answer_tokens": 42,
+          "answer_fraction": 0.2877,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_callsite-00040",
+          "n_full_tokens": 149,
+          "n_answer_tokens": 44,
+          "answer_fraction": 0.2953,
+          "task": "code_callsite"
+        },
+        {
+          "id": "code_tests-00041",
+          "n_full_tokens": 134,
+          "n_answer_tokens": 25,
+          "answer_fraction": 0.1866,
+          "task": "code_tests"
+        },
+        {
+          "id": "code_callsite-00042",
+          "n_full_tokens": 277,
+          "n_answer_tokens": 172,
+          "answer_fraction": 0.6209,
+          "task": "code_callsite"
+        },
+        {
+          "id": "router_config-00043",
+          "n_full_tokens": 274,
+          "n_answer_tokens": 134,
+          "answer_fraction": 0.4891,
+          "task": "router_config"
+        },
+        {
+          "id": "code_callsite-00044",
+          "n_full_tokens": 205,
+          "n_answer_tokens": 99,
+          "answer_fraction": 0.4829,
+          "task": "code_callsite"
+        },
+        {
+          "id": "defense-00045",
+          "n_full_tokens": 145,
+          "n_answer_tokens": 73,
+          "answer_fraction": 0.5034,
+          "task": "defense"
+        },
+        {
+          "id": "refusal-00046",
+          "n_full_tokens": 141,
+          "n_answer_tokens": 21,
+          "answer_fraction": 0.1489,
+          "task": "refusal"
+        },
+        {
+          "id": "code_signature-00047",
+          "n_full_tokens": 153,
+          "n_answer_tokens": 49,
+          "answer_fraction": 0.3203,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_signature-00048",
+          "n_full_tokens": 150,
+          "n_answer_tokens": 46,
+          "answer_fraction": 0.3067,
+          "task": "code_signature"
+        },
+        {
+          "id": "code_tests-00049",
+          "n_full_tokens": 137,
+          "n_answer_tokens": 28,
+          "answer_fraction": 0.2044,
+          "task": "code_tests"
+        }
+      ]
+    }
+  }
+}

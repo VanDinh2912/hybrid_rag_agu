@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-10-26T02:11:04",
+  "purpose": "B4 — cửa sổ có căn cứ vàng vs cùng cửa sổ rút vàng: cross-encoder nhỏ phân biệt tới đâu so với hạng truy xuất (0 lượt sinh)",
+  "round": "r11",
+  "k": 6,
+  "window_k_note": "NEG giữ đúng 6 ô, bù bằng hạng kề tiếp",
+  "pairs_source": "r11/retrieval.jsonl + index chroma_db",
+  "index": {
+    "persist_dir": "chroma_db",
+    "collection": "agu_regulations",
+    "n_reads": 194,
+    "n_miss": 0,
+    "error": null
+  },
+  "dataset_path": "data\\loop\\diag\\answerability_labelset_r11_retrieval.jsonl",
+  "n_pairs": 518,
+  "skipped": {
+    "vang_ngoai_cua_so": 182,
+    "khong_co_chunk_vang": 111
+  },
+  "by_split": {
+    "eval": {
+      "pairs": 260,
+      "documents": 12
+    },
+    "train": {
+      "pairs": 258,
+      "documents": 12
+    }
+  },
+  "n_still_answerable": 335,
+  "preregistered": {
+    "auc_threshold": 0.75,
+    "min_pairs": 30,
+    "primary": "auc_ce_max trên eval_clean"
+  },
+  "n_scored": 0,
+  "model_meta": {
+    "mode": "build_only"
+  },
+  "aggregate": {},
+  "ket_luan": {
+    "verdict": "KHONG_DO_DUOC",
+    "ly_do": "không có cặp nào trên partition eval — xem `skipped` (thường là `khong_doc_duoc_text_ung_vien_bu` khi đọc index lỗi) và trường `index`",
+    "nguong_dang_ky": 0.75,
+    "auc_ce_max": null,
+    "auc_rank_min": null,
+    "n_pairs_eval": 0,
+    "so_cap_lo_do_thieu_text": 0,
+    "model": {
+      "mode": "build_only"
+    },
+    "so_khong_duoc_tinh": {
+      "vang_ngoai_cua_so": 182,
+      "khong_co_chunk_vang": 111
+    }
+  }
+}

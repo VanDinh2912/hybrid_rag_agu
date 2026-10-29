@@ -1,0 +1,170 @@
+{
+  "measured_at": "2026-10-25T12:22:46",
+  "round_source": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\rounds\\r5\\full.jsonl",
+  "n_questions": 20,
+  "model": "qwen2.5:1.5b-instruct",
+  "temperature": 0.1,
+  "cache": "off",
+  "latency_seconds": {
+    "total": 68.6,
+    "p50": 2.9,
+    "p95": 4.421,
+    "min": 2.719,
+    "max": 9.626,
+    "mean": 3.428,
+    "first_call_seconds": 9.626,
+    "p50_excluding_first": 2.9,
+    "p95_excluding_first": 4.421,
+    "method": "nearest-rank trên 20 mẫu; cache TẮT; câu 1 gồm thời gian nạp model"
+  },
+  "vram_mib": {
+    "baseline": 0,
+    "peak": 1401,
+    "delta_peak": 1401,
+    "n_samples": 150,
+    "method": "nvidia-smi memory.used, mẫu 0,4 s (Ollama là tiến trình riêng)"
+  },
+  "per_question": [
+    {
+      "n": 1,
+      "id": "C10492769338965",
+      "seconds": 9.626,
+      "prompt_chars": 4531,
+      "answer_chars": 105
+    },
+    {
+      "n": 2,
+      "id": "C126485669658863",
+      "seconds": 2.719,
+      "prompt_chars": 4608,
+      "answer_chars": 108
+    },
+    {
+      "n": 3,
+      "id": "C127986564498750",
+      "seconds": 2.892,
+      "prompt_chars": 5337,
+      "answer_chars": 122
+    },
+    {
+      "n": 4,
+      "id": "C129706954034989",
+      "seconds": 2.901,
+      "prompt_chars": 4137,
+      "answer_chars": 109
+    },
+    {
+      "n": 5,
+      "id": "C130083932506629",
+      "seconds": 3.206,
+      "prompt_chars": 5297,
+      "answer_chars": 252
+    },
+    {
+      "n": 6,
+      "id": "C140231016537484",
+      "seconds": 2.886,
+      "prompt_chars": 4884,
+      "answer_chars": 105
+    },
+    {
+      "n": 7,
+      "id": "C141453164501757",
+      "seconds": 2.837,
+      "prompt_chars": 4930,
+      "answer_chars": 185
+    },
+    {
+      "n": 8,
+      "id": "C145524027648409",
+      "seconds": 2.848,
+      "prompt_chars": 4531,
+      "answer_chars": 105
+    },
+    {
+      "n": 9,
+      "id": "C151482102557130",
+      "seconds": 3.513,
+      "prompt_chars": 4643,
+      "answer_chars": 310
+    },
+    {
+      "n": 10,
+      "id": "C154042131342800",
+      "seconds": 3.012,
+      "prompt_chars": 5132,
+      "answer_chars": 153
+    },
+    {
+      "n": 11,
+      "id": "C159725752125707",
+      "seconds": 2.992,
+      "prompt_chars": 4824,
+      "answer_chars": 171
+    },
+    {
+      "n": 12,
+      "id": "C162319281103737",
+      "seconds": 2.959,
+      "prompt_chars": 4701,
+      "answer_chars": 108
+    },
+    {
+      "n": 13,
+      "id": "C176702127689533",
+      "seconds": 3.959,
+      "prompt_chars": 5223,
+      "answer_chars": 482
+    },
+    {
+      "n": 14,
+      "id": "C188669893116147",
+      "seconds": 2.9,
+      "prompt_chars": 4735,
+      "answer_chars": 105
+    },
+    {
+      "n": 15,
+      "id": "HQ01",
+      "seconds": 3.445,
+      "prompt_chars": 4988,
+      "answer_chars": 280
+    },
+    {
+      "n": 16,
+      "id": "HQ02",
+      "seconds": 4.421,
+      "prompt_chars": 4489,
+      "answer_chars": 750
+    },
+    {
+      "n": 17,
+      "id": "HQ03",
+      "seconds": 2.886,
+      "prompt_chars": 4852,
+      "answer_chars": 156
+    },
+    {
+      "n": 18,
+      "id": "HQ04",
+      "seconds": 2.886,
+      "prompt_chars": 4697,
+      "answer_chars": 105
+    },
+    {
+      "n": 19,
+      "id": "HQ05",
+      "seconds": 2.87,
+      "prompt_chars": 5009,
+      "answer_chars": 105
+    },
+    {
+      "n": 20,
+      "id": "HQ06",
+      "seconds": 2.797,
+      "prompt_chars": 5063,
+      "answer_chars": 105
+    }
+  ],
+  "note": "chỉ BÁO SỐ — đề bài T4 không đặt ngưỡng cứng cho mục này"
+}

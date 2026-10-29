@@ -1,0 +1,85 @@
+{
+  "mục_đích": "kiểm chứng giả thuyết WDDM oversubscription cho B5 (đỉnh VRAM đo được > 4095,5 MiB không nhất thiết là OOM thật)",
+  "torch": "2.14.1+cu126",
+  "cuda": "12.6",
+  "device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "mem_get_info_trước": {
+    "free_mib": 3305.7,
+    "total_mib": 4095.5
+  },
+  "nvidia_smi_trước": "73 MiB, 4096 MiB",
+  "ram": {
+    "tong_mib": 16088.1,
+    "con_trong_mib": 6914.9,
+    "tong_pagefile_mib": 32176.1
+  },
+  "các_lượng_đã_thử_gib": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8
+  ],
+  "kết_quả_từng_lượng": [
+    {
+      "gib": 1,
+      "kết_quả": "OK",
+      "allocated_mib_được_quản_lý": 1024.0,
+      "giây_fill": 0.051,
+      "GiB_mỗi_giây": 19.778,
+      "nvidia_smi_trong_luc": "1097 MiB, 4096 MiB"
+    },
+    {
+      "gib": 2,
+      "kết_quả": "OK",
+      "allocated_mib_được_quản_lý": 2048.0,
+      "giây_fill": 0.074,
+      "GiB_mỗi_giây": 26.889,
+      "nvidia_smi_trong_luc": "2121 MiB, 4096 MiB"
+    },
+    {
+      "gib": 3,
+      "kết_quả": "OK",
+      "allocated_mib_được_quản_lý": 3072.0,
+      "giây_fill": 0.089,
+      "GiB_mỗi_giây": 33.576,
+      "nvidia_smi_trong_luc": "3145 MiB, 4096 MiB"
+    },
+    {
+      "gib": 4,
+      "kết_quả": "OK",
+      "allocated_mib_được_quản_lý": 4096.0,
+      "giây_fill": 0.155,
+      "GiB_mỗi_giây": 25.751,
+      "nvidia_smi_trong_luc": "3849 MiB, 4096 MiB"
+    },
+    {
+      "gib": 6,
+      "kết_quả": "OK",
+      "allocated_mib_được_quản_lý": 6144.0,
+      "giây_fill": 0.5,
+      "GiB_mỗi_giây": 11.995,
+      "nvidia_smi_trong_luc": "3849 MiB, 4096 MiB"
+    },
+    {
+      "gib": 8,
+      "kết_quả": "OK",
+      "allocated_mib_được_quản_lý": 8192.0,
+      "giây_fill": 1.012,
+      "GiB_mỗi_giây": 7.907,
+      "nvidia_smi_trong_luc": "3849 MiB, 4096 MiB"
+    }
+  ],
+  "số_lượng_OK": 6,
+  "số_lượng_BỊ_TỪ_CHỐI": 0,
+  "lượng_OK_lớn_nhất_gib": 8,
+  "tốc_độ_fill_GiB_mỗi_giây": {
+    "nhanh_nhất": 33.576,
+    "chậm_nhất": 7.907,
+    "tỷ_lệ": 4.25
+  },
+  "phát_hiện": "CUDA cấp tới 8 GiB trên card 4095.5 MiB mà không báo lỗi; nvidia-smi khoá ở mức VRAM thật nên phần vượt phải nằm ở RAM hệ thống; fill chậm đi x4.25 ở lượng lớn",
+  "verdict": "OVERSUBSCRIPTION_CO_THAT: peak > tổng VRAM KHÔNG phải bằng chứng OOM thật; cái giá là tốc độ (đo được), không phải thất bại",
+  "timestamp": "2026-10-25T19:45:14.213063+00:00"
+}

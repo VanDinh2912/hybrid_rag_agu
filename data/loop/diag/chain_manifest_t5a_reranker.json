@@ -1,0 +1,110 @@
+{
+  "chain": "t5a_reranker",
+  "out_root": "data/loop/rounds",
+  "requires": [],
+  "spec_path": "tools/loop/chains/t5a_reranker.json",
+  "spec_sha256": "c3a59927ae25335c48d76780d96755661c8689ac03a2159910ad4b44d012e203",
+  "steps": [
+    {
+      "argv": [
+        "venv/Scripts/python.exe",
+        "tools/loop/run_round.py",
+        "--round",
+        "r11",
+        "--phase",
+        "retrieval",
+        "--out-root",
+        "data/loop/rounds",
+        "--split",
+        "all",
+        "--top-k",
+        "6",
+        "--generator",
+        "offline_qwen"
+      ],
+      "env": {
+        "ENABLE_ANSWER_GUARD": "0",
+        "ENABLE_ANSWER_RESCUE": "0",
+        "ENABLE_CLASSIFIER": "1",
+        "ENABLE_CONTEXTUAL_HEADER": "0",
+        "ENABLE_DECOUPLED_REFUSAL": "0",
+        "ENABLE_EVIDENCE_SELECTION": "0",
+        "ENABLE_RERANKER": "0",
+        "NORMALIZE_SANITY_GUARD": "0",
+        "ROUTER_FILTER_RANK_BONUS": "12",
+        "ROUTER_SOFT_FILTER": "1",
+        "ROUTER_SOURCE_QUOTA": "0"
+      },
+      "phase": "retrieval",
+      "post": [],
+      "round": "r11"
+    },
+    {
+      "argv": [
+        "venv/Scripts/python.exe",
+        "tools/loop/run_round.py",
+        "--round",
+        "r12",
+        "--phase",
+        "retrieval",
+        "--out-root",
+        "data/loop/rounds",
+        "--split",
+        "all",
+        "--top-k",
+        "6",
+        "--generator",
+        "offline_qwen"
+      ],
+      "env": {
+        "ENABLE_ANSWER_GUARD": "0",
+        "ENABLE_ANSWER_RESCUE": "0",
+        "ENABLE_CLASSIFIER": "1",
+        "ENABLE_CONTEXTUAL_HEADER": "0",
+        "ENABLE_DECOUPLED_REFUSAL": "0",
+        "ENABLE_EVIDENCE_SELECTION": "0",
+        "ENABLE_RERANKER": "1",
+        "NORMALIZE_SANITY_GUARD": "0",
+        "RERANKER_DEVICE": "cuda",
+        "RERANKER_KEEP_CANDIDATES": "1",
+        "ROUTER_FILTER_RANK_BONUS": "12",
+        "ROUTER_SOFT_FILTER": "1",
+        "ROUTER_SOURCE_QUOTA": "0"
+      },
+      "phase": "retrieval",
+      "post": [
+        {
+          "argv": [
+            "venv/Scripts/python.exe",
+            "tools/loop/gate.py",
+            "--candidate",
+            "r12",
+            "--baseline",
+            "r11",
+            "--phase",
+            "retrieval",
+            "--rounds-root",
+            "data/loop/rounds"
+          ],
+          "tool": "gate"
+        },
+        {
+          "argv": [
+            "venv/Scripts/python.exe",
+            "tools/loop/attribute.py",
+            "--round",
+            "r12",
+            "--phase",
+            "retrieval",
+            "--compare",
+            "r11",
+            "--rounds-root",
+            "data/loop/rounds"
+          ],
+          "tool": "attribute"
+        }
+      ],
+      "round": "r12"
+    }
+  ]
+}

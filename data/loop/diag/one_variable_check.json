@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-10-24T10:17:56",
+  "candidate": "r10",
+  "baseline": "r5",
+  "n_common": 100,
+  "n_candidate_only": 0,
+  "n_baseline_only": 0,
+  "non_generation_fields": {
+    "contexts": {
+      "identical": 100,
+      "differing": 0,
+      "note": "so SHA-1 trên toàn bộ cấu trúc của trường, từng ký tự"
+    },
+    "sources": {
+      "identical": 100,
+      "differing": 0,
+      "note": "so SHA-1 trên toàn bộ cấu trúc của trường, từng ký tự"
+    },
+    "normalized_query": {
+      "identical": 100,
+      "differing": 0,
+      "note": "so SHA-1 trên toàn bộ cấu trúc của trường, từng ký tự"
+    },
+    "labels": {
+      "identical": 100,
+      "differing": 0,
+      "note": "so SHA-1 trên toàn bộ cấu trúc của trường, từng ký tự"
+    },
+    "retrieval_config": {
+      "identical": 100,
+      "differing": 0,
+      "note": "so SHA-1 trên toàn bộ cấu trúc của trường, từng ký tự"
+    }
+  },
+  "answer_text_differing": 50,
+  "mismatch_ids_first10": {
+    "contexts": [],
+    "sources": [],
+    "normalized_query": [],
+    "labels": [],
+    "retrieval_config": []
+  },
+  "conclusion_rule": "one-variable CHỈ được chấp nhận khi contexts/sources/normalized_query identical = n_common (answer khác là ĐÚNG vì đó là biến số đang đo)"
+}

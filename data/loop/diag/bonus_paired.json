@@ -1,0 +1,1164 @@
+{
+  "purpose": "Kiểm lại lý do bonus 12 thấp gold@6 hơn bonus 3 trên TOÀN BỘ cặp bất đồng 811 item (ROADMAP P5.16 mới có probe 21 item).",
+  "definitions": {
+    "gold_at_k": "trung bình gold_in_top_k trên item has_gold_chunk — same as tools/loop/gate.py",
+    "anchor": "trung bình expected_source_in_window (toàn cục + family HUMAN)",
+    "tests": "mcnemar_exact + paired_bootstrap 10.000 lượt seed 20261023 (tools/loop/noise_floor.py)",
+    "window": 6
+  },
+  "rounds": {
+    "r1": {
+      "n_items": 811,
+      "n_gold_items": 700,
+      "gold_at_k": 0.7657,
+      "gold_ci95": {
+        "ci95": [
+          0.7343,
+          0.7971
+        ]
+      },
+      "settings": {
+        "split": "all",
+        "families": "all",
+        "top_k": 6,
+        "generator": "offline_qwen",
+        "strategy": "stratified",
+        "limit": null,
+        "only_retrieved": false,
+        "normalize_query": false,
+        "pin_subset_from": null,
+        "testset": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\testset_v1.jsonl",
+        "enable_classifier": "1",
+        "enable_answer_guard": "1",
+        "router_soft_filter": "1",
+        "router_filter_rank_bonus": "3",
+        "answer_rescue": "0",
+        "generation_cache_dir": "tmp/loop_gen_cache",
+        "referee": "9f1179ccab74",
+        "oversample_factor": null
+      },
+      "anchor_rate_all": 0.8356,
+      "anchor_rate_human": 0.7732,
+      "n_anchor_human": 97,
+      "gold_by_family": {
+        "CLOZE": {
+          "n_gold": 153,
+          "gold_at_k": 0.9477,
+          "ci95": {
+            "ci95": [
+              0.9085,
+              0.9804
+            ]
+          }
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "gold_at_k": 0.9806,
+          "ci95": {
+            "ci95": [
+              0.9612,
+              0.9951
+            ]
+          }
+        },
+        "EXACT": {
+          "n_gold": 52,
+          "gold_at_k": 0.2115,
+          "ci95": {
+            "ci95": [
+              0.1154,
+              0.3269
+            ]
+          }
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "gold_at_k": 0.4554,
+          "ci95": {
+            "ci95": [
+              0.3661,
+              0.5446
+            ]
+          }
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "gold_at_k": 0.6667,
+          "ci95": {
+            "ci95": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "gold_at_k": 0.9412,
+          "ci95": {
+            "ci95": [
+              0.8922,
+              0.9804
+            ]
+          }
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "gold_at_k": 0.1304,
+          "ci95": {
+            "ci95": [
+              0.0,
+              0.2609
+            ]
+          }
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "gold_at_k": 0.4706,
+          "ci95": {
+            "ci95": [
+              0.2353,
+              0.7059
+            ]
+          }
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "gold_at_k": 0.5625,
+          "ci95": {
+            "ci95": [
+              0.375,
+              0.7188
+            ]
+          }
+        }
+      },
+      "gold_by_split": {
+        "test": {
+          "n_gold": 296,
+          "gold_at_k": 0.7635
+        },
+        "trainpool": {
+          "n_gold": 404,
+          "gold_at_k": 0.7673
+        }
+      },
+      "window_concentration": {
+        "mean_modal_source_share": 0.5323,
+        "n_items_window_full_by_one_source": 105,
+        "n_items_modal_ge_4": 236,
+        "n_measured": 811
+      },
+      "rows_without_retrieval_config": 811,
+      "attribution_usable": false
+    },
+    "r2": {
+      "n_items": 811,
+      "n_gold_items": 700,
+      "gold_at_k": 0.74,
+      "gold_ci95": {
+        "ci95": [
+          0.7071,
+          0.7729
+        ]
+      },
+      "settings": {
+        "split": "all",
+        "families": "all",
+        "top_k": 6,
+        "generator": "offline_qwen",
+        "strategy": "stratified",
+        "limit": null,
+        "only_retrieved": false,
+        "normalize_query": false,
+        "pin_subset_from": null,
+        "testset": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\testset_v1.jsonl",
+        "enable_classifier": "1",
+        "enable_answer_guard": "0",
+        "router_soft_filter": "1",
+        "router_filter_rank_bonus": "12",
+        "answer_rescue": "0",
+        "generation_cache_dir": "tmp/loop_gen_cache",
+        "referee": "9f1179ccab74",
+        "oversample_factor": null
+      },
+      "anchor_rate_all": 0.8319,
+      "anchor_rate_human": 0.8144,
+      "n_anchor_human": 97,
+      "gold_by_family": {
+        "CLOZE": {
+          "n_gold": 153,
+          "gold_at_k": 0.9085,
+          "ci95": {
+            "ci95": [
+              0.8627,
+              0.9477
+            ]
+          }
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "gold_at_k": 0.9709,
+          "ci95": {
+            "ci95": [
+              0.9466,
+              0.9903
+            ]
+          }
+        },
+        "EXACT": {
+          "n_gold": 52,
+          "gold_at_k": 0.2115,
+          "ci95": {
+            "ci95": [
+              0.1154,
+              0.3269
+            ]
+          }
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "gold_at_k": 0.4375,
+          "ci95": {
+            "ci95": [
+              0.3482,
+              0.5268
+            ]
+          }
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "gold_at_k": 0.6667,
+          "ci95": {
+            "ci95": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "gold_at_k": 0.8529,
+          "ci95": {
+            "ci95": [
+              0.7843,
+              0.9216
+            ]
+          }
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "gold_at_k": 0.1304,
+          "ci95": {
+            "ci95": [
+              0.0,
+              0.2609
+            ]
+          }
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "gold_at_k": 0.4706,
+          "ci95": {
+            "ci95": [
+              0.2353,
+              0.7059
+            ]
+          }
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "gold_at_k": 0.5938,
+          "ci95": {
+            "ci95": [
+              0.4062,
+              0.75
+            ]
+          }
+        }
+      },
+      "gold_by_split": {
+        "test": {
+          "n_gold": 296,
+          "gold_at_k": 0.7297
+        },
+        "trainpool": {
+          "n_gold": 404,
+          "gold_at_k": 0.7475
+        }
+      },
+      "window_concentration": {
+        "mean_modal_source_share": 0.6102,
+        "n_items_window_full_by_one_source": 209,
+        "n_items_modal_ge_4": 346,
+        "n_measured": 811
+      },
+      "rows_without_retrieval_config": 0,
+      "attribution_usable": true
+    },
+    "r4": {
+      "n_items": 811,
+      "n_gold_items": 700,
+      "gold_at_k": 0.7429,
+      "gold_ci95": {
+        "ci95": [
+          0.71,
+          0.7757
+        ]
+      },
+      "settings": {
+        "split": "all",
+        "families": "all",
+        "top_k": 6,
+        "generator": "offline_qwen",
+        "strategy": "stratified",
+        "limit": null,
+        "only_retrieved": false,
+        "normalize_query": false,
+        "pin_subset_from": null,
+        "testset": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\testset_v1.jsonl",
+        "enable_classifier": "1",
+        "enable_answer_guard": "0",
+        "router_soft_filter": "1",
+        "router_filter_rank_bonus": "12",
+        "router_source_quota": "4",
+        "answer_rescue": "0",
+        "generation_cache_dir": "./.generation_cache",
+        "referee": "9f1179ccab74",
+        "oversample_factor": 2
+      },
+      "anchor_rate_all": 0.8394,
+      "anchor_rate_human": 0.8144,
+      "n_anchor_human": 97,
+      "gold_by_family": {
+        "CLOZE": {
+          "n_gold": 153,
+          "gold_at_k": 0.915,
+          "ci95": {
+            "ci95": [
+              0.8693,
+              0.9542
+            ]
+          }
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "gold_at_k": 0.9515,
+          "ci95": {
+            "ci95": [
+              0.9223,
+              0.9806
+            ]
+          }
+        },
+        "EXACT": {
+          "n_gold": 52,
+          "gold_at_k": 0.2115,
+          "ci95": {
+            "ci95": [
+              0.1154,
+              0.3269
+            ]
+          }
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "gold_at_k": 0.4464,
+          "ci95": {
+            "ci95": [
+              0.3571,
+              0.5357
+            ]
+          }
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "gold_at_k": 0.6667,
+          "ci95": {
+            "ci95": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "gold_at_k": 0.8922,
+          "ci95": {
+            "ci95": [
+              0.8333,
+              0.951
+            ]
+          }
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "gold_at_k": 0.1304,
+          "ci95": {
+            "ci95": [
+              0.0,
+              0.2609
+            ]
+          }
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "gold_at_k": 0.4706,
+          "ci95": {
+            "ci95": [
+              0.2353,
+              0.7059
+            ]
+          }
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "gold_at_k": 0.5938,
+          "ci95": {
+            "ci95": [
+              0.4062,
+              0.75
+            ]
+          }
+        }
+      },
+      "gold_by_split": {
+        "test": {
+          "n_gold": 296,
+          "gold_at_k": 0.7331
+        },
+        "trainpool": {
+          "n_gold": 404,
+          "gold_at_k": 0.75
+        }
+      },
+      "window_concentration": {
+        "mean_modal_source_share": 0.5271,
+        "n_items_window_full_by_one_source": 24,
+        "n_items_modal_ge_4": 348,
+        "n_measured": 811
+      },
+      "rows_without_retrieval_config": 0,
+      "attribution_usable": true
+    }
+  },
+  "paired": {
+    "n_common_items": 811,
+    "n_common_gold_items": 700,
+    "baseline": "r1",
+    "candidate": "r2",
+    "gold_flags": {
+      "both_hit": 515,
+      "only_baseline": 3,
+      "only_candidate": 21,
+      "both_miss": 161
+    },
+    "mcnemar_exact": {
+      "n_discordant": 24,
+      "b": 3,
+      "c": 21,
+      "p_two_sided": 0.0002771615982055664
+    },
+    "paired_bootstrap_gold_delta": {
+      "reps_requested": 10000,
+      "reps_valid": 10000,
+      "reps_skipped_zero_denominator": 0,
+      "seed": 20261023,
+      "mean_diff": -0.0257,
+      "ci95_percentile": [
+        -0.04,
+        -0.0129
+      ]
+    },
+    "gold_delta": -0.0257,
+    "by_family": {
+      "EXACT": {
+        "n_gold": 52,
+        "baseline_rate": 0.2115,
+        "candidate_rate": 0.2115,
+        "delta": 0.0,
+        "mcnemar": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        }
+      },
+      "TRAP": {
+        "n_gold": 23,
+        "baseline_rate": 0.1304,
+        "candidate_rate": 0.1304,
+        "delta": 0.0,
+        "mcnemar": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        }
+      },
+      "TRAP_OCR": {
+        "n_gold": 17,
+        "baseline_rate": 0.4706,
+        "candidate_rate": 0.4706,
+        "delta": 0.0,
+        "mcnemar": {
+          "n_discordant": 0,
+          "b": 0,
+          "c": 0,
+          "p_two_sided": 1.0
+        }
+      }
+    },
+    "anchor": {
+      "n": 797,
+      "baseline_rate": 0.8356,
+      "candidate_rate": 0.8319,
+      "delta": -0.0038,
+      "paired_bootstrap": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": -0.0038,
+        "ci95_percentile": [
+          -0.0163,
+          0.0088
+        ]
+      },
+      "human": {
+        "n": 97,
+        "baseline_rate": 0.7732,
+        "candidate_rate": 0.8144,
+        "delta": 0.0412,
+        "mcnemar": {
+          "n_discordant": 10,
+          "b": 7,
+          "c": 3,
+          "p_two_sided": 0.34375
+        }
+      }
+    },
+    "mechanism": {
+      "lost_in_candidate": {
+        "n": 21,
+        "by_cause": {
+          "filter_blocks_gold": 21
+        },
+        "by_family": {
+          "CLOZE": 6,
+          "NUMERIC": 4,
+          "CLOZE_OCR": 2,
+          "SOURCE_LOOKUP": 9
+        },
+        "by_split": {
+          "test": 10,
+          "trainpool": 11
+        },
+        "n_gold_just_outside_window_7_to_12": 21,
+        "n_window_taken_by_one_source": 5,
+        "mean_candidate_modal_share": 3.81,
+        "mean_baseline_modal_share": 2.71,
+        "items": [
+          {
+            "id": "C101539207984361",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 5,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 3,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "C118708752958570",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 5,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 3,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "C176628353893093",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 5,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 2,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ]
+          },
+          {
+            "id": "C27076665484846",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 4,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 5,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "C41275909282740",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 6,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 2,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf"
+            ]
+          },
+          {
+            "id": "C96313333720417",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 5,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 2,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "N110205502928361",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "1059-qd-dhag-2020-09-29.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 6,
+            "candidate_gold_rank": 8,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 3,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "N140089310187598",
+            "family": "NUMERIC",
+            "split": "test",
+            "gold_source": "1054-qd-dhag-2020-09-28.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 6,
+            "candidate_gold_rank": 8,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "candidate_modal_source_share": 2,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "N182626167637764#2",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 3,
+            "candidate_gold_rank": 8,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 5,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "N72681999194812",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "1059-qd-dhag-2020-09-29.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 5,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "888-qd-dhag-2022-08-08.pdf"
+            ],
+            "candidate_modal_source_share": 4,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf"
+            ]
+          },
+          {
+            "id": "O172750923353984",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 6,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 2,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf"
+            ]
+          },
+          {
+            "id": "O225523197923668",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 6,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 2,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S110175939029303",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 6,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 3,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "KH To chuc HK 261 - 20260612.pdf"
+            ]
+          },
+          {
+            "id": "S114242358502836",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "don-xin-chuyen-nhom-hoc-phan.docx",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 1,
+            "candidate_gold_rank": 11,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 6,
+            "baseline_modal_source_share": 4,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S118014254487460",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 3,
+            "candidate_gold_rank": 8,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 6,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S136422793382502",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 3,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 6,
+            "baseline_modal_source_share": 4,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S158759023544540",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 3,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 4,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "S211792009368179",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 3,
+            "candidate_gold_rank": 8,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 4,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "S279375377112304",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 3,
+            "candidate_gold_rank": 10,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 6,
+            "baseline_modal_source_share": 4,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S64974098351674",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 5,
+            "candidate_gold_rank": 7,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 4,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S9269983706187",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "cause": "filter_blocks_gold",
+            "baseline_gold_rank": 3,
+            "candidate_gold_rank": 9,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "candidate_modal_source_share": 6,
+            "baseline_modal_source_share": 3,
+            "candidate_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          }
+        ]
+      },
+      "gained_in_candidate": {
+        "n": 3,
+        "by_cause": {
+          "unclassified": 3
+        },
+        "by_family": {
+          "NUMERIC": 2,
+          "YESNO_FACT": 1
+        },
+        "by_split": {
+          "trainpool": 3
+        },
+        "n_gold_just_outside_window_7_to_12": 0,
+        "n_window_taken_by_one_source": 0,
+        "mean_candidate_modal_share": 3.0,
+        "mean_baseline_modal_share": 2.0,
+        "items": [
+          {
+            "id": "N38199595532626",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "cause": "unclassified",
+            "baseline_gold_rank": 11,
+            "candidate_gold_rank": 2,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 2,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ]
+          },
+          {
+            "id": "N57312825590941",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "367-QĐ-ĐU ngay 08-4-2026.pdf",
+            "cause": "unclassified",
+            "baseline_gold_rank": 8,
+            "candidate_gold_rank": 2,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ],
+            "candidate_modal_source_share": 3,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "Y216155493208429",
+            "family": "YESNO_FACT",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "cause": "unclassified",
+            "baseline_gold_rank": 7,
+            "candidate_gold_rank": 3,
+            "baseline_filter": null,
+            "candidate_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "candidate_modal_source_share": 4,
+            "baseline_modal_source_share": 2,
+            "candidate_top6_sources": [
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf"
+            ]
+          }
+        ]
+      }
+    },
+    "third_round": {
+      "round": "r4",
+      "n": 700,
+      "gold_at_k": 0.7429,
+      "vs_baseline": {
+        "delta": -0.0229
+      },
+      "vs_candidate": {
+        "delta": 0.0029,
+        "mcnemar": {
+          "n_discordant": 12,
+          "b": 7,
+          "c": 5,
+          "p_two_sided": 0.7744140625
+        }
+      },
+      "recovered_items_of_candidate_losses": 7
+    }
+  }
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "label": "lan_1_lanh",
+    "model": "qwen2.5:1.5b-instruct",
+    "wall_s": 9.39,
+    "prompt_eval_count": 2905,
+    "eval_count": 23,
+    "load_s": 5.99436,
+    "prompt_eval_s": 0.981809,
+    "eval_s": 0.276723,
+    "answer_preview": "Học phí được tính theo đơn vị tín chỉ và được quy định mức thu bởi Hội đồng trường."
+  },
+  {
+    "label": "lan_2_am",
+    "model": "qwen2.5:1.5b-instruct",
+    "wall_s": 2.34,
+    "prompt_eval_count": 2905,
+    "eval_count": 23,
+    "load_s": 0.0132299,
+    "prompt_eval_s": 0.01109,
+    "eval_s": 0.233771,
+    "answer_preview": "Học phí được tính theo đơn vị tín chỉ và được quy định mức thu bởi Hội đồng trường."
+  },
+  {
+    "label": "lan_1_lanh",
+    "model": "qwen2.5:3b-instruct",
+    "wall_s": 13.02,
+    "prompt_eval_count": 2905,
+    "eval_count": 55,
+    "load_s": 7.9188583,
+    "prompt_eval_s": 1.793546,
+    "eval_s": 1.201888,
+    "answer_preview": "Theo các quy chế đào tạo trình độ đại học được cung cấp, học phí được tính theo tín chỉ và mức thu được Hội đồng trường "
+  },
+  {
+    "label": "lan_2_am",
+    "model": "qwen2.5:3b-instruct",
+    "wall_s": 3.42,
+    "prompt_eval_count": 2905,
+    "eval_count": 46,
+    "load_s": 0.0195699,
+    "prompt_eval_s": 0.05481,
+    "eval_s": 1.043070999,
+    "answer_preview": "Theo quy chế đào tạo trình độ đại học, học phí được tính theo tín chỉ và mức thu do Hội đồng trường quy định. Mức thu nà"
+  }
+]

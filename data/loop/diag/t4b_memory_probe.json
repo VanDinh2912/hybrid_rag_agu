@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-10-24T10:19:24",
+  "kind": "probe chi phí (1 bước fwd/bwd giả), KHÔNG phải lượt train",
+  "bitsandbytes_installed": false,
+  "rows": [
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 768,
+      "grad_checkpointing": false,
+      "weights_plus_adapter_allocated_mib": 950.6,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 3339.8,
+      "peak_reserved_mib": 3624.0,
+      "loss_at_first_step": 13.412332534790039,
+      "wall_seconds": 3.5,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    },
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 768,
+      "grad_checkpointing": true,
+      "weights_plus_adapter_allocated_mib": 967.6,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 3356.0,
+      "peak_reserved_mib": 3626.0,
+      "loss_at_first_step": 13.412332534790039,
+      "wall_seconds": 2.1,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    },
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 1768,
+      "grad_checkpointing": false,
+      "weights_plus_adapter_allocated_mib": 967.6,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 6437.9,
+      "peak_reserved_mib": 7068.0,
+      "loss_at_first_step": 13.316288948059082,
+      "wall_seconds": 6.6,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    },
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 1768,
+      "grad_checkpointing": true,
+      "weights_plus_adapter_allocated_mib": 967.6,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 6451.0,
+      "peak_reserved_mib": 7068.0,
+      "loss_at_first_step": 13.316288948059082,
+      "wall_seconds": 5.0,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    }
+  ],
+  "deployment_check_3b": {
+    "model": "Qwen/Qwen2.5-3B-Instruct",
+    "cached_locally": false,
+    "error": "OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.\nCheck your internet connection or see how to run the library in offline mode at 'https://",
+    "consequence": "muốn đo/train 3B phải tải trọng số HF trước (~6,2 GB fp16) — chưa làm, cần duyệt"
+  },
+  "reading_rule": "so peak_allocated_mib với gpu_total_mib; số cho 3B là NGOẠI SUY từ tỉ trọng số, chưa kiểm chứng bằng lượt nạp 3B thật (trọng số chưa có trên máy)"
+}

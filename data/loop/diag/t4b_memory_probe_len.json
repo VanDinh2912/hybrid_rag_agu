@@ -1,0 +1,87 @@
+{
+  "generated_at": "2026-10-24T10:23:36",
+  "kind": "probe chi phí (1 bước fwd/bwd giả), KHÔNG phải lượt train",
+  "bitsandbytes_installed": false,
+  "rows": [
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 960,
+      "grad_checkpointing": false,
+      "weights_plus_adapter_allocated_mib": 950.6,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 3931.0,
+      "peak_reserved_mib": 4274.0,
+      "loss_at_first_step": 13.398946762084961,
+      "wall_seconds": 8.9,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    },
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 960,
+      "grad_checkpointing": true,
+      "weights_plus_adapter_allocated_mib": 967.9,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 3946.1,
+      "peak_reserved_mib": 4292.0,
+      "loss_at_first_step": 13.398946762084961,
+      "wall_seconds": 5.1,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    },
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 1024,
+      "grad_checkpointing": false,
+      "weights_plus_adapter_allocated_mib": 967.9,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 4156.9,
+      "peak_reserved_mib": 4482.0,
+      "loss_at_first_step": 13.365548133850098,
+      "wall_seconds": 4.3,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    },
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 1024,
+      "grad_checkpointing": true,
+      "weights_plus_adapter_allocated_mib": 967.9,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 4164.8,
+      "peak_reserved_mib": 4504.0,
+      "loss_at_first_step": 13.365548133850098,
+      "wall_seconds": 4.5,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    },
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 1100,
+      "grad_checkpointing": false,
+      "weights_plus_adapter_allocated_mib": 967.9,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 4379.4,
+      "peak_reserved_mib": 4842.0,
+      "loss_at_first_step": 13.344532012939453,
+      "wall_seconds": 5.2,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    },
+    {
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "length_tokens": 1100,
+      "grad_checkpointing": true,
+      "weights_plus_adapter_allocated_mib": 967.9,
+      "trainable_params": 2162688,
+      "peak_allocated_mib": 4388.6,
+      "peak_reserved_mib": 4846.0,
+      "loss_at_first_step": 13.344532012939453,
+      "wall_seconds": 5.0,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "gpu_total_mib": 4095.5
+    }
+  ],
+  "deployment_check_3b": null,
+  "reading_rule": "so peak_allocated_mib với gpu_total_mib; số cho 3B là NGOẠI SUY từ tỉ trọng số, chưa kiểm chứng bằng lượt nạp 3B thật (trọng số chưa có trên máy)"
+}

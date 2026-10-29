@@ -1,0 +1,717 @@
+{
+  "n_mapped": 57,
+  "n_unmapped": 23,
+  "mapped": [
+    {
+      "id": "C126485669658863",
+      "family": "CLOZE",
+      "old_chunk_id": 265,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "3bc2018e-c8c6-4dca-ba08-d44cc4f49188",
+      "n_hits": 2,
+      "new_chars": 1218,
+      "old_chars": 898
+    },
+    {
+      "id": "C10492769338965",
+      "family": "CLOZE",
+      "old_chunk_id": 330,
+      "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+      "new_cid": "62ee9048-85ca-494b-94c3-7f21b5fe27bf",
+      "n_hits": 1,
+      "new_chars": 903,
+      "old_chars": 903
+    },
+    {
+      "id": "T24199159682252",
+      "family": "EXACT",
+      "old_chunk_id": 262,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 1,
+      "new_chars": 1307,
+      "old_chars": 1307
+    },
+    {
+      "id": "T111158251954171",
+      "family": "EXACT",
+      "old_chunk_id": 253,
+      "source": "KH To chuc HK 261 - 20260612.pdf",
+      "new_cid": "7ddc2420-3ec6-42df-a321-f64bd34e9e16",
+      "n_hits": 1,
+      "new_chars": 1101,
+      "old_chars": 1101
+    },
+    {
+      "id": "N172171203676287",
+      "family": "NUMERIC",
+      "old_chunk_id": 263,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 2,
+      "new_chars": 1307,
+      "old_chars": 389
+    },
+    {
+      "id": "V53554715153706",
+      "family": "REVERSE_LEGAL",
+      "old_chunk_id": 346,
+      "source": "don-xin-mien-hoc-phan-tieng-anh.docx",
+      "new_cid": "42ddcd6b-25cc-413a-bb6a-ef187f8956ae",
+      "n_hits": 1,
+      "new_chars": 904,
+      "old_chars": 904
+    },
+    {
+      "id": "S100040424033217",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 262,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 2,
+      "new_chars": 1307,
+      "old_chars": 1307
+    },
+    {
+      "id": "S103676246349149",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 329,
+      "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+      "new_cid": "2f91de40-4ae2-4213-b61c-9ee77ee735d6",
+      "n_hits": 1,
+      "new_chars": 1293,
+      "old_chars": 1293
+    },
+    {
+      "id": "T139306397651845",
+      "family": "TRAP",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "T153781448113107",
+      "family": "TRAP",
+      "old_chunk_id": 327,
+      "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+      "new_cid": "235dcea6-e03b-43c4-ae3f-9e0260c19f60",
+      "n_hits": 1,
+      "new_chars": 1197,
+      "old_chars": 1197
+    },
+    {
+      "id": "Y1133031866122",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "Y166453071308081",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 316,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "33f1a318-3607-445d-890e-7adee54a111d",
+      "n_hits": 1,
+      "new_chars": 375,
+      "old_chars": 375
+    },
+    {
+      "id": "C129706954034989",
+      "family": "CLOZE",
+      "old_chunk_id": 266,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "3bc2018e-c8c6-4dca-ba08-d44cc4f49188",
+      "n_hits": 1,
+      "new_chars": 1218,
+      "old_chars": 1218
+    },
+    {
+      "id": "C127986564498750",
+      "family": "CLOZE",
+      "old_chunk_id": 320,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "a7175d29-91bc-48e3-a58e-6ae81c748c30",
+      "n_hits": 1,
+      "new_chars": 1205,
+      "old_chars": 1205
+    },
+    {
+      "id": "T43714716473179",
+      "family": "EXACT",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "T130276288816834",
+      "family": "EXACT",
+      "old_chunk_id": 253,
+      "source": "KH To chuc HK 261 - 20260612.pdf",
+      "new_cid": "7ddc2420-3ec6-42df-a321-f64bd34e9e16",
+      "n_hits": 1,
+      "new_chars": 1101,
+      "old_chars": 1101
+    },
+    {
+      "id": "N172171203676287#2",
+      "family": "NUMERIC",
+      "old_chunk_id": 263,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 2,
+      "new_chars": 1307,
+      "old_chars": 389
+    },
+    {
+      "id": "S102115618966494",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "S112834129362285",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 329,
+      "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+      "new_cid": "2f91de40-4ae2-4213-b61c-9ee77ee735d6",
+      "n_hits": 1,
+      "new_chars": 1293,
+      "old_chars": 1293
+    },
+    {
+      "id": "T320008594923",
+      "family": "TRAP",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "T274957825497798",
+      "family": "TRAP",
+      "old_chunk_id": 327,
+      "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+      "new_cid": "235dcea6-e03b-43c4-ae3f-9e0260c19f60",
+      "n_hits": 1,
+      "new_chars": 1197,
+      "old_chars": 1197
+    },
+    {
+      "id": "P266781223697651",
+      "family": "TRAP_OCR",
+      "old_chunk_id": 313,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "f8926985-ad99-42d3-9c2f-a37a12f0ac3f",
+      "n_hits": 1,
+      "new_chars": 864,
+      "old_chars": 864
+    },
+    {
+      "id": "Y157881864411299",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "Y188194188155446",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 318,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "68acca4f-8380-4fbb-9212-1ede8e129e21",
+      "n_hits": 1,
+      "new_chars": 941,
+      "old_chars": 941
+    },
+    {
+      "id": "C130083932506629",
+      "family": "CLOZE",
+      "old_chunk_id": 262,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 1,
+      "new_chars": 1307,
+      "old_chars": 1307
+    },
+    {
+      "id": "C140231016537484",
+      "family": "CLOZE",
+      "old_chunk_id": 331,
+      "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+      "new_cid": "83091d36-bfb2-4726-9934-d8fe52da1199",
+      "n_hits": 1,
+      "new_chars": 1286,
+      "old_chars": 1286
+    },
+    {
+      "id": "T56549597345139",
+      "family": "EXACT",
+      "old_chunk_id": 265,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "a41915e6-4975-42e0-9d13-52d8ea1d65e5",
+      "n_hits": 1,
+      "new_chars": 898,
+      "old_chars": 898
+    },
+    {
+      "id": "T136033890847523",
+      "family": "EXACT",
+      "old_chunk_id": 256,
+      "source": "KH To chuc HK 261 - 20260612.pdf",
+      "new_cid": "77a660b1-fd16-4446-9276-be9e2255c391",
+      "n_hits": 1,
+      "new_chars": 1360,
+      "old_chars": 1360
+    },
+    {
+      "id": "S13195954021918",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "S115028976296200",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 343,
+      "source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+      "new_cid": "c7527574-8a02-4fa6-b0d9-826640a616c7",
+      "n_hits": 1,
+      "new_chars": 1246,
+      "old_chars": 1246
+    },
+    {
+      "id": "T70568322614840",
+      "family": "TRAP",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "P76438801854457",
+      "family": "TRAP_OCR",
+      "old_chunk_id": 308,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "6b96c061-f98c-4664-af6e-7b326812153b",
+      "n_hits": 1,
+      "new_chars": 839,
+      "old_chars": 839
+    },
+    {
+      "id": "Y276949344929833",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "Y215997632637955",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 332,
+      "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+      "new_cid": "756ec389-b554-42ff-8bc2-f2d189e7b10b",
+      "n_hits": 1,
+      "new_chars": 898,
+      "old_chars": 898
+    },
+    {
+      "id": "C159725752125707",
+      "family": "CLOZE",
+      "old_chunk_id": 262,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 1,
+      "new_chars": 1307,
+      "old_chars": 1307
+    },
+    {
+      "id": "C141453164501757",
+      "family": "CLOZE",
+      "old_chunk_id": 271,
+      "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+      "new_cid": "54d98e6d-623a-4679-b501-91faa60f734f",
+      "n_hits": 1,
+      "new_chars": 1009,
+      "old_chars": 1009
+    },
+    {
+      "id": "T84810705430065",
+      "family": "EXACT",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "T224347701010571",
+      "family": "EXACT",
+      "old_chunk_id": 254,
+      "source": "KH To chuc HK 261 - 20260612.pdf",
+      "new_cid": "b5e46aa1-3f80-41bb-9146-472a1dc51574",
+      "n_hits": 1,
+      "new_chars": 727,
+      "old_chars": 727
+    },
+    {
+      "id": "S190549162852123",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 262,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 1,
+      "new_chars": 1307,
+      "old_chars": 1307
+    },
+    {
+      "id": "S128111294790282",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 303,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "ff974e75-c47b-4069-86c3-2c03682f0e91",
+      "n_hits": 1,
+      "new_chars": 1125,
+      "old_chars": 1125
+    },
+    {
+      "id": "Y3134353560758",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 265,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "a41915e6-4975-42e0-9d13-52d8ea1d65e5",
+      "n_hits": 1,
+      "new_chars": 898,
+      "old_chars": 898
+    },
+    {
+      "id": "Y216155493208429",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 310,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "68c162eb-e6a7-4ca4-b5ab-6a7af65f8bd2",
+      "n_hits": 1,
+      "new_chars": 1055,
+      "old_chars": 1055
+    },
+    {
+      "id": "C162319281103737",
+      "family": "CLOZE",
+      "old_chunk_id": 346,
+      "source": "don-xin-mien-hoc-phan-tieng-anh.docx",
+      "new_cid": "42ddcd6b-25cc-413a-bb6a-ef187f8956ae",
+      "n_hits": 1,
+      "new_chars": 904,
+      "old_chars": 904
+    },
+    {
+      "id": "C145524027648409",
+      "family": "CLOZE",
+      "old_chunk_id": 329,
+      "source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+      "new_cid": "2f91de40-4ae2-4213-b61c-9ee77ee735d6",
+      "n_hits": 1,
+      "new_chars": 1293,
+      "old_chars": 1293
+    },
+    {
+      "id": "S193409910201077",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 262,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 1,
+      "new_chars": 1307,
+      "old_chars": 1307
+    },
+    {
+      "id": "S131375215439331",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 253,
+      "source": "KH To chuc HK 261 - 20260612.pdf",
+      "new_cid": "7ddc2420-3ec6-42df-a321-f64bd34e9e16",
+      "n_hits": 1,
+      "new_chars": 1101,
+      "old_chars": 1101
+    },
+    {
+      "id": "Y47079626627164",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 299,
+      "source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+      "new_cid": "ab7e9b39-6e36-42d9-abd0-b646950bb550",
+      "n_hits": 1,
+      "new_chars": 1119,
+      "old_chars": 1119
+    },
+    {
+      "id": "Y231035235702969",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 271,
+      "source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+      "new_cid": "54d98e6d-623a-4679-b501-91faa60f734f",
+      "n_hits": 1,
+      "new_chars": 1009,
+      "old_chars": 1009
+    },
+    {
+      "id": "C176702127689533",
+      "family": "CLOZE",
+      "old_chunk_id": 266,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "3bc2018e-c8c6-4dca-ba08-d44cc4f49188",
+      "n_hits": 1,
+      "new_chars": 1218,
+      "old_chars": 1218
+    },
+    {
+      "id": "C151482102557130",
+      "family": "CLOZE",
+      "old_chunk_id": 244,
+      "source": "KH To chuc HK 261 - 20260612.pdf",
+      "new_cid": "201cba08-1eba-419a-ba2c-959c526ab6e3",
+      "n_hits": 1,
+      "new_chars": 1252,
+      "old_chars": 1252
+    },
+    {
+      "id": "S212921544712179",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 265,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "a41915e6-4975-42e0-9d13-52d8ea1d65e5",
+      "n_hits": 1,
+      "new_chars": 898,
+      "old_chars": 898
+    },
+    {
+      "id": "S147418342963925",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 254,
+      "source": "KH To chuc HK 261 - 20260612.pdf",
+      "new_cid": "b5e46aa1-3f80-41bb-9146-472a1dc51574",
+      "n_hits": 1,
+      "new_chars": 727,
+      "old_chars": 727
+    },
+    {
+      "id": "Y57173144541416",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 262,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 2,
+      "new_chars": 1307,
+      "old_chars": 1307
+    },
+    {
+      "id": "Y242514248015098",
+      "family": "YESNO_FACT",
+      "old_chunk_id": 314,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "fc2441dc-96ac-4b9b-9134-87e8b3104191",
+      "n_hits": 2,
+      "new_chars": 1498,
+      "old_chars": 1498
+    },
+    {
+      "id": "C188669893116147",
+      "family": "CLOZE",
+      "old_chunk_id": 266,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "3bc2018e-c8c6-4dca-ba08-d44cc4f49188",
+      "n_hits": 1,
+      "new_chars": 1218,
+      "old_chars": 1218
+    },
+    {
+      "id": "C154042131342800",
+      "family": "CLOZE",
+      "old_chunk_id": 311,
+      "source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+      "new_cid": "c30baecb-c19a-4e89-99bb-743735e8146a",
+      "n_hits": 1,
+      "new_chars": 904,
+      "old_chars": 904
+    },
+    {
+      "id": "S21358280526248",
+      "family": "SOURCE_LOOKUP",
+      "old_chunk_id": 262,
+      "source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+      "new_cid": "c07e8374-887f-4954-b45c-ee24b4ccd8a7",
+      "n_hits": 1,
+      "new_chars": 1307,
+      "old_chars": 1307
+    }
+  ],
+  "unmapped": [
+    {
+      "id": "O10172700165077",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+    },
+    {
+      "id": "O10235702435549",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "367-QĐ-ĐU ngay 08-4-2026.pdf"
+    },
+    {
+      "id": "N121570199836064",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "NUMERIC",
+      "source": "1059-qd-dhag-2020-09-29.pdf"
+    },
+    {
+      "id": "P246967067930891",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "TRAP_OCR",
+      "source": "367-QĐ-ĐU ngay 08-4-2026.pdf"
+    },
+    {
+      "id": "O101995178075997",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+    },
+    {
+      "id": "O102464711059095",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "367-QĐ-ĐU ngay 08-4-2026.pdf"
+    },
+    {
+      "id": "N121989377006900",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "NUMERIC",
+      "source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+    },
+    {
+      "id": "O10364377056039",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "1054-qd-dhag-2020-09-28.pdf"
+    },
+    {
+      "id": "O103189525480643",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+    },
+    {
+      "id": "N5831596481650",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "NUMERIC",
+      "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+    },
+    {
+      "id": "N13560832540059",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "NUMERIC",
+      "source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+    },
+    {
+      "id": "O105878724802157",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+    },
+    {
+      "id": "O110351889344961",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "367-QĐ-ĐU ngay 08-4-2026.pdf"
+    },
+    {
+      "id": "N135865507843783",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "NUMERIC",
+      "source": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+    },
+    {
+      "id": "O106002750552266",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+    },
+    {
+      "id": "O112922606788277",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "1059-qd-dhag-2020-09-29.pdf"
+    },
+    {
+      "id": "N143662722487347",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "NUMERIC",
+      "source": "1059-qd-dhag-2020-09-29.pdf"
+    },
+    {
+      "id": "O106830364358307",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "1054-qd-dhag-2020-09-28.pdf"
+    },
+    {
+      "id": "O116387805961189",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "367-QĐ-ĐU ngay 08-4-2026.pdf"
+    },
+    {
+      "id": "N148008092394710",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "NUMERIC",
+      "source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+    },
+    {
+      "id": "O114508989116049",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "888-qd-dhag-2022-08-08.pdf"
+    },
+    {
+      "id": "O120013109966068",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "CLOZE_OCR",
+      "source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+    },
+    {
+      "id": "N153558676427472",
+      "reason": "no_new_chunk_same_source_with_gold",
+      "family": "NUMERIC",
+      "source": "367-QĐ-ĐU ngay 08-4-2026.pdf"
+    }
+  ],
+  "multi_hit": 6
+}

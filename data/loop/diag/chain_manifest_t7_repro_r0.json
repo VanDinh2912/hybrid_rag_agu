@@ -1,0 +1,49 @@
+{
+  "chain": "t7_repro_r0",
+  "out_root": "tmp/rounds_t7_repro",
+  "requires": [],
+  "spec_path": "tools/loop/chains/t7_repro_r0.json",
+  "spec_sha256": "77b8901117015106415f922687217fb4dfabfe2cc4b6943e5ebd9879c0e87e55",
+  "steps": [
+    {
+      "argv": [
+        "venv/Scripts/python.exe",
+        "tools/loop/run_round.py",
+        "--round",
+        "r0_repro",
+        "--phase",
+        "retrieval",
+        "--out-root",
+        "tmp/rounds_t7_repro",
+        "--testset",
+        "data/loop/testset_v1.jsonl",
+        "--split",
+        "all",
+        "--top-k",
+        "6",
+        "--generator",
+        "offline_qwen",
+        "--strategy",
+        "stratified"
+      ],
+      "env": {
+        "ENABLE_ANSWER_GUARD": "1",
+        "ENABLE_ANSWER_RESCUE": "0",
+        "ENABLE_CLASSIFIER": "1",
+        "ENABLE_CONTEXTUAL_HEADER": "0",
+        "ENABLE_DECOUPLED_REFUSAL": "0",
+        "ENABLE_EVIDENCE_SELECTION": "0",
+        "ENABLE_RERANKER": "0",
+        "GATE_ALLOW_CONFIG_MISMATCH": "0",
+        "NORMALIZE_SANITY_GUARD": "0",
+        "RESCUE_MIN_SCORE": "0.8",
+        "ROUTER_FILTER_RANK_BONUS": "3",
+        "ROUTER_SOFT_FILTER": "0",
+        "ROUTER_SOURCE_QUOTA": "0"
+      },
+      "phase": "retrieval",
+      "post": [],
+      "round": "r0_repro"
+    }
+  ]
+}

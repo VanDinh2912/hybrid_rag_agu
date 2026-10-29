@@ -1,0 +1,4329 @@
+{
+  "purpose": "Kiểm lại lý do bonus 12 thấp gold@6 hơn bonus 3 trên TOÀN BỘ cặp bất đồng 811 item (ROADMAP P5.16 mới có probe 21 item).",
+  "definitions": {
+    "gold_at_k": "trung bình gold_in_top_k trên item has_gold_chunk — same as tools/loop/gate.py",
+    "anchor": "trung bình expected_source_in_window (toàn cục + family HUMAN)",
+    "tests": "mcnemar_exact + paired_bootstrap 10.000 lượt seed 20261023 (tools/loop/noise_floor.py)",
+    "window": 6
+  },
+  "rounds": {
+    "r12": {
+      "n_items": 811,
+      "n_gold_items": 700,
+      "gold_at_k": 0.6686,
+      "gold_ci95": {
+        "ci95": [
+          0.6343,
+          0.7029
+        ]
+      },
+      "settings": {
+        "split": "all",
+        "families": "all",
+        "top_k": 6,
+        "generator": "offline_qwen",
+        "strategy": "stratified",
+        "limit": 811,
+        "only_retrieved": false,
+        "normalize_query": false,
+        "pin_subset_from": null,
+        "testset": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\testset_v1.jsonl",
+        "enable_classifier": "1",
+        "enable_answer_guard": "0",
+        "router_soft_filter": "1",
+        "router_filter_rank_bonus": "12",
+        "router_source_quota": "0",
+        "answer_rescue": "0",
+        "rescue_min_score": "0.8",
+        "normalize_sanity_guard": "0",
+        "normalize_min_containment": "0.3",
+        "decoupled_refusal": "0",
+        "dec_thresholds": {
+          "min_entity_coverage": 0.34,
+          "min_token_overlap": 0.2,
+          "min_rrf_norm": 0.9,
+          "min_grounding": 0.6,
+          "max_unsupported": 1
+        },
+        "evidence_selection": "0",
+        "evidence_reranker": {
+          "requested": "bge-reranker-base",
+          "kind": "chưa_chạy",
+          "notes": []
+        },
+        "retrieval_reranker": {
+          "enabled": true,
+          "requested_model": "BAAI/bge-reranker-v2-m3",
+          "loaded_model": "loaded BAAI/bge-reranker-v2-m3 on cuda in 8.32s, max_length=512",
+          "loaded": true,
+          "load_seconds": 8.32,
+          "device": "cuda",
+          "candidate_pool": 20,
+          "keep_candidates": true,
+          "max_length": 512,
+          "batch_size": 4,
+          "query_convention": "fold(query) vs page_content nguyên văn, sắp xếp ổn định theo (-diem, hang RRF+bonus)",
+          "model_error": null,
+          "last_call": {
+            "n_candidates": 38,
+            "n_scored": 20,
+            "seconds": 2.1445,
+            "model": "BAAI/bge-reranker-v2-m3",
+            "device": "cuda",
+            "pool": 20,
+            "top_score": 0.5324,
+            "bottom_score": 0.0018,
+            "order_changed": true,
+            "notes": [
+              "loaded BAAI/bge-reranker-v2-m3 on cuda in 8.32s, max_length=512"
+            ]
+          },
+          "last_rerank_call": {
+            "n_candidates": 38,
+            "n_scored": 20,
+            "seconds": 2.1445,
+            "model": "BAAI/bge-reranker-v2-m3",
+            "device": "cuda",
+            "pool": 20,
+            "top_score": 0.5324,
+            "bottom_score": 0.0018,
+            "order_changed": true,
+            "notes": [
+              "loaded BAAI/bge-reranker-v2-m3 on cuda in 8.32s, max_length=512"
+            ]
+          },
+          "hybrid_path_available": true
+        },
+        "generator_status": {
+          "generator_model_env": "",
+          "class": "QwenGenerator",
+          "model_name": "local-qwen (qwen2.5:1.5b-instruct)",
+          "ollama_model": "qwen2.5:1.5b-instruct",
+          "temperature": 0.1,
+          "num_ctx": 8192,
+          "prompt_version": "v1.3",
+          "context_char_caps": {
+            "block": 1600,
+            "total": 10000
+          }
+        },
+        "generation_cache_dir": "./.generation_cache",
+        "referee": "2911c69f740d",
+        "oversample_factor": 2
+      },
+      "anchor_rate_all": 0.7553,
+      "anchor_rate_human": 0.701,
+      "n_anchor_human": 97,
+      "gold_by_family": {
+        "CLOZE": {
+          "n_gold": 153,
+          "gold_at_k": 0.8105,
+          "ci95": {
+            "ci95": [
+              0.7451,
+              0.8693
+            ]
+          }
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "gold_at_k": 0.9612,
+          "ci95": {
+            "ci95": [
+              0.932,
+              0.9854
+            ]
+          }
+        },
+        "EXACT": {
+          "n_gold": 52,
+          "gold_at_k": 0.0385,
+          "ci95": {
+            "ci95": [
+              0.0,
+              0.0962
+            ]
+          }
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "gold_at_k": 0.4821,
+          "ci95": {
+            "ci95": [
+              0.3929,
+              0.5714
+            ]
+          }
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "gold_at_k": 0.6667,
+          "ci95": {
+            "ci95": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "gold_at_k": 0.6373,
+          "ci95": {
+            "ci95": [
+              0.5392,
+              0.7255
+            ]
+          }
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "gold_at_k": 0.0,
+          "ci95": {
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "gold_at_k": 0.4706,
+          "ci95": {
+            "ci95": [
+              0.2353,
+              0.7059
+            ]
+          }
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "gold_at_k": 0.4688,
+          "ci95": {
+            "ci95": [
+              0.3125,
+              0.6562
+            ]
+          }
+        }
+      },
+      "gold_by_split": {
+        "test": {
+          "n_gold": 296,
+          "gold_at_k": 0.6318
+        },
+        "trainpool": {
+          "n_gold": 404,
+          "gold_at_k": 0.6955
+        }
+      },
+      "window_concentration": {
+        "mean_modal_source_share": 0.5783,
+        "n_items_window_full_by_one_source": 124,
+        "n_items_modal_ge_4": 334,
+        "n_measured": 811
+      },
+      "rows_without_retrieval_config": 0,
+      "attribution_usable": true,
+      "gold_rank_ceiling": {
+        "EXACT": {
+          "n_gold": 52,
+          "in_window": 2,
+          "outside_window_in_list": 30,
+          "absent_from_list": 20,
+          "gold_at_k": 0.0385,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.6154
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "in_window": 0,
+          "outside_window_in_list": 5,
+          "absent_from_list": 18,
+          "gold_at_k": 0.0,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.2174
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "in_window": 54,
+          "outside_window_in_list": 26,
+          "absent_from_list": 32,
+          "gold_at_k": 0.4821,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.7143
+        },
+        "CLOZE": {
+          "n_gold": 153,
+          "in_window": 124,
+          "outside_window_in_list": 29,
+          "absent_from_list": 0,
+          "gold_at_k": 0.8105,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "in_window": 65,
+          "outside_window_in_list": 37,
+          "absent_from_list": 0,
+          "gold_at_k": 0.6373,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "in_window": 15,
+          "outside_window_in_list": 13,
+          "absent_from_list": 4,
+          "gold_at_k": 0.4688,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.875
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "in_window": 2,
+          "outside_window_in_list": 0,
+          "absent_from_list": 1,
+          "gold_at_k": 0.6667,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.6667
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "in_window": 198,
+          "outside_window_in_list": 8,
+          "absent_from_list": 0,
+          "gold_at_k": 0.9612,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "in_window": 8,
+          "outside_window_in_list": 5,
+          "absent_from_list": 4,
+          "gold_at_k": 0.4706,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.7647
+        }
+      }
+    },
+    "r16": {
+      "n_items": 811,
+      "n_gold_items": 700,
+      "gold_at_k": 0.8357,
+      "gold_ci95": {
+        "ci95": [
+          0.8086,
+          0.8629
+        ]
+      },
+      "settings": {
+        "split": "all",
+        "families": "all",
+        "top_k": 6,
+        "generator": "offline_qwen",
+        "strategy": "stratified",
+        "limit": 811,
+        "only_retrieved": false,
+        "normalize_query": false,
+        "pin_subset_from": null,
+        "testset": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\testset_v1.jsonl",
+        "enable_classifier": "1",
+        "enable_answer_guard": "0",
+        "router_soft_filter": "1",
+        "router_filter_rank_bonus": "12",
+        "router_source_quota": "0",
+        "answer_rescue": "0",
+        "rescue_min_score": "0.8",
+        "normalize_sanity_guard": "0",
+        "normalize_min_containment": "0.3",
+        "decoupled_refusal": "0",
+        "dec_thresholds": {
+          "min_entity_coverage": 0.34,
+          "min_token_overlap": 0.2,
+          "min_rrf_norm": 0.9,
+          "min_grounding": 0.6,
+          "max_unsupported": 1
+        },
+        "evidence_selection": "0",
+        "evidence_reranker": {
+          "requested": "bge-reranker-base",
+          "kind": "chưa_chạy",
+          "notes": []
+        },
+        "retrieval_reranker": {
+          "enabled": true,
+          "requested_model": "BAAI/bge-reranker-v2-m3",
+          "loaded_model": "loaded BAAI/bge-reranker-v2-m3 on cuda in 9.21s, max_length=512",
+          "loaded": true,
+          "load_seconds": 9.21,
+          "device": "cuda",
+          "candidate_pool": 20,
+          "keep_candidates": true,
+          "fallback": false,
+          "max_length": 512,
+          "batch_size": 4,
+          "query_convention": "query NGUYEN VAN (chi strip) vs page_content nguyen van, sap xep on dinh theo (-diem, hang RRF+bonus) [PA-25]",
+          "model_error": null,
+          "last_call": {
+            "n_candidates": 38,
+            "n_scored": 20,
+            "seconds": 2.117,
+            "model": "BAAI/bge-reranker-v2-m3",
+            "device": "cuda",
+            "pool": 20,
+            "top_score": 0.9991,
+            "bottom_score": 0.0001,
+            "order_changed": true,
+            "notes": [
+              "loaded BAAI/bge-reranker-v2-m3 on cuda in 9.21s, max_length=512"
+            ]
+          },
+          "last_rerank_call": {
+            "n_candidates": 38,
+            "n_scored": 20,
+            "seconds": 2.117,
+            "model": "BAAI/bge-reranker-v2-m3",
+            "device": "cuda",
+            "pool": 20,
+            "top_score": 0.9991,
+            "bottom_score": 0.0001,
+            "order_changed": true,
+            "notes": [
+              "loaded BAAI/bge-reranker-v2-m3 on cuda in 9.21s, max_length=512"
+            ]
+          },
+          "hybrid_path_available": true
+        },
+        "generator_status": {
+          "generator_model_env": "",
+          "class": "QwenGenerator",
+          "model_name": "local-qwen (qwen2.5:1.5b-instruct)",
+          "ollama_model": "qwen2.5:1.5b-instruct",
+          "temperature": 0.1,
+          "num_ctx": 8192,
+          "prompt_version": "v1.3",
+          "context_char_caps": {
+            "block": 1600,
+            "total": 10000
+          }
+        },
+        "generation_cache_dir": "./.generation_cache",
+        "referee": "2911c69f740d",
+        "oversample_factor": 2
+      },
+      "anchor_rate_all": 0.8883,
+      "anchor_rate_human": 0.7629,
+      "n_anchor_human": 97,
+      "gold_by_family": {
+        "CLOZE": {
+          "n_gold": 153,
+          "gold_at_k": 1.0,
+          "ci95": {
+            "ci95": [
+              1.0,
+              1.0
+            ]
+          }
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "gold_at_k": 0.9709,
+          "ci95": {
+            "ci95": [
+              0.9466,
+              0.9903
+            ]
+          }
+        },
+        "EXACT": {
+          "n_gold": 52,
+          "gold_at_k": 0.4231,
+          "ci95": {
+            "ci95": [
+              0.2885,
+              0.5577
+            ]
+          }
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "gold_at_k": 0.5714,
+          "ci95": {
+            "ci95": [
+              0.4821,
+              0.6607
+            ]
+          }
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "gold_at_k": 0.6667,
+          "ci95": {
+            "ci95": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "gold_at_k": 0.9902,
+          "ci95": {
+            "ci95": [
+              0.9706,
+              1.0
+            ]
+          }
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "gold_at_k": 0.1739,
+          "ci95": {
+            "ci95": [
+              0.0435,
+              0.3478
+            ]
+          }
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "gold_at_k": 0.6471,
+          "ci95": {
+            "ci95": [
+              0.4118,
+              0.8824
+            ]
+          }
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "gold_at_k": 0.875,
+          "ci95": {
+            "ci95": [
+              0.75,
+              0.9688
+            ]
+          }
+        }
+      },
+      "gold_by_split": {
+        "test": {
+          "n_gold": 296,
+          "gold_at_k": 0.8074
+        },
+        "trainpool": {
+          "n_gold": 404,
+          "gold_at_k": 0.8564
+        }
+      },
+      "window_concentration": {
+        "mean_modal_source_share": 0.6465,
+        "n_items_window_full_by_one_source": 213,
+        "n_items_modal_ge_4": 432,
+        "n_measured": 811
+      },
+      "rows_without_retrieval_config": 0,
+      "attribution_usable": true,
+      "gold_rank_ceiling": {
+        "EXACT": {
+          "n_gold": 52,
+          "in_window": 22,
+          "outside_window_in_list": 10,
+          "absent_from_list": 20,
+          "gold_at_k": 0.4231,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.6154
+        },
+        "TRAP": {
+          "n_gold": 23,
+          "in_window": 4,
+          "outside_window_in_list": 1,
+          "absent_from_list": 18,
+          "gold_at_k": 0.1739,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.2174
+        },
+        "NUMERIC": {
+          "n_gold": 112,
+          "in_window": 64,
+          "outside_window_in_list": 16,
+          "absent_from_list": 32,
+          "gold_at_k": 0.5714,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.7143
+        },
+        "CLOZE": {
+          "n_gold": 153,
+          "in_window": 153,
+          "outside_window_in_list": 0,
+          "absent_from_list": 0,
+          "gold_at_k": 1.0,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "SOURCE_LOOKUP": {
+          "n_gold": 102,
+          "in_window": 101,
+          "outside_window_in_list": 1,
+          "absent_from_list": 0,
+          "gold_at_k": 0.9902,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "YESNO_FACT": {
+          "n_gold": 32,
+          "in_window": 28,
+          "outside_window_in_list": 0,
+          "absent_from_list": 4,
+          "gold_at_k": 0.875,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.875
+        },
+        "REVERSE_LEGAL": {
+          "n_gold": 3,
+          "in_window": 2,
+          "outside_window_in_list": 0,
+          "absent_from_list": 1,
+          "gold_at_k": 0.6667,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.6667
+        },
+        "CLOZE_OCR": {
+          "n_gold": 206,
+          "in_window": 200,
+          "outside_window_in_list": 6,
+          "absent_from_list": 0,
+          "gold_at_k": 0.9709,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 1.0
+        },
+        "TRAP_OCR": {
+          "n_gold": 17,
+          "in_window": 11,
+          "outside_window_in_list": 2,
+          "absent_from_list": 4,
+          "gold_at_k": 0.6471,
+          "ceiling_if_all_outside_ranks_7_to_12_recovered": 0.7647
+        }
+      }
+    }
+  },
+  "paired": {
+    "n_common_items": 811,
+    "n_common_gold_items": 700,
+    "baseline": "r12",
+    "candidate": "r16",
+    "gold_flags": {
+      "both_hit": 461,
+      "only_baseline": 7,
+      "only_candidate": 124,
+      "both_miss": 108
+    },
+    "mcnemar_exact": {
+      "n_discordant": 131,
+      "b": 124,
+      "c": 7,
+      "p_two_sided": 8.681051190896228e-29
+    },
+    "paired_bootstrap_gold_delta": {
+      "reps_requested": 10000,
+      "reps_valid": 10000,
+      "reps_skipped_zero_denominator": 0,
+      "seed": 20261023,
+      "mean_diff": 0.1671,
+      "ci95_percentile": [
+        0.1371,
+        0.1971
+      ]
+    },
+    "gold_delta": 0.1671,
+    "by_family": {
+      "EXACT": {
+        "n_gold": 52,
+        "baseline_rate": 0.0385,
+        "candidate_rate": 0.4231,
+        "delta": 0.3846,
+        "mcnemar": {
+          "n_discordant": 20,
+          "b": 20,
+          "c": 0,
+          "p_two_sided": 1.9073486328125e-06
+        }
+      },
+      "TRAP": {
+        "n_gold": 23,
+        "baseline_rate": 0.0,
+        "candidate_rate": 0.1739,
+        "delta": 0.1739,
+        "mcnemar": {
+          "n_discordant": 4,
+          "b": 4,
+          "c": 0,
+          "p_two_sided": 0.125
+        }
+      },
+      "TRAP_OCR": {
+        "n_gold": 17,
+        "baseline_rate": 0.4706,
+        "candidate_rate": 0.6471,
+        "delta": 0.1765,
+        "mcnemar": {
+          "n_discordant": 3,
+          "b": 3,
+          "c": 0,
+          "p_two_sided": 0.25
+        }
+      }
+    },
+    "anchor": {
+      "n": 797,
+      "baseline_rate": 0.7553,
+      "candidate_rate": 0.8883,
+      "delta": 0.133,
+      "paired_bootstrap": {
+        "reps_requested": 10000,
+        "reps_valid": 10000,
+        "reps_skipped_zero_denominator": 0,
+        "seed": 20261023,
+        "mean_diff": 0.1331,
+        "ci95_percentile": [
+          0.1066,
+          0.1606
+        ]
+      },
+      "human": {
+        "n": 97,
+        "baseline_rate": 0.701,
+        "candidate_rate": 0.7629,
+        "delta": 0.0619,
+        "mcnemar": {
+          "n_discordant": 22,
+          "b": 14,
+          "c": 8,
+          "p_two_sided": 0.28627872467041016
+        }
+      }
+    },
+    "mechanism": {
+      "lost_in_candidate": {
+        "n": 7,
+        "loser_round": "r16",
+        "by_cause": {
+          "ranking_outside_window": 6,
+          "filter_blocks_gold": 1
+        },
+        "by_family": {
+          "NUMERIC": 1,
+          "CLOZE_OCR": 6
+        },
+        "by_split": {
+          "trainpool": 1,
+          "test": 6
+        },
+        "n_gold_just_outside_window_7_to_12": 7,
+        "n_window_taken_by_one_source": 4,
+        "loser_rank_distribution": {
+          "9": 3,
+          "8": 2,
+          "10": 2
+        },
+        "winner_rank_distribution": {
+          "6": 3,
+          "1": 2,
+          "4": 1,
+          "2": 1
+        },
+        "loser_filter_recorded": 7,
+        "winner_filter_recorded": 7,
+        "reading_note": "Hai round cùng chạy classifier + bảng TOPIC_SOURCE_FILTER như nhau (settings giống hệt nhau ngoại trừ con số bonus), nên `filter_blocks_gold` ở đây KHÔNG có nghĩa là bộ lọc CẮT chunk vàng (chế độ mềm không cắt) — mà là: chunk vàng nằm NGOÀI danh sách nguồn được ưu tiên, và bonus đủ lớn (>= cỡ cửa sổ) kéo MỌI chunk trong danh sách lên trước nó, đúng bao nhiêu hạng bằng đúng mức bonus.",
+        "mean_loser_modal_share": 5.29,
+        "mean_winner_modal_share": 5.14,
+        "items": [
+          {
+            "id": "N245202928509085",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+            "loser_round": "r16",
+            "winner_round": "r12",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 4,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "O123508198751185",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "loser_round": "r16",
+            "winner_round": "r12",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "winner_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "loser_modal_source_share": 6,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ]
+          },
+          {
+            "id": "O126962814314930",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "888-qd-dhag-2022-08-08.pdf",
+            "loser_round": "r16",
+            "winner_round": "r12",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "888-qd-dhag-2022-08-08.pdf"
+            ],
+            "winner_filter": [
+              "888-qd-dhag-2022-08-08.pdf"
+            ],
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "888-qd-dhag-2022-08-08.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf"
+            ]
+          },
+          {
+            "id": "O151584480372662",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "1054-qd-dhag-2020-09-28.pdf",
+            "loser_round": "r16",
+            "winner_round": "r12",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 6,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "O152923660886474",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "888-qd-dhag-2022-08-08.pdf",
+            "loser_round": "r16",
+            "winner_round": "r12",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "888-qd-dhag-2022-08-08.pdf"
+            ],
+            "winner_filter": [
+              "888-qd-dhag-2022-08-08.pdf"
+            ],
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "888-qd-dhag-2022-08-08.pdf"
+            ]
+          },
+          {
+            "id": "O162438923367627",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+            "loser_round": "r16",
+            "winner_round": "r12",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 6,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "O172942237695496",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "1054-qd-dhag-2020-09-28.pdf",
+            "loser_round": "r16",
+            "winner_round": "r12",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 6,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          }
+        ]
+      },
+      "gained_in_candidate": {
+        "n": 124,
+        "loser_round": "r12",
+        "by_cause": {
+          "filter_blocks_gold": 67,
+          "ranking_outside_window": 57
+        },
+        "by_family": {
+          "CLOZE": 29,
+          "NUMERIC": 11,
+          "CLOZE_OCR": 8,
+          "TRAP_OCR": 3,
+          "SOURCE_LOOKUP": 36,
+          "EXACT": 20,
+          "TRAP": 4,
+          "YESNO_FACT": 13
+        },
+        "by_split": {
+          "trainpool": 66,
+          "test": 58
+        },
+        "n_gold_just_outside_window_7_to_12": 61,
+        "n_window_taken_by_one_source": 2,
+        "loser_rank_distribution": {
+          "8": 13,
+          "9": 13,
+          "19": 13,
+          "20": 13,
+          "10": 11,
+          "14": 10,
+          "7": 9,
+          "11": 8,
+          "18": 7,
+          "12": 7,
+          "13": 6,
+          "15": 5,
+          "16": 5,
+          "17": 4
+        },
+        "winner_rank_distribution": {
+          "1": 86,
+          "2": 20,
+          "3": 8,
+          "5": 4,
+          "6": 3,
+          "4": 3
+        },
+        "loser_filter_recorded": 81,
+        "winner_filter_recorded": 81,
+        "reading_note": "Hai round cùng chạy classifier + bảng TOPIC_SOURCE_FILTER như nhau (settings giống hệt nhau ngoại trừ con số bonus), nên `filter_blocks_gold` ở đây KHÔNG có nghĩa là bộ lọc CẮT chunk vàng (chế độ mềm không cắt) — mà là: chunk vàng nằm NGOÀI danh sách nguồn được ưu tiên, và bonus đủ lớn (>= cỡ cửa sổ) kéo MỌI chunk trong danh sách lên trước nó, đúng bao nhiêu hạng bằng đúng mức bonus.",
+        "mean_loser_modal_share": 2.62,
+        "mean_winner_modal_share": 3.41,
+        "items": [
+          {
+            "id": "C105652622704907",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 15,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "C107232753951147",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 18,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "C107595163449345",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ]
+          },
+          {
+            "id": "C108895471067235",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ]
+          },
+          {
+            "id": "C111117702982761",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 11,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "C111550607514301",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 1,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "C120126368602479",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 15,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1059-qd-dhag-2020-09-29.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "C12741448737759",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 13,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "KH To chuc HK 261 - 20260612.pdf"
+            ]
+          },
+          {
+            "id": "C130073270565488",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "C138944661199096",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 13,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "C144954559979778",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 12,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "C154042131342800",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ]
+          },
+          {
+            "id": "C17328646531984",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "C176628353893093",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 16,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "C192145756488930",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 1,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf"
+            ]
+          },
+          {
+            "id": "C206107883081956",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 11,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "KH To chuc HK 261 - 20260612.pdf"
+            ]
+          },
+          {
+            "id": "C208859906141151",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 16,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "C222550575090599",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 4,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf"
+            ]
+          },
+          {
+            "id": "C225970549617825",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "KH To chuc HK 261 - 20260612.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf"
+            ]
+          },
+          {
+            "id": "C23423428899732",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 4,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "lich-hoc-tap-tuan-shcd-sv-2026-2027-dh24-dh25-dh26.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "C235908696167932",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "C241294323189123",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "C245769958060758",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 13,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "KH To chuc HK 261 - 20260612.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "C281049306129668",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 12,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "KH To chuc HK 261 - 20260612.pdf",
+              "KH To chuc HK 261 - 20260612.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "KH To chuc HK 261 - 20260612.pdf"
+            ]
+          },
+          {
+            "id": "C31505621150313",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "KH To chuc HK 261 - 20260612.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "C40742331345322",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "C41275909282740",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 17,
+            "winner_gold_rank": 5,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "C94290390832964",
+            "family": "CLOZE",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 12,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "KH To chuc HK 261 - 20260612.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "C96313333720417",
+            "family": "CLOZE",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "N121989377006900",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 3,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "N13560832540059",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "N172171203676287#2",
+            "family": "NUMERIC",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "N196263614913534",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 13,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "N196263614913534#2",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "N215234412761373",
+            "family": "NUMERIC",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 1,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "N269981552137906",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 3,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "N27292691594437",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "N45769564669798",
+            "family": "NUMERIC",
+            "split": "test",
+            "gold_source": "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "winner_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ]
+          },
+          {
+            "id": "N52859559320835",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "1059-qd-dhag-2020-09-29.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 3,
+            "loser_filter": [
+              "1059-qd-dhag-2020-09-29.pdf"
+            ],
+            "winner_filter": [
+              "1059-qd-dhag-2020-09-29.pdf"
+            ],
+            "loser_modal_source_share": 6,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1059-qd-dhag-2020-09-29.pdf"
+            ]
+          },
+          {
+            "id": "N79642582103261",
+            "family": "NUMERIC",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "O137831332378968",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 11,
+            "winner_gold_rank": 6,
+            "loser_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "winner_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ]
+          },
+          {
+            "id": "O180494654644930",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "O197562482008393",
+            "family": "CLOZE_OCR",
+            "split": "trainpool",
+            "gold_source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "O225523197923668",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 17,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "O273357807554180",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 11,
+            "winner_gold_rank": 4,
+            "loser_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "winner_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ]
+          },
+          {
+            "id": "O32296082393238",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "winner_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "O40009272787566",
+            "family": "CLOZE_OCR",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 6,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+              "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+              "TB tham gia BHYT SV NH 2026 - 2027.pdf"
+            ]
+          },
+          {
+            "id": "O48450127192075",
+            "family": "CLOZE_OCR",
+            "split": "trainpool",
+            "gold_source": "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "P124557295996989",
+            "family": "TRAP_OCR",
+            "split": "trainpool",
+            "gold_source": "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 2,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "P266781223697651",
+            "family": "TRAP_OCR",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 1,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ]
+          },
+          {
+            "id": "P80319208154176#2",
+            "family": "TRAP_OCR",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 12,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "S100040424033217",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 2,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "S101681573362212",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "winner_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "S103676246349149",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "S110175939029303",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 3,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ]
+          },
+          {
+            "id": "S114242358502836",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "don-xin-chuyen-nhom-hoc-phan.docx",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 6,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S118014254487460",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "S131375215439331",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 16,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ]
+          },
+          {
+            "id": "S136422793382502",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S136602209663909",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 12,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "S148862742577743",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "S15154637517476",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ]
+          },
+          {
+            "id": "S163142788646690",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 13,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S173597443766226",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "don-xin-mien-hoc-phan-tieng-anh.docx",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 3,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S183497106904866",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 11,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ]
+          },
+          {
+            "id": "S187617953419249",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "S192446966638930",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 16,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "S1964580340301",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 1,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "S211792009368179",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 18,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S21358280526248",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 17,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "S21733247145565",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "S219920946058519",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "winner_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "S231289202186686",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 18,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 5,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S238295638684458",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 15,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S250741611644094",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "S258534392187225",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S279375377112304",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S30531982420503",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "don-gia-han-hoc-phi-3.docx",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "winner_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ]
+          },
+          {
+            "id": "S30889259807024",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf"
+            ]
+          },
+          {
+            "id": "S32471428660229",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 11,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 1,
+            "loser_top6_sources": [
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "S55337036853835",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 11,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S58279665248655",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "S66378107266526",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 1,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "S71987047225773",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 18,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "S80110671227149",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "S8445186527785",
+            "family": "SOURCE_LOOKUP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "S9269983706187",
+            "family": "SOURCE_LOOKUP",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "T111158251954171",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 1,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "888-qd-dhag-2022-08-08.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "T126243395732433",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "don-gia-han-hoc-phi-3.docx",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 1,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "888-qd-dhag-2022-08-08.pdf"
+            ]
+          },
+          {
+            "id": "T130276288816834",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 9,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 6,
+            "loser_top6_sources": [
+              "1059-qd-dhag-2020-09-29.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "T139306397651845",
+            "family": "TRAP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "TB16 THAY DOI CONG RA VAO KTX.pdf",
+              "TB16 THAY DOI CONG RA VAO KTX.pdf"
+            ]
+          },
+          {
+            "id": "T140835809083255",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 18,
+            "winner_gold_rank": 2,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "T144896717366273",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf"
+            ]
+          },
+          {
+            "id": "T177156981959215",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 3,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "888-qd-dhag-2022-08-08.pdf"
+            ]
+          },
+          {
+            "id": "T177663690614045",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf"
+            ]
+          },
+          {
+            "id": "T193847537672851",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "T197226521741965",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "don-xac-nhan-hoan-canh-kho-khan.docx",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 1,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "T198290899368008",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 15,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "winner_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "T224347701010571",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 2,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "T231659771122737",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 5,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "T24199159682252",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 13,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf"
+            ]
+          },
+          {
+            "id": "T24822787546956",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "T269724694329437",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "winner_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "T274957825497798",
+            "family": "TRAP",
+            "split": "trainpool",
+            "gold_source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 12,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "888-qd-dhag-2022-08-08.pdf"
+            ]
+          },
+          {
+            "id": "T320008594923",
+            "family": "TRAP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 5,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf"
+            ]
+          },
+          {
+            "id": "T32885607500313",
+            "family": "TRAP",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 3,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "T49826991308295",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 15,
+            "winner_gold_rank": 3,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "T56549597345139",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 11,
+            "winner_gold_rank": 5,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "T81855558362586",
+            "family": "EXACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 17,
+            "winner_gold_rank": 2,
+            "loser_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "winner_filter": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "1059-qd-dhag-2020-09-29.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "888-qd-dhag-2022-08-08.pdf"
+            ]
+          },
+          {
+            "id": "T84810705430065",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 2,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 4,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "T93385473533286",
+            "family": "EXACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "888-qd-dhag-2022-08-08.pdf",
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf"
+            ]
+          },
+          {
+            "id": "Y111220391465874",
+            "family": "YESNO_FACT",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 1,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf"
+            ]
+          },
+          {
+            "id": "Y115938935822713",
+            "family": "YESNO_FACT",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 18,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "winner_filter": [
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "Y126472464845134",
+            "family": "YESNO_FACT",
+            "split": "trainpool",
+            "gold_source": "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 7,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf"
+            ]
+          },
+          {
+            "id": "Y140162569861675",
+            "family": "YESNO_FACT",
+            "split": "test",
+            "gold_source": "1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 8,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1059-qd-dhag-2020-09-29.pdf"
+            ]
+          },
+          {
+            "id": "Y184050601125343",
+            "family": "YESNO_FACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 16,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "winner_filter": [
+              "1054-qd-dhag-2020-09-28.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "Y191848994401896",
+            "family": "YESNO_FACT",
+            "split": "trainpool",
+            "gold_source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "Y215997632637955",
+            "family": "YESNO_FACT",
+            "split": "trainpool",
+            "gold_source": "ban-mo-ta-ctdt-nganh-cntt-2021.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 20,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "winner_filter": [
+              "ban-mo-ta-ctdt-nganh-cntt-2021.pdf"
+            ],
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 3,
+            "loser_top6_sources": [
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "888-qd-dhag-2022-08-08.pdf"
+            ]
+          },
+          {
+            "id": "Y231035235702969",
+            "family": "YESNO_FACT",
+            "split": "trainpool",
+            "gold_source": "Thong bao dang ky hoc chuong trinh 2 nam hoc 2026-2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "Y275021997507787",
+            "family": "YESNO_FACT",
+            "split": "test",
+            "gold_source": "TB_KhaoSatSinhVien_HoTroHocPhi (1).pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "filter_blocks_gold",
+            "loser_gold_rank": 18,
+            "winner_gold_rank": 1,
+            "loser_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "winner_filter": [
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "Qui dinh muc hoc phi nam hoc 2026-2027.pdf"
+            ],
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "Y3134353560758",
+            "family": "YESNO_FACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 14,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 3,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "1054-qd-dhag-2020-09-28.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "1054-qd-dhag-2020-09-28.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf"
+            ]
+          },
+          {
+            "id": "Y57173144541416",
+            "family": "YESNO_FACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 10,
+            "winner_gold_rank": 2,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 5,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24th-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "Y77858545654452",
+            "family": "YESNO_FACT",
+            "split": "trainpool",
+            "gold_source": "KH To chuc HK 261 - 20260612.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 19,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 2,
+            "loser_top6_sources": [
+              "163-tb-ctsv-thong-bao-ve-viec-bay-von-tin-chap-tai-ngan-hang-acb-theo-ct-acb-dong-hanh-cung-sinh-vien-dhqg-hcm.pdf",
+              "17-tb-ctsv-thong-bao-ve-viec-trien-khai-tin-dung-doi-voi-sinh-vien-cac-nganh-stem.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf",
+              "03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf"
+            ]
+          },
+          {
+            "id": "Y86206377922780",
+            "family": "YESNO_FACT",
+            "split": "test",
+            "gold_source": "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+            "loser_round": "r12",
+            "winner_round": "r16",
+            "cause": "ranking_outside_window",
+            "loser_gold_rank": 12,
+            "winner_gold_rank": 1,
+            "loser_filter": null,
+            "winner_filter": null,
+            "loser_modal_source_share": 2,
+            "winner_modal_source_share": 4,
+            "loser_top6_sources": [
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf",
+              "ke-hoach-ttck-kltn-dh24pm-2026.pdf",
+              "TB tham gia BHYT SV NH 2026 - 2027.pdf",
+              "367-QĐ-ĐU ngay 08-4-2026.pdf",
+              "05-tb-ctsv-thong-bao-ve-viec-nop-ho-so-huong-che-do-ho-tro-chi-phi-hoc-tap-hki-nam-hoc-2025-2026.pdf"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "settings_diff": {
+    "retrieval_reranker": {
+      "r12": {
+        "enabled": true,
+        "requested_model": "BAAI/bge-reranker-v2-m3",
+        "loaded_model": "loaded BAAI/bge-reranker-v2-m3 on cuda in 8.32s, max_length=512",
+        "loaded": true,
+        "load_seconds": 8.32,
+        "device": "cuda",
+        "candidate_pool": 20,
+        "keep_candidates": true,
+        "max_length": 512,
+        "batch_size": 4,
+        "query_convention": "fold(query) vs page_content nguyên văn, sắp xếp ổn định theo (-diem, hang RRF+bonus)",
+        "model_error": null,
+        "last_call": {
+          "n_candidates": 38,
+          "n_scored": 20,
+          "seconds": 2.1445,
+          "model": "BAAI/bge-reranker-v2-m3",
+          "device": "cuda",
+          "pool": 20,
+          "top_score": 0.5324,
+          "bottom_score": 0.0018,
+          "order_changed": true,
+          "notes": [
+            "loaded BAAI/bge-reranker-v2-m3 on cuda in 8.32s, max_length=512"
+          ]
+        },
+        "last_rerank_call": {
+          "n_candidates": 38,
+          "n_scored": 20,
+          "seconds": 2.1445,
+          "model": "BAAI/bge-reranker-v2-m3",
+          "device": "cuda",
+          "pool": 20,
+          "top_score": 0.5324,
+          "bottom_score": 0.0018,
+          "order_changed": true,
+          "notes": [
+            "loaded BAAI/bge-reranker-v2-m3 on cuda in 8.32s, max_length=512"
+          ]
+        },
+        "hybrid_path_available": true
+      },
+      "r16": {
+        "enabled": true,
+        "requested_model": "BAAI/bge-reranker-v2-m3",
+        "loaded_model": "loaded BAAI/bge-reranker-v2-m3 on cuda in 9.21s, max_length=512",
+        "loaded": true,
+        "load_seconds": 9.21,
+        "device": "cuda",
+        "candidate_pool": 20,
+        "keep_candidates": true,
+        "fallback": false,
+        "max_length": 512,
+        "batch_size": 4,
+        "query_convention": "query NGUYEN VAN (chi strip) vs page_content nguyen van, sap xep on dinh theo (-diem, hang RRF+bonus) [PA-25]",
+        "model_error": null,
+        "last_call": {
+          "n_candidates": 38,
+          "n_scored": 20,
+          "seconds": 2.117,
+          "model": "BAAI/bge-reranker-v2-m3",
+          "device": "cuda",
+          "pool": 20,
+          "top_score": 0.9991,
+          "bottom_score": 0.0001,
+          "order_changed": true,
+          "notes": [
+            "loaded BAAI/bge-reranker-v2-m3 on cuda in 9.21s, max_length=512"
+          ]
+        },
+        "last_rerank_call": {
+          "n_candidates": 38,
+          "n_scored": 20,
+          "seconds": 2.117,
+          "model": "BAAI/bge-reranker-v2-m3",
+          "device": "cuda",
+          "pool": 20,
+          "top_score": 0.9991,
+          "bottom_score": 0.0001,
+          "order_changed": true,
+          "notes": [
+            "loaded BAAI/bge-reranker-v2-m3 on cuda in 9.21s, max_length=512"
+          ]
+        },
+        "hybrid_path_available": true
+      }
+    }
+  },
+  "settings_diff_retrieval_relevant": {}
+}

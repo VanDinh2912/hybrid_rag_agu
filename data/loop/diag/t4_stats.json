@@ -1,0 +1,183 @@
+{
+  "seed": 20261023,
+  "bootstrap_reps": 10000,
+  "rounds": {
+    "r5": {
+      "round": "r5",
+      "n": 100,
+      "referee_in_summary": "9f1179ccab74",
+      "counts": {
+        "PASS_CORRECT": 14,
+        "FAIL_OVERREFUSAL": 37,
+        "FAIL_RETRIEVAL": 20,
+        "PASS_REFUSAL": 17,
+        "FAIL_HALLUCINATED_ON_UNANSWERABLE": 2,
+        "FAIL_INCOMPLETE": 9,
+        "FAIL_FABRICATED": 1
+      },
+      "rates": {
+        "pass_correct": 0.14,
+        "refusal_rate": 0.69,
+        "fabrication_rate_on_answered": 0.0323
+      },
+      "ci95": {
+        "pass_correct": {
+          "ci95": [
+            0.07,
+            0.21
+          ]
+        },
+        "refusal_rate": {
+          "ci95": [
+            0.6,
+            0.78
+          ]
+        },
+        "fabrication_rate_on_answered": {
+          "ci95": [
+            0.0,
+            0.1111
+          ]
+        }
+      },
+      "gold_in_window": {
+        "n_items_with_gold": 80,
+        "rate": 0.7375
+      },
+      "latency_seconds": {
+        "median": 16.16,
+        "p95": 18.65,
+        "max": 21.43
+      }
+    },
+    "r8": {
+      "round": "r8",
+      "n": 100,
+      "referee_in_summary": "9f1179ccab74",
+      "counts": {
+        "FAIL_OVERREFUSAL": 23,
+        "FAIL_INCOMPLETE": 19,
+        "PASS_CORRECT": 19,
+        "FAIL_RETRIEVAL": 21,
+        "FAIL_HALLUCINATED_ON_UNANSWERABLE": 12,
+        "FAIL_CONFIRMED_FALSE_PREMISE": 4,
+        "PASS_REFUSAL": 2
+      },
+      "rates": {
+        "pass_correct": 0.19,
+        "refusal_rate": 0.28,
+        "fabrication_rate_on_answered": 0.0
+      },
+      "ci95": {
+        "pass_correct": {
+          "ci95": [
+            0.12,
+            0.27
+          ]
+        },
+        "refusal_rate": {
+          "ci95": [
+            0.2,
+            0.37
+          ]
+        },
+        "fabrication_rate_on_answered": {
+          "ci95": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "gold_in_window": {
+        "n_items_with_gold": 80,
+        "rate": 0.7125
+      },
+      "latency_seconds": {
+        "median": 14.9,
+        "p95": 19.73,
+        "max": 26.19
+      }
+    },
+    "r9": {
+      "round": "r9",
+      "n": 100,
+      "referee_in_summary": "9f1179ccab74",
+      "counts": {
+        "FAIL_OVERREFUSAL": 35,
+        "FAIL_INCOMPLETE": 9,
+        "PASS_CORRECT": 19,
+        "FAIL_RETRIEVAL": 18,
+        "PASS_REFUSAL": 14,
+        "FAIL_HALLUCINATED_ON_UNANSWERABLE": 3,
+        "FAIL_CONFIRMED_FALSE_PREMISE": 2
+      },
+      "rates": {
+        "pass_correct": 0.19,
+        "refusal_rate": 0.57,
+        "fabrication_rate_on_answered": 0.0
+      },
+      "ci95": {
+        "pass_correct": {
+          "ci95": [
+            0.12,
+            0.27
+          ]
+        },
+        "refusal_rate": {
+          "ci95": [
+            0.47,
+            0.67
+          ]
+        },
+        "fabrication_rate_on_answered": {
+          "ci95": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "gold_in_window": {
+        "n_items_with_gold": 80,
+        "rate": 0.7125
+      },
+      "latency_seconds": {
+        "median": 25.18,
+        "p95": 33.2,
+        "max": 39.08
+      }
+    }
+  },
+  "pairs": [],
+  "b_gemini_top6": {
+    "config": "b_gemini_top6",
+    "counting_rule": "gộp theo id, giữ dòng hợp lệ đầu tiên (như recount_dedup.py)",
+    "n": 12,
+    "n_target": 30,
+    "rates": {
+      "pass_correct": 0.75,
+      "refusal_rate": 0.0833,
+      "fabrication_rate_on_answered": 0.1818
+    },
+    "ci95": {
+      "pass_correct": {
+        "ci95": [
+          0.5,
+          1.0
+        ]
+      },
+      "refusal_rate": {
+        "ci95": [
+          0.0,
+          0.25
+        ]
+      },
+      "fabrication_rate_on_answered": {
+        "ci95": [
+          0.0,
+          0.4444
+        ]
+      }
+    },
+    "caveat": "pool = FAIL_OVERREFUSAL ∩ has_gold_chunk của r5 ⇒ 0/ n mặc định là đúng với Qwen; không ngoại suy ra 100 câu"
+  }
+}
