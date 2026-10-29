@@ -149,3 +149,110 @@ Tổng kết đầy đủ, số nguyên văn từ artifact: `tmp/overnight_summa
 4. Dọn `tmp/` sau nghiệm thu (giữ `tmp/r21c_20261029/`, `tmp/r23_20261029/`, `tmp/r22_*`,
    `tmp/overnight_summary.md`, `tmp/gates*`); có dựng lại 2 zip chain3 đã mất hay không.
 5. Duyệt hàng PA có khuyến nghị "duyệt" (12 hàng, xem `tmp/overnight_summary.md` mục cuối).
+
+## PHIÊN TIẾP 29-10 (22:5x–23:0x) — 5 việc duyệt theo thứ tự, ĐÃ ĐÓNG BĂNG repo
+
+Lệnh: "Duyệt theo thứ tự, tự trị, không hỏi, không tạo PA mới, 0 Gemini, không chạy round, không
+đụng trọng tài/gate/generator, không dọn tmp/". HEAD cuối phiên **`0fe9caf`** (nhánh
+`chore/restructure`); 0 lời gọi Gemini; 0 round chạy; `src/` không đổi byte.
+
+### 1) Vá `docs/DECISION_LOG.md` D-37 — commit `6872c1a`
+
+Cột Trạng thái nay là **BỊ BÁC VETO HUMAN** (r22, 29-10) kèm câu chặn đọc nhầm: nhãn khoa học ở
+EXPERIMENTS là **KHÔNG ĐẠT NGƯỠNG ĐĂNG KÝ**, *không phải BÁC khoa học* (Δ dương, CI loại 0).
+Số đã đối chiếu lại với `tmp/r22_y_check_20261029.md` (không chép suông từ lệnh): gold@6
+581→612 (+31, p=3,12e-06) trên nền r17-T; neo HUMAN 77→72 (−6,49%, ngưỡng −5%); 4/8 mục rơi
+(HQ23, HQ36, HQ40, HQ58) trùng D-37; McNemar 3/8 p=0,227; cờ TẮT. Cột artifact đã trỏ
+`tmp/r22_reranker_20261029.json`, `tmp/r22_report.md`, `tmp/r22_y_check_20261029.md`; câu "CHỜ ĐO
+LẠI" đã bỏ khỏi cột Đo lường. `docs/EXPERIMENTS.md` **không lệch** nên không sửa. Không đổi số khác.
+*Lỗi chính tả trong chính commit message*: "neo HUMAN" bị gõ thành "neoo HUMAN" — không amend
+(luật: không amend commit đã tạo), ghi ở đây để tra cứu.
+
+### 2) PA-31 — bản REDACTED, commit `c346be6`
+
+Dụng cụ mới `tools/diag/redact_pii.py` (nhập `secret_scan.PATTERNS`, **không sửa** máy quét đã
+công bố) ghi bản che sang `data/loop/diag_redacted/`. **Tệp gốc không đổi một byte.**
+
+| | trước | sau |
+|---|---:|---:|
+| dòng có PII (khuôn công bố) | **60** | **0** |
+| lần khớp (khuôn công bố) | **89** (65 SĐT + 24 email) | **0** |
+| SĐT dạng nhóm (lớp rộng bổ sung) | **120** | **0** |
+| tổng số dòng | 49.896 | 49.896 |
+| tổng byte | 4.054.151 | 4.053.785 |
+| JSON/JSONL parse được | — | 5/5 tệp |
+
+Chốt chống dương tính giả (đã sửa 1 lỗi của chính phiên này): khuôn rộng ban đầu cắt chuỗi số dài
+và số thực thành "số điện thoại" (116 ca giả ở `answerability_probe_r11_retrieval.json`) ⇒ nay ứng
+viên phải **trọn** 10 chữ số (đầu 03/05/07/08/09) hoặc 11 chữ số (đầu 02). Soát hồi quy: **312**
+chuỗi số ≥12 chữ số trong 8 tệp **còn nguyên**, 0 bị cắt. Cổng trong `REDACTION_REPORT.json`:
+`lines_kept`/`json_valid`/`pii_zero_after` = true.
+
+**ĐÍNH CHÍNH tiền đề PA-31** (ghi trong `data/loop/diag_redacted/README.md`): hồ sơ 25-10 nói 8 tệp
+"untracked, chưa từng rời máy"; trên cây 29-10 **cả 8 đều đã được git theo dõi** ⇒ PII **đã** nằm
+trong lịch sử git từ trước. Bản redacted có giá trị chia sẻ/nộp, **không** phải biện pháp xoá lịch sử.
+
+### 3) PA-33 — `.gitignore`, commit `5541039`
+
+Đo trước/sau bằng `git ls-files --others --exclude-standard`: **2.655 đường dẫn / 406,6 MiB** →
+**52 đường dẫn / 20,56 MiB**, không tệp đơn lẻ nào > 2 MiB. Artifact **không bị xoá**, vẫn trên đĩa
+và vẫn do `ARTIFACT_MANIFEST` ghim sha256. Sau các commit của phiên, `git add --dry-run -A` còn
+**10 mục** — toàn bộ là tệp chẩn đoán đã biết còn PII (danh sách trong test pin).
+
+### 4) PA-8 — commit phần nhẹ, 4 nhóm
+
+`6872c1a` docs D-37 · `5541039` .gitignore · `c346be6` tool + bản redacted (11 tệp, 3,9 MB) ·
+`629f89f` 31 tệp bằng chứng chẩn đoán (1,4 MB, 55.045 dòng). **KHÔNG** commit `data/loop/rounds*`,
+`chroma_db*`, `tmp/`, `models/`, `data/training/`. Loại khỏi commit vì còn PII: 3 tệp
+`answerability_labelset_*` (15,9 MB / 456 khớp), `corpus_check/*`, `b1_cprime/{a,c}_prime/rows.jsonl`,
+`b3_smoke/sm16/retrieval.jsonl`; loại vì lộ đường dẫn `C:\Users\<tên>`: `t4_adapter_probe.json`.
+
+### 5) Cấu hình khuyến nghị — commit `fa44bbc` + `0fe9caf`
+
+`docs/REPRODUCE.md` mục "Cấu hình khuyến nghị (r23, 29-10)" + khối cuối `.env.example`:
+**`ENABLE_DENSE_ORIGINAL_QUERY=1` và `ENABLE_ANSWER_GUARD=1`**, `ENABLE_RERANKER` **giữ TẮT**
+(r22 veto HUMAN). **Mặc định mã không đổi** (vẫn `"0"`).
+
+**SAI LỆCH CÓ CHỦ ĐÍCH so với câu chữ lệnh:** lệnh nói "ghi vào `.env.example`"; bản đầu ghi dạng
+`TEN_CO=1` đang bật, và **2 test đỏ** vì `tools/diag/env_flag_audit.py` xếp một cờ khai báo BẬT
+trong tệp mẫu là `LOI_KHAI_BAO` (chép `.env.example` thành `.env` = bật ngầm). Nay khuyến nghị nằm ở
+dạng **dòng chú thích** (`# ENABLE_DENSE_ORIGINAL_QUERY=1`) kèm chỉ dẫn bỏ `#`; mặc định và luật
+kiểm toán giữ nguyên; `pytest` xanh. Nếu người dùng muốn tệp mẫu bật thật thì phải sửa luật
+`env_flag_audit` + test pin — việc đó ngoài phạm vi phiên này.
+
+**Đã sửa 1 test pin** (`tests/test_final_secret_scan.py`, đổi tên
+`..._chua_loai_tru_...` → `..._da_loai_tru_...`): chính docstring của nó ghi "RED nếu ai đó thêm
+ignore rule đúng cách (PA-30 áp dụng) — khi đó cập nhật kỳ vọng có chủ đích". Bất biến mới: `git add
+--dry-run -A` ≤ 50 mục, KHÔNG có `tmp`/`models`, mọi tệp còn lại ≤ 2 MiB.
+
+### Cổng cuối (đo SAU khi commit, trước khi đóng băng)
+
+| cổng | kết quả |
+|---|---|
+| `referee_fingerprint()` | **`2911c69f740d`** (không đổi) |
+| `pytest tests -q` | **1551 passed / 5 skipped** (103 s) |
+| `artifact_manifest.py --check` | **KHỚP** — 158 tệp / 390.961.924 B (chỉ `--check`, không sinh lại) |
+| `evidence_pack_check.py --check` | **KHỚP** — 84 tệp / 4.041.992 B, 25 D-row, 9 neo |
+| `docs_consistency_check.py` | **SẠCH LỖI**, 5 cảnh báo cũ, 42 mục sổ, 114 đường dẫn |
+
+### Sao lưu (ngoài repo, mode "x", không ghi đè)
+
+- `D:/backup_thesis_20261029/backup_final_20261029T230504.zip` — **906.286 B**,
+  sha256 `bb17081e…7364e695f`, CRC OK, 51 tệp + manifest, `tree_head = 0fe9caf`.
+  Đã đối chiếu 6 tệp trọng yếu trong zip ↔ đĩa: **6/6 khớp sha**.
+- `C:/backup_thesis_20261029_secondary/backup_final_20261029T230507.zip` — **92.399.462 B**,
+  sha256 `60474c7f…9600e89ccb`, CRC OK, 583 tệp + manifest (lần đầu ở đích này nên ghi đủ phạm vi).
+- Dụng cụ dùng: `tmp/next_backup_20261029_c.py` = **bản sao có `--dest`** của
+  `tmp/next_backup_20261029.py` (giữ nguyên luật; tệp gốc không sửa vì đã sinh các zip đã công bố).
+- **Lưu ý sổ `seen_sha256.json` ở D:**: sau khi xoá 2 zip cũ theo yêu cầu (`backup_r22_*`,
+  `backup_final_*T214551`), sổ vẫn coi nội dung của chúng là "đã có trong backup trước" ⇒ lượt này
+  chỉ ghi 51 tệp mới. Không mất dữ liệu: toàn bộ nội dung đó nằm trong `backup_full_*` (777 MB).
+  Hiện `D:` còn 4 tệp: `SHA256.txt`, `seen_sha256.json`, `backup_full_*`, `backup_generation_*`,
+  và zip mới ở trên.
+
+### Trạng thái kết thúc: ĐÓNG BĂNG
+
+Không còn việc nào được lệnh yêu cầu. Repo dừng ở `0fe9caf`; 10 tệp còn PII **giữ nguyên untracked**
+theo PA-8. Hai việc chờ người dùng quyết (không tự làm): (a) có muốn `.env.example` bật thật 2 cờ
+khuyến nghị (phải sửa luật `env_flag_audit` + test pin); (b) có viết lại lịch sử git để xoá PII của
+8 tệp PA-31 (đổi hash mọi commit từ đó về sau).
