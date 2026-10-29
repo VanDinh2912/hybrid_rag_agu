@@ -63,3 +63,19 @@ chroma_db*/
 # outputs/: file mới mặc định KHÔNG stage; file đã track giữ nguyên trong git.
 # Chốt một kết quả mới để công bố thì `git add -f outputs/<file>` rồi chạy lại manifest.
 outputs/*
+
+# ===== PA-33 (29-10): vùng artifact nặng — chặn `git add -A` stage nhầm =====
+# Đo ngay trước khi thêm luật: 2.655 đường dẫn / 406,6 MiB chưa bị ignore, trong đó
+# data/loop/rounds/ 130,4 MiB · data/loop/rounds_v2/ 32,3 MiB · tmp/ (390 MB trên đĩa,
+# gồm 3 bản sao index không cần git) · data/training/ 13 MB · models/ (phần còn lại
+# ngoài 2 mục B3 phía trên).
+# Artifact vẫn NẰM NGUYÊN trên đĩa và vẫn được ARTIFACT_MANIFEST.json theo dõi theo sha256;
+# chỉ không vào git. Muốn chốt một tệp cụ thể thì `git add -f <path>`.
+tmp/
+models/
+data/loop/rounds/
+data/loop/rounds_v2/
+data/training/
+# cache của các lượt diag (tra cứu lại được bằng cách chạy lại công cụ)
+data/loop/diag/**/cache/
+
