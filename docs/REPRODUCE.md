@@ -156,8 +156,9 @@ round nguồn (cây `data/loop/rounds_v2/` chưa tracked) và từ chối chạy
 | `referee_fingerprint()` | **`2911c69f740d`** | không đổi |
 | `tools/diag/repro_preflight.py` | **ĐẠT** (0 hỏng; 1 cảnh báo = lever `.env` như dòng trên) | 361 chunk / 26 nguồn / phân bố tầng / sha256 index / 29 tệp corpus / 24 tệp + 10.672 dòng `data/training`; pin `docs/repro_pins_20261031.json` (PA-57) |
 
-**Thứ tự cổng bắt buộc (PA-60):** `final_number_audit.py` mở trực tiếp `chroma_db` và
-`indexes/experimental/chroma_db_vie` nên Chroma **tái ghi byte** ba tệp mỗi index dù nội dung logic
-không đổi. Vì vậy: chạy `final_number_audit.py` **trước**, `artifact_manifest.py --check`
-**sau cùng**. Nếu lỡ chạy ngược, phục hồi 6 tệp từ backup rồi kiểm lại. `repro_preflight.py`
-đọc index bằng sqlite `mode=ro&immutable=1` nên **không** gây hiệu ứng này.
+**Thứ tự cổng (PA-60):** ngày 31-10 đã thấy byte 3 tệp mỗi index bị đổi ngay sau một chuỗi cổng dù
+nội dung logic không đổi; **kiểm soát lại cùng ngày** (băm 10 tệp → chạy riêng
+`final_number_audit.py` → băm lại) cho **0/10 tệp đổi**, nên bước gây tái ghi **chưa xác định**.
+Phòng ngừa vẫn giữ: chạy `final_number_audit.py` **trước**, `artifact_manifest.py --check`
+**sau cùng**; nếu LỆCH, phục hồi 6 tệp từ backup rồi kiểm lại. `repro_preflight.py` đọc index
+bằng sqlite `mode=ro&immutable=1` nên không thể gây hiệu ứng này.
