@@ -150,8 +150,13 @@ def mask_personal_paths(line: str) -> Tuple[str, int]:
 
 
 def count_personal_paths(text: str) -> int:
-    """Số lần khuôn đường dẫn cá nhân còn khớp trên `text` (cùng khuôn với `mask_personal_paths`)."""
-    return sum(len(rx.findall(line)) for rx in PATH_PATTERNS for line in text.splitlines())
+    """Số lần SẼ được che trên `text` — cùng thứ tự khuôn với `mask_personal_paths`.
+
+    Trước 01-11 hàm đếm mọi khuôn độc lập nên `C:/Users/<tên>` bị đếm 2 lần (khuôn ổ đĩa và
+    khuôn `/Users/` cùng khớp một chỗ), trong khi lượt che chỉ thay 1 lần — báo cáo `before`
+    lớn hơn số thật. Giờ đếm bằng chính phép che (không đổi `after == 0` nên cổng cũ vẫn đúng).
+    """
+    return sum(mask_personal_paths(line)[1] for line in text.splitlines())
 
 
 def out_path_for(rel: str, out_dir: Path) -> Path:
@@ -161,6 +166,19 @@ def out_path_for(rel: str, out_dir: Path) -> Path:
     if parts[:2] == ("data", "loop"):
         return out_dir.joinpath(*parts[2:])
     return out_dir / r
+
+
+def display_path(path: Path) -> str:
+    """Đường dẫn ghi vào báo cáo: tương đối với `ROOT` khi được, tuyệt đối khi `--out` ở ngoài repo.
+
+    Trước 01-11 hàm gọi thẳng `relative_to(ROOT)` ⇒ `--out` ngoài repo (hoặc tương đối — xem
+    `main()`) ném `ValueError` sau khi đã che xong. Báo cáo là dữ liệu chẩn đoán: không được làm
+    hỏng lượt chạy chỉ vì chỗ ghi nằm ngoài cây.
+    """
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 def mask_line(line: str, start_index: Dict[str, int], seen: Dict[str, str], json_mode: bool = False):
@@ -282,7 +300,7 @@ def redact_file(rel: str, out_dir: Path, dry: bool) -> Dict:
         except Exception:
             json_ok = False
 
-    rec = {"path": rel, "out": str(out_path_for(rel, out_dir).relative_to(ROOT).as_posix()),
+    rec = {"path": rel, "out": display_path(out_path_for(rel, out_dir)),
            "lines_before": len(raw.splitlines()), "lines_after": len(out_text.splitlines()),
            "pii_lines_before": before_dong, "pii_hits_before": before_tong,
            "masked_here": hits, "pii_lines_after": after_dong, "pii_hits_after": after_tong,
@@ -308,7 +326,9 @@ def main() -> int:
                          "full = +10 artifact phát sinh sau (ea9416d), KHÔNG gồm testset")
     args = ap.parse_args()
 
-    out_dir = Path(args.out)
+    # `resolve()`: `--out` tương đối (`tmp/x`) phải neo vào CWD, không phải chuỗi thô — trước
+    # 01-11 `relative_to(ROOT)` ném ValueError với mọi `--out` tương đối dù lượt chạy đã che xong.
+    out_dir = Path(args.out).resolve()
     files = list(PA31_FILES) + (list(PA31_EXTRA_FILES) if args.set == "full" else [])
     recs = [redact_file(rel, out_dir, args.dry) for rel in files]
 
