@@ -1038,6 +1038,11 @@ sẽ vẫn xanh vì chỉ kiểm "không bật"; phần "phải khai báo" cần
 
 ## PA-31 — 89 dòng dữ liệu nhân thân trên 8 file chưa mask (nghiệm thu cuối, 25-10 18:5x)
 
+> **TRẠNG THÁI 01-11: ĐÃ ÁP.** Đề xuất dưới đây là bản ghi lúc 25-10 (phạm vi 8 tệp). PA-31 được
+> triển khai trên dòng `main` (`refactor/phase1-runtime`, `b19cfe9`): che **17/18 tệp** xuống
+> **0 khớp PII + 0 đường dẫn cá nhân**, cố ý giữ `data/loop/testset_v1.jsonl` (76 khớp, tập đo đóng
+> băng); pin test `165/9 → 76/1`. Chi tiết: `docs/DECISION_LOG.md` **D-43**, `docs/PA_TRIAGE.md`.
+
 **Vấn đề (đo được).** `tools/diag/secret_scan.py` → `tmp/secret_scan.json`: **0 secret**, **0 đường dẫn
 theo tên user**, nhưng **89 dòng `DU_CAO_NHAN_HOC`** trên 8 file: `data/loop/diag/referee_labeling_r5.jsonl`
 28, `referee_labeling_r5.md` 28, `b_gemini_top6/rows.jsonl` 11, `a_oracle_qwen/rows.jsonl` 6,
