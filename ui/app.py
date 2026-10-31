@@ -41,6 +41,7 @@ load_dotenv(ROOT_DIR / ".env")
 from src.retrieval.vector_db import VectorStoreManager
 from src.generation.local_slm import LocalSLM
 from src.generator import GeminiGenerator, QwenGenerator, _env_flag, is_fallback_answer, GeneratorError
+from src.core.config import DEFAULT_TOP_K
 from src.core.pipeline import HybridRAGPipeline
 from ingest import run_ingestion
 from scripts.learn import append_note, log_learning
@@ -257,7 +258,7 @@ class RAGApplication(tk.Tk):
         self.query_entry.focus_set()
 
         ttk.Label(input_row, text="Top-K:").pack(side=tk.LEFT, padx=(4, 4))
-        self.top_k_var = tk.IntVar(value=6)
+        self.top_k_var = tk.IntVar(value=DEFAULT_TOP_K)
         self.top_k_spin = ttk.Spinbox(input_row, from_=1, to=15, width=4, textvariable=self.top_k_var)
         self.top_k_spin.pack(side=tk.LEFT, padx=(0, 10))
 
@@ -731,7 +732,7 @@ class RAGApplication(tk.Tk):
     def _run_test_thread(self, query: str):
         try:
             print(f"[Test Thread] Bắt đầu xử lý câu hỏi: {query[:50]}...")
-            result = self.pipeline.run(query, top_k=6)
+            result = self.pipeline.run(query, top_k=DEFAULT_TOP_K)
             # P3.5: log thêm nhãn phân loại để người dùng đối chiếu khi gán nhãn thủ công.
             labels = result.get("labels")
             if labels:

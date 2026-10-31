@@ -29,7 +29,7 @@ from typing import Any, Optional
 from langchain_core.documents import Document
 
 from src.core.classifier import classify_query
-from src.core.config import settings
+from src.core.config import DEFAULT_TOP_K, settings
 from src.generation.evidence_selection import evidence_selection_enabled, select_evidence
 from src.core.query_normalizer import normalize_user_query
 from src.generation.refusal_policy import (
@@ -347,7 +347,7 @@ class HybridRAGPipeline:
     def retrieve(
         self,
         query: str,
-        k: int = 6,
+        k: int = DEFAULT_TOP_K,
         fallback_query: Optional[str] = None,
         config: Optional[RetrievalConfig] = None,
     ) -> list[Document]:
@@ -560,7 +560,7 @@ class HybridRAGPipeline:
         )
         return [doc for _, _, doc in merged[: max(1, int(k))]]
 
-    def run(self, question: str, top_k: int = 4) -> dict:
+    def run(self, question: str, top_k: int = DEFAULT_TOP_K) -> dict:
         """Xử lý một câu hỏi với True Hybrid Search và oversampling.
 
         Tham số:

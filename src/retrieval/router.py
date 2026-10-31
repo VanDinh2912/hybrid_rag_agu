@@ -42,6 +42,7 @@ from dotenv import load_dotenv
 from langchain_core.documents import Document
 
 from src.core.classifier import QUESTION_TYPES, TOPICS, _TOPIC_BY_FOLDED
+from src.core.config import DEFAULT_TOP_K, top_k_from_env
 from src.text_utils import fold
 from src.retrieval.vector_db import DEFAULT_BM25_WEIGHT, DEFAULT_VECTOR_WEIGHT
 
@@ -95,7 +96,8 @@ TOPIC_SOURCE_FILTER = {
     ),
 }
 
-DEFAULT_TOP_K = 4
+# `DEFAULT_TOP_K` được re-export từ `src.core.config` (import ở đầu file) để
+# `from src.retrieval.router import DEFAULT_TOP_K` vẫn chạy như trước.
 
 
 @dataclass
@@ -114,14 +116,10 @@ def base_config_from_env() -> RetrievalConfig:
 
     Đọc cùng các biến môi trường mà pipeline hiện tại dùng (RAG_TOP_K,
     BM25_WEIGHT, CHROMA_WEIGHT) nên ENABLE_CLASSIFIER=0 sẽ trả về đúng hành vi
-    cũ. Giá trị sai/không dương rơi về mặc định.
+    cũ. Giá trị sai/không dương rơi về mặc định. `top_k` lấy từ
+    `src.core.config.top_k_from_env()` — một nguồn mặc định duy nhất (REVIEW §3).
     """
-    try:
-        top_k = int(os.getenv("RAG_TOP_K", str(DEFAULT_TOP_K)))
-    except ValueError:
-        top_k = DEFAULT_TOP_K
-    if top_k <= 0:
-        top_k = DEFAULT_TOP_K
+    top_k = top_k_from_env()
 
     try:
         bm25_weight = float(os.getenv("BM25_WEIGHT", str(DEFAULT_BM25_WEIGHT)))

@@ -27,10 +27,10 @@ from src.generator import (
     is_fallback_answer,
 )
 from src.generation.local_slm import LocalSLM, LocalSLMError
+from src.core.config import DEFAULT_TOP_K, top_k_from_env
 from src.core.pipeline import HybridRAGPipeline
 from src.retrieval.vector_db import VectorStoreManager
 
-DEFAULT_TOP_K = 6
 EXIT_WORDS = {"exit", "quit", "thoat", "thoát", "q"}
 HELP_WORDS = {"help", "h", "?", "hd", "huong dan"}
 
@@ -57,7 +57,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("query", nargs="?", default=None,
                         help="Câu hỏi cần tra cứu (bỏ trống sẽ vào vòng lặp tương tác)")
     parser.add_argument("-k", "--top-k", type=int,
-                        default=int(os.getenv("RAG_TOP_K", str(DEFAULT_TOP_K))),
+                        default=top_k_from_env(),
                         help=f"Số chunk ngữ cảnh truy xuất từ ChromaDB (mặc định: {DEFAULT_TOP_K})")
     return parser.parse_args()
 

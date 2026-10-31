@@ -25,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from ingest import run_ingestion
 from src.generator import GeminiGenerator
 from src.generation.local_slm import LocalSLM
+from src.core.config import DEFAULT_TOP_K
 from src.core.pipeline import HybridRAGPipeline, RetrieverRebuildError
 from src.retrieval.vector_db import VectorStoreManager
 
@@ -111,7 +112,7 @@ def main():
             break
 
         try:
-            result = pipeline.run(question, top_k=4)
+            result = pipeline.run(question, top_k=DEFAULT_TOP_K)
         except KeyboardInterrupt:
             print("\n[Đã hủy] Ngắt lượt hỏi này (Ctrl+C).\n")
             continue

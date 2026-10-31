@@ -298,7 +298,7 @@ OLLAMA_TIMEOUT=90
 USE_QWEN_GENERATOR=0             # 1 = evaluation dùng Local Qwen làm generator (offline 100%)
 EMBEDDING_MODEL=BAAI/bge-m3
 CHROMA_PERSIST_DIR=./chroma_db
-RAG_TOP_K=4
+RAG_TOP_K=6
 
 # True Hybrid Search — mặc định đã bật, chỉ khai báo khi muốn tắt/đổi trọng số
 ENABLE_HYBRID_SEARCH=1           # 0 = tắt BM25, chỉ dùng vector search thuần
@@ -325,7 +325,7 @@ OCR_CACHE_DIR=./.cache/ocr/rapidocr
 Vài giá trị cần lưu ý khi viết phần thực nghiệm:
 
 - `GEMINI_MAX_TOKENS=4096` — `gemini-2.5-flash` là model "thinking": token suy luận nội bộ bị trừ **vào cùng** ngân sách `max_output_tokens`. Đo thực tế một lượt trả lời tốn 763 token thinking + 73 token trả lời, nên đặt 1024 sẽ làm câu trả lời **bị cắt giữa chừng**. Thư viện `google-generativeai` 0.8.6 chưa có `thinking_config` để tách riêng ngân sách, chỉ còn cách đặt lớn. `generator.py` vẫn in cảnh báo nếu `finish_reason = MAX_TOKENS`.
-- `RAG_TOP_K=4` — số chunk ngữ cảnh mỗi lượt hỏi của `main.py`; flag `-k/--top-k` ghi đè giá trị này, và nếu `.env` không khai báo thì `main.py` dùng mặc định 6. `src/assessment/evaluation.py` và `scripts/benchmark_chunking.py` có cờ `--top-k` riêng (mặc định 6 và 3).
+- `RAG_TOP_K=6` — mặc định vận hành **duy nhất** (`src/core/config.py::DEFAULT_TOP_K`) cho số chunk ngữ cảnh mỗi lượt hỏi; `main.py`/router đọc biến này, flag `-k/--top-k` ghi đè. `src/assessment/evaluation.py` và `scripts/benchmark_chunking.py` có cờ `--top-k` riêng (mặc định 6 và 3); GUI hiển thị đúng mặc định 6. Không đặt biến thì `main`/router dùng 6; `scripts/benchmark_chunking.py` là thí nghiệm chunking riêng, giữ mặc định 3.
 - `ENABLE_HYBRID_SEARCH` / `ENABLE_QUERY_EXPANSION` — hai công tắc của True Hybrid Search, mặc định **bật**; đặt `0` để lùi về vector search thuần (tiện so sánh có/không hybrid trong phần thực nghiệm). `BM25_WEIGHT` / `CHROMA_WEIGHT` là trọng số RRF của hai nhánh truy xuất.
 - `ENABLE_CLASSIFIER` / `CLASSIFIER_MODEL` / `CLASSIFIER_TIMEOUT` — công tắc tầng phân loại câu hỏi (2 nhãn) + router truy xuất, mặc định `ENABLE_CLASSIFIER=0` (pipeline chạy đúng hành vi cũ 100%, không tốn thêm lần gọi Ollama nào). `1` = bật phân loại: router chọn cấu hình truy xuất theo nhãn, tách truy vấn con cho câu `SO_SANH`, prompt biến thể theo loại; mọi lỗi phân loại suy giảm mềm về cấu hình chung. `CLASSIFIER_MODEL` để trống thì dùng chung `OLLAMA_MODEL`; `CLASSIFIER_TIMEOUT` là timeout gọi Ollama, mặc định 20 giây.
 

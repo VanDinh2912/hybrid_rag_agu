@@ -92,7 +92,7 @@ pipeline vẫn sống và tự lùi về `similarity_search`. Đây là “suy g
 
 ## 3. `run()`: chín bước của một câu hỏi
 
-`HybridRAGPipeline.run(question, top_k=4)` (`:298–444`) là hợp đồng chính. Sơ đồ:
+`HybridRAGPipeline.run(question, top_k=DEFAULT_TOP_K)` (mặc định 6) là hợp đồng chính. Sơ đồ:
 
 ```
 question (raw)
@@ -134,8 +134,9 @@ question (raw)
 
 - Classifier nhận **câu thô**, không phải câu chuẩn hóa. Lý do: nhãn chủ đề/loại câu
   nên dựa trên điều sinh viên hỏi, không phụ thuộc Qwen viết lại đúng hay sai.
-- `base_config.top_k = top_k` ghi đè mặc định 4 của router bằng tham số caller. Nếu
-  caller không truyền, `run` mặc định 4; `main.py` truyền 6 (hoặc `RAG_TOP_K`).
+- `base_config.top_k = top_k` ghi đè mặc định của router bằng tham số caller. Mặc định
+  duy nhất là 6 (`config.DEFAULT_TOP_K`): `pipeline.run` không truyền cũng dùng 6;
+  `main.py` truyền 6 hoặc `RAG_TOP_K` (REVIEW §3).
 - Router có thể tăng `top_k` (SO_SANH +2), đổi trọng số (THU_TUC 0.6/0.4), đặt filter
   nguồn, bật subquery. Không bao giờ giảm `top_k` — đây là ràng buộc có chủ ý để tránh
   mất recall.
@@ -275,7 +276,7 @@ luồng thì có. Chương 09 sẽ nhắc lại.
 | `ENABLE_QUERY_EXPANSION` | `1` | `0` → không đồng nghĩa | |
 | `BM25_WEIGHT` | `0.5` | trọng số RRF | env thắng tham số |
 | `CHROMA_WEIGHT` | `0.5` | trọng số RRF | env thắng tham số |
-| `RAG_TOP_K` | `4` (env example) / `6` (main fallback) | default `-k` của main | không ảnh hưởng evaluation |
+| `RAG_TOP_K` | `6` (mặc định chung `config.DEFAULT_TOP_K`) | default `-k` của main + base router | evaluation dùng `--top-k` riêng |
 | `USE_QWEN_GENERATOR` | `0` | main dùng Qwen thay Gemini | evaluation dùng cờ riêng |
 | `GENERATION_CACHE` | `1` | cache câu trả lời | |
 | `QWEN_FALLBACK` | `1` | Gemini lỗi → Qwen | |
@@ -284,16 +285,17 @@ luồng thì có. Chương 09 sẽ nhắc lại.
 | `CHROMA_PERSIST_DIR` | `./chroma_db` | vị trí DB | |
 | `EMBEDDING_MODEL` | `BAAI/bge-m3` | **chỉ** tokenizer của benchmark chunking | `VectorStoreManager` hard-code bge-m3, không đọc cờ này |
 
-### 5.2. Ba nguồn `top_k`
+### 5.2. Nguồn `top_k`
 
 ```
-main.py -k / RAG_TOP_K  →  run(top_k=...)  →  base_config.top_k  →  router (+2 nếu SO_SANH)
+caller (main.py -k / evaluation --top-k)  >  RAG_TOP_K  >  DEFAULT_TOP_K (6)
 ```
 
-- `pipeline.run` mặc định **4** nếu caller không truyền.
-- `main.py` mặc định **6** nếu env không có `RAG_TOP_K`.
-- `.env.example` đặt `RAG_TOP_K=4`; ai copy file này sẽ chạy 4, không phải 6.
-- Evaluation truyền `top_k` tường minh (thường 6), nên không phụ thuộc hai mặc định trên.
+- `DEFAULT_TOP_K = 6` trong `src/core/config.py` là mặc định **duy nhất** cho
+  `main`, router, `pipeline.run`, evaluation và GUI (REVIEW §3).
+- `pipeline.run` không truyền `top_k` cũng dùng 6; `main.py`/router đọc `RAG_TOP_K`
+  qua `top_k_from_env()`, thiếu/hỏng thì 6. `.env.example` cũng ghi 6.
+- Evaluation truyền `top_k` tường minh (thường 6), nên không phụ thuộc env.
 
 Khi báo cáo, luôn ghi rõ “top_k hiệu dụng” và “retrieve_k”, đừng chỉ ghi “top_k=6”.
 
@@ -431,10 +433,10 @@ collection và nhúng lại toàn bộ 361 chunk; với bge-m3 CPU, mỗi lần 
 so sánh chunk trước/sau khó hiểu. Với đồ án, chấp nhận được; với hệ thống thật, cần
 incremental indexing.
 
-Ngoài ra: `scripts/learn.py` cố định `top_k=4` (`:108`), không đọc `RAG_TOP_K`/`-k`; luôn dùng
-`GeminiGenerator` (không tôn trọng `USE_QWEN_GENERATOR`), nên chạy offline sẽ tốn quota
-hoặc phải chờ fallback. `read_correction()` không bắt `EOFError`/`KeyboardInterrupt` —
-Ctrl+C giữa lúc dán sẽ thoát bằng traceback.
+Ngoài ra: `scripts/learn.py` dùng `top_k=DEFAULT_TOP_K` (6, REVIEW §3), không đọc
+`RAG_TOP_K`/`-k`; luôn dùng `GeminiGenerator` (không tôn trọng `USE_QWEN_GENERATOR`),
+nên chạy offline sẽ tốn quota hoặc phải chờ fallback. `read_correction()` không bắt
+`EOFError`/`KeyboardInterrupt` — Ctrl+C giữa lúc dán sẽ thoát bằng traceback.
 
 ---
 
@@ -555,8 +557,8 @@ Không cần chạy `main.py` hay `evaluation.py` để kiểm tra các hợp đ
 `topic="chương trình đào tạo"`. Cho biết `effective_top_k`, `retrieve_k`, số chunk
 generator đọc, số phần tử `sources`, và số chunk tối đa mà `print_result` liệt kê.
 
-**B. Hai mặc định `top_k`.** Vì sao chạy `python main.py "..."` có thể dùng 6, còn
-`pipeline.run("...")` không truyền `top_k` lại dùng 4? Nếu copy `.env.example` thì con số
+**B. Thứ tự ưu tiên `top_k`.** Vì sao `python main.py "..."` và `pipeline.run("...")`
+không truyền `top_k` đều dùng 6 (REVIEW §3)? `RAG_TOP_K` và `--top-k` ghi đè theo thứ tự
 nào? Evaluation có bị ảnh hưởng không?
 
 **C. Ollama chết.** Mô tả ba tầng bị ảnh hưởng khi Ollama không chạy: chuẩn hóa,
@@ -582,11 +584,11 @@ cách sửa và một test.
 `sources` có 16 phần tử; `print_result` liệt kê tối đa 16 (vì lặp toàn bộ `sources`).
 `contexts` có 8. Đừng nhầm “Top-6” ở dòng tiến trình với 16 chunk thực truy xuất.
 
-**B.** `main.py` lấy default `-k` từ `os.getenv("RAG_TOP_K", str(DEFAULT_TOP_K))` với
-`DEFAULT_TOP_K=6` (`main.py:33,59–61`). `pipeline.run` có default `top_k=4`
-(`pipeline.py:298`). Nếu copy `.env.example`, `RAG_TOP_K=4` → main cũng dùng 4. Evaluation
-truyền `top_k` tường minh (thường 6) nên không phụ thuộc hai default này; nhưng nếu
-evaluation đọc env `RAG_TOP_K` thì cần kiểm tra implementation chương 08.
+**B.** `DEFAULT_TOP_K=6` nằm ở `src/core/config.py`; `main.py` lấy default `-k` qua
+`top_k_from_env()` (đọc `RAG_TOP_K`, thiếu/hỏng thì 6), và `pipeline.run` cũng mặc định 6
+(`pipeline.py`, REVIEW §3). `.env.example` ghi `RAG_TOP_K=6`. Evaluation truyền `top_k`
+tường minh (thường 6) nên không phụ thuộc env; nếu evaluation đọc env `RAG_TOP_K` thì cần
+kiểm tra implementation chương 08.
 
 **C.** (1) Chuẩn hóa: `normalize_user_query` bắt exception, trả câu gốc → giảm chất lượng
 truy xuất nhưng không chết. (2) Classifier: `classify_query` có fallback 3 tầng (LLM →
@@ -640,8 +642,8 @@ generator luôn ném `GeneratorError`, chạy `main` với query và assert exit
 4. `retrieve()` có bốn nhánh: hybrid, fallback query, hậu lọc, vector thuần. Nhánh vector
    thuần bỏ qua toàn bộ trọng số/filter của router.
 5. Fail-open ở filter nguồn: lọc sạch thì giữ kết quả chưa lọc, chỉ cảnh báo.
-6. `main.py` mặc định 6 chunk (nếu env không có), `pipeline.run` mặc định 4;
-   `.env.example` đặt 4; evaluation truyền tường minh.
+6. `main.py`, `pipeline.run` và GUI dùng chung mặc định 6 (`config.DEFAULT_TOP_K`);
+   `RAG_TOP_K`/`--top-k` ghi đè, evaluation truyền tường minh.
 7. `main.py` in 12/16 nguồn dưới nhãn “nguồn trích dẫn” — đó là ứng viên, không phải ngữ
    cảnh đã dùng.
 8. Lỗi một lần trong `main.py` vẫn trả exit code 0 — bug cần sửa nếu dùng automation.

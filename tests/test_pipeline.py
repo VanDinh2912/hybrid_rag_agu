@@ -18,6 +18,9 @@ def _khoa_lever_chuan_hoa(monkeypatch):
     """
     monkeypatch.setenv("NORMALIZE_SANITY_GUARD", "0")
     monkeypatch.setenv("NORMALIZE_MIN_CONTAINMENT", "0.3")
+    # Router đọc top_k nền từ RAG_TOP_K (REVIEW §3). Ghim "không đặt" để máy dev có
+    # RAG_TOP_K trong .env không làm đỏ các assert về cửa sổ oversampling.
+    monkeypatch.delenv("RAG_TOP_K", raising=False)
 
 # Câu chuẩn hóa giả lập từ Qwen (có dấu tiếng Việt) — chỉ dùng hằng này xuyên suốt
 # để khỏi lệch chính tả giữa fake SLM và phần assert.
@@ -84,8 +87,8 @@ class TestRunFoldsQueryBeforeRetrieval:
         query_sent, k = vector_db.received[0]
         assert query_sent == fold(result["expanded_query"])
         assert query_sent.isascii()  # fold triệt để: không còn dấu tiếng Việt
-        # top_k mặc định (4) × oversample_factor (2) = 8 chunk gửi xuống ChromaDB.
-        assert k == 8  # oversampling: generator chỉ dùng 4 đầu, retrieval lấy 8
+        # top_k mặc định chung (6) × oversample_factor (2) = 12 chunk gửi xuống ChromaDB.
+        assert k == 12  # oversampling: generator chỉ dùng 6 đầu, retrieval lấy 12
 
     def test_retrieval_query_exposed_in_result(self):
         pipeline, _, _ = make_pipeline()
@@ -149,9 +152,9 @@ class TestClassifierFlagDisabled:
         assert calls == []  # KHÔNG được gọi classifier
         assert result["labels"] is None
         assert result["retrieval_config"] is None
-        # Đường cũ nguyên vẹn: retrieve_k = top_k(4) × oversample(2) = 8.
+        # Đường cũ nguyên vẹn: retrieve_k = top_k(6) × oversample(2) = 12.
         _, k = vector_db.received[0]
-        assert k == 8
+        assert k == 12
 
     def test_flag_defaults_to_off(self, monkeypatch):
         monkeypatch.delenv("ENABLE_CLASSIFIER", raising=False)
@@ -182,7 +185,7 @@ class TestClassifierFlagEnabled:
         assert result["labels"] == FAKE_LABELS
         cfg = result["retrieval_config"]
         assert cfg is not None
-        assert cfg["top_k"] == 4  # TRA_CUU giữ nguyên base (top_k param mặc định)
+        assert cfg["top_k"] == 6  # TRA_CUU giữ nguyên base (top_k param mặc định)
         assert cfg["bm25_weight"] == 0.5
         assert cfg["chroma_weight"] == 0.5
         assert cfg["source_filter"] is None
@@ -195,11 +198,11 @@ class TestClassifierFlagEnabled:
         pipeline, vector_db, _ = make_pipeline()
         result = pipeline.run("diem ren luyen 62 thi sao?")
 
-        # SO_SANH: top_k 4 + 2 = 6 → retrieve_k = 12, bật subquery.
-        assert result["retrieval_config"]["top_k"] == 6
+        # SO_SANH: top_k 6 + 2 = 8 → retrieve_k = 16, bật subquery.
+        assert result["retrieval_config"]["top_k"] == 8
         assert result["retrieval_config"]["enable_subquery"] is True
         _, k = vector_db.received[0]
-        assert k == 12
+        assert k == 16
 
     def test_filtered_topic_and_thu_tuc_config(self, monkeypatch):
         monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
@@ -213,9 +216,9 @@ class TestClassifierFlagEnabled:
         assert cfg["chroma_weight"] == 0.4
         assert cfg["source_filter"] is not None
         assert len(cfg["source_filter"]) == 2  # học phí có 2 nguồn
-        # THU_TUC không đổi top_k → retrieve_k vẫn 8.
+        # THU_TUC không đổi top_k → retrieve_k vẫn 12.
         _, k = vector_db.received[0]
-        assert k == 8
+        assert k == 12
 
     def test_classifier_exception_falls_back(self, monkeypatch, capsys):
         monkeypatch.setenv("ENABLE_CLASSIFIER", "1")
@@ -228,7 +231,7 @@ class TestClassifierFlagEnabled:
         assert result["labels"] is None
         assert result["retrieval_config"] is None
         _, k = vector_db.received[0]
-        assert k == 8  # retrieve_k theo top_k gốc 4 × 2
+        assert k == 12  # retrieve_k theo top_k gốc 6 × 2
         assert "[Classifier] Cảnh báo" in capsys.readouterr().out
 
 

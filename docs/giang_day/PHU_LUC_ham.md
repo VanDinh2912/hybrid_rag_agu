@@ -353,7 +353,7 @@ Chương 05.
 | 114 | └ `_init_hybrid_retriever` | `(self)` | BM25 + Chroma → Ensemble. |
 | 148 | └ `retrieve` | `(query, k=6, fallback_query=None, config=None)` | Hybrid/vector, subquery, best-first. |
 | 271 | └ `_merge_subquery_branches` | `(branches, k)` | Hợp nhất nhánh theo hạng tốt nhất. |
-| 298 | ★ `run` | `(question, top_k=4)` | Chuẩn hóa → classify → router → retrieve → generate; trả `sources` rộng, `contexts` hẹp. |
+| 298 | ★ `run` | `(question, top_k=DEFAULT_TOP_K=6)` | Chuẩn hóa → classify → router → retrieve → generate; trả `sources` rộng, `contexts` hẹp. |
 
 Chương 07. ⚠ `run(top_k)` tự nhân `oversample_factor`; đừng truyền `retrieve_k`.
 

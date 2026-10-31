@@ -85,6 +85,7 @@ from src.generator import (
     quota_error_kind,
 )
 from src.generation.local_slm import LocalSLM
+from src.core.config import DEFAULT_TOP_K
 from src.core.pipeline import HybridRAGPipeline
 from src.text_utils import fold
 from src.retrieval.vector_db import VectorStoreManager
@@ -92,7 +93,6 @@ from src.retrieval.vector_db import VectorStoreManager
 BENCHMARK_PATH = Path("data/evaluation/benchmark_100_questions_v2.json")
 RESULTS_PATH = Path("outputs/evaluation_results.json")
 SUMMARY_PATH = Path("outputs/evaluation_summary.md")
-DEFAULT_TOP_K = 6
 # Luôn lấy tối thiểu 6 chunk để tính đồng thời Hit@3, Hit@5 và Hit@6 từ MỘT lượt truy xuất.
 # Kết hợp với oversampling ×2 trong pipeline, evaluation_k=6 → ChromaDB thực trả 12 chunk.
 MIN_TOP_K = 6

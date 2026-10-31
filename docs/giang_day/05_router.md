@@ -54,7 +54,7 @@ nếu cần thêm hành vi, phải sửa cả pipeline — đó là lý do thi�
 
 | Trường | Nguồn | Mặc định | Xử lý sai |
 |---|---|---|---|
-| `top_k` | `RAG_TOP_K` | 4 | không phải int hoặc ≤0 → 4 |
+| `top_k` | `RAG_TOP_K` | 6 (`config.DEFAULT_TOP_K`) | không phải int hoặc ≤0 → 6 |
 | `bm25_weight` | `BM25_WEIGHT` | 0.5 | không phải float → 0.5 |
 | `chroma_weight` | `CHROMA_WEIGHT` | 0.5 | không phải float → 0.5 |
 | `source_filter` | — | `None` | — |
@@ -62,23 +62,22 @@ nếu cần thêm hành vi, phải sửa cả pipeline — đó là lý do thi�
 
 ### 2.1. Ai thắng khi có nhiều nguồn `top_k`?
 
-Ba nơi có thể đặt `top_k`:
+Sau REVIEW §3 (31-10) chỉ còn **một** mặc định: `DEFAULT_TOP_K = 6` trong
+`src/core/config.py` (dùng cho `main`, router, `pipeline.run`, evaluation, GUI).
 
-1. `main.py` đọc `RAG_TOP_K` làm default của `-k` (`main.py:59–61`), nhưng hằng số
-   nội bộ là **6** nếu env không có;
-2. `.env.example` ghi `RAG_TOP_K=4`;
-3. `pipeline.run(top_k=...)` nhận tham số caller, rồi **ghi đè** `base_config.top_k`
-   (`src/core/pipeline.py:336`).
+1. `main.py` lấy default của `-k` qua `top_k_from_env()` (đọc `RAG_TOP_K`, thiếu/hỏng
+   thì 6); `.env.example` cũng ghi `RAG_TOP_K=6`;
+2. `pipeline.run(top_k=...)` nhận tham số caller, rồi **ghi đè** `base_config.top_k`
+   (`src/core/pipeline.py`);
+3. gọi `pipeline.run(question)` không truyền `top_k` cũng dùng 6, thống nhất với
+   `main.py`.
 
 Thứ tự thực tế:
 
 ```
-caller (main.py -k / evaluation)  >  RAG_TOP_K (chỉ khi main.py lấy default)  >  4
+caller (main.py -k / evaluation --top-k)  >  RAG_TOP_K  >  DEFAULT_TOP_K (6)
 ```
-
-Nếu bạn gọi `pipeline.run(question)` mà không truyền `top_k`, mặc định hàm là 4
-(`run` signature), không phải 6 của `main.py`. Khi bảo vệ, đừng nói “hệ thống mặc định
-6 chunk” mà không nói “main.py mặc định 6; pipeline.run mặc định 4; evaluation truyền 6”.
+Khi báo cáo, luôn ghi “top_k hiệu dụng” và “retrieve_k”, đừng chỉ ghi “top_k=6”.
 
 ### 2.2. Vì sao base phải giống hành vi cũ?
 

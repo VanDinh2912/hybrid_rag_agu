@@ -15,7 +15,7 @@ Ba nguyên tắc
    theo thay đổi nguồn env.
 2. KHÔNG đọc env lúc import. Test dùng ~198 lời gọi `monkeypatch.setenv` để đổi env giữa
    hai lượt gọi hàm, nên `settings()` cache theo **ảnh chụp** env: env đổi → dựng lại
-   Settings; env yên → trả lại đúng instance cũ (một lượt đọc 25 biến, không phải mỗi
+   Settings; env yên → trả lại đúng instance cũ (một lượt đọc cả danh sách, không phải mỗi
    getter một lần `os.getenv`).
 3. Tên `_flag` / `_env_flag` / `_env_int` / `_env_float` không phải sở thích: máy kiểm
    `tools/diag/env_flag_audit.py` chỉ nhận diện đúng các "reader" này khi quét tĩnh.
@@ -27,9 +27,10 @@ Chỉ 9 module đã chuyển: contextual_header, evidence_selection, refusal_pol
 loader, vector_db, local_slm, classifier, chunking. CỐ Ý không chuyển:
 `generator/pipeline/query_normalizer/router` (đóng băng PA-26), `answer_guard` (file trọng
 tài — chữ ký `referee_fingerprint` băm byte), `evaluation` (runner đo), `reranker` (chưa
-được track). Các file đó vẫn đọc env trực tiếp; việc gom nốt nằm ở PA-44. Ngoại lệ duy
-nhất: `pipeline` đọc **một** cờ mới (`ENABLE_DENSE_ORIGINAL_QUERY`, PA-48a) qua
-`settings()._flag(...)`; các cờ cũ của pipeline vẫn đọc trực tiếp như trước.
+được track). Các file đó vẫn đọc env trực tiếp; việc gom nốt nằm ở PA-44. Hai ngoại lệ đã
+đăng ký: `pipeline` đọc **một** cờ mới (`ENABLE_DENSE_ORIGINAL_QUERY`, PA-48a) qua
+`settings()._flag(...)`; và REVIEW §3 (31-10) gom `RAG_TOP_K` về `top_k_from_env()` cho
+`main`/`router` — các cờ cũ của hai module đó vẫn đọc trực tiếp như trước.
 """
 
 from __future__ import annotations
@@ -38,6 +39,13 @@ import os
 from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Mapping, Optional
+
+#: Số chunk ngữ cảnh mặc định cho MỌI entry point (REVIEW §3, 31-10).
+#: Trước đây bốn nơi khai báo bốn giá trị (pipeline 4, router 4, main/evaluation 6,
+#: GUI 6). Chọn 6 vì đó là cấu hình đã dùng cho các phép đo công bố (rounds truyền
+#: top_k tường minh) và cho CLI/GUI/evaluation; đây là hằng số DUY NHẤT, mỗi entry
+#: point vẫn được override qua tham số/`--top-k` như cũ.
+DEFAULT_TOP_K = 6
 
 #: Mọi biến mà 9 module đã chuyển có thể đọc. `settings()` chụp ĐÚNG danh sách này;
 #: accessor gọi một tên ngoài danh sách sẽ `KeyError` ngay (fail-fast: thêm site đọc mà
@@ -78,6 +86,8 @@ TRACKED_ENV: tuple[str, ...] = (
     "EMBEDDING_MODEL",
     # pipeline (V1/PA-48a): chỉ nhánh dense dùng query nguyên văn thay vì fold
     "ENABLE_DENSE_ORIGINAL_QUERY",
+    # top_k vận hành (REVIEW §3): một nguồn đọc chung cho main/router
+    "RAG_TOP_K",
 )
 
 #: Giá trị được coi là BẬT khi dùng ngữ nghĩa `in _ON_VALUES` (contextual_header).
@@ -188,3 +198,13 @@ def settings() -> Settings:
     current = Settings(raw=MappingProxyType(dict(snapshot)))
     _CACHE = (snapshot, current)
     return current
+
+
+def top_k_from_env() -> int:
+    """`RAG_TOP_K` cho `main`/`router` — giữ đúng ngữ nghĩa router cũ.
+
+    Không đặt / rỗng / không phải số / ≤ 0 ⇒ `DEFAULT_TOP_K` (6). Ở mọi nơi khác,
+    `DEFAULT_TOP_K` là mặc định của tham số; entry point vẫn override được qua
+    `--top-k`/tham số như trước — review §3 chỉ gom *mặc định*, không đổi quyền ưu tiên.
+    """
+    return settings()._env_int("RAG_TOP_K", DEFAULT_TOP_K)
