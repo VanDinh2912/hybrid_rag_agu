@@ -1,0 +1,79 @@
+{
+ "schema": 2,
+ "generated_at": "2026-10-31",
+ "note": "Ghim tái lập cho các artifact KHÔNG được git theo dõi. Đọc bởi tools/diag/repro_preflight.py. Đổi pin = một quyết định, phải ghi lý do. Khoá là đường dẫn TƯƠNG ĐỐI (tên trần trùng giữa các thư mục con).",
+ "chroma_db": {
+  "chunks": 361,
+  "sources": 26,
+  "tiers": {
+   "Tầng 1": 234,
+   "Tầng 2": 50,
+   "cac_file_bo_xung_khac": 77
+  },
+  "sha256": {
+   "chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/data_level0.bin": "d50f9087d610573a772447815813a373f7bd19a14bb8279f343dc4b2d8b7e452",
+   "chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/header.bin": "bf12d4486518c7addf488cb4854526902c78e91951990e1e2f4e055cec814e5d",
+   "chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/length.bin": "6124a8a45464ecf1e741676bd2c6e0e70b68b6934d51ef18aa102fceb5aaafd9",
+   "chroma_db/0bde6463-a057-46ca-aadb-f3e6cdf0fb0c/link_lists.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "chroma_db/chroma.sqlite3": "9ef395a912bfca33234815ba96577a51d934db1fe4a03a94e59c79f6fb6c72eb"
+  }
+ },
+ "corpus": {
+  "files": 29,
+  "ext": {
+   ".pdf": 24,
+   ".docx": 5
+  }
+ },
+ "data_training": {
+  "files": 24,
+  "rows": {
+   "classifier_benchmark_seed.jsonl": 447,
+   "classifier_train.jsonl": 2778,
+   "corpus_identification.jsonl": 1490,
+   "rag_grounded.jsonl": 53,
+   "refusal.jsonl": 240,
+   "retrieval_pairs.jsonl": 881,
+   "sft_benchmark_seed.jsonl": 680,
+   "sft_benchmark_seed_alpaca.jsonl": 680,
+   "sft_train.jsonl": 1635,
+   "sft_train_alpaca.jsonl": 1635,
+   "sft_val.jsonl": 50,
+   "sft_val_alpaca.jsonl": 50,
+   "t4b_r5/sft_holdout.jsonl": 5,
+   "t4b_r5/sft_train.jsonl": 9,
+   "t4b_r5r6r7/sft_holdout.jsonl": 4,
+   "t4b_r5r6r7/sft_train.jsonl": 12,
+   "t4b_r5r8r9r10/sft_holdout.jsonl": 10,
+   "t4b_r5r8r9r10/sft_train.jsonl": 13
+  },
+  "total_rows": 10672,
+  "toplevel_rows": 10619,
+  "sha256": {
+   "classifier_benchmark_seed.jsonl": "09dd8cede3ad2795480891323282ec47c469e2db30fb2ece821a82eca64a7f70",
+   "classifier_train.jsonl": "22455717bd7f147c73d86a6ae5f33f2776a22cae723a4711b76164edea033eb4",
+   "corpus_identification.jsonl": "235590e71ef3779e8794258d050e8cc09c39f41ec7f50427368b0099e5b10ff5",
+   "manifest.json": "5c1a465f645ee74c526a2e3f9c8dc29d5377d7fe96666d0ddb6ec4a7c37032f7",
+   "preview.md": "339f0086e7cc0fa82309af9f471191dd274484b4694c1cca5d41807899828106",
+   "rag_grounded.jsonl": "84f7d2f3ab197da5612273c3755294f1739b3d496308f1d628fe78ba6090d0b6",
+   "README.md": "a192b02ef1163150f7ef131958922052dbe7732aae538d5872c47268d3d9bce0",
+   "refusal.jsonl": "63be65d9fc7ca84550e2f6743c971a3c6381a2e30cb5675b6e6dd43d96f1c843",
+   "retrieval_pairs.jsonl": "51c507c6fc66631eb5e80d6d8e065c4b30799ecea80883b1fae415a4d0b7e8d9",
+   "sft_benchmark_seed.jsonl": "bac655568b9305bd901d9d0853332dde734f3267f93cd8299193cf1944bf9148",
+   "sft_benchmark_seed_alpaca.jsonl": "8c54f22fcce579d3768783bcdbcc901bdb80c1327ea6a6014deabb8208aa21f7",
+   "sft_train.jsonl": "c1d220f4b06c02814078bdbeb6f8d27d07c7794c91a13b1f450a7bec59ae93c2",
+   "sft_train_alpaca.jsonl": "dc2572f5479091c46ee9bb35442c124f0585beec14ff912c82a1607a40cbb697",
+   "sft_val.jsonl": "bfba2a23989108fd89d072f00092f4df8ceabb87d064110e1eb9c89e7f6476cc",
+   "sft_val_alpaca.jsonl": "4005ed6c51aabfe921422b9e758d93c9b7970eef197cf326c7ea012c283cd16e",
+   "t4b_r5/manifest.json": "9ee69bafd740d1b604d901cf191d55366f6011e7c12c2b39a4089ecf6ab8716b",
+   "t4b_r5/sft_holdout.jsonl": "3d794d0ee45bde130f4b8111454c5df9667be44460ad884d71301d55f9ba8e86",
+   "t4b_r5/sft_train.jsonl": "af2f29b9545681d5f4a8a2c7b32ff63b9c24a52ce5955a458750bca340404195",
+   "t4b_r5r6r7/manifest.json": "650584f6cd0478078bcf559e0c2e799906f3fb5ee7c2720111df40a4e4972c88",
+   "t4b_r5r6r7/sft_holdout.jsonl": "b19a51aec7661a6a9a6eb32ba5fdb2d70cb1275eff98a4b96547d5697d37f792",
+   "t4b_r5r6r7/sft_train.jsonl": "80ae759fe3f587921a52ad7b7ab30485f80912f9c9c26f5343b631ddfe3f77ec",
+   "t4b_r5r8r9r10/manifest.json": "793a242d95e69ca5a49659963e94e6b176b0f5f1d5fee0571e6b49e5b074fe0a",
+   "t4b_r5r8r9r10/sft_holdout.jsonl": "d302d8b86b198018b4ad730e3db510984f7e49392c5aaf8948c32f8b2dfea518",
+   "t4b_r5r8r9r10/sft_train.jsonl": "12a0c6ca3a78bc8dfaf6b2a336f7595eabe248035ef2eaa90cfbf16b1e796174"
+  }
+ }
+}
