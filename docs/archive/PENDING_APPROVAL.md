@@ -1,5 +1,8 @@
 # PENDING_APPROVAL — việc cần người dùng duyệt (phiên tự trị KHÔNG tự làm)
 
+> **Tài liệu lịch sử (historical).** Hàng đợi PA tính đến lúc lưu trữ; đường dẫn bên trong có
+> thể theo layout trước tái cấu trúc 28-10. Xem `docs/RESTRUCTURE_MAP.md` để đối chiếu.
+
 Mỗi mục: bối cảnh → đề xuất → diff/đường dẫn → cách hoàn tác nếu bị từ chối.
 
 ---

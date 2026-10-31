@@ -92,7 +92,10 @@ hybrid_rag_agu/
 │   │   ├── benchmark_50_questions.json/.md  # 50 câu (mặc định của scripts/benchmark_chunking.py)
 │   │   ├── benchmark_15_questions.json/.md  # bộ 15 câu đầu tiên
 │   │   ├── benchmark_questions.json         # 15 câu GUI tự sinh (schema 10 khóa cũ)
-│   │   └── reference/       # File quy chế mẫu (không index — chỉ dùng đối chiếu)
+│   │   ├── reference/       # File quy chế mẫu (không index — chỉ dùng đối chiếu)
+│   │                        # Phân loại benchmark: v3 = CHÍNH THỨC cho lượt A/B (P4);
+│   │                        #   v2 = mặc định của src/assessment/evaluation.py; v1 / 50 câu /
+│   │                        #   15 câu / benchmark_questions.json = lịch sử, khảo sát và demo GUI
 │   ├── loop/                # Vòng lặp P5 tự kiểm chứng (sổ đăng ký round ở data/loop/README.md)
 │   │   ├── testset_v1.jsonl # 811 item đo chốt (câu + gold chunk + nguồn) + testset_v1_manifest.json
 │   │   ├── README.md        # Đăng ký TRƯỚC từng round + luật quyết định (r0 → r21/r21b)

@@ -140,9 +140,10 @@ class VectorStoreManager:
     ) -> EnsembleRetriever:
         """Tạo EnsembleRetriever kết hợp BM25 (từ khóa) và Chroma (ngữ nghĩa) theo RRF.
 
-        weights: [bm25_weight, vector_weight]. Mặc định [0.4, 0.6].
+        weights: [bm25_weight, vector_weight]. Mặc định [0.5, 0.5] (DEFAULT_BM25_WEIGHT /
+            DEFAULT_VECTOR_WEIGHT, ghi đè bằng BM25_WEIGHT / CHROMA_WEIGHT).
         c: hằng số làm mượt xếp hạng Reciprocal Rank Fusion (mặc định 60).
-        id_key: 'chunk_id' để so khớp chính xác từng chunk giữa hai bộ truy xuất.
+        id_key: luôn là 'chunk_id' để so khớp chính xác từng chunk giữa hai bộ truy xuất.
         k: số ứng viên truy xuất (mặc định 12 cho oversampling, sau đó lọc Top-6).
         """
         cfg = settings()

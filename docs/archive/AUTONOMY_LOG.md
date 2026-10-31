@@ -1,5 +1,8 @@
 # AUTONOMY_LOG — phiên tự trị qua đêm (23-10 → 24-10)
 
+> **Tài liệu lịch sử (historical).** Giữ nguyên văn như lúc viết; đường dẫn bên trong có thể
+> theo layout trước tái cấu trúc 28-10. Bản đồ đường dẫn mới: `docs/RESTRUCTURE_MAP.md`.
+
 Chế độ: người dùng ngủ, TUYỆT ĐỐI không hỏi. Mỗi ngã rẽ chọn phương án BẢO THỦ NHẤT
 (không phá dữ liệu, không đổi trọng tài, ít tốn quota), ghi ở đây rồi làm tiếp.
 Việc cần duyệt → KHÔNG tự làm, ghi vào `docs/PENDING_APPROVAL.md`.

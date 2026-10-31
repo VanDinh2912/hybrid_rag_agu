@@ -1,5 +1,8 @@
 # Báo cáo kiểm thử — T7: `run_chain` + khóa chính sách trong cache sinh + sổ quyết định
 
+> **Tài liệu lịch sử (historical).** Số đo và đường dẫn giữ nguyên như lúc viết (trước tái cấu
+> trúc 28-10). Không chạy lại script đo để làm mới số trong báo cáo này.
+
 Ngày: 2026-10-25 · Nhánh `auto/overnight` · Phạm vi: **đóng gói công cụ + test + tài liệu**;
 KHÔNG sửa trọng tài (`tools/loop/verify.py`, `src/answer_guard.py`, `src/text_utils.py`), KHÔNG sửa
 `tools/loop/gate.py`, KHÔNG chấm lại round đã đóng, KHÔNG ghi vào `outputs/` hay

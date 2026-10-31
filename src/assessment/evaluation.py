@@ -1,7 +1,10 @@
-"""Module đánh giá định lượng Hybrid RAG trên tập benchmark chuẩn hóa.
+"""Module đánh giá định lượng Hybrid RAG trên một bộ benchmark chuẩn hóa.
 
-Với mỗi câu hỏi trong `data/evaluation/benchmark_questions.json`, chạy đúng pipeline
-sản xuất (Qwen chuẩn hóa → ChromaDB truy xuất → Gemini trả lời) rồi đo:
+Mặc định đọc `data/evaluation/benchmark_100_questions_v2.json` (100 câu); đổi bằng
+`--benchmark` — lượt A/B chính thức dùng `benchmark_100_questions_v3.json` (v3 thêm
+`question_type`). `benchmark_questions.json` chỉ là bộ 15 câu do GUI tự sinh, không phải
+bộ đo chính thức. Với mỗi câu hỏi, chạy đúng pipeline sản xuất (Qwen chuẩn hóa →
+ChromaDB truy xuất → Gemini trả lời) rồi đo:
 
 Tầng truy xuất:
 - Hit@3 / Hit@5 / Hit@K: Top-K có chứa chunk thuộc `source_document` ground truth không
@@ -33,7 +36,7 @@ bảng đó ra terminal. Câu hỏi lỗi (hết quota, mất mạng...) đượ
 không làm chết cả lượt đánh giá; Ctrl+C giữa chừng vẫn ghi kết quả phần đã chạy.
 
 Cách chạy (từ thư mục gốc dự án):
-    python src/assessment/evaluation.py                  # đủ 8 câu, top_k=6, có giám khảo
+    python src/assessment/evaluation.py                  # mặc định 100 câu v2, top_k=6, có giám khảo
     python src/assessment/evaluation.py -k 4             # truy xuất Top-4 (Hit@3/Hit@5 vẫn đo được)
     python src/assessment/evaluation.py --limit 2        # chạy thử nhanh 2 câu đầu
     python src/assessment/evaluation.py --no-judge       # bỏ tầng giám khảo, tiết kiệm quota
