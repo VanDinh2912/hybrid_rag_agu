@@ -4,7 +4,9 @@ Bạn đang làm việc trong repo `hybrid_rag_agu` (Windows). Đọc toàn bộ
 
 ## 1. Đề tài và hiện trạng
 
-- Hệ thống RAG hỏi–đáp quy chế học vụ AGU đang chạy ổn định theo 4 tầng: chuẩn hóa câu hỏi (Qwen2.5:1.5b qua Ollama) → mở rộng truy vấn bằng từ điển đồng nghĩa pháp lý → True Hybrid Search (BM25 + bge-m3/ChromaDB hợp nhất RRF) → generator Gemini (temperature 0, trích dẫn Điều/Khoản, Soft Refusal khi thiếu căn cứ). Corpus 26 tài liệu, index 361 chunks, benchmark 100 câu v2, 85 unit test offline.
+- Hệ thống RAG hỏi–đáp quy chế học vụ AGU đang chạy ổn định theo 4 tầng: chuẩn hóa câu hỏi (Qwen2.5:1.5b qua Ollama) → mở rộng truy vấn bằng từ điển đồng nghĩa pháp lý → True Hybrid Search (BM25 + bge-m3/ChromaDB hợp nhất RRF) → generator Gemini (temperature 0, trích dẫn Điều/Khoản, Soft Refusal khi thiếu căn cứ). Corpus 26 tài liệu, index 361 chunks, benchmark 100 câu v2, 85 unit test offline *(snapshot
+20-10 — cập nhật 31-10: `data/corpus/` có **29 tệp (24 PDF + 5 DOCX)**, trong đó 26 tệp đã ingest
+nên index sản xuất vẫn **361 chunk**; bộ test hiện **1.556 test được collect**)*.
 - Đang làm lại đồ án theo hướng mới: **thêm tầng phân loại câu hỏi (2 nhãn: chủ đề + loại câu hỏi) và router truy xuất theo lớp câu hỏi**, đánh giá A/B bật/tắt tầng phân loại.
 - Nguyên tắc bất di bất dịch: `ENABLE_CLASSIFIER=0` phải giữ hành vi pipeline cũ **nguyên vẹn 100%**; mọi tầng mới (classifier, router, sub-query) lỗi phải **suy giảm mềm** — lùi về cấu hình chung, tuyệt đối không chết pipeline.
 - Bộ dữ liệu chuẩn của hướng mới: `data/evaluation/benchmark_100_questions_v3.json` (13 khóa = 12 khóa v2 + `question_type`).

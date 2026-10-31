@@ -20,7 +20,7 @@
 (điền thẳng 3 câu hỏi từ `chuong3_kien_truc.md` mục 3.1.1 — nguồn docs/planning/ROADMAP.md mục 2)
 
 ### 1.4. Phạm vi và đối tượng
-- Trong phạm vi: 26 văn bản quy chế học vụ AGU (3 tầng corpus), benchmark 100 câu v3, generator Qwen local/Gemini, không fine-tune embedding, không đổi vector DB. (nguồn: docs/planning/ROADMAP.md mục 4, 5)
+- Trong phạm vi: 26 văn bản quy chế học vụ AGU (3 tầng corpus; `data/corpus/` trên đĩa có 29 tệp nhưng 3 PDF thêm 28-10 **chưa ingest** nên index sản xuất vẫn đúng 26 nguồn / 361 chunk), benchmark 100 câu v3, generator Qwen local/Gemini, không fine-tune embedding, không đổi vector DB. (nguồn: docs/planning/ROADMAP.md mục 4, 5; `README.md` §4.1)
 - Ngoài phạm vi: OCR chất lượng cao, mở rộng corpus ngoài học vụ, train mới embedding. (nguồn: docs/planning/ROADMAP.md mục 5)
 
 ### 1.5. Đóng góp của đề tài

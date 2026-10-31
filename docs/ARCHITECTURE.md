@@ -71,7 +71,11 @@ runner đo, `reranker`) vẫn đọc env trực tiếp; gom nốt là PA-44.
 
 ## Dữ liệu và index
 
-- `data/corpus/` — 26 tài liệu (21 PDF + 5 DOCX) ở 3 tầng.
+- `data/corpus/` — **29 tệp (24 PDF + 5 DOCX)** ở 3 tầng, trong đó **26 tệp đã ingest**;
+  3 PDF thêm 28-10 (`dh24-ky`, `qd-1543-BGDDT`, `so-tay-sktt`) chưa vào index sản xuất
+  (chi tiết: `README.md` §4.1 "Đưa tài liệu vào thư mục `data/corpus/`"). Hệ quả: chạy lại
+  `ingest.py` trên `data/corpus/` hiện hành sinh **443 chunk**, không phải 361 — xem
+  `docs/REPRODUCE.md` §1.
 - `chroma_db/` — index sản xuất (361 chunk) do `ingest.py` dựng.
 - `indexes/experimental/chroma_db_vie/` — index re-OCR tiếng Việt (342 chunk): chất lượng dấu tốt
   hơn nhưng **chưa kích hoạt** vì mất neo vàng 389/797 = 48,81% (PA-17 re-anchor). Đường dẫn cũ

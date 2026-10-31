@@ -2,7 +2,7 @@
 
 > Sinh từ toàn bộ 27 tài liệu trong `data/corpus` (Tầng 1, Tầng 2, cac_file_bo_xung_khac).
 > Mỗi câu gồm **câu hỏi**, **đáp án chuẩn** và **dòng bổ sung đáp án đúng nếu kết quả sai** (`supplement_if_wrong`).
-> Bản máy đọc: `benchmark_50_questions.json` (tương thích `src/evaluation.py`).
+> Bản máy đọc: `benchmark_50_questions.json` (tương thích `src/assessment/evaluation.py`).
 
 ## Tầng 1
 

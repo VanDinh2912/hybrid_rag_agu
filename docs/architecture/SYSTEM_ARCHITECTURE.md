@@ -606,20 +606,19 @@ hybrid_rag_agu/
 │   │   └── cac_file_bo_xung_khac/
 │   └── evaluation/
 │       └── benchmark_100_questions_v3.json  # 100 câu benchmark v3 (có nhãn question_type)
-├── src/
-│   ├── query_normalizer.py  # Chuẩn hóa câu hỏi (Qwen)
-│   ├── classifier.py        # Phân loại câu hỏi 2 nhãn (chủ đề + loại, Qwen local)
-│   ├── router.py            # Nhãn phân loại → cấu hình truy xuất theo lớp
-│   ├── retrieval.py         # Query expansion, từ điển đồng nghĩa, tách truy vấn con
+├── src/                     # 5 tiểu package (tái cấu trúc Phase 3, 28-10)
+│   ├── core/                #   config, pipeline, classifier, query_normalizer,
+│   │                        #   cache_policy, faithfulness_heuristic
+│   ├── indexing/            #   loader, chunking, contextual_header
+│   ├── retrieval/           #   vector_db, retrieval, router, reranker
+│   ├── generation/          #   local_slm, evidence_selection, refusal_policy
+│   ├── assessment/          #   evaluation, evaluate_classifier, analyze_ab
 │   ├── generator.py         # Generator (Gemini) + Fallback (Qwen)
-│   ├── pipeline.py          # Điều phối luồng Hybrid RAG
-│   ├── evaluation.py        # Đánh giá định lượng
-│   ├── vector_db.py         # ChromaDB + BM25 setup
-│   ├── local_slm.py         # Local SLM wrapper (Qwen)
-│   ├── text_utils.py        # Hàm tiện ích (fold, tokenize)
-│   ├── chunking.py          # Phân đoạn văn bản
-│   ├── loader.py            # Tải tài liệu (PDF, DOCX, TXT)
-│   └── ingest.py            # Script nạp dữ liệu
+│   ├── answer_guard.py      # Guard chặn trả lời không căn cứ
+│   └── text_utils.py        # Hàm tiện ích (fold, tokenize)
+├── data/learning/           # Cặp chuẩn hóa do GUI ghi (tự tạo lúc chạy, chưa có trong repo)
+├── indexes/experimental/    # Index thực nghiệm (chroma_db_vie, chroma_db_headers_old)
+├── .cache/ocr/              # Cache OCR (rapidocr, easyocr_vie)
 ├── outputs/
 │   ├── evaluation_results.json
 │   └── evaluation_summary.md

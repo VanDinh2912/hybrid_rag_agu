@@ -33,6 +33,12 @@ Hướng làm lại kế thừa nguyên vẹn pipeline True Hybrid Search 4 tầ
 | Unit test | 85 test offline | `pytest --collect-only` ngày 2026-10-20 |
 | Benchmark hiện có | 100 câu v2, đúng 12 khóa, 14 nhóm chủ đề | `data/evaluation/benchmark_100_questions_v2.json` |
 
+> **Đính chính khi đọc lại (31-10):** bảng trên là snapshot có ghi ngày (20-10), giữ nguyên vì nó
+> mô tả đúng trạng thái lúc lập kế hoạch. So với đĩa hôm nay: `data/corpus/` có **29 tệp
+> (24 PDF + 5 DOCX)** — 3 PDF thêm 28-10 chưa ingest nên **index sản xuất vẫn 361 chunk** (chi tiết
+> `README.md` §4.1, `docs/ARCHITECTURE.md`); số test đã tăng từ 85 lên **1.556 test được collect**
+> (`pytest tests --collect-only -q`, đo 31-10).
+
 ### 3.2. Chất lượng pipeline hiện tại
 
 Lượt chạy ngày 2026-10-18 trên benchmark v2 (100 câu), generator Local Qwen, Top-K 6, giám khảo tắt:
@@ -78,7 +84,7 @@ Nguồn: `logs/benchmark/summary_comparison_report.md`, lượt 2026-10-17 23:36
 
 Nguồn phạm vi: `dev/prompts/archive/P0_1_direction_doc.md` (mục "Phạm vi làm lại") và `dev/prompts/README.md`; số liệu tái sử dụng lấy từ `README.md` và kiểm tra trực tiếp ngày 2026-10-20.
 
-**Tái sử dụng nguyên vẹn, không làm lại:** corpus 26 tài liệu, index 361 chunks, hybrid search BM25 + Chroma, generator trích dẫn Điều/Khoản + Soft Refusal, bộ chỉ số Hit@K/MRR/Citation/Faithfulness, 85 unit test hiện có. Benchmark v2 được nâng thành v3 bằng cách thêm khóa `question_type`, không đổi câu hỏi và ground truth.
+**Tái sử dụng nguyên vẹn, không làm lại:** corpus 26 tài liệu, index 361 chunks, hybrid search BM25 + Chroma, generator trích dẫn Điều/Khoản + Soft Refusal, bộ chỉ số Hit@K/MRR/Citation/Faithfulness, 85 unit test hiện có *(cập nhật 31-10: corpus trên đĩa nay 29 tệp, 26 tệp đã ingest ⇒ index vẫn 361 chunk; bộ test đã 1.556)*. Benchmark v2 được nâng thành v3 bằng cách thêm khóa `question_type`, không đổi câu hỏi và ground truth.
 
 ## 5. Ngoài phạm vi
 

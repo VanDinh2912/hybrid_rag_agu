@@ -24,4 +24,4 @@ Bảng tổng hợp bộ dữ liệu chuẩn hóa gồm 15 câu hỏi thực ngh
 
 ### Các file lưu trữ trong dự án
 - [`data/evaluation/benchmark_15_questions.json`](benchmark_15_questions.json): Lưu nguyên bản danh sách mảng JSON 15 câu hỏi của bạn.
-- [`data/evaluation/benchmark_questions.json`](benchmark_questions.json): Cập nhật vào benchmark chính của hệ thống với định dạng tương thích với `src/evaluation.py`.
+- [`data/evaluation/benchmark_questions.json`](benchmark_questions.json): Cập nhật vào benchmark chính của hệ thống với định dạng tương thích với `src/assessment/evaluation.py`.

@@ -61,7 +61,7 @@ Mức độ: **C** = cao (ảnh hưởng kết luận hoặc trải nghiệm), *
 | # | Giới hạn | Bằng chứng | Mức | Cách xử lý đúng khi nói |
 |---|---|---|---|---|
 | L1 | OCR Tầng 1 mất dấu thanh | Chỉ **62/361** chunk đủ dấu để dùng cho bài tập sinh văn bản | C | “Hệ thống bù bằng `fold()` ở mọi tầng so khớp; không che việc dữ liệu gốc kém.” |
-| L2 | 3 file `.doc` + 1 PDF text hỏng không vào index | Loader bỏ qua, log ghi nhận | T | “Độ phủ corpus chưa đủ 100%; đây là việc phải bổ sung trước khi coi là bản đầy đủ.” |
+| L2 | 3 file `.doc` + 1 PDF text hỏng không vào index | Loader bỏ qua, log ghi nhận *(cập nhật 31-10: `data/corpus/` không còn tệp `.doc` — 24 PDF + 5 DOCX theo `README.md` §4.1)* | T | “Độ phủ corpus chưa đủ 100%; đây là việc phải bổ sung trước khi coi là bản đầy đủ.” |
 | L3 | Benchmark 100 câu do chính nhóm soạn, một người gán nhãn | v3 + báo cáo verify | C | “Có thiên lệch người soạn; chưa có inter-annotator agreement. Vì vậy em báo cáo cả lỗi và mẫu số.” |
 | L4 | Few-shot classifier lấy **16 câu từ chính benchmark** | `classifier.py` + đối chiếu v3 | C | “Accuracy 85%/81% là cận lạc quan; số held-out thấp hơn (82.1%/77.4%).” |
 | L5 | Generator A/B là **Qwen 1.5B local**, không phải Gemini | `meta.generator_model` của cả 2 file A/B | C | “Kết luận retrieval chuyển được; kết luận chất lượng câu trả lời thì không.” |
@@ -441,7 +441,8 @@ giống.”
 
 Ngắn: “Vì văn bản công khai, có cấu trúc Điều/Khoản, và là bài toán thật của
 sinh viên. Corpus gồm quy chế, quyết định, hướng dẫn thuộc Tầng 1 và Tầng 2;
-361 chunk đã index, còn 3 file `.doc` và 1 PDF lỗi chưa vào.”
+361 chunk đã index, còn 1 PDF lỗi chưa vào. *(Cập nhật 31-10: 3 tệp `.doc` legacy không còn
+trong `data/corpus/`; 3 PDF thêm 28-10 thì **chưa ingest** — `README.md` §4.1.)*”
 
 Sâu: “Phạm vi là các câu hỏi học vụ trong 14 chủ đề; câu ngoài phạm vi phải bị
 từ chối. Em không nhận là bao phủ toàn bộ văn bản của trường.”
