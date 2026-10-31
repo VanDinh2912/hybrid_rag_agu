@@ -676,10 +676,10 @@ Thể chế mặc định giữ nguyên công thức cũ từng byte nên cache 
 câu trả lời của thể chế cũ bị tách khỏi cache mới. Đánh đổi có chủ đích: đổi ngưỡng hậu xử lý sẽ tốn
 lại lượt sinh — thà tốn lượt hơn trộn hai thể chế vào một phép đo.
 
-> Trạng thái đóng gói: các file `tools/loop/*`, `src/answer_guard.py`, `src/retrieval/reranker.py`,
-> `src/core/cache_policy.py` và nhiều test hiện **chưa được commit** (xem PA-26 trong
-> `docs/archive/PENDING_APPROVAL.md`). Trong working tree hiện tại, `pytest tests -q` = **1.124 passed, 2 skipped**
-> (2 skipped là hai test T4 **slow**; chạy riêng bằng `T4_RUN_SLOW=1`).
+> Trạng thái đóng gói (đối soát 01-11): `tools/loop/*`, `src/answer_guard.py`,
+> `src/retrieval/reranker.py`, `src/core/cache_policy.py` và **toàn bộ `src/` (25 tệp) đã được
+> commit**; working tree sạch ⇒ HEAD tái lập được cây đã test — PA-26 đã đóng (`docs/PA_TRIAGE.md`).
+> Lệnh chạy bộ test và số hiện hành: `docs/REPRODUCE.md`.
 
 ---
 
@@ -769,8 +769,10 @@ Những điều dưới đây **không** được che bằng số đẹp; mỗi 
 7. **SFT bị chặn bởi bộ nhớ, không phải ý tưởng.** Card 4 GB hết chỗ từ **1.024 token** (~3 MiB/token)
    trong khi **13/13 dòng train ≥ 1.016 token** ⇒ chưa train được trên máy này (PA-11 4-bit / PA-12
    đổi định dạng chờ duyệt; `docs/archive/reports/T4.md` §5).
-8. **HEAD không tái lập được cây đã test**: 41 file nguồn/công cụ/test chưa commit + 6 file đang sửa.
-   "Người ngoài chạy lại từ README" chỉ đúng trong working tree hiện tại cho tới khi PA-26 được duyệt.
+8. **HEAD tái lập được cây đã test (đối soát 01-11)**: toàn bộ `src/` (25 tệp), `tools/loop/` và
+   testset đã vào kho, working tree sạch — PA-26 đã đóng. Giới hạn còn lại nằm ở artifact nặng:
+   chúng không vào git mà được ghim bằng `ARTIFACT_MANIFEST.json`, nên phải `--check` manifest
+   trước khi tái lập số đo.
 9. **Chi phí round được đo, không ngoại suy.** r12 thật = **≈66 phút** (3.855,5 s tổng latency, median
    4,74 s/item), không phải con số ngoại suy 27–30 phút từng công bố; bài học đã ghi ở T5.md §2.6.
 10. **Ngân sách đo là hữu hạn.** Toàn bộ chuỗi r0–r13 chạy trên một máy, một GPU 4 GB, ngân sách

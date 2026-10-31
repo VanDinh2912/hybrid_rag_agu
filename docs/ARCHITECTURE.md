@@ -65,9 +65,9 @@ Hai cơ chế xuyên suốt: `fold()` bỏ dấu thanh dùng chung cho truy xu�
 
 `src/core/config.py` gom env cho **9 module** (contextual_header, evidence_selection, refusal_policy,
 retrieval, loader, vector_db, local_slm, classifier, chunking), cache theo ảnh chụp env và giữ
-nguyên ngữ nghĩa parse của từng site cũ. Bốn module đóng băng PA-26 (`generator`, `pipeline`,
-`query_normalizer`, `router`) và ba tệp nhạy cảm (`answer_guard` — file trọng tài, `evaluation` —
-runner đo, `reranker`) vẫn đọc env trực tiếp; gom nốt là PA-44.
+nguyên ngữ nghĩa parse của từng site cũ. Bốn module (`generator`, `pipeline`, `query_normalizer`,
+`router`) và ba tệp nhạy cảm (`answer_guard` — file trọng tài, `evaluation` — runner đo, `reranker`)
+vẫn đọc env trực tiếp; gom nốt là PA-44 (PA-26 đã đóng 01-11 nên không còn là điều kiện chặn).
 
 ## Dữ liệu và index
 
@@ -103,14 +103,15 @@ và logic chấm nằm trong gói sản xuất, nên "chỉ sửa mã đo" khó 
 ### 2. `src/generator.py` quá lớn
 
 1.377 dòng: prompt theo loại câu hỏi, chính sách từ chối, lớp rescue đã bị bác, đường Gemini +
-Qwen. Tách tệp bị chặn bởi hai thứ: (a) PA-26 — tệp đang có thay đổi chưa commit, HEAD không tái
-lập được cây đã test, nên không được sửa trong bước dọn; (b) `tools/diag/env_flag_audit.py` chỉ
+Qwen. Tách tệp từng bị chặn bởi hai thứ: (a) PA-26 — tệp đang có thay đổi chưa commit, HEAD không
+tái lập được cây đã test; **PA-26 đã đóng 01-11** (cây sạch, toàn bộ `src/` đã track) nên điều
+kiện này hết hiệu lực; (b) `tools/diag/env_flag_audit.py` chỉ
 quét `src/`, `tools/` và script gốc, còn `tests/test_final_env_flag_defaults.py` đòi **mỗi cờ
 đăng ký có ít nhất một site đọc** — chuyển phần đọc cờ sang thư mục mới làm test đỏ dù hành vi
 không đổi.
 
-**Không sửa** cho tới khi PA-26 đóng (PA-46). Hệ quả chấp nhận: diff một lever dễ chạm nhiều lever
-khác trong cùng tệp.
+**Không sửa** trong khuôn khổ hiện tại: tách `generator.py` đã chốt là hướng phát triển (PA-54).
+Hệ quả chấp nhận: diff một lever dễ chạm nhiều lever khác trong cùng tệp.
 
 ### 3. Lever âm vẫn nằm trong mã, sau cờ TẮT
 
