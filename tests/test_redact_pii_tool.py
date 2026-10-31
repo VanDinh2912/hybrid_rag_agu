@@ -232,6 +232,33 @@ def test_json_van_hop_le_khi_email_nam_sat_escape(tmp_path, monkeypatch):
     assert '"dong1\\\\[EMAIL_1]"' in out, "phải là `\\\\[` (escape hợp lệ), không phải `\\[`"
 
 
+def test_fix_json_escape_chi_them_khi_day_backslash_le():
+    # `\[` = escape KHÔNG hợp lệ ⇒ thêm một backslash; `\\[` đã hợp lệ ⇒ giữ nguyên.
+    assert redact.fix_json_escape(r"a\[EMAIL_1]b") == r"a\\[EMAIL_1]b"
+    assert redact.fix_json_escape(r"a\\[EMAIL_1]b") == r"a\\[EMAIL_1]b"
+    # Token của lượt RỘNG cũng phải được bảo vệ (trước 01-11 bị bỏ sót).
+    assert redact.fix_json_escape(r"a\[PHONE_B_2]b") == r"a\\[PHONE_B_2]b"
+
+
+def test_che_lai_json_da_che_khong_lam_hong_escape(tmp_path, monkeypatch):
+    """Lượt hai trên bản ĐÃ CHE phải giữ nguyên byte.
+
+    Cách cũ nhân đôi mọi backslash trước token, nên `\\\\[EMAIL_1]` (hợp lệ) thành
+    `\\\\\\[EMAIL_1]` (escape hỏng). Lỗi này lộ ra khi chạy `--dry` trên artifact 01-11.
+    """
+    rel = "data/loop/d.json"
+    _ghi(tmp_path, rel, '{"msg": "dong1\\n' + MAIL + '"}\n')
+    monkeypatch.setattr(redact, "ROOT", tmp_path)
+
+    redact.redact_file(rel, tmp_path / "out", dry=False)
+    lan1 = _doc(tmp_path, "out/d.json")
+    rec2 = redact.redact_file("out/d.json", tmp_path / "out2", dry=False)
+
+    assert rec2["pii_hits_before"] == 0
+    assert rec2["json_valid_after"] is True
+    assert _doc(tmp_path, "out2/out/d.json") == lan1
+
+
 def test_jsonl_giu_so_ban_ghi_sau_khi_che(tmp_path, monkeypatch):
     rel = "data/loop/d.jsonl"
     goc = (
