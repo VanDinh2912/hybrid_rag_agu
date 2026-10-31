@@ -119,6 +119,9 @@ tools/loop/run_chain.ps1 -Chain tools/loop/chains/t5a_reranker.json
 ## 5. Máy kiểm và số neo
 
 ```bash
+# (0) cổng tái lập: chỉ đọc, so trạng thái thật với pin 31-10 (rc=1 nếu HỎNG)
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/repro_preflight.py
+
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe -m pytest tests -q
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/docs_consistency_check.py
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/final_number_audit.py
@@ -151,3 +154,10 @@ round nguồn (cây `data/loop/rounds_v2/` chưa tracked) và từ chối chạy
 | `docs_consistency_check.py` | **0 lỗi, 5 cảnh báo, 115 đường dẫn** | |
 | `final_number_audit.py` | **63 dòng, 4 LỆCH, rc=0** | 4 dòng LỆCH đều là **kỳ vọng cũ** so với cây hiện tại (2 dòng đếm test T5 đo trước khi bộ test lớn lên; 1 dòng checker ghi 100 đường dẫn; 1 dòng chữ ký trọng tài v1 `9f1179ccab74`) — không phải số đo hồi quy |
 | `referee_fingerprint()` | **`2911c69f740d`** | không đổi |
+| `tools/diag/repro_preflight.py` | **ĐẠT** (0 hỏng; 1 cảnh báo = lever `.env` như dòng trên) | 361 chunk / 26 nguồn / phân bố tầng / sha256 index / 29 tệp corpus / 24 tệp + 10.672 dòng `data/training`; pin `docs/repro_pins_20261031.json` (PA-57) |
+
+**Thứ tự cổng bắt buộc (PA-60):** `final_number_audit.py` mở trực tiếp `chroma_db` và
+`indexes/experimental/chroma_db_vie` nên Chroma **tái ghi byte** ba tệp mỗi index dù nội dung logic
+không đổi. Vì vậy: chạy `final_number_audit.py` **trước**, `artifact_manifest.py --check`
+**sau cùng**. Nếu lỡ chạy ngược, phục hồi 6 tệp từ backup rồi kiểm lại. `repro_preflight.py`
+đọc index bằng sqlite `mode=ro&immutable=1` nên **không** gây hiệu ứng này.
