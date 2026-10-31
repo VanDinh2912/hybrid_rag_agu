@@ -6,18 +6,19 @@ Bao gồm 3 tab chức năng:
 3. Tab 3: Vừa test vừa học (Interactive Testing & Feedback) - Kiểm tra câu hỏi, gắn nhãn Đúng/Sai,
    nhập đáp án đúng thực tế và lưu vào logs/feedback/user_feedback.json.
 
+Phần logic không cần widget đã tách sang các module cùng thư mục (REVIEW §7/§8/§13):
+`ui_state` (trạng thái + hàm định dạng), `backend_controller`, `search_controller`,
+`ingest_controller`, `feedback_controller`, `log_bridge`. File này chỉ còn dựng widget,
+điều phối luồng nền và hiển thị hộp thoại.
+
 Cách chạy:
     python ui/app.py
 """
 
-import io
-import json
-import os
-import re
+import logging
+import queue
 import sys
 import threading
-import time
-from datetime import datetime
 from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
@@ -38,13 +39,21 @@ if hasattr(sys.stdout, "reconfigure"):
 from dotenv import load_dotenv
 load_dotenv(ROOT_DIR / ".env")
 
-from src.retrieval.vector_db import VectorStoreManager
-from src.generation.local_slm import LocalSLM
-from src.generator import GeminiGenerator, QwenGenerator, _env_flag, is_fallback_answer, GeneratorError
+from src.generator import GeminiGenerator, QwenGenerator, _env_flag, is_fallback_answer
 from src.core.config import DEFAULT_TOP_K
-from src.core.pipeline import HybridRAGPipeline
 from ingest import run_ingestion
 from scripts.learn import append_note, log_learning
+
+from ui import (
+    backend_controller,
+    feedback_controller,
+    ingest_controller,
+    search_controller,
+)
+from ui.log_bridge import drain
+from ui.ui_state import AppState, format_labels_display
+
+logger = logging.getLogger(__name__)
 
 # Đường dẫn lưu trữ
 FEEDBACK_PATH = ROOT_DIR / "logs" / "feedback" / "user_feedback.json"
@@ -61,27 +70,6 @@ FONT_SUBTITLE = (DEFAULT_FONT_FAMILY, 9, "italic")
 FONT_BOLD = (DEFAULT_FONT_FAMILY, 10, "bold")
 FONT_NORMAL = (DEFAULT_FONT_FAMILY, 10)
 FONT_CODE = ("Consolas" if sys.platform == "win32" else "Courier", 9)
-
-
-def format_labels_display(labels, retrieval_config) -> str:
-    """Dòng nhãn hiển thị ở Tab 1 (P3.5) — THUẦN HIỂN THỊ, không đụng logic hỏi đáp.
-
-    - labels None/rỗng (ENABLE_CLASSIFIER=0 hoặc suy giảm mềm) → "—".
-    - Có nhãn → gộp 1 dòng: chủ đề · loại câu hỏi · top_k · trọng số · lọc nguồn.
-    """
-    if not labels:
-        return "—"
-    cfg = retrieval_config or {}
-    parts = [
-        f"chủ đề: {labels.get('topic', '—')}",
-        f"loại: {labels.get('question_type', '—')}",
-        f"top_k={cfg.get('top_k', '—')}",
-        f"bm25={cfg.get('bm25_weight', '—')}/chroma={cfg.get('chroma_weight', '—')}",
-    ]
-    src_filter = cfg.get("source_filter") or []
-    if src_filter:
-        parts.append("lọc nguồn: " + ", ".join(src_filter))
-    return " | ".join(parts)
 
 
 def use_qwen_generator() -> bool:
@@ -104,20 +92,6 @@ def build_generator(use_qwen: bool):
     return GeminiGenerator()
 
 
-class StdoutRedirector:
-    """Chuyển hướng tạm thời stdout sang callback của Tkinter để cập nhật log thời gian thực."""
-
-    def __init__(self, callback):
-        self.callback = callback
-
-    def write(self, string):
-        if string:
-            self.callback(string)
-
-    def flush(self):
-        pass
-
-
 class RAGApplication(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -125,15 +99,10 @@ class RAGApplication(tk.Tk):
         self.geometry("1150x750")
         self.minsize(1000, 650)
 
-        # Trạng thái backend
-        self.db_manager: VectorStoreManager | None = None
-        self.local_slm: LocalSLM | None = None
-        self.generator: GeminiGenerator | QwenGenerator | None = None
-        self.pipeline: HybridRAGPipeline | None = None
-
-        self.is_searching = False
-        self.is_ingesting = False
-        self.is_testing = False
+        # Trạng thái backend + cờ bận nằm trong AppState (không phải widget).
+        self._app_state = AppState()
+        # Log ingest đi qua queue: worker chỉ đẩy dòng, luồng GUI mới chèn vào widget.
+        self._ingest_sink: "queue.Queue[str]" = queue.Queue()
 
         self._setup_style()
         self._build_ui()
@@ -141,12 +110,89 @@ class RAGApplication(tk.Tk):
         # Khởi tạo backend ở luồng nền khi vừa bật app
         self.after(100, self._init_backend_thread)
 
+    # ------------------------------------------------------------------
+    # Trạng thái: giữ tên thuộc tính cũ để phần còn lại của GUI và test
+    # không phải đổi, nhưng dữ liệu thật nằm trong AppState.
+    # ------------------------------------------------------------------
+    @property
+    def app_state(self) -> AppState:
+        state = self.__dict__.get("_app_state")
+        if state is None:
+            state = AppState()
+            self.__dict__["_app_state"] = state
+        return state
+
+    @property
+    def db_manager(self):
+        return self.app_state.db_manager
+
+    @db_manager.setter
+    def db_manager(self, value):
+        self.app_state.db_manager = value
+
+    @property
+    def local_slm(self):
+        return self.app_state.local_slm
+
+    @local_slm.setter
+    def local_slm(self, value):
+        self.app_state.local_slm = value
+
+    @property
+    def generator(self):
+        return self.app_state.generator
+
+    @generator.setter
+    def generator(self, value):
+        self.app_state.generator = value
+
+    @property
+    def pipeline(self):
+        return self.app_state.pipeline
+
+    @pipeline.setter
+    def pipeline(self, value):
+        self.app_state.pipeline = value
+
+    @property
+    def is_searching(self) -> bool:
+        return self.app_state.is_searching
+
+    @is_searching.setter
+    def is_searching(self, value: bool):
+        self.app_state.is_searching = value
+
+    @property
+    def is_ingesting(self) -> bool:
+        return self.app_state.is_ingesting
+
+    @is_ingesting.setter
+    def is_ingesting(self, value: bool):
+        self.app_state.is_ingesting = value
+
+    @property
+    def is_testing(self) -> bool:
+        return self.app_state.is_testing
+
+    @is_testing.setter
+    def is_testing(self, value: bool):
+        self.app_state.is_testing = value
+
+    @property
+    def current_test_data(self):
+        return self.app_state.current_test_data
+
+    @current_test_data.setter
+    def current_test_data(self, value):
+        self.app_state.current_test_data = value
+
     def _setup_style(self):
         style = ttk.Style(self)
         try:
             style.theme_use("clam")
-        except Exception:
-            pass
+        except tk.TclError as exc:
+            # Theme chỉ ảnh hưởng thẩm mỹ: dùng theme mặc định và ghi lại lý do.
+            logger.debug("Không đổi được theme 'clam' (%s) — giữ theme mặc định.", exc)
 
         self.bg_color = "#f8fafc"
         self.primary_color = "#1d4ed8"
@@ -343,10 +389,8 @@ class RAGApplication(tk.Tk):
         threading.Thread(target=self._run_search_thread, args=(query, top_k), daemon=True).start()
 
     def _run_search_thread(self, query: str, top_k: int):
-        t0 = time.perf_counter()
         try:
-            result = self.pipeline.run(query, top_k=top_k)
-            elapsed = time.perf_counter() - t0
+            result, elapsed = search_controller.execute_search(self.pipeline, query, top_k)
             self.after(0, self._render_search_result, result, elapsed)
         except Exception as exc:
             self.after(0, self._render_search_error, str(exc))
@@ -463,59 +507,67 @@ class RAGApplication(tk.Tk):
         self.is_ingesting = True
         self.btn_ingest.configure(state=tk.DISABLED)
         self.txt_ingest_log.delete("1.0", tk.END)
+        drain(self._ingest_sink)  # bỏ dòng còn sót của lượt trước
         self._append_ingest_log("[BẮT ĐẦU] Bắt đầu tiến trình nạp dữ liệu vào ChromaDB...\n")
 
         reuse = self.reuse_model_var.get()
         threading.Thread(target=self._run_ingest_thread, args=(reuse,), daemon=True).start()
+        self.after(80, self._pump_ingest_log)
 
     def _append_ingest_log(self, text: str):
         self.txt_ingest_log.insert(tk.END, text)
         self.txt_ingest_log.see(tk.END)
 
+    def _flush_ingest_log(self):
+        """Chuyển các dòng worker đã đẩy vào queue sang widget (chạy trên luồng GUI)."""
+        lines = drain(self._ingest_sink)
+        if lines:
+            self._append_ingest_log("".join(lines))
+
+    def _pump_ingest_log(self):
+        self._flush_ingest_log()
+        if self.is_ingesting:
+            self.after(80, self._pump_ingest_log)
+
     def _run_ingest_thread(self, reuse_model: bool):
-        old_stdout = sys.stdout
-        redirector = StdoutRedirector(lambda s: self.after(0, self._append_ingest_log, s))
-        sys.stdout = redirector
-
         try:
-            target_manager = self.db_manager if (reuse_model and self.db_manager) else None
-            # reset=False khi reuse_model để tránh lỗi lock file ChromaDB
-            reset_mode = not reuse_model
-            new_manager, new_vector_db, total = run_ingestion(db_manager=target_manager, reset=reset_mode)
-
-            # Cập nhật pipeline ngay sau khi ingest thành công. Phải dựng lại CẢ bộ truy
-            # xuất (BM25 giữ danh sách document cũ nếu chỉ gán vector_db) — xem REVIEW §2.1.
-            self.db_manager = new_manager
-            if self.pipeline:
-                try:
-                    self.pipeline.replace_vector_db(new_vector_db)
-                except Exception as exc:
-                    # Dữ liệu đã nạp nhưng tầng truy xuất chưa theo corpus mới: báo lỗi
-                    # rõ ràng, KHÔNG hiển thị thông báo thành công.
-                    self.after(0, self._append_ingest_log, f"\n[LỖI RETRIEVER] Đã nạp {total} chunks nhưng chưa làm mới được bộ truy xuất: {exc}\n")
-                    self.after(0, self._on_ingest_error, f"Đã nạp {total} chunks vào ChromaDB nhưng chưa làm mới được bộ truy xuất:\n{exc}")
-                    return
-
-            msg = f"\n[HOÀN TẤT] Nạp thành công {total} chunks vào ChromaDB!\n"
-            self.after(0, self._append_ingest_log, msg)
-            self.after(0, self._on_ingest_completed, total)
-
+            outcome = ingest_controller.execute_ingest(
+                self.pipeline, self.db_manager, reuse_model, self._ingest_sink.put
+            )
+        except ingest_controller.IngestRetrieverError as exc:
+            # Dữ liệu đã nạp nhưng tầng truy xuất chưa theo corpus mới: báo lỗi
+            # rõ ràng, KHÔNG hiển thị thông báo thành công (REVIEW §2.1).
+            self._ingest_sink.put(
+                f"\n[LỖI RETRIEVER] Đã nạp {exc.outcome.total} chunks nhưng chưa làm mới được "
+                f"bộ truy xuất: {exc.cause}\n"
+            )
+            self.after(0, self._on_ingest_retriever_error, exc.outcome, str(exc.cause))
         except Exception as exc:
-            self.after(0, self._append_ingest_log, f"\n[LỖI INGEST] {exc}\n")
+            self._ingest_sink.put(f"\n[LỖI INGEST] {exc}\n")
             self.after(0, self._on_ingest_error, str(exc))
-        finally:
-            sys.stdout = old_stdout
+        else:
+            self._ingest_sink.put(f"\n[HOÀN TẤT] Nạp thành công {outcome.total} chunks vào ChromaDB!\n")
+            self.after(0, self._on_ingest_completed, outcome.total, outcome.db_manager)
 
-    def _on_ingest_completed(self, total: int):
+    def _on_ingest_completed(self, total: int, db_manager=None):
+        self.db_manager = db_manager
         self.is_ingesting = False
+        self._flush_ingest_log()
         self.btn_ingest.configure(state=tk.NORMAL)
         status_msg = f"Hệ thống sẵn sàng | DB: {total} chunks"
         self.status_var.set(status_msg)
         self.lbl_status.configure(foreground="#16a34a")
         messagebox.showinfo("Thành công", f"Đã hoàn thành nạp dữ liệu! Tổng cộng: {total} chunks.")
 
+    def _on_ingest_retriever_error(self, outcome, err_msg: str):
+        self.db_manager = outcome.db_manager
+        self._on_ingest_error(
+            f"Đã nạp {outcome.total} chunks vào ChromaDB nhưng chưa làm mới được bộ truy xuất:\n{err_msg}"
+        )
+
     def _on_ingest_error(self, err_msg: str):
         self.is_ingesting = False
+        self._flush_ingest_log()
         self.btn_ingest.configure(state=tk.NORMAL)
         messagebox.showerror("Lỗi Ingest", f"Quá trình nạp dữ liệu gặp sự cố:\n{err_msg}")
 
@@ -900,33 +952,7 @@ class RAGApplication(tk.Tk):
 
     def _report_feedback_result(self, status: dict, errors: list[str]):
         """Thông báo kết quả từng phần — chỉ nói "thành công" cho việc thật sự xong."""
-        lines = ["Đã lưu phản hồi vào logs/feedback/user_feedback.json!"]
-        if status["benchmark_saved"] is True:
-            lines.append("Đã cập nhật benchmark_questions.json!")
-        elif status["benchmark_saved"] is False:
-            lines.append("CHƯA cập nhật được benchmark_questions.json.")
-        if status["normalization_pair_saved"] is True:
-            lines.append("Đã lưu cặp chuẩn hóa cho Qwen học!")
-        elif status["normalization_pair_saved"] is False:
-            lines.append("CHƯA lưu được cặp chuẩn hóa cho Qwen.")
-        if status["note_saved"] is True:
-            lines.append("Đã ghi bài học vào data/corpus/ghi_chu_hoc_them.txt.")
-        elif status["note_saved"] is False:
-            lines.append("CHƯA ghi được bài học vào corpus.")
-        if status["rebuild_succeeded"] is True:
-            lines.append("Đã nạp lại corpus và làm mới bộ truy xuất thành công.")
-        elif status["rebuild_succeeded"] is False:
-            lines.append(
-                "ChromaDB/bộ truy xuất CHƯA được cập nhật — lượt hỏi tiếp theo vẫn dùng corpus cũ."
-            )
-        if errors:
-            lines.append("\nChi tiết lỗi:")
-            lines.extend(f"- {err}" for err in errors)
-
-        failed = bool(errors) or any(
-            status[key] is False
-            for key in ("benchmark_saved", "normalization_pair_saved", "note_saved", "rebuild_succeeded")
-        )
+        lines, failed = feedback_controller.build_result_lines(status, errors)
         if failed:
             messagebox.showwarning("Đã lưu một phần", "\n".join(lines))
         else:
@@ -940,114 +966,30 @@ class RAGApplication(tk.Tk):
         Trả `(True, "")` khi ghi xong, `(False, lỗi)` khi hỏng — caller phải báo đúng
         trạng thái thay vì coi mọi nhánh là thành công.
         """
-        try:
-            # Đọc benchmark hiện tại
-            if BENCHMARK_PATH.exists():
-                with open(BENCHMARK_PATH, "r", encoding="utf-8") as f:
-                    benchmark = json.load(f)
-            else:
-                benchmark = {"version": "2.0", "description": "Bộ câu hỏi benchmark Hybrid RAG AGU", "questions": []}
-
-            # Tạo câu hỏi mới
-            new_question = {
-                "id": f"Q{len(benchmark['questions']) + 1:02d}",
-                "category": "người dùng thêm",
-                "in_corpus": True,
-                "source_document": source_doc,
-                "raw_query": self.current_test_data["raw_query"],
-                "normalized_query": normalized_query,  # Sử dụng normalized query từ người dùng
-                "expected_answer": ground_truth,
-                "expected_citations": [citation] if citation else [],
-                "ground_truth_answer": ground_truth,
-                "ground_truth_citation": f"{source_doc} - {citation}" if citation else source_doc
-            }
-
-            # Thêm vào danh sách
-            benchmark["questions"].append(new_question)
-
-            # Lưu lại
-            BENCHMARK_PATH.parent.mkdir(parents=True, exist_ok=True)
-            with open(BENCHMARK_PATH, "w", encoding="utf-8") as f:
-                json.dump(benchmark, f, ensure_ascii=False, indent=2)
-
-            print(f"[Benchmark] Đã thêm câu hỏi {new_question['id']} vào benchmark_questions.json")
-            return True, ""
-        except Exception as e:
-            print(f"[Benchmark Error] Không thể lưu vào benchmark: {e}")
-            return False, str(e)
+        ok, error = feedback_controller.save_benchmark(
+            BENCHMARK_PATH, self.current_test_data, ground_truth, citation, source_doc, normalized_query
+        )
+        if ok:
+            logger.info("[Benchmark] Đã thêm câu hỏi vào %s", BENCHMARK_PATH)
+        return ok, error
 
     def _save_normalization_pair(self, raw_query: str, normalized_query: str) -> tuple[bool, str]:
         """Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file normalization_pairs.json để Qwen học.
 
         Trả `(True, "")` khi ghi xong, `(False, lỗi)` khi hỏng — caller báo đúng trạng thái.
         """
-        try:
-            # Đọc pairs hiện tại
-            if NORMALIZATION_PAIRS_PATH.exists():
-                with open(NORMALIZATION_PAIRS_PATH, "r", encoding="utf-8") as f:
-                    pairs = json.load(f)
-            else:
-                pairs = {"version": "1.0", "description": "Cặp câu hỏi chuẩn hóa để Qwen học", "pairs": []}
-
-            # Kiểm tra trùng lặp
-            existing_pairs = {p["raw_query"]: p["normalized_query"] for p in pairs["pairs"]}
-            if raw_query in existing_pairs:
-                print(f"[Normalization] Cặp câu hỏi này đã tồn tại, sẽ cập nhật normalized query")
-                # Cập nhật normalized query nếu đã tồn tại
-                for p in pairs["pairs"]:
-                    if p["raw_query"] == raw_query:
-                        p["normalized_query"] = normalized_query
-                        p["updated_at"] = datetime.now().isoformat(timespec="seconds")
-                        break
-            else:
-                # Thêm cặp mới
-                new_pair = {
-                    "raw_query": raw_query,
-                    "normalized_query": normalized_query,
-                    "created_at": datetime.now().isoformat(timespec="seconds")
-                }
-                pairs["pairs"].append(new_pair)
-                print(f"[Normalization] Đã thêm cặp chuẩn hóa mới: {raw_query[:30]}... -> {normalized_query[:30]}...")
-
-            # Lưu lại
-            NORMALIZATION_PAIRS_PATH.parent.mkdir(parents=True, exist_ok=True)
-            with open(NORMALIZATION_PAIRS_PATH, "w", encoding="utf-8") as f:
-                json.dump(pairs, f, ensure_ascii=False, indent=2)
-
-            print(f"[Normalization] Đã lưu vào {NORMALIZATION_PAIRS_PATH}")
-            return True, ""
-        except Exception as e:
-            print(f"[Normalization Error] Không thể lưu cặp chuẩn hóa: {e}")
-            return False, str(e)
+        return feedback_controller.save_normalization_pair(
+            NORMALIZATION_PAIRS_PATH, raw_query, normalized_query
+        )
 
     def _save_feedback_record(self, feedback_type: str, correct_answer: str | None):
-        """Ghi nhận log đánh giá của người dùng vào logs/feedback/user_feedback.json."""
-        FEEDBACK_PATH.parent.mkdir(parents=True, exist_ok=True)
+        """Ghi nhận log đánh giá của người dùng vào logs/feedback/user_feedback.json.
 
-        record = {
-            "timestamp": datetime.now().isoformat(timespec="seconds"),
-            "feedback": feedback_type,
-            "raw_query": self.current_test_data.get("raw_query"),
-            "normalized_query": self.current_test_data.get("normalized_query"),
-            "system_answer": self.current_test_data.get("answer"),
-            "correct_answer": correct_answer,
-            "sources": [
-                {"rank": s["rank"], "source": s["source"], "tier": s["tier"], "chunk_id": s["chunk_id"]}
-                for s in self.current_test_data.get("sources", [])
-            ],
-        }
-
-        records = []
-        if FEEDBACK_PATH.exists():
-            try:
-                records = json.loads(FEEDBACK_PATH.read_text(encoding="utf-8"))
-                if not isinstance(records, list):
-                    records = []
-            except Exception:
-                records = []
-
-        records.append(record)
-        FEEDBACK_PATH.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+        Ghi nguyên tử + khoá file (`src/core/json_store.py`): không để lại file cụt và
+        không nuốt lỗi đọc file cũ — hỏng thì nổi lên để GUI báo thất bại.
+        """
+        record = feedback_controller.feedback_record(self.current_test_data, feedback_type, correct_answer)
+        feedback_controller.append_feedback(FEEDBACK_PATH, record)
 
     # =========================================================================
     # KHỞI TẠO BACKEND (CHẠY NGẦM)
@@ -1055,43 +997,46 @@ class RAGApplication(tk.Tk):
     def _init_backend_thread(self):
         threading.Thread(target=self._init_backend_task, daemon=True).start()
 
+    def _set_status_text(self, text: str):
+        self.status_var.set(text)
+
+    def _on_backend_ready(self, status_msg: str):
+        self.status_var.set(status_msg)
+        self.lbl_status.configure(foreground="#16a34a")
+
+    def _on_backend_error(self, err_msg: str):
+        self.status_var.set(f"Khởi tạo thất bại: {err_msg}")
+        self.lbl_status.configure(foreground="#dc2626")
+        messagebox.showerror("Lỗi khởi tạo Backend", f"Không thể khởi động hệ thống RAG:\n{err_msg}")
+
     def _init_backend_task(self):
         try:
-            self.status_var.set("Đang kết nối ChromaDB...")
-            self.db_manager = VectorStoreManager()
-            vector_db = self.db_manager.load_vector_store()
-
-            self.status_var.set("Kiểm tra Local SLM (Ollama)...")
-            self.local_slm = LocalSLM()
-            slm_ok, _msg = self.local_slm.check_connection()
-
-            # Bước 0 P5.1: đọc USE_QWEN_GENERATOR thay vì hardcode Gemini —
-            # smoke GUI chạy offline 100% khi cờ bật (không tốn quota Gemini).
-            use_qwen = use_qwen_generator()
-            self.status_var.set(
-                "Kết nối Local Qwen (chế độ OFFLINE)..." if use_qwen else "Kết nối Gemini API..."
+            bundle = backend_controller.build_backend(
+                status=lambda msg: self.after(0, self._set_status_text, msg),
+                use_qwen=use_qwen_generator(),
+                generator_factory=build_generator,
             )
-            self.generator = build_generator(use_qwen)
-            if use_qwen:
-                print(
-                    f"      CẢNH BÁO: USE_QWEN_GENERATOR=1 — app đang chạy OFFLINE với generator "
-                    f"'{self.generator.model_name}' (không tốn quota Gemini, chất lượng thấp hơn bình thường)."
-                )
-
-            self.pipeline = HybridRAGPipeline(
-                vector_db=vector_db, local_slm=self.local_slm, generator=self.generator
-            )
-
-            status_msg = f"Hệ thống sẵn sàng | DB: {vector_db._collection.count()} chunks"
-            if not slm_ok:
-                status_msg += " | Cảnh báo: Ollama tắt (dùng query gốc)"
-            self.status_var.set(status_msg)
-            self.lbl_status.configure(foreground="#16a34a")
-
         except Exception as exc:
-            self.status_var.set(f"Khởi tạo thất bại: {exc}")
-            self.lbl_status.configure(foreground="#dc2626")
-            messagebox.showerror("Lỗi khởi tạo Backend", f"Không thể khởi động hệ thống RAG:\n{exc}")
+            # Worker chỉ báo lỗi; việc đổi widget/hộp thoại do luồng GUI làm.
+            self.after(0, self._on_backend_error, str(exc))
+            return
+
+        self.db_manager = bundle.db_manager
+        self.local_slm = bundle.local_slm
+        self.generator = bundle.generator
+        self.pipeline = bundle.pipeline
+
+        if isinstance(bundle.generator, QwenGenerator):
+            logger.warning(
+                "USE_QWEN_GENERATOR=1 — app chạy OFFLINE với generator '%s' "
+                "(không tốn quota Gemini, chất lượng thấp hơn bình thường).",
+                getattr(bundle.generator, "model_name", "?"),
+            )
+
+        status_msg = f"Hệ thống sẵn sàng | DB: {bundle.chunk_count} chunks"
+        if not bundle.slm_ok:
+            status_msg += " | Cảnh báo: Ollama tắt (dùng query gốc)"
+        self.after(0, self._on_backend_ready, status_msg)
 
 
 if __name__ == "__main__":
