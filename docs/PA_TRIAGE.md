@@ -14,9 +14,9 @@ Cột "khuyến nghị": **duyệt** = nên làm, thường rẻ và không đ�
 đã bị số đo bác, hoặc khuyến nghị giữ nguyên); **hoãn** = cần điều kiện khác (duyệt ngưỡng, quota,
 PA-26, re-anchor) trước khi làm.
 
-Đếm: (a) 26 · (b) 19 · (c) 5 (50 hàng; PA-55 thuộc (b) nhưng dòng đếm cũ ghi 18). Đã đóng 14:
+Đếm: (a) 26 · (b) 19 · (c) 5 (50 hàng; PA-55 thuộc (b) nhưng dòng đếm cũ ghi 18). Đã đóng 15:
 PA-2, 5, 6, 9, 10, 19, 20, 25, 34, 45, 47, **48 (đã áp `ed0fc74`), 54 (hướng phát triển),
-55 (bản ghi lịch sử)**.
+55 (bản ghi lịch sử)**, **31 (đã áp 01-11 trên nhánh `refactor/phase1-runtime`)**.
 
 | PA | Việc | Nhóm | Khuyến nghị | Lý do ngắn |
 |---|---|---|---|---|
@@ -50,7 +50,7 @@ PA-2, 5, 6, 9, 10, 19, 20, 25, 34, 45, 47, **48 (đã áp `ed0fc74`), 54 (hướ
 | PA-28 | Bộ sinh SFT giữ dòng thiếu thực thể | a | **hoãn** | đụng dữ liệu train; cần chốt đặc tả T4 |
 | PA-29 | 5 script thiếu argparse; `ingest` xoá index | b | **duyệt** | rẻ: thêm dry-run/xác nhận; không đổi số |
 | PA-30 | `.env.example` thiếu 13 cờ lever | b | **duyệt** | rẻ, chỉ tài liệu |
-| PA-31 | 89 dòng nhân thân chưa mask | b | **duyệt** | tạo bản redacted; không sửa artifact gốc |
+| PA-31 | PII nhân thân trong artifact đã commit (89 khớp/8 tệp lúc 25-10; **640 khớp/18 tệp** trên dòng `main` sau `ea9416d`) | b | **ĐÃ ÁP 01-11** (nhánh `refactor/phase1-runtime`) | Che 17/18 tệp bằng `tools/diag/redact_pii.py --set full`: **564 khớp PII + 1 đường dẫn cá nhân → 0**, giữ số dòng và JSON hợp lệ. `data/loop/testset_v1.jsonl` **giữ nguyên** (76 khớp, sha `202ca508…`) vì che nó là đổi tập đo đóng băng ⇒ pin test hạ `165/9 → 76/1` có chủ đích. `thesis-final` `9c1c00e` **không đổi**, không tag `thesis-final-pii` |
 | PA-32 | 3 id trùng tên train/val/benchmark | a | **hoãn** | đụng dữ liệu train; cần quyết định tách id |
 | PA-33 | `.gitignore` chưa phủ vùng artifact | b | **duyệt** | rẻ; chặn stage 1.980 đường dẫn |
 | PA-34 | Điều kiện chạy test chưa đăng ký | b | **đóng** | REPRODUCE.md đã ghi venv + PYTHONIOENCODING; guard đã có |
