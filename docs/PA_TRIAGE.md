@@ -1,7 +1,7 @@
-# Phân loại PA-1…PA-48 + PA-54…PA-59 (27-10; PA-48 thêm 28-10, **đã áp `ed0fc74` 29-10**; PA-54–55 thêm 29-10, **đã đóng 29-10**; PA-56–59 đề xuất 31-10, **chưa áp**)
+# Phân loại PA-1…PA-48 + PA-54…PA-59 (27-10; PA-48 thêm 28-10, **đã áp `ed0fc74` 29-10**; PA-54–55 thêm 29-10, **đã đóng 29-10**; PA-56–59 đề xuất 31-10, **PA-57 đã áp `18ecc88`**, còn lại hoãn/đóng — xem mục cuối)
 
 PA-49…PA-53 không nằm trong bảng này — ghi thành mục riêng trong `docs/archive/PENDING_APPROVAL.md`.
-PA-56…PA-59 là đề xuất 31-10, ghi ở mục riêng cuối tệp.
+PA-56…PA-60 là đề xuất 31-10, ghi ở mục riêng cuối tệp (đã chốt quyết định 31-10).
 
 Mục đích: một bảng để quyết định việc duyệt tiếp theo, **không** áp PA nào. Ba nhóm:
 
@@ -79,18 +79,21 @@ mục nào trong bảng này được tự áp.
 
 ---
 
-## PA-56…PA-59 — đề xuất 31-10 (nhánh `fix/audit-20261031`, **CHƯA ÁP**)
+## PA-56…PA-60 — đề xuất 31-10 (nhánh `fix/audit-20261031`; **PA-57 đã áp `18ecc88`**, còn lại đã chốt)
 
-Sinh ra từ đợt rà soát toàn dự án 31-10 (ca trực tự động). Bốn mục dưới **không** nằm trong bảng
+Sinh ra từ đợt rà soát toàn dự án 31-10 (ca trực tự động). Các mục dưới **không** nằm trong bảng
 PA-1…PA-48 ở trên; mỗi mục ghi rõ bằng chứng đo được và điều kiện cứng trước khi áp.
+Quyết định 31-10 (người dùng giao toàn quyền cho ca trực): **PA-57 áp ngay** (chỉ thêm cổng đọc,
+không đổi số đo); PA-56/PA-58 **hoãn** vì đụng vùng neo/số đo; PA-59 **đóng** (không còn tệp nào
+lệch byte); PA-60 **chấp nhận** bằng thứ tự cổng, không sửa dụng cụ đo.
 
 | PA | Việc | Nhóm | Khuyến nghị | Lý do ngắn |
 |---|---|---|---|---|
-| PA-56 | Bỏ `load_dotenv()` **lúc import** ở `src/core/classifier.py:38`, `src/retrieval/router.py:48`, `src/assessment/evaluation.py:72`; chuyển sang đọc qua `settings()` (đã snapshot `os.environ` mỗi lần gọi) | a | **hoãn** | 31-10: `.env` máy này bật `NORMALIZE_SANITY_GUARD=1` ⇒ `load_dotenv()` lúc import làm **10 test hermetic đỏ** và đổi `cache_policy_deviation()` của mọi tiến trình (kể cả `run_round.py`). Sửa mã đổi byte 3 tệp trong vùng neo ⇒ phải có round mới + fingerprint, không tự áp |
-| PA-57 | Ghim byte `data/training/` (12 tệp jsonl + 12 tệp phụ, 10.619 dòng) vào một manifest riêng hoặc thêm scope vào `ARTIFACT_MANIFEST.json` | b | **duyệt** | 31-10: 24 tệp này **bị gitignore + ngoài manifest** nên bị tái sinh âm thầm (13 test đỏ suốt một phiên); đã khôi phục byte-nguyên từ backup 29-10 nhưng **không có cổng nào chặn tái diễn**. Chỉ thêm manifest, không đổi số đo |
-| PA-58 | Quyết định chuẩn hoá `data/corpus/` (29 tệp) với index sản xuất (26 nguồn / 361 chunk) | a | **hoãn** | 31-10: `ingest.py` trên thư mục hiện hành sinh **443 chunk**; 3 PDF thêm 28-10 (`dh24-ky`, `qd-1543-BGDDT`, `so-tay-sktt`) chưa ingest. Hai đường: (i) ingest thành round mới + đo lại neo, (ii) chuyển 3 tệp sang vùng "chưa ingest". Không tự chọn — đụng số đo |
-| PA-59 | Re-pin `logs/README.md` (và các tệp bị manifest băm) sau khi sửa câu chữ lỗi thời | b | **hoãn** | 31-10: `logs/README.md` nằm trong 158 tệp manifest ⇒ sửa chữ là đổi hash; cần một lượt `artifact_manifest --write` + `evidence_pack --write` có duyệt, gộp với PA-57 |
-| PA-60 | `final_number_audit.py` tự khai **CHỈ-ĐỌC** nhưng mở `chroma_db` + `indexes/experimental/chroma_db_vie` ⇒ Chroma tái ghi byte (`chroma.sqlite3`, `data_level0.bin`, `length.bin`) ⇒ `artifact_manifest --check` báo LỆCH ngay sau khi chạy | b | **duyệt** | 31-10: đo được — sau khi phục hồi byte từ backup rồi chạy audit, manifest LỆCH đúng 3 tệp mỗi index dù nội dung logic (361/342 embedding) không đổi. Hai cách: (i) cho audit mở **bản sao** index, (ii) ghi thứ tự cổng: audit TRƯỚC, `artifact_manifest --check` SAU CÙNG. Sửa `tools/` là sửa dụng cụ đo ⇒ cần duyệt |
+| PA-56 | Bỏ `load_dotenv()` **lúc import** ở `src/core/classifier.py:38`, `src/retrieval/router.py:48`, `src/assessment/evaluation.py:72`; chuyển sang đọc qua `settings()` (đã snapshot `os.environ` mỗi lần gọi) | a | **HOÃN (quyết định 31-10)** | Không sửa `src/` trong nhánh audit; lối tắt đã có: test hermetic ghim lever + preflight cảnh báo. Muốn đo sạch thì tắt `NORMALIZE_SANITY_GUARD` trong `.env` **của máy** (agent không chạm `.env`). Bằng chứng: `.env` máy này bật `NORMALIZE_SANITY_GUARD=1` ⇒ `load_dotenv()` lúc import làm **10 test hermetic đỏ** và đổi `cache_policy_deviation()` của mọi tiến trình (kể cả `run_round.py`). Sửa mã đổi byte 3 tệp trong vùng neo ⇒ phải có round mới + fingerprint, không tự áp |
+| PA-57 | Ghim byte `data/training/` (12 tệp jsonl + 12 tệp phụ, 10.619 dòng) vào một manifest riêng hoặc thêm scope vào `ARTIFACT_MANIFEST.json` | b | **ĐÃ ÁP `18ecc88`** | `tools/diag/repro_preflight.py` + `docs/repro_pins_20261031.json` + 8 test; chỉ đọc, không đổi số đo, không đụng manifest gốc. Bằng chứng: 24 tệp này **bị gitignore + ngoài manifest** nên bị tái sinh âm thầm (13 test đỏ suốt một phiên); đã khôi phục byte-nguyên từ backup 29-10 nhưng **không có cổng nào chặn tái diễn**. Chỉ thêm manifest, không đổi số đo |
+| PA-58 | Quyết định chuẩn hoá `data/corpus/` (29 tệp) với index sản xuất (26 nguồn / 361 chunk) | a | **QUYẾT ĐỊNH 31-10: giữ nguyên** | Giữ 29 tệp corpus / 26 nguồn / 361 chunk; 3 PDF 28-10 là tư liệu tham chiếu, **chưa ingest**. Chuẩn hoá phải là round mới + đo lại neo (PA-17), không làm trong nhánh audit. Bằng chứng: `ingest.py` trên thư mục hiện hành sinh **443 chunk**; 3 PDF thêm 28-10 (`dh24-ky`, `qd-1543-BGDDT`, `so-tay-sktt`) chưa ingest. Hai đường: (i) ingest thành round mới + đo lại neo, (ii) chuyển 3 tệp sang vùng "chưa ingest". Không tự chọn — đụng số đo |
+| PA-59 | Re-pin `logs/README.md` (và các tệp bị manifest băm) sau khi sửa câu chữ lỗi thời | b | **ĐÓNG — không cần** | Không tệp nào trong manifest bị sửa câu chữ ở nhánh này (`logs/README.md` giữ nguyên byte); mọi sửa docs đều ngoài manifest. Nếu sau này sửa thì gộp vào lượt re-pin có duyệt. Bối cảnh: `logs/README.md` nằm trong 158 tệp manifest ⇒ sửa chữ là đổi hash; cần một lượt `artifact_manifest --write` + `evidence_pack --write` có duyệt, gộp với PA-57 |
+| PA-60 | `final_number_audit.py` tự khai **CHỈ-ĐỌC** nhưng mở `chroma_db` + `indexes/experimental/chroma_db_vie` ⇒ Chroma tái ghi byte (`chroma.sqlite3`, `data_level0.bin`, `length.bin`) ⇒ `artifact_manifest --check` báo LỆCH ngay sau khi chạy | b | **CHẤP NHẬN, không sửa dụng cụ** | Chọn (ii): ghi thứ tự cổng — audit TRƯỚC, `artifact_manifest --check` SAU CÙNG (đã ghi `REPRODUCE.md` §5). Không sửa `final_number_audit.py` vì là dụng cụ đo đã công bố. Bằng chứng: đo được — sau khi phục hồi byte từ backup rồi chạy audit, manifest LỆCH đúng 3 tệp mỗi index dù nội dung logic (361/342 embedding) không đổi. Hai cách: (i) cho audit mở **bản sao** index, (ii) ghi thứ tự cổng: audit TRƯỚC, `artifact_manifest --check` SAU CÙNG. Sửa `tools/` là sửa dụng cụ đo ⇒ cần duyệt |
 
 **Đã sửa ngay trong nhánh này (không cần duyệt vì không đổi số đo):** test hermetic ghim lever
 chuẩn hoá (`3757344`, 4 tệp test, 38 dòng thêm); 6 tài liệu sống hết lỗi thời (29 tệp corpus /
