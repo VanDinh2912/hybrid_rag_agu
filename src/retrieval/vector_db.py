@@ -1,6 +1,8 @@
+import logging
 import re
 from typing import Any, Optional
 
+from chromadb.errors import NotFoundError
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
@@ -9,6 +11,8 @@ from langchain_core.documents import Document
 from src.core.config import settings
 from src.core.paths import CHROMA_DIR
 from src.text_utils import fold
+
+logger = logging.getLogger(__name__)
 
 try:
     from langchain.retrievers import EnsembleRetriever
@@ -71,15 +75,20 @@ class VectorStoreManager:
         Mỗi chunk là {"text", "tier", "source"}; metadata lưu kèm chunk_id đánh số
         tuần tự toàn đợt nạp để truy vết và thống kê Recall@K theo từng tầng.
         """
-        # Xóa collection cũ để mỗi lần chạy rebuild index từ data/, tránh nhân đôi chunk khi chạy lại
+        # Xóa collection cũ để mỗi lần chạy rebuild index từ data/, tránh nhân đôi chunk khi chạy lại.
+        # REVIEW §12: chỉ nuốt đúng "collection chưa tồn tại"; lỗi khoá/hỏng DB phải nổi lên,
+        # nếu không ingest sẽ ghi chồng lên index cũ mà vẫn báo thành công.
         try:
             Chroma(
                 persist_directory=self.persist_directory,
                 embedding_function=self.embeddings,
                 collection_name=collection_name,
             ).delete_collection()
-        except Exception:
-            pass
+        except NotFoundError:
+            logger.debug("Collection %s chưa tồn tại — không có gì để xoá.", collection_name)
+        except ValueError as exc:
+            # langchain_chroma dịch NotFoundError thành ValueError ở một số phiên bản.
+            logger.debug("Không xoá được collection %s (%s) — coi như chưa tồn tại.", collection_name, exc)
 
         documents = [
             Document(
