@@ -14,6 +14,7 @@ from pathlib import Path
 import pytest
 
 import ui.app as ui_app
+import ui.backend_controller as backend_controller
 import ui.ingest_controller as ingest_controller
 import ui.search_controller as search_controller
 from ui import feedback_controller
@@ -231,3 +232,105 @@ def test_ui_app_giu_bieu_tuong_cong_khai_ma_test_cu_va_entry_point_dung():
                  "FEEDBACK_PATH", "BENCHMARK_PATH", "NORMALIZATION_PAIRS_PATH",
                  "run_ingestion", "append_note", "log_learning", "messagebox"):
         assert hasattr(ui_app, name), name
+
+
+# ---------------------------------------------------------------------------
+# backend_controller — module tách cuối cùng từng không có test nào (rà 01-11)
+# ---------------------------------------------------------------------------
+class _FakeVectorDB:
+    class _Collection:
+        def count(self):
+            return 42
+
+    _collection = _Collection()
+
+
+def test_build_backend_tra_bundle_va_bao_tien_trinh(monkeypatch):
+    logs = []
+    nhan = {}
+
+    class FakeDBManager:
+        def load_vector_store(self):
+            return _FakeVectorDB()
+
+    class FakeSLM:
+        def check_connection(self):
+            return True, "ollama ok"
+
+    class FakePipeline:
+        def __init__(self, vector_db, local_slm, generator):
+            nhan["pipeline"] = {"vector_db": vector_db, "local_slm": local_slm,
+                                "generator": generator}
+
+    class FakeGen:
+        def __init__(self, use_qwen):
+            nhan["use_qwen"] = use_qwen
+
+    monkeypatch.setattr(backend_controller, "VectorStoreManager", FakeDBManager)
+    monkeypatch.setattr(backend_controller, "LocalSLM", FakeSLM)
+    monkeypatch.setattr(backend_controller, "HybridRAGPipeline", FakePipeline)
+
+    bundle = backend_controller.build_backend(
+        logs.append, use_qwen=True, generator_factory=FakeGen)
+
+    assert isinstance(bundle.db_manager, FakeDBManager)
+    assert bundle.vector_db is nhan["pipeline"]["vector_db"]
+    assert bundle.slm_ok is True
+    assert bundle.chunk_count == 42, "đếm chunk lấy từ collection thật, không hard-code"
+    assert nhan["use_qwen"] is True, "cờ use_qwen phải đi vào generator factory"
+    assert nhan["pipeline"] == {"vector_db": bundle.vector_db,
+                                "local_slm": bundle.local_slm,
+                                "generator": bundle.generator}
+    assert logs == ["Đang kết nối ChromaDB...",
+                    "Kiểm tra Local SLM (Ollama)...",
+                    "Kết nối Local Qwen (chế độ OFFLINE)..."]
+
+
+def test_build_backend_mac_dinh_chon_generator_theo_co(monkeypatch):
+    da_chon = []
+
+    class FakeDBManager:
+        def load_vector_store(self):
+            return _FakeVectorDB()
+
+    class FakeSLM:
+        def check_connection(self):
+            return False, "không có ollama"
+
+    class FakePipeline:
+        def __init__(self, **_kw):
+            pass
+
+    class FakeQwen:
+        def __init__(self, use_qwen):
+            da_chon.append(("qwen", use_qwen))
+
+    class FakeGemini:
+        def __init__(self, use_qwen):
+            da_chon.append(("gemini", use_qwen))
+
+    monkeypatch.setattr(backend_controller, "VectorStoreManager", FakeDBManager)
+    monkeypatch.setattr(backend_controller, "LocalSLM", FakeSLM)
+    monkeypatch.setattr(backend_controller, "HybridRAGPipeline", FakePipeline)
+    monkeypatch.setattr(backend_controller, "QwenGenerator", FakeQwen)
+    monkeypatch.setattr(backend_controller, "GeminiGenerator", FakeGemini)
+
+    bundle = backend_controller.build_backend(use_qwen=True)
+
+    assert da_chon == [("qwen", True)]
+    assert bundle.slm_ok is False, "SLM hỏng không được làm sập backend"
+
+    backend_controller.build_backend()
+    assert da_chon[-1] == ("gemini", False)
+
+
+def test_build_backend_de_loi_that_len_caller(monkeypatch):
+    """Docstring hứa "ném lỗi thật" — không được trả backend rỗng để GUI chạy tiếp."""
+    class FakeDBManager:
+        def load_vector_store(self):
+            raise RuntimeError("không mở được chroma_db")
+
+    monkeypatch.setattr(backend_controller, "VectorStoreManager", FakeDBManager)
+
+    with pytest.raises(RuntimeError, match="không mở được chroma_db"):
+        backend_controller.build_backend()
