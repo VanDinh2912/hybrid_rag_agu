@@ -19,6 +19,11 @@ Nguyên tắc:
 Chạy:
     PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/redact_pii.py
     PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/redact_pii.py --dry
+
+`--set full` (PA-31 trên dòng `main`, 01-11): 8 tệp hồ sơ 25-10 **+ 10 artifact phát sinh sau**
+(`ea9416d`), tổng 18. Bộ mặc định `published` giữ nguyên 8 tệp để không đổi phạm vi đã công bố.
+`data/loop/testset_v1.jsonl` KHÔNG nằm trong cả hai bộ (tập đo đóng băng). Lượt che này xử lý
+thêm đường dẫn cá nhân (thay tên người dùng bằng `<user>`).
 """
 
 from __future__ import annotations
@@ -47,6 +52,33 @@ PA31_FILES: List[str] = [
     "outputs/ab_results_without_classifier.json",
     "outputs/ab_results_with_classifier.json",
     "data/loop/diag/corpus_diagnostics/manual_20_segments.txt",
+]
+
+#: 10 tệp PHÁT SINH SAU bản hồ sơ 25-10, được commit ở `ea9416d`
+#: ("chore(diag): nhập artifact chẩn đoán còn sót của B1/B3/B4/T4"). Tách khỏi `PA31_FILES`
+#: để bộ mặc định vẫn đúng phạm vi đã công bố; chỉ dùng khi gọi `--set full`.
+#: Riêng `t4_adapter_probe.json` chỉ có 1 đường dẫn cá nhân, không có PII.
+PA31_EXTRA_FILES: List[str] = [
+    "data/loop/diag/answerability_labelset_r5.jsonl",
+    "data/loop/diag/answerability_labelset_r11_retrieval.jsonl",
+    "data/loop/diag/answerability_labelset_r12_retrieval.jsonl",
+    "data/loop/diag/b1_cprime/a_prime/rows.jsonl",
+    "data/loop/diag/b1_cprime/c_prime/rows.jsonl",
+    "data/loop/diag/b3_smoke/sm16/retrieval.jsonl",
+    "data/loop/diag/corpus_check/corpus_check.json",
+    "data/loop/diag/corpus_check/manual_20_segments_new_index.txt",
+    "data/loop/diag/corpus_check/manual_20_segments_provenance.txt",
+    "data/loop/diag/t4_adapter_probe.json",
+]
+
+#: `data/loop/testset_v1.jsonl` (76 dòng PII) CỐ Ý không nằm trong cả hai danh sách: nó là tập đo
+#: đã đóng băng (sha256 `202ca508…`), che nó là đổi tập đo đã công bố. Xem test pin PA-31.
+
+#: Che đường dẫn cá nhân (`C:\Users\<tên>`, `/home/<tên>`): thay phần tên người dùng bằng
+#: `<user>` — đủ để khuôn `DUONG_DAN_CA_NHAN` không còn khớp, mà vẫn đọc được ngữ cảnh lỗi.
+PATH_PATTERNS: List[re.Pattern] = [
+    re.compile(r"([A-Za-z]:[\\/]{1,2}[Uu]sers[\\/]+)([A-Za-z0-9._-]{2,})"),
+    re.compile(r"((?<![\w.])/(?:home|Users)/)([A-Za-z0-9._-]{2,})"),
 ]
 
 #: Chỉ che lớp dữ liệu cá nhân; KHÔNG che SECRET_COTHAT (máy quét khai 0 ca) hay BI_MAU.
@@ -103,6 +135,23 @@ def mask_broad_phone(line: str, seen: Dict[str, str]) -> Tuple[str, int]:
         n += 1
     out.append(line[pos:])
     return "".join(out), n
+
+
+def mask_personal_paths(line: str) -> Tuple[str, int]:
+    """Che tên người dùng trong đường dẫn cá nhân; trả (dòng mới, số lần che)."""
+    n = 0
+    for rx in PATH_PATTERNS:
+        def repl(m: "re.Match", _rx=rx) -> str:
+            nonlocal n
+            n += 1
+            return m.group(1) + "<user>"
+        line = rx.sub(repl, line)
+    return line, n
+
+
+def count_personal_paths(text: str) -> int:
+    """Số lần khuôn đường dẫn cá nhân còn khớp trên `text` (cùng khuôn với `mask_personal_paths`)."""
+    return sum(len(rx.findall(line)) for rx in PATH_PATTERNS for line in text.splitlines())
 
 
 def out_path_for(rel: str, out_dir: Path) -> Path:
@@ -194,14 +243,17 @@ def redact_file(rel: str, out_dir: Path, dry: bool) -> Dict:
     new_lines: List[str] = []
     hits = 0
     broad_hits = 0
+    path_hits = 0
     json_mode = rel.endswith(".json") or rel.endswith(".jsonl")
     for line in lines:
         body = line.rstrip("\r\n")
         eol = line[len(body):]
         masked, n = mask_line(body, start_index, seen, json_mode=False)
         masked, nb = mask_broad_phone(masked, seen)
+        masked, npath = mask_personal_paths(masked)
         hits += n
         broad_hits += nb
+        path_hits += npath
         if json_mode:
             masked = re.sub(r"\\(\[(?:EMAIL|PHONE|ID)_\d+\])",
                             lambda m: "\\\\" + m.group(1), masked)
@@ -212,6 +264,8 @@ def redact_file(rel: str, out_dir: Path, dry: bool) -> Dict:
     after_dong, after_tong = count_hits(out_text)
     broad_before = count_broad(raw)
     broad_after = count_broad(out_text)
+    path_before = count_personal_paths(raw)
+    path_after = count_personal_paths(out_text)
 
     # Kiểm cấu trúc: số dòng và tính hợp lệ JSON
     json_ok = None
@@ -234,6 +288,8 @@ def redact_file(rel: str, out_dir: Path, dry: bool) -> Dict:
            "masked_here": hits, "pii_lines_after": after_dong, "pii_hits_after": after_tong,
            "broad_phone_before": broad_before, "broad_phone_masked_here": broad_hits,
            "broad_phone_after": broad_after,
+           "personal_path_before": path_before, "personal_path_masked_here": path_hits,
+           "personal_path_after": path_after,
            "bytes_before": len(raw.encode("utf-8")), "bytes_after": len(out_text.encode("utf-8")),
            "json_valid_after": json_ok, "tokens": len(seen)}
     if not dry:
@@ -247,13 +303,17 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="PA-31 — xuất bản redacted (chỉ đọc nguồn).")
     ap.add_argument("--out", default=str(DEFAULT_OUT))
     ap.add_argument("--dry", action="store_true", help="chỉ đo, không ghi bản che")
+    ap.add_argument("--set", choices=("published", "full"), default="published",
+                    help="published = 8 tệp hồ sơ 25-10 (mặc định); "
+                         "full = +10 artifact phát sinh sau (ea9416d), KHÔNG gồm testset")
     args = ap.parse_args()
 
     out_dir = Path(args.out)
-    recs = [redact_file(rel, out_dir, args.dry) for rel in PA31_FILES]
+    files = list(PA31_FILES) + (list(PA31_EXTRA_FILES) if args.set == "full" else [])
+    recs = [redact_file(rel, out_dir, args.dry) for rel in files]
 
     print(f"{'tệp':60s} {'dòng':>6} {'PII dòng':>8} {'khớp':>5} {'còn':>4} "
-          f"{'SĐT rộng':>9} {'còn':>4} {'JSON':>5}")
+          f"{'SĐT rộng':>9} {'còn':>4} {'path':>5} {'JSON':>5}")
     for r in recs:
         if "error" in r:
             print(f"{r['path']:60s} {r['error']}")
@@ -261,18 +321,21 @@ def main() -> int:
         print(f"{r['path']:60s} {r['lines_before']:>6} {r['pii_lines_before']:>8} "
               f"{r['pii_hits_before']:>5} {r['pii_hits_after']:>4} "
               f"{r['broad_phone_before']:>9} {r['broad_phone_after']:>4} "
-              f"{str(r['json_valid_after']):>5}")
+              f"{r['personal_path_masked_here']:>5} {str(r['json_valid_after']):>5}")
 
     ok = [r for r in recs if "error" not in r]
     print("\nTỔNG: %d tệp · khuôn đã công bố: %d lần khớp trước / %d còn lại · "
-          "khuôn RỘNG (bổ sung): %d trước / %d còn lại"
+          "khuôn RỘNG (bổ sung): %d trước / %d còn lại · đường dẫn cá nhân: %d trước / %d còn lại"
           % (len(ok), sum(r["pii_hits_before"] for r in ok), sum(r["pii_hits_after"] for r in ok),
-             sum(r["broad_phone_before"] for r in ok), sum(r["broad_phone_after"] for r in ok)))
+             sum(r["broad_phone_before"] for r in ok), sum(r["broad_phone_after"] for r in ok),
+             sum(r["personal_path_before"] for r in ok),
+             sum(r["personal_path_after"] for r in ok)))
     print("      · dòng PII (khuôn công bố) trước khi che: %d"
           % sum(r["pii_lines_before"] for r in ok))
     dong_ok = all(r["lines_before"] == r["lines_after"] for r in ok)
     json_ok = all(r["json_valid_after"] in (True, None) for r in ok)
-    clean = all(r["pii_hits_after"] == 0 and r["broad_phone_after"] == 0 for r in ok)
+    clean = all(r["pii_hits_after"] == 0 and r["broad_phone_after"] == 0
+                and r["personal_path_after"] == 0 for r in ok)
     print(f"cổng: số dòng giữ nguyên={dong_ok} · JSON hợp lệ={json_ok} · PII còn lại=0 → {clean}")
     if not args.dry:
         rep = {"schema": "pa31-redaction/v1", "files": recs,

@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-31T18:00:05",
+ "generated_at": "2026-11-01T01:01:49",
  "root": ".",
  "algorithm": "sha256",
  "scopes": [
@@ -362,7 +362,7 @@
    "name": "outputs",
    "dir": "outputs",
    "file_count": 22,
-   "total_bytes": 5407995,
+   "total_bytes": 5407917,
    "files": [
     {
      "path": "outputs/ab_comparison.md",
@@ -372,14 +372,14 @@
     },
     {
      "path": "outputs/ab_results_with_classifier.json",
-     "bytes": 1228992,
-     "sha256": "233caa79316ced673a8afba45547aa083a672199b5bda2d36fdefe1c3a9d76b6",
+     "bytes": 1228951,
+     "sha256": "65446b5261c1d0bd9769c0e3a8c3fe17825d557aad142fdc22709984a489707f",
      "tracked": true
     },
     {
      "path": "outputs/ab_results_without_classifier.json",
-     "bytes": 1218298,
-     "sha256": "cc6f134dbef41cd3505d425d9c144a84e4eb9d9305f7cdb99fc781b95fc85a4f",
+     "bytes": 1218261,
+     "sha256": "cfbf1001677476abecce42400a8f4ab4637a3d8c84718da3afa53c96e354ce3b",
      "tracked": true
     },
     {
@@ -502,7 +502,7 @@
    "name": "logs",
    "dir": "logs",
    "file_count": 44,
-   "total_bytes": 30720057,
+   "total_bytes": 30720079,
    "files": [
     {
      "path": "logs/ab_frame_reports.md",
@@ -764,8 +764,8 @@
     },
     {
      "path": "logs/README.md",
-     "bytes": 1990,
-     "sha256": "902d0693fb8cb191a929d4eed79750fb981c3efcc5a6080a359e1dd6b6707d32",
+     "bytes": 2012,
+     "sha256": "46b6a4d1715d913c60b67a6009189dedd1781c21e0afb442324b01714200d535",
      "tracked": true
     }
    ]
@@ -1059,6 +1059,6 @@
  ],
  "summary": {
   "file_count": 158,
-  "total_bytes": 390961959
+  "total_bytes": 390961903
  }
 }

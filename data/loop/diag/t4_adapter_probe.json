@@ -19,7 +19,7 @@
   "failure_probe": {
     "raised": true,
     "type": "ValueError",
-    "message": "Can't find 'adapter_config.json' at 'C:\\Users\\vandi\\AppData\\Local\\Temp\\tmp19_twjdy'",
+    "message": "Can't find 'adapter_config.json' at 'C:\\Users\\<user>\\AppData\\Local\\Temp\\tmp19_twjdy'",
     "note": "không có nhánh fallback nào được chạy; lỗi nổi lên nguyên vẹn"
   }
 }

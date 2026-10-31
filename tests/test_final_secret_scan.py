@@ -154,18 +154,22 @@ class TestHienTrangRepo:
         assert kiem.returncode == 0, ".env phải nằm trong ignore"
 
     def test_ghim_hien_trang_pii_trong_artifact(self, ket_qua):
-        """Số thật tại 25-10: PII nghiệp vụ còn trong artifact đã commit — chờ duyệt PA-31.
+        """Số thật sau PA-31 trên dòng `main` (01-11): 76 khớp / 1 tệp — chỉ còn tập đo.
 
-        ghim = 89 dòng / 8 file. Nếu số tăng (thêm artifact mới chứa email/điện thoại) test đỏ.
-        Nếu PA-31 được duyệt và che hết, test cũng đỏ — đó là chủ đích: phải sửa kỳ vọng có
-        chủ đích, không được âm thầm đổi kết luận.
+        Lịch sử con số (giữ để đọc được vì sao ghim đổi):
+        * 25-10: 89 khớp / 8 tệp (hồ sơ PA-31 ban đầu);
+        * 27-10: 165 / 9 — thêm `data/loop/testset_v1.jsonl` (76 khớp) để clone tái lập round;
+        * 31-10: 640 / 18 — nhập thêm 10 artifact B1/B3/B4/T4 ở `ea9416d`; **chưa che**;
+        * 01-11: PA-31 che 17/18 tệp bằng `tools/diag/redact_pii.py --set full` (564 khớp
+          PII + 1 đường dẫn cá nhân trong `t4_adapter_probe.json`), pin hạ về 76 / 1.
+
+        `testset_v1.jsonl` CỐ Ý giữ nguyên (sha256 `202ca508…`): che nó là đổi tập đo đã đóng
+        băng. Vì vậy 76 khớp còn lại là số dư có chủ đích, không phải PII bỏ sót — bỏ ghim này
+        xuống 0 sẽ là sửa tập đo, không phải sửa quyền riêng tư.
         """
         mod, files, r = ket_qua
-        # Q1 (27-10): +76 dòng / +1 tệp so với mốc 25-10, tất cả từ
-        # `data/loop/testset_v1.jsonl` được commit để clone tái lập được round.
-        # Đây là thay đổi có chủ đích (không phải PII mới phát sinh); PA-31 vẫn chờ duyệt.
-        assert r["by_loai"].get("DU_CAO_NHAN_HOC") == 165, r["by_loai"]
-        assert len(r["pii_by_file"]) == 9, sorted(r["pii_by_file"])
+        assert r["by_loai"].get("DU_CAO_NHAN_HOC") == 76, r["by_loai"]
+        assert list(r["pii_by_file"]) == ["data/loop/testset_v1.jsonl"], sorted(r["pii_by_file"])
         # mọi file chứa PII đều là artifact dữ liệu, không phải code
         for f in r["pii_by_file"]:
             assert f.startswith(("data/", "outputs/", "logs/")), f
@@ -199,7 +203,8 @@ class TestHienTrangRepo:
             "data/loop/diag/corpus_check/corpus_check.json",
             "data/loop/diag/corpus_check/manual_20_segments_new_index.txt",
             "data/loop/diag/corpus_check/manual_20_segments_provenance.txt",
-            # lộ `C:\Users\<tên>` trong thông điệp lỗi ⇒ không commit
+            # đã commit ở `ea9416d`, che đường dẫn cá nhân 01-11 (PA-31) — giữ tên để máy cũ
+            # còn bản lộ vẫn được xét cổng kích thước thay vì lọt im lặng
             "data/loop/diag/t4_adapter_probe.json",
         }
         for rel in sorted(con_lai - duoc_biet):

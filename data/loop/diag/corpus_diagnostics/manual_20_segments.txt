@@ -4430,7 +4430,7 @@ tục được hưởng chế độ trong HKI năm học 2025-2026.
 Thời gian: Từ ngày ra thông báo đến 30/9/2025.
 Địa điểm: Nộp trực tiếp tại Phòng
 tác sinh viên (SV3) hoặc liên hệ Cô
-Dương (SĐT 0981 699 476)
+Dương (SĐT [PHONE_B_1])
 Đề nghị các Khoa
 báo để sinh viên biết và triển khai thực hiện theo
 tinh thần Thông báo này / .
@@ -5905,7 +5905,7 @@ thông
 tác Sinh viên (SV3)
 18
 Văn
-Khiêm, Phường Long Xuyên, An Giang, số điện thoại 0981 699 476).
+Khiêm, Phường Long Xuyên, An Giang, số điện thoại [PHONE_B_1]).
 Đề nghị các khoa
 báo để sinh viên biết và triển khai thực hiện theo
 tinh
@@ -10761,7 +10761,7 @@ Thời gian tiếp nhận hồ sơ:
 +
 Đợt 2: Ngày 10/11/2025.
 Địa điểm nộp:
-tác sinh viên (SVO3), anh Trần Thiện (0919.304.442
+tác sinh viên (SVO3), anh Trần Thiện ([PHONE_B_2]
 tranthien@agu edu vn)
 tác sinh viên
 báo đến các Khoa và sinh viên biết thực hiện theo
@@ -13190,7 +13190,7 @@ Cấp trường
 Từ ngày 09/4/2026 đến hết ngày 20/5/2026: Ban Thư ký nhận hồ sơ, tác
 dự thi từ thời diểm ban hành kế hoạch Cuộc thi. Nơi nhận: Ban Tuyên giáo và Dân
 vận
-ủy qua emai: qthong@agu.edu.vn hoặc Sdt: 0918607123 .
+ủy qua emai: [EMAIL_1] hoặc Sdt: [PHONE_1] .
 Ngày 30/5/2026: Ban Giám khảo xét chọn 05 tác
 xuất sắc đại diện cho
 05 thể loai.
@@ -13408,7 +13408,7 @@ tin;
 trao đổi với Ban Tuyên
 và Dân vận Đảng ủy (qua
 chí Quách Thị
-diên thoai: 0918607123
+diên thoai: [PHONE_1]
 Nơi_nhân:
 T/M BAN THƯỜNG VỤ
 Ban Thường vụ Tỉnh ủy

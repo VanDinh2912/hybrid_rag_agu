@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-31T18:00:05",
+ "generated_at": "2026-11-01T01:04:41",
  "algorithm": "sha256",
  "root": ".",
  "note": "sha256 trên byte thô, không chuẩn hoá EOL; artifact nặng không commit",
@@ -504,8 +504,8 @@
   },
   {
    "path": "data/loop/diag/corpus_diagnostics/manual_20_segments.txt",
-   "bytes": 282491,
-   "sha256": "fee3ce7de84f9c1192e5296ec78bf3c97c3865f3fe7aad7bf3d6dc35e9249839",
+   "bytes": 282478,
+   "sha256": "bbcc7d23ffb30657c6847c8c78b62ee590e683f02479b9331dd17b06d057d26e",
    "tracked": true
   },
   {
@@ -534,8 +534,8 @@
   },
   {
    "path": "data/loop/diag/b_gemini_top6/rows.jsonl",
-   "bytes": 153108,
-   "sha256": "5ddf2b1bdc6708328f10f8278c2b972dcdc87ad912655350f799e421d795e4c9",
+   "bytes": 153095,
+   "sha256": "cba1b3c768a665a2fedac9d0e22b067552781fa7ed938f8f7b1a308a5cec75f8",
    "tracked": true
   },
   {
@@ -624,8 +624,8 @@
   },
   {
    "path": "data/loop/diag/answerability_labelset_r5.jsonl",
-   "bytes": 888362,
-   "sha256": "182dd5cb71a65f1c7cf73e9bff6367dee7133faecf369ed114d4fceaed288cc1",
+   "bytes": 888107,
+   "sha256": "f9d330f90d563750f38428ab461283fcf142f8d9beea8c04701b747ea3d978fe",
    "tracked": true
   },
   {
@@ -769,13 +769,13 @@
   {
    "path": "ARTIFACT_MANIFEST.json",
    "bytes": 37225,
-   "sha256": "414bbb81776d24f9dac1436c9cbd55adfc2541e01e279e2e05713145fd6e1ee1",
+   "sha256": "59c53907319792aaa9e9e95a618cfa1e25c9cf7b36aea7ec8293aa9f9f07a422",
    "tracked": true
   }
  ],
  "summary": {
   "rows": 25,
   "files": 84,
-  "total_bytes": 4041992
+  "total_bytes": 4041711
  }
 }

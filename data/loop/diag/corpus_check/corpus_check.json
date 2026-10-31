@@ -582,7 +582,7 @@
       {
         "id": "N49416901773191",
         "family": "NUMERIC",
-        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -\ntranthien@agu.ed",
+        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_1] -\\[EMAIL_1]",
         "best_token_overlap": 0.875,
         "class": "near"
       },
@@ -1779,21 +1779,21 @@
       {
         "id": "O256341394116235",
         "family": "CLOZE_OCR",
-        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -\ntranthien@agu.ed",
+        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_1] -\\[EMAIL_1]",
         "best_token_overlap": 0.875,
         "class": "near"
       },
       {
         "id": "O176417486352910",
         "family": "CLOZE_OCR",
-        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -\ntranthien@agu.ed",
+        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_1] -\\[EMAIL_1]",
         "best_token_overlap": 0.875,
         "class": "near"
       },
       {
         "id": "P124557295996989",
         "family": "TRAP_OCR",
-        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -\ntranthien@agu.ed",
+        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_1] -\\[EMAIL_1]",
         "best_token_overlap": 0.875,
         "class": "near"
       },

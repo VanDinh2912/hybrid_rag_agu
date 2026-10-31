@@ -78,12 +78,12 @@ cùng dòng (mốc baseline, cổng so sánh, nhật ký đếm); `neo` = neo đ
 | D-13 | phụ | `data/loop/diag/corpus_diagnostics/index_before.json` | 282 | `47bf9e148f12` | tracked |
 | D-13 | phụ | `data/loop/diag/corpus_diagnostics/quality_vie.json` | 5258 | `383281e68922` | tracked |
 | D-13 | phụ | `data/loop/diag/corpus_diagnostics/easyocr_trial.json` | 1949 | `ccf36bbd7169` | tracked |
-| D-13 | phụ | `data/loop/diag/corpus_diagnostics/manual_20_segments.txt` | 282491 | `fee3ce7de84f` | tracked |
+| D-13 | phụ | `data/loop/diag/corpus_diagnostics/manual_20_segments.txt` | 282478 | `bbcc7d23ffb3` | tracked |
 | D-13 | phụ | `data/loop/diag/corpus_diagnostics/per_file.json` | 22998 | `23f2ccae828f` | tracked |
 | D-14 | chính | `data/loop/diag/b_gemini_top6/bootstrap_ci_25.json` | 423 | `a5f38107f803` | tracked |
 | D-14 | phụ | `data/loop/diag/b_gemini_top6/summary.json` | 35527 | `c56de3bf0471` | tracked |
 | D-14 | phụ | `data/loop/diag/b_gemini_top6/id_status.json` | 14525 | `766d36ab1735` | tracked |
-| D-14 | phụ | `data/loop/diag/b_gemini_top6/rows.jsonl` | 153108 | `5ddf2b1bdc67` | tracked |
+| D-14 | phụ | `data/loop/diag/b_gemini_top6/rows.jsonl` | 153095 | `cba1b3c768a6` | tracked |
 | D-14 | phụ | `data/loop/diag/b_gemini_top6/settings.json` | 734 | `993191ec9a85` | tracked |
 | D-16 | chính | `docs/bao_cao/danh_gia_tong_quan_2026-10-23.md` | 47101 | `dcc488f27e39` | tracked |
 | D-20 | chính | `data/loop/rounds/r12/round_summary_retrieval.json` | 8428 | `67879ac8e265` | chưa |
@@ -101,7 +101,7 @@ cùng dòng (mốc baseline, cổng so sánh, nhật ký đếm); `neo` = neo đ
 | D-37 | phụ | `tmp/probe_r12_fold.json` | 6402 | `03e6f168f77a` | chưa |
 | D-37 | phụ | `data/loop/rounds_v2/r16/round_summary_retrieval.json` | 8468 | `c23bcaaac0b1` | chưa |
 | D-38 | chính | `data/loop/diag/answerability_probe_r5.json` | 40156 | `577bf36a8133` | tracked |
-| D-38 | phụ | `data/loop/diag/answerability_labelset_r5.jsonl` | 888362 | `182dd5cb71a6` | tracked |
+| D-38 | phụ | `data/loop/diag/answerability_labelset_r5.jsonl` | 888107 | `f9d330f90d56` | tracked |
 | D-38 | phụ | `data/loop/diag/answerability_probe_r5_buildonly.json` | 1617 | `ce03a3e7c300` | tracked |
 | D-38 | phụ | `data/loop/diag/answerability_probe_r11_retrieval.json` | 322961 | `325ac38914de` | tracked |
 | D-38 | phụ | `data/loop/diag/answerability_probe_r12_retrieval.json` | 292037 | `214555de030a` | tracked |
@@ -125,7 +125,7 @@ cùng dòng (mốc baseline, cổng so sánh, nhật ký đếm); `neo` = neo đ
 | neo | neo | `tmp/anchor_r11_rescore_v2.json` | 657 | `cefb17a5d00c` | chưa |
 | neo | neo | `tmp/b0_golden_env_off.txt` | 3302 | `ccc8a92e1d92` | chưa |
 | neo | neo | `tmp/b0_anchor_numbers.py` | 2198 | `186fdacc8c48` | chưa |
-| neo | neo | `ARTIFACT_MANIFEST.json` | 37225 | `414bbb81776d` | tracked |
+| neo | neo | `ARTIFACT_MANIFEST.json` | 37225 | `59c539073197` | tracked |
 
 <!-- evidence-table:end -->
 

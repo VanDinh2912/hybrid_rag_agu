@@ -395,7 +395,7 @@ tại trường. 4. Hồ sơ và địa điểm đăng ký tham gia BHYT sinh vi
 Lưu ý: Những Sinh viên thuộc đối tượng khác thì không phải mua BHYT 
 tại trường. 4. Hồ sơ và địa điểm đăng ký tham gia BHYT sinh viên: - Hồ sơ: Biên lai nộp tiền BHYT, chuyển khoản thành công, chụp và lưu 
 lại để đối chiếu khi cần thiết. - Địa điểm đăng ký : Phòng Y tế (D.110) nhà D – Khu Trung tâm, hoặc 
-liên hệ số điện thoại: 0387.500.616 (Cô Tân) 
+liên hệ số điện thoại: [PHONE_B_1] (Cô Tân) 
 5. Phương thức nộp tiền 
 - Nộp tiền BHYT tại ngân hàng hoặc chuyển khoản cho Ngân hàng TMCP 
 Ngoại thương (Vietcombank) chi nhánh An Giang. - Theo số tài khoản của Trường Đại học An Giang: 015 100 000 4173. NỘI DUNG NỘP/CHUYỂN TIỀN 
@@ -566,7 +566,7 @@ duc chinh tri, tur turong, dao dtrc, l6i song;
 + Huyen Tinh Bién: xa An Cu, xa Van Giao. b) Sinh vien cac tinh khac dang hoc  truong lien he Phong CTSV de dugc huong dan. c) Sinh vien da huong mien, giam hoc phi HKII nam hoc 2024-2025 tiép tuc dugc huong
 ché do trong HKI nam hoc 2025 - 2026. 4. Thoi gian va dja diém
 - Thoi gian: Tu ngay ra thong bao dén 30/9/2025. - Dja diém: Nop truc tiep tai Phong Cong tac Sinh vien (SV3) (So 18 Ung Van
-Khiem, Phuong Long Xuyen, An Giang, so dien thoai 0981 699 476). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
+Khiem, Phuong Long Xuyen, An Giang, so dien thoai [PHONE_B_2]). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
 than Thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Khoa, Lop; CONG TAC SINH VIEN
 - Luu: CTSV. Nguyen Thi Thanh Loan
@@ -904,8 +904,8 @@ trén ng goc con lai theo quy dinh cia ACB. 8. Quy dinh khac
 - Sinh vien phai thanh toan khodn vay trong vong 30 ngay ké tur ngay nhan thong bao
 thu hoi ng truoc han néu co quyét dinh thoi hoc cua co so dao tao du chua dén thoi han tra
 ng. - Sinh vién co thé tra khoan vay truoc thoi han. 9. Thoi gian, dja diém tiép nhan ho so
-- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -
-tranthien@agu.edu.vn). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
+- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_3] -
+[EMAIL_1]). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
 thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Phong, Khoa; - Luu: CTSV. Nguyen Thi Thanh Loan
 CONG HOA XA HOI CHU NGHIA VIET NAM
@@ -921,7 +921,7 @@ Toi ten la: . Ngay sinh: ...... Ma so sinh vién: Nganh hoc: Lop: . Khoa: Truong
 + Huyen Tinh Bién: xa An Cu, xa Van Giao. b) Sinh vien cac tinh khac dang hoc  truong lien he Phong CTSV de dugc huong dan. c) Sinh vien da huong mien, giam hoc phi HKII nam hoc 2024-2025 tiép tuc dugc huong
 ché do trong HKI nam hoc 2025 - 2026. 4. Thoi gian va dja diém
 - Thoi gian: Tu ngay ra thong bao dén 30/9/2025. - Dja diém: Nop truc tiep tai Phong Cong tac Sinh vien (SV3) (So 18 Ung Van
-Khiem, Phuong Long Xuyen, An Giang, so dien thoai 0981 699 476). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
+Khiem, Phuong Long Xuyen, An Giang, so dien thoai [PHONE_B_2]). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
 than Thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Khoa, Lop; CONG TAC SINH VIEN
 - Luu: CTSV. Nguyen Thi Thanh Loan
@@ -1017,13 +1017,13 @@ HCM để đóng học phí liên hệ bộ phận hỗ trợ của P hòng CTSV
 làm hồ sơ vay. 
 Trong quá trình nộp học phí, SV cần biết thêm thông tin về học phí , các vấn đề 
 liên quan học phí và vay vốn tín dụng có thể liên hệ: 
-- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại 0983204236  (phụ 
+- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại [PHONE_1]  (phụ 
 trách theo dõi nộp học phí (qua VNPAY, ngân hàng) và cập nhật nộp học phí của SV. 
-- Thầy Nguyễn Văn Vũ - Phòng Đào tạo, số điện thoại 0949686964  (phụ trách 
+- Thầy Nguyễn Văn Vũ - Phòng Đào tạo, số điện thoại [PHONE_2]  (phụ trách 
 đăng ký học phần của SV). 
-- Cô Thái Thị Thùy Dương - Phòng CTSV, số điện thoại 0981699476 (phụ trách 
+- Cô Thái Thị Thùy Dương - Phòng CTSV, số điện thoại [PHONE_3] (phụ trách 
 nhận đơn xin gia hạn học phí). 
-- Thầy Trần Thiện – Phòng CTSV, số điện thoại 0919304442 (phụ trách tư vấn, 
+- Thầy Trần Thiện – Phòng CTSV, số điện thoại [PHONE_4] (phụ trách tư vấn, 
 tiếp nhận hồ sơ đăng ký vay vốn cho SV)./. 
 Nơi nhận: 
 - Trưởng đơn vị; 
@@ -1115,7 +1115,7 @@ trong phong chong, khac phuc hau qua thien tai, dich benh o don vi, dja phuong;
 + Huyen Tinh Bién: xa An Cu, xa Van Giao. b) Sinh vien cac tinh khac dang hoc  truong lien he Phong CTSV de dugc huong dan. c) Sinh vien da huong mien, giam hoc phi HKII nam hoc 2024-2025 tiép tuc dugc huong
 ché do trong HKI nam hoc 2025 - 2026. 4. Thoi gian va dja diém
 - Thoi gian: Tu ngay ra thong bao dén 30/9/2025. - Dja diém: Nop truc tiep tai Phong Cong tac Sinh vien (SV3) (So 18 Ung Van
-Khiem, Phuong Long Xuyen, An Giang, so dien thoai 0981 699 476). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
+Khiem, Phuong Long Xuyen, An Giang, so dien thoai [PHONE_B_2]). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
 than Thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Khoa, Lop; CONG TAC SINH VIEN
 - Luu: CTSV. Nguyen Thi Thanh Loan
@@ -1771,8 +1771,8 @@ trén ng goc con lai theo quy dinh cia ACB. 8. Quy dinh khac
 - Sinh vien phai thanh toan khodn vay trong vong 30 ngay ké tur ngay nhan thong bao
 thu hoi ng truoc han néu co quyét dinh thoi hoc cua co so dao tao du chua dén thoi han tra
 ng. - Sinh vién co thé tra khoan vay truoc thoi han. 9. Thoi gian, dja diém tiép nhan ho so
-- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -
-tranthien@agu.edu.vn). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
+- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_3] -
+[EMAIL_1]). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
 thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Phong, Khoa; - Luu: CTSV. Nguyen Thi Thanh Loan
 CONG HOA XA HOI CHU NGHIA VIET NAM
@@ -3005,7 +3005,7 @@ tại trường. 4. Hồ sơ và địa điểm đăng ký tham gia BHYT sinh vi
 Lưu ý: Những Sinh viên thuộc đối tượng khác thì không phải mua BHYT 
 tại trường. 4. Hồ sơ và địa điểm đăng ký tham gia BHYT sinh viên: - Hồ sơ: Biên lai nộp tiền BHYT, chuyển khoản thành công, chụp và lưu 
 lại để đối chiếu khi cần thiết. - Địa điểm đăng ký : Phòng Y tế (D.110) nhà D – Khu Trung tâm, hoặc 
-liên hệ số điện thoại: 0387.500.616 (Cô Tân) 
+liên hệ số điện thoại: [PHONE_B_1] (Cô Tân) 
 5. Phương thức nộp tiền 
 - Nộp tiền BHYT tại ngân hàng hoặc chuyển khoản cho Ngân hàng TMCP 
 Ngoại thương (Vietcombank) chi nhánh An Giang. - Theo số tài khoản của Trường Đại học An Giang: 015 100 000 4173. NỘI DUNG NỘP/CHUYỂN TIỀN 
@@ -3460,7 +3460,7 @@ giang vien huong dan KLTN. Cong bo diém cho sinh vien.
 
 ## Mẫu 27
 
-**Câu hỏi:** điện thoại là 0983204236, thông tin này có đúng theo quy định không?
+**Câu hỏi:** điện thoại là [PHONE_1], thông tin này có đúng theo quy định không?
 
 **Câu trả lời của hệ thống:**
 
@@ -3479,8 +3479,8 @@ trén ng goc con lai theo quy dinh cia ACB. 8. Quy dinh khac
 - Sinh vien phai thanh toan khodn vay trong vong 30 ngay ké tur ngay nhan thong bao
 thu hoi ng truoc han néu co quyét dinh thoi hoc cua co so dao tao du chua dén thoi han tra
 ng. - Sinh vién co thé tra khoan vay truoc thoi han. 9. Thoi gian, dja diém tiép nhan ho so
-- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -
-tranthien@agu.edu.vn). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
+- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_3] -
+[EMAIL_1]). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
 thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Phong, Khoa; - Luu: CTSV. Nguyen Thi Thanh Loan
 CONG HOA XA HOI CHU NGHIA VIET NAM
@@ -3527,13 +3527,13 @@ HCM để đóng học phí liên hệ bộ phận hỗ trợ của P hòng CTSV
 làm hồ sơ vay. 
 Trong quá trình nộp học phí, SV cần biết thêm thông tin về học phí , các vấn đề 
 liên quan học phí và vay vốn tín dụng có thể liên hệ: 
-- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại 0983204236  (phụ 
+- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại [PHONE_1]  (phụ 
 trách theo dõi nộp học phí (qua VNPAY, ngân hàng) và cập nhật nộp học phí của SV. 
-- Thầy Nguyễn Văn Vũ - Phòng Đào tạo, số điện thoại 0949686964  (phụ trách 
+- Thầy Nguyễn Văn Vũ - Phòng Đào tạo, số điện thoại [PHONE_2]  (phụ trách 
 đăng ký học phần của SV). 
-- Cô Thái Thị Thùy Dương - Phòng CTSV, số điện thoại 0981699476 (phụ trách 
+- Cô Thái Thị Thùy Dương - Phòng CTSV, số điện thoại [PHONE_3] (phụ trách 
 nhận đơn xin gia hạn học phí). 
-- Thầy Trần Thiện – Phòng CTSV, số điện thoại 0919304442 (phụ trách tư vấn, 
+- Thầy Trần Thiện – Phòng CTSV, số điện thoại [PHONE_4] (phụ trách tư vấn, 
 tiếp nhận hồ sơ đăng ký vay vốn cho SV)./. 
 Nơi nhận: 
 - Trưởng đơn vị; 
@@ -3632,8 +3632,8 @@ trén ng goc con lai theo quy dinh cia ACB. 8. Quy dinh khac
 - Sinh vien phai thanh toan khodn vay trong vong 30 ngay ké tur ngay nhan thong bao
 thu hoi ng truoc han néu co quyét dinh thoi hoc cua co so dao tao du chua dén thoi han tra
 ng. - Sinh vién co thé tra khoan vay truoc thoi han. 9. Thoi gian, dja diém tiép nhan ho so
-- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -
-tranthien@agu.edu.vn). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
+- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_3] -
+[EMAIL_1]). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
 thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Phong, Khoa; - Luu: CTSV. Nguyen Thi Thanh Loan
 CONG HOA XA HOI CHU NGHIA VIET NAM
@@ -3837,7 +3837,7 @@ khích sinh viên gia hạn lại thẻ có giá trị liên tục đến hết 
 + Huyen Tinh Bién: xa An Cu, xa Van Giao. b) Sinh vien cac tinh khac dang hoc  truong lien he Phong CTSV de dugc huong dan. c) Sinh vien da huong mien, giam hoc phi HKII nam hoc 2024-2025 tiép tuc dugc huong
 ché do trong HKI nam hoc 2025 - 2026. 4. Thoi gian va dja diém
 - Thoi gian: Tu ngay ra thong bao dén 30/9/2025. - Dja diém: Nop truc tiep tai Phong Cong tac Sinh vien (SV3) (So 18 Ung Van
-Khiem, Phuong Long Xuyen, An Giang, so dien thoai 0981 699 476). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
+Khiem, Phuong Long Xuyen, An Giang, so dien thoai [PHONE_B_2]). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
 than Thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Khoa, Lop; CONG TAC SINH VIEN
 - Luu: CTSV. Nguyen Thi Thanh Loan
@@ -3918,7 +3918,7 @@ khích sinh viên gia hạn lại thẻ có giá trị liên tục đến hết 
 + Huyen Tinh Bién: xa An Cu, xa Van Giao. b) Sinh vien cac tinh khac dang hoc  truong lien he Phong CTSV de dugc huong dan. c) Sinh vien da huong mien, giam hoc phi HKII nam hoc 2024-2025 tiép tuc dugc huong
 ché do trong HKI nam hoc 2025 - 2026. 4. Thoi gian va dja diém
 - Thoi gian: Tu ngay ra thong bao dén 30/9/2025. - Dja diém: Nop truc tiep tai Phong Cong tac Sinh vien (SV3) (So 18 Ung Van
-Khiem, Phuong Long Xuyen, An Giang, so dien thoai 0981 699 476). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
+Khiem, Phuong Long Xuyen, An Giang, so dien thoai [PHONE_B_2]). De nghi cac khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung tinh
 than Thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Khoa, Lop; CONG TAC SINH VIEN
 - Luu: CTSV. Nguyen Thi Thanh Loan
@@ -4802,8 +4802,8 @@ trén ng goc con lai theo quy dinh cia ACB. 8. Quy dinh khac
 - Sinh vien phai thanh toan khodn vay trong vong 30 ngay ké tur ngay nhan thong bao
 thu hoi ng truoc han néu co quyét dinh thoi hoc cua co so dao tao du chua dén thoi han tra
 ng. - Sinh vién co thé tra khoan vay truoc thoi han. 9. Thoi gian, dja diém tiép nhan ho so
-- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -
-tranthien@agu.edu.vn). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
+- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_3] -
+[EMAIL_1]). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
 thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Phong, Khoa; - Luu: CTSV. Nguyen Thi Thanh Loan
 CONG HOA XA HOI CHU NGHIA VIET NAM
@@ -5062,8 +5062,8 @@ trén ng goc con lai theo quy dinh cia ACB. 8. Quy dinh khac
 - Sinh vien phai thanh toan khodn vay trong vong 30 ngay ké tur ngay nhan thong bao
 thu hoi ng truoc han néu co quyét dinh thoi hoc cua co so dao tao du chua dén thoi han tra
 ng. - Sinh vién co thé tra khoan vay truoc thoi han. 9. Thoi gian, dja diém tiép nhan ho so
-- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -
-tranthien@agu.edu.vn). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
+- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_3] -
+[EMAIL_1]). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
 thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Phong, Khoa; - Luu: CTSV. Nguyen Thi Thanh Loan
 CONG HOA XA HOI CHU NGHIA VIET NAM
@@ -5467,7 +5467,7 @@ tại trường. 4. Hồ sơ và địa điểm đăng ký tham gia BHYT sinh vi
 Lưu ý: Những Sinh viên thuộc đối tượng khác thì không phải mua BHYT 
 tại trường. 4. Hồ sơ và địa điểm đăng ký tham gia BHYT sinh viên: - Hồ sơ: Biên lai nộp tiền BHYT, chuyển khoản thành công, chụp và lưu 
 lại để đối chiếu khi cần thiết. - Địa điểm đăng ký : Phòng Y tế (D.110) nhà D – Khu Trung tâm, hoặc 
-liên hệ số điện thoại: 0387.500.616 (Cô Tân) 
+liên hệ số điện thoại: [PHONE_B_1] (Cô Tân) 
 5. Phương thức nộp tiền 
 - Nộp tiền BHYT tại ngân hàng hoặc chuyển khoản cho Ngân hàng TMCP 
 Ngoại thương (Vietcombank) chi nhánh An Giang. - Theo số tài khoản của Trường Đại học An Giang: 015 100 000 4173. NỘI DUNG NỘP/CHUYỂN TIỀN 
@@ -5590,12 +5590,12 @@ tại trường. 4. Hồ sơ và địa điểm đăng ký tham gia BHYT sinh vi
 
 ## Mẫu 44
 
-**Câu hỏi:** Quy định "- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại 0983204236 (phụ trách theo dõ" nằm trong văn bản nào?
+**Câu hỏi:** Quy định "- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại [PHONE_1] (phụ trách theo dõ" nằm trong văn bản nào?
 
 **Câu trả lời của hệ thống:**
 
 ```
-Câu hỏi: Quy định "- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch - Tài vụ, số điện thoại 0983204236 (phụ trách theo dõ" nằm trong văn bản nào?
+Câu hỏi: Quy định "- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch - Tài vụ, số điện thoại [PHONE_1] (phụ trách theo dõ" nằm trong văn bản nào?
 
 Trả lời: Quy định này nằm trong văn bản [1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf]. (1413-HPCQ_Thong bao thu HP HKI NH(2026-2027).pdf)
 ```
@@ -5610,13 +5610,13 @@ HCM để đóng học phí liên hệ bộ phận hỗ trợ của P hòng CTSV
 làm hồ sơ vay. 
 Trong quá trình nộp học phí, SV cần biết thêm thông tin về học phí , các vấn đề 
 liên quan học phí và vay vốn tín dụng có thể liên hệ: 
-- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại 0983204236  (phụ 
+- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại [PHONE_1]  (phụ 
 trách theo dõi nộp học phí (qua VNPAY, ngân hàng) và cập nhật nộp học phí của SV. 
-- Thầy Nguyễn Văn Vũ - Phòng Đào tạo, số điện thoại 0949686964  (phụ trách 
+- Thầy Nguyễn Văn Vũ - Phòng Đào tạo, số điện thoại [PHONE_2]  (phụ trách 
 đăng ký học phần của SV). 
-- Cô Thái Thị Thùy Dương - Phòng CTSV, số điện thoại 0981699476 (phụ trách 
+- Cô Thái Thị Thùy Dương - Phòng CTSV, số điện thoại [PHONE_3] (phụ trách 
 nhận đơn xin gia hạn học phí). 
-- Thầy Trần Thiện – Phòng CTSV, số điện thoại 0919304442 (phụ trách tư vấn, 
+- Thầy Trần Thiện – Phòng CTSV, số điện thoại [PHONE_4] (phụ trách tư vấn, 
 tiếp nhận hồ sơ đăng ký vay vốn cho SV)./. 
 Nơi nhận: 
 - Trưởng đơn vị; 
@@ -5700,8 +5700,8 @@ trén ng goc con lai theo quy dinh cia ACB. 8. Quy dinh khac
 - Sinh vien phai thanh toan khodn vay trong vong 30 ngay ké tur ngay nhan thong bao
 thu hoi ng truoc han néu co quyét dinh thoi hoc cua co so dao tao du chua dén thoi han tra
 ng. - Sinh vién co thé tra khoan vay truoc thoi han. 9. Thoi gian, dja diém tiép nhan ho so
-- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -
-tranthien@agu.edu.vn). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
+- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_3] -
+[EMAIL_1]). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
 thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Phong, Khoa; - Luu: CTSV. Nguyen Thi Thanh Loan
 CONG HOA XA HOI CHU NGHIA VIET NAM
@@ -6574,7 +6574,7 @@ do cac giang vien Khoa Cong nghe thong tin goi y.
 
 ## Mẫu 51
 
-**Câu hỏi:** điện thoại là 0919304442, thông tin này có đúng theo quy định không?
+**Câu hỏi:** điện thoại là [PHONE_4], thông tin này có đúng theo quy định không?
 
 **Câu trả lời của hệ thống:**
 
@@ -6609,8 +6609,8 @@ trén ng goc con lai theo quy dinh cia ACB. 8. Quy dinh khac
 - Sinh vien phai thanh toan khodn vay trong vong 30 ngay ké tur ngay nhan thong bao
 thu hoi ng truoc han néu co quyét dinh thoi hoc cua co so dao tao du chua dén thoi han tra
 ng. - Sinh vién co thé tra khoan vay truoc thoi han. 9. Thoi gian, dja diém tiép nhan ho so
-- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -
-tranthien@agu.edu.vn). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
+- Thoi gian tiep nhan ho so: + Dot 1: Ngay 10/9/2025. + Dot 2: Ngay 10/11/2025. - Dia diém nop: Phong Cong tac sinh vien (SV03), anh Tran Thien ([PHONE_B_3] -
+[EMAIL_1]). Phong Cong tac sinh vien thong bao dén cac Khoa va sinh vién biét thuc hien theo
 thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac Phong, Khoa; - Luu: CTSV. Nguyen Thi Thanh Loan
 CONG HOA XA HOI CHU NGHIA VIET NAM
@@ -6641,13 +6641,13 @@ HCM để đóng học phí liên hệ bộ phận hỗ trợ của P hòng CTSV
 làm hồ sơ vay. 
 Trong quá trình nộp học phí, SV cần biết thêm thông tin về học phí , các vấn đề 
 liên quan học phí và vay vốn tín dụng có thể liên hệ: 
-- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại 0983204236  (phụ 
+- Cô Nguyễn Thị Tiếp - Phòng Kế hoạch -Tài vụ, số điện thoại [PHONE_1]  (phụ 
 trách theo dõi nộp học phí (qua VNPAY, ngân hàng) và cập nhật nộp học phí của SV. 
-- Thầy Nguyễn Văn Vũ - Phòng Đào tạo, số điện thoại 0949686964  (phụ trách 
+- Thầy Nguyễn Văn Vũ - Phòng Đào tạo, số điện thoại [PHONE_2]  (phụ trách 
 đăng ký học phần của SV). 
-- Cô Thái Thị Thùy Dương - Phòng CTSV, số điện thoại 0981699476 (phụ trách 
+- Cô Thái Thị Thùy Dương - Phòng CTSV, số điện thoại [PHONE_3] (phụ trách 
 nhận đơn xin gia hạn học phí). 
-- Thầy Trần Thiện – Phòng CTSV, số điện thoại 0919304442 (phụ trách tư vấn, 
+- Thầy Trần Thiện – Phòng CTSV, số điện thoại [PHONE_4] (phụ trách tư vấn, 
 tiếp nhận hồ sơ đăng ký vay vốn cho SV)./. 
 Nơi nhận: 
 - Trưởng đơn vị; 
@@ -6665,7 +6665,7 @@ Nguyễn Hữu Trí
 4. Thoi gian va dja diem: Thoi gian: Tu ngay ra thong bao dén 30/9/2025. - Dja diém:
 
 4. Thoi gian va dja diem: Thoi gian: Tu ngay ra thong bao dén 30/9/2025. - Dja diém: Nop truc tiep tai Phong Cong tac sinh vien (SV3) hoac lien he Co
-Duong (SDT 0981 699 476)
+Duong (SDT [PHONE_B_2])
 De nghi cac Khoa thong bao dé sinh vien biét va trién khai thuc hien theo dung
 tinh than Thong bao nay./. Noi nhan: TRUONG PHONG
 - Cac khoa; - Luu: CTSV. Nguyén Thi Thanh Loan

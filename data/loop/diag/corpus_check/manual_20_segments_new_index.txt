@@ -663,7 +663,7 @@ thông
 tác Sinh viên (SV3)
 18
 Văn
-Khiêm, Phường Long Xuyên, An Giang, số điện thoại 0981 699 476). Đề nghị các khoa
+Khiêm, Phường Long Xuyên, An Giang, số điện thoại [PHONE_B_1]). Đề nghị các khoa
 báo để sinh viên biết và triển khai thực hiện theo
 tinh
 thần Thông báo này / . Nơi nhận: TRƯỜNG PHÒNG
@@ -739,7 +739,7 @@ họp
 năng
 
 [16] chunk124
-0918607123 . Ngày 30/5/2026: Ban Giám khảo xét chọn 05 tác
+[PHONE_1] . Ngày 30/5/2026: Ban Giám khảo xét chọn 05 tác
 xuất sắc đại diện cho
 05 thể loai. Ngày 02/6/2026: Công bố kết
 cuộc thi. 2: Cấp tỉnh
