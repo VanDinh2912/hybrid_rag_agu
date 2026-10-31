@@ -850,11 +850,14 @@ group-split theo tài liệu train 13 / holdout 10 (2 tài liệu holdout), ba a
 `overrefusal_threshold_only` 17 · trùng id cross-round 38. Tokenizer thật
 (`models/qwen25_05b_sft_adapter`) đo: **train min 1.016 / median 1.439 / max 1.707**, **13/13 vượt
 trần 768**. (2) Bộ nhớ: `data/loop/diag/t4b_memory_probe{,_len}.json` — LoRA fp16 của 0,5B trên card
-4.095,5 MiB hết chỗ từ **1.024 token** (peak 4.156,9; 960 token còn 3.931,0; 1.768 token cần 6.437,9),
-độ dốc ≈ **3 MiB/token** và `gradient_checkpointing` **không giảm** (6.451,0 so với 6.437,9) ⇒ bộ nhớ
-bị chiếm bởi logits của LM head, phần checkpointing không chạm tới. Cộng lại: **mọi dòng train thật
-đều dài hơn trần bộ nhớ của máy** ⇒ hoặc đổi định dạng dữ liệu (PA-12, đụng bất biến #7 nếu cắt
-nhầm căn cứ) hoặc đổi phần cứng/4-bit (PA-11, cần `bitsandbytes` + trọng số HF 3B, cả hai chưa có).
+4.095,5 MiB có **peak allocated vượt VRAM khai báo từ 1.024 token** (peak 4.156,9; 960 token còn
+3.931,0; 1.768 token 6.437,9), độ dốc ≈ **3 MiB/token** và `gradient_checkpointing` **không giảm**
+(6.451,0 so với 6.437,9) ⇒ bộ nhớ bị chiếm bởi logits của LM head, phần checkpointing không chạm
+tới. **Đính chính PA-40:** peak > VRAM trên máy này là **oversubscription (WDDM)** — driver vẫn
+cấp/ghi đủ, chỉ chậm — nên **chưa** phải bằng chứng "không train nổi"; chưa quan sát thất bại thật
+có artifact ⇒ câu hỏi train thật **MỞ** (D-39/PA-39). Cộng lại: **mọi dòng train thật đều dài hơn
+ngưỡng peak vượt VRAM của máy** ⇒ hoặc đổi định dạng dữ liệu (PA-12, đụng bất biến #7 nếu cắt nhầm
+căn cứ) hoặc đổi phần cứng/4-bit (PA-11, cần `bitsandbytes` + trọng số HF 3B, cả hai chưa có).
 Theo đặc tả của user, phiên này **chỉ dựng pipeline + báo cáo chi phí**, không train, nên tiêu chí
 "chứng minh bằng `PASS_CORRECT` trên test group tách rời" vẫn **chưa** được thỏa.
 

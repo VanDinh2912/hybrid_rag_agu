@@ -766,9 +766,14 @@ Những điều dưới đây **không** được che bằng số đẹp; mỗi 
    trong bộ đo này, chưa suy ra được cho câu hỏi thật ngoài đời (`tools/eval/real_questions.jsonl` hiện 0 câu).
 6. **Nhiễu ±3 item.** Các chênh lệch 1–3 item giữa hai round được ghi là "đi ngang", không phải cải
    thiện; quy ước ở `tools/loop/noise_floor.py` + `data/loop/README.md`.
-7. **SFT bị chặn bởi bộ nhớ, không phải ý tưởng.** Card 4 GB hết chỗ từ **1.024 token** (~3 MiB/token)
-   trong khi **13/13 dòng train ≥ 1.016 token** ⇒ chưa train được trên máy này (PA-11 4-bit / PA-12
-   đổi định dạng chờ duyệt; `docs/archive/reports/T4.md` §5).
+7. **SFT chưa được chứng minh là chạy nổi — cách đọc số đã đính chính (PA-40).** Card 4 GB (khai báo
+   4.095,5 MiB) có **peak allocated vượt trần từ 1.024 token** (~3 MiB/token; 960 → 3.931,0 MiB,
+   1.024 → 4.156,9 MiB) trong khi **13/13 dòng train ≥ 1.016 token**. Nhưng driver ở máy này
+   **oversubscribe (WDDM)**: tensor 8 GiB vẫn được cấp và ghi đủ, chỉ chậm ×4,25 ⇒ "peak > VRAM"
+   là **oversubscription, chưa phải thất bại**; **chưa quan sát được lượt train thật thất bại có
+   artifact tái lập** (một lượt 23-10 dừng ở step 24 nhưng log đã mất) ⇒ câu hỏi train thật còn
+   **MỞ** (D-39/PA-39). PA-11 (4-bit) / PA-12 (đổi định dạng) vẫn chờ duyệt, không còn là hai
+   đường duy nhất; chi tiết `docs/archive/reports/T4.md` §5.
 8. **HEAD tái lập được cây đã test (đối soát 01-11)**: toàn bộ `src/` (25 tệp), `tools/loop/` và
    testset đã vào kho, working tree sạch — PA-26 đã đóng. Giới hạn còn lại nằm ở artifact nặng:
    chúng không vào git mà được ghim bằng `ARTIFACT_MANIFEST.json`, nên phải `--check` manifest

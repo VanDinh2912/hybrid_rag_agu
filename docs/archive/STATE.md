@@ -63,10 +63,12 @@ KHÔNG dùng thêm — (b) bị chặn PerDay, đề bài "hết quota thì bỏ
   `data/training/t4b_r5r8r9r10/`: 23 dòng SFT, group-split **theo tài liệu** 13 train / 10 holdout,
   ba assert chống rò rỉ = true, chặn `blocked_test_leak` 134 · `skip_sft_target_not_in_context` 20 ·
   `overrefusal_threshold_only` 17 · trùng id 38. Tokenizer thật: **train min 1.016 / median 1.439
-  token ⇒ 13/13 vượt trần 768**. VRAM đo trên card 4,09 GB: **hết chỗ từ 1.024 token**
-  (960 → 3.931,0 MiB; 1.024 → 4.156,9; 1.768 → 6.437,9), gradient checkpointing **không giúp**
-  (logits của LM head). ⇒ Trần train thật của máy ≈ **1.000 token/dòng**, dữ liệu hiện tại không vừa;
-  đường 4-bit bị chặn vì `bitsandbytes` chưa cài và trọng số HF 3B chưa có trên máy.
+  token ⇒ 13/13 vượt trần 768**. Peak allocated đo trên card 4,09 GB **vượt VRAM khai báo từ
+  1.024 token** (960 → 3.931,0 MiB; 1.024 → 4.156,9; 1.768 → 6.437,9), gradient checkpointing
+  **không giúp** (logits của LM head). **Đính chính PA-40 (01-11):** máy chạy WDDM oversubscribe
+  ⇒ peak > VRAM **chưa phải** bằng chứng hết chỗ/OOM; **chưa quan sát thất bại thật có artifact**
+  ⇒ "dữ liệu hiện tại có train nổi không" còn **MỞ** (D-39/PA-39); đường 4-bit bị chặn vì
+  `bitsandbytes` chưa cài và trọng số HF 3B chưa có trên máy.
 - **Điều chưa được phép kết luận:** (b) `b_gemini_top6` mới **12/30 id hợp lệ** (PerDay chặn, window
   reset ~14:00 VN) ⇒ **chưa** được nói "năng lực model là nút thắt".
 - Bằng chứng: `data/loop/rounds/r10/` (`full.jsonl`, `verdicts_full.jsonl`, `round_summary_full.json`

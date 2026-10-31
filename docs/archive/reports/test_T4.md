@@ -109,7 +109,7 @@ Qwen3-4B. Kết luận này là **âm**, không phải "model là nút thắt".
 | Dòng bị chặn | `blocked_test_leak` **134** · `skip_sft_target_not_in_context` **20** · `overrefusal_threshold_only` **17** · `deduped_same_item_across_rounds` **38** · `sft_refusal_rows` **2** | cùng manifest, `ledger.blocked` |
 | Trần VRAM đo được | 960 token → 3.931 MiB; **1.024 token → 4.156,9 MiB** | `data/loop/diag/t4b_memory_probe_len.json` |
 | Dòng train vượt trần 1.024 | **13/13** dòng (min 1.016 token) | cùng file |
-| Kết luận | Không train nổi trên GPU 4 GB; gradient checkpointing **không giúp** (logits LM head) | `docs/reports/T4.md` §2.6 |
+| Kết luận | Peak allocated vượt VRAM khai báo từ 1.024 token; gradient checkpointing **không giúp** (logits LM head). "Peak > VRAM" = **oversubscription (WDDM)**, chưa phải thất bại thật — "train nổi hay không" còn **MỞ** (PA-39) | `docs/reports/T4.md` §2.6 |
 
 ## 3. Kết luận chỉ từ số
 
@@ -226,9 +226,10 @@ Nguồn số: `tmp/t4_invariants_report.json` (chạy `tools/diag/check_sft_inva
 | 5 | Parse được, không rỗng/trùng, token ≤ `max_length` | **ĐỎ (DỮ LIỆU)** | parse 23/23, 0 rỗng, 0 trùng; **train 13/13 dòng > 768 token** (min 1.016, max 1.707); **holdout 8/10 dòng > 768** (min 657, max 1.488) |
 
 ĐỎ ở mục 5 là **ĐỎ của dữ liệu, không phải của test**: `models/train_sft_lora.py` sẽ cắt cụt dòng
-nếu train với `max_length=768`, mà cắt cụt = mất căn cứ = phá bất biến #7. Không nâng trần (vượt
-VRAM 4 GB, xem D-10), không cắt dòng, không sửa artifact. Đường sửa đã có đề xuất: **PA-11** (4-bit) /
-**PA-12** (đổi định dạng dòng).
+nếu train với `max_length=768`, mà cắt cụt = mất căn cứ = phá bất biến #7. Không nâng trần (peak
+allocated vượt VRAM khai báo ở 1.024 token; lưu ý PA-40: peak > VRAM = oversubscription WDDM,
+chưa phải OOM — xem D-10/D-39), không cắt dòng, không sửa artifact. Đường sửa đã có đề xuất:
+**PA-11** (4-bit) / **PA-12** (đổi định dạng dòng) / **PA-39** (train thật + logits theo vị trí).
 
 ### 10.2 Mục 1 — "dòng giả thiếu thực thể ⇒ bị loại và đếm"
 
