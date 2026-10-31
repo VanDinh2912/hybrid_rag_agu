@@ -1,0 +1,63 @@
+# Nguồn gốc của ĐÚNG 20 đoạn trong manual_20_segments_new_index.txt (seed 20261024) — chỉ để tra bản gốc.
+# Chunk không có tiêu đề `[Điều N.]` = chunk fallback (cắt theo đoạn văn).
+# Script không phán đúng/sai nội dung.
+
+[1] chunk125 | 367-QĐ-ĐU ngay 08-4-2026.pdf - Phần mở đầu | 1195 ký tự
+    đầu đoạn: Chủ tịch doàn cơ sở, thành viên; 7 Đlc Nguyễn Thị Thanh Loan Đảng ủy v
+
+[2] chunk052 | 1054-qd-dhag-2020-09-28.pdf - Điều 24. | 176 ký tự
+    đầu đoạn: [1054-qd-dhag-2020-09-28.pdf] - [Điều 24.] (phần 2/6) ANGLA#G 7 Vo Văn
+
+[3] chunk226 | QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf - Điều 14. | 451 ký tự
+    đầu đoạn: [QD1133_22815_VNU_ban hanh Quy dinh khen thuong HSSV -1.pdf] - [Điều 1
+
+[4] chunk015 | 1054-qd-dhag-2020-09-28.pdf - Điều 7. | 160 ký tự
+    đầu đoạn: [1054-qd-dhag-2020-09-28.pdf] - [Điều 7.] (phần 2/3) Trường: Đại diện
+
+[5] chunk134 | 367-QĐ-ĐU ngay 08-4-2026.pdf - Điều 2. | 241 ký tự
+    đầu đoạn: Mỗi bài (hoặc loạt bài) có độ dài tối đa 05 phút; thể hiện được đặc tr
+
+[6] chunk336 | ke-hoach-ttck-kltn-dh24pm-2026.pdf (fallback) | 1189 ký tự
+    đầu đoạn: 5 7 Y 2 ; 0 8 ỉ ; 9 9 ; 8 g 0 p 8 ; 8 g 1 1 8 ; 1 1 9 ; ẵ 2 8 8 ; ; 8
+
+[7] chunk042 | 1054-qd-dhag-2020-09-28.pdf - Điều 17. | 140 ký tự
+    đầu đoạn: [1054-qd-dhag-2020-09-28.pdf] - [Điều 17.] (phần 2/2) gây ảnh hưởng xấ
+
+[8] chunk059 | 1059-qd-dhag-2020-09-29.pdf - Điều 2. | 156 ký tự
+    đầu đoạn: [1059-qd-dhag-2020-09-29.pdf] - [Điều 2.] Quyết định này có hiệu lực t
+
+[9] chunk243 | KH To chuc HK 261 - 20260612.pdf (fallback) | 861 ký tự
+    đầu đoạn: - PĐT - Khoa, Bộ môn, Cố vấn học tập - SV 5 SV n ộp phi ếu đi ều chỉnh
+
+[10] chunk331 | don-xac-nhan-hoan-canh-kho-khan.docx (fallback) | 171 ký tự
+    đầu đoạn: [don-xac-nhan-hoan-canh-kho-khan.docx] ...............................
+
+[11] chunk326 | don-dang-ky-hoc-thi-cai-thien.docx (fallback) | 370 ký tự
+    đầu đoạn: Duyệt của Phòng Đào tạo Số TT | Mã HP | Tên học phần | Điểm đã tích lũ
+
+[12] chunk247 | KH To chuc HK 261 - 20260612.pdf (fallback) | 963 ký tự
+    đầu đoạn: theo dõi, h ỗ trợ và phản hồi các vướng mắc về ĐKHP với Khoa/Bộ môn ho
+
+[13] chunk276 | 03-tb-ctsv-thong-bao-ve-viec-nop-ho-so-mien-giam-hoc-phi-hki-nam-hoc-2025-2026.pdf (fallback) | 458 ký tự
+    đầu đoạn: phí công công công hưởng hàng tháng động nghề nghề xuyên. Giang vùng A
+
+[14] chunk326 | don-dang-ky-hoc-thi-cai-thien.docx (fallback) | 673 ký tự
+    đầu đoạn: ĐƠN ĐĂNG KÝ HỌC, THI CẢI THIỆN ĐIỂM Kính gửi: - Cố vấn học tập - Phòng
+
+[15] chunk116 | 118_QUY CHẾ XÉT CHỌN DANH HIỆU SINH VIÊN 5 TỐT, TẬP THỂ SINH VIÊN 5 TỐT VÀ GIẢI THƯỞNG SAO THÁNG GIÊNG CẤP TRƯỜNG GIAI ĐOẠN 2026-2028_dadongdau.pdf - Điều 19. | 512 ký tự
+    đầu đoạn: hủ cảm xúc (Emotion Management) Kỹ vượt qua nghịch cảnh (Skills to Ove
+
+[16] chunk124 | 367-QĐ-ĐU ngay 08-4-2026.pdf - Phần mở đầu | 1159 ký tự
+    đầu đoạn: 0918607123 . Ngày 30/5/2026: Ban Giám khảo xét chọn 05 tác xuất sắc đạ
+
+[17] chunk313 | ban-mo-ta-ctdt-nganh-cntt-2021.pdf (fallback) | 49 ký tự
+    đầu đoạn: TRƯỜNG ĐẠI HỌC AN GIANG KHOA CÔNG NGHỆ THÔNG TIN
+
+[18] chunk294 | Qui dinh muc hoc phi nam hoc 2026-2027.pdf - Điều 3. | 1178 ký tự
+    đầu đoạn: I. MỨC THU HỌC PHÍ TRÌNH ĐỘ ĐÀO TẠO ĐẠI HỌC 1. Mức thu học phí áp dụng
+
+[19] chunk319 | ban-mo-ta-ctdt-nganh-cntt-2021.pdf (fallback) | 235 ký tự
+    đầu đoạn: Ngôn ngữ giảng dạy: Tiếng Việt d. Thời điểm áp dụng: Tháng 8/2021 7. K
+
+[20] chunk192 | 888-qd-dhag-2022-08-08.pdf - Điều 28. | 87 ký tự
+    đầu đoạn: [888-qd-dhag-2022-08-08.pdf] - [Điều 28.] (phần 2/2) quả sáng quả Sáng

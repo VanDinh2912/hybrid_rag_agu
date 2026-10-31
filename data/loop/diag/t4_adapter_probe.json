@@ -1,0 +1,25 @@
+{
+  "adapter_dir": "D:\\DoAn\\hybrid_rag_agu\\models\\qwen25_05b_sft_adapter",
+  "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "device": "cuda",
+  "dtype": "torch.float16",
+  "greedy": true,
+  "max_new_tokens": 48,
+  "base_text": "Sinh viên được học lại tối đa 8 lần đối với mỗi học phần.",
+  "adapter_text": "Sinh viên được học lại tối đa 8 lần đối với mỗi học phần và phải đóng học phí cho lần học lại đó.",
+  "outputs_differ": true,
+  "vram_peak_base_mib": 964.0,
+  "vram_peak_adapter_mib": 1025.4,
+  "seconds": {
+    "load_base": 1.99,
+    "gen_base": 1.3,
+    "load_adapter": 0.43,
+    "gen_adapter": 1.68
+  },
+  "failure_probe": {
+    "raised": true,
+    "type": "ValueError",
+    "message": "Can't find 'adapter_config.json' at 'C:\\Users\\vandi\\AppData\\Local\\Temp\\tmp19_twjdy'",
+    "note": "không có nhánh fallback nào được chạy; lỗi nổi lên nguyên vẹn"
+  }
+}

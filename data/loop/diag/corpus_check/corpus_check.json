@@ -1,0 +1,3199 @@
+{
+  "old_dir_digest": {
+    "before": "867823d988c3bf24",
+    "after": "3c247b1eff6fd0e0",
+    "unchanged": false,
+    "note": "byte-digest ĐỔI chỉ vì ChromaDB tái ghi file bin khi MỞ; thước bất biến đúng là content_signature"
+  },
+  "old_content_signature": {
+    "before_first_open": {
+      "n_chunks": 361,
+      "signature": "8031beea81da"
+    },
+    "after_reopen": {
+      "n_chunks": 361,
+      "signature": "8031beea81da"
+    },
+    "unchanged": true
+  },
+  "source_files": {
+    "n_files": 29,
+    "by_ext": {
+      ".pdf": 24,
+      ".docx": 5
+    },
+    "expected": 26
+  },
+  "source_note": "CHÊNH — xem by_ext",
+  "gate": {
+    "thresholds": {
+      "min_diacritic": 0.6,
+      "min_vocab": 0.7
+    },
+    "measured_on": "nội dung đã index, gộp chunk theo tiêu đề [tệp] (khớp 26 tệp nguồn: 26 nhóm)",
+    "n_files_new_index": 26,
+    "n_good_new": 23,
+    "n_gap_new": 3,
+    "gap_new": [
+      {
+        "stem": "kehoachttckkltndh24pm2026pdf",
+        "n_chunks": 4,
+        "ratio": 0.586687306501548,
+        "vocab_ratio": null,
+        "reasons": [
+          "từ có dấu 0.587 < 0.6"
+        ]
+      },
+      {
+        "stem": "kehoachttckkltndh24th2026pdf",
+        "n_chunks": 4,
+        "ratio": 0.5818452380952381,
+        "vocab_ratio": null,
+        "reasons": [
+          "từ có dấu 0.582 < 0.6"
+        ]
+      },
+      {
+        "stem": "tb16thaydoicongravaoktxpdf",
+        "n_chunks": 2,
+        "ratio": 0.0,
+        "vocab_ratio": null,
+        "reasons": [
+          "từ có dấu 0.000 < 0.6"
+        ]
+      }
+    ],
+    "n_gap_old_index": 14,
+    "leak": {
+      "n_gap": 3,
+      "n_leaked_into_index": 3,
+      "leaked": [
+        "kehoachttckkltndh24pm2026pdf",
+        "kehoachttckkltndh24th2026pdf",
+        "tb16thaydoicongravaoktxpdf"
+      ],
+      "silent": true
+    }
+  },
+  "hygiene_old": {
+    "n_chunks": 361,
+    "n_empty": 0,
+    "empty_ids": [],
+    "n_duplicate_chunks": 0,
+    "n_duplicate_groups": 0,
+    "duplicate_ratio": 0.0,
+    "duplicate_over_threshold": false
+  },
+  "hygiene_new": {
+    "n_chunks": 342,
+    "n_empty": 0,
+    "empty_ids": [],
+    "n_duplicate_chunks": 0,
+    "n_duplicate_groups": 0,
+    "duplicate_ratio": 0.0,
+    "duplicate_over_threshold": false
+  },
+  "foreign_glyphs": {
+    "n_chars": 324979,
+    "n_supported": 324960,
+    "n_foreign": 19,
+    "n_foreign_kinds": 2,
+    "foreign": [
+      {
+        "char": "₊",
+        "codepoint": "U+208A",
+        "count": 16,
+        "example": "ầu. - Nguyên tắc phân công: ₊ Mỗi học phần được phân côn"
+      },
+      {
+        "char": "€",
+        "codepoint": "U+20AC",
+        "count": 3,
+        "example": "ẵ Hieak ; 2a 1 2 1 1 1 { 9 € 1 ẵg ẵ { F f: g 1 { ẵ fẲi"
+      }
+    ],
+    "foreign_truncated": false
+  },
+  "manual_segments": {
+    "seed": 20261024,
+    "n": 20,
+    "file": "D:\\DoAn\\hybrid_rag_agu\\data\\loop\\diag\\corpus_check\\manual_20_segments_new_index.txt"
+  },
+  "gold_coverage": {
+    "n_items": 811,
+    "n_checkable": 797,
+    "n_no_gold_sentence": 14,
+    "n_missing_gold": 389,
+    "missing_rate": 0.4881,
+    "red": true,
+    "red_threshold": 0.02,
+    "n_near_verbatim": 375,
+    "n_absent": 14,
+    "absent_rate_of_checkable": 0.0176,
+    "missing": [
+      {
+        "id": "N756350275574",
+        "family": "NUMERIC",
+        "gold_sentence": "5 thang 4 nam 2016 cua Bo truong\nBo Gido duc va Dao tao ve viec ban hanh Quy ché",
+        "best_token_overlap": 0.935,
+        "class": "near"
+      },
+      {
+        "id": "N245049948094349",
+        "family": "NUMERIC",
+        "gold_sentence": "110\nCan cit Quyet dinh so 1325/QD-BGDDT, ngay 25 thdng 4 nam 2016 cua Bo truong\n",
+        "best_token_overlap": 0.872,
+        "class": "near"
+      },
+      {
+        "id": "N30699320639996",
+        "family": "NUMERIC",
+        "gold_sentence": "HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONGDAIHOCANGIANG\nDoclap-Tu do -Hanh ph",
+        "best_token_overlap": 0.844,
+        "class": "near"
+      },
+      {
+        "id": "N235983475041132",
+        "family": "NUMERIC",
+        "gold_sentence": "Truong\nkhong xet khen thuong doi voi SV bi ky luat hoac co diem trung binh hoc p",
+        "best_token_overlap": 0.923,
+        "class": "near"
+      },
+      {
+        "id": "N220576577836355",
+        "family": "NUMERIC",
+        "gold_sentence": "h) Sinh vien 5 tot tieu biéu cap DHQG-HCM, co diem trung binh nam hoc dat tur 8.",
+        "best_token_overlap": 0.955,
+        "class": "near"
+      },
+      {
+        "id": "N140089310187598",
+        "family": "NUMERIC",
+        "gold_sentence": "k) Sinh vien tot nghiep dai hoc, co diem trung binh tich luy toan khoa dat tur 9",
+        "best_token_overlap": 0.963,
+        "class": "near"
+      },
+      {
+        "id": "N88764683610227",
+        "family": "NUMERIC",
+        "gold_sentence": "Quy che nay thay the cho Quy che Cong tac sinh vien doi voi churong trinh dao ta",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "N277130098950786",
+        "family": "NUMERIC",
+        "gold_sentence": "Thanh lap, tham gia cac hoat dong\nNéu nghiem trong,\n211\nmang tinh chat chinh tri",
+        "best_token_overlap": 0.957,
+        "class": "near"
+      },
+      {
+        "id": "N28977478083074",
+        "family": "NUMERIC",
+        "gold_sentence": "Can cut Quyét dinh so 1250/QD-DHAG ngay 09 thdng 6 nam 2017 cua Hieu truong\nTruo",
+        "best_token_overlap": 0.848,
+        "class": "near"
+      },
+      {
+        "id": "N280337701016470",
+        "family": "NUMERIC",
+        "gold_sentence": "Quy che nay ap dung doi voi sinh vien trinh do dai hoc va trinh do cao dang\nngan",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "N72681999194812",
+        "family": "NUMERIC",
+        "gold_sentence": "Diém ren luyen dugc danh gia bang thang diém 100\nChurong II\nCACTIEUCHIDANHGIAVAK",
+        "best_token_overlap": 0.667,
+        "class": "near"
+      },
+      {
+        "id": "N7586938380832",
+        "family": "NUMERIC",
+        "gold_sentence": "Diem danh gia quy dinh tai dieu nay\ndugc tinh vao tong diem danh gia ket qua ren",
+        "best_token_overlap": 0.87,
+        "class": "near"
+      },
+      {
+        "id": "N52859559320835",
+        "family": "NUMERIC",
+        "gold_sentence": "Quy ché nay thay the cho Quy dinh Danh gia ket qua ren luyen cua nguoi hoc\nhinh ",
+        "best_token_overlap": 0.927,
+        "class": "near"
+      },
+      {
+        "id": "N258863825901835",
+        "family": "NUMERIC",
+        "gold_sentence": "ap dung doi voi sinh vien\ntrinh do dai hoc va trinh do cao dang nganh Giao duc M",
+        "best_token_overlap": 0.935,
+        "class": "near"
+      },
+      {
+        "id": "N1985685272778",
+        "family": "NUMERIC",
+        "gold_sentence": "Trong trurong hop can thiét, Truong phong Cong tac Sinh vien co thé de xuat\nHieu",
+        "best_token_overlap": 0.886,
+        "class": "near"
+      },
+      {
+        "id": "N223229978542077",
+        "family": "NUMERIC",
+        "gold_sentence": "Sinh vien phai dat tu 15 diém tro len Tieu chi 4 moi dugc diem thuong\n(tri nhirn",
+        "best_token_overlap": 0.826,
+        "class": "near"
+      },
+      {
+        "id": "N110205502928361",
+        "family": "NUMERIC",
+        "gold_sentence": "Sinh vien co nghi lurc phan dau vuron len trong hoc tap\n10\n- Sinh vien co hoan c",
+        "best_token_overlap": 0.935,
+        "class": "near"
+      },
+      {
+        "id": "N23756721748812",
+        "family": "NUMERIC",
+        "gold_sentence": "c phan dau vuron len trong hoc tap\n10\n- Sinh vien co hoan canh gia dinh dac biet",
+        "best_token_overlap": 0.933,
+        "class": "near"
+      },
+      {
+        "id": "N110129844915891",
+        "family": "NUMERIC",
+        "gold_sentence": "TONGCONG\n100\nKHUNG DANH GIA KET QUA REN LUYEN SINH VIEN\nHINH THUC CHINH QUY\n(Kem",
+        "best_token_overlap": 0.872,
+        "class": "near"
+      },
+      {
+        "id": "N160302746487501",
+        "family": "NUMERIC",
+        "gold_sentence": "Danh gia y thurc, thai do hoc tap va nghien curu khoa hoc\nToida 30\n1.1.",
+        "best_token_overlap": 0.8,
+        "class": "near"
+      },
+      {
+        "id": "N143662722487347",
+        "family": "NUMERIC",
+        "gold_sentence": "Danh gia y thtrc chap hanh noi quy, quy che, quy dinh trong nha trurong\nT6i da 2",
+        "best_token_overlap": 0.833,
+        "class": "near"
+      },
+      {
+        "id": "N121570199836064",
+        "family": "NUMERIC",
+        "gold_sentence": "Chap hanh tot noi quy, quy che cua nha trurong (trit 2 aiem/lan vi pham)\n2.3.",
+        "best_token_overlap": 0.812,
+        "class": "near"
+      },
+      {
+        "id": "N39118644401422",
+        "family": "NUMERIC",
+        "gold_sentence": "Danh gia y thurc tham gia cac hoat dong chinh tri, xa hoi, van hoa, van nghe, th",
+        "best_token_overlap": 0.933,
+        "class": "near"
+      },
+      {
+        "id": "N118865460700722",
+        "family": "NUMERIC",
+        "gold_sentence": "Danh giay thurc cong dan trong quan he cong dong\nT0i da 25\n4.1.",
+        "best_token_overlap": 0.786,
+        "class": "near"
+      },
+      {
+        "id": "N32286231372080",
+        "family": "NUMERIC",
+        "gold_sentence": "- Can cit Quy ché lam viec cia Ban Chap hanh Hoi Sinh vien Viet Nam\nTruong Dai h",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "N23208489130806",
+        "family": "NUMERIC",
+        "gold_sentence": "- Can cit Quy ché Thi dua, Khen thuong cia Ban Chap hanh Hoi Sinh vien\nViet Nam ",
+        "best_token_overlap": 0.923,
+        "class": "near"
+      },
+      {
+        "id": "N45769564669798",
+        "family": "NUMERIC",
+        "gold_sentence": "- Quyét dinh s6 68-QD/TWHSV ngay 23/10/2025 cua Ban Thu ky Trung\nuong Hoi Sinh v",
+        "best_token_overlap": 0.909,
+        "class": "near"
+      },
+      {
+        "id": "N71911179964895",
+        "family": "NUMERIC",
+        "gold_sentence": "Tieu chuan dao dirc tot\n5.2.",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "N30788122789136",
+        "family": "NUMERIC",
+        "gold_sentence": "- Diém trung binh chung hoc tap ca nam hoc dat tu 8.5/10 (khong ap dung\nthang di",
+        "best_token_overlap": 0.952,
+        "class": "near"
+      },
+      {
+        "id": "N150829289124940",
+        "family": "NUMERIC",
+        "gold_sentence": "* Sinh vien khuyet tat khong bat buoc xet tieu chuan vé thé luc (phai bo\n5.2.4.",
+        "best_token_overlap": 0.944,
+        "class": "near"
+      },
+      {
+        "id": "N141022220541295",
+        "family": "NUMERIC",
+        "gold_sentence": "- C6 diém trung binh chung hoc tap ca nam hoc dat tu 8.7/10, ngoai ra doi\nTF\nvoi",
+        "best_token_overlap": 0.893,
+        "class": "near"
+      },
+      {
+        "id": "N122999315496359",
+        "family": "NUMERIC",
+        "gold_sentence": "- Diém ren luyen nam hoc dat tur 95 diém tro len (tren thang diem 100 theo quy)\n",
+        "best_token_overlap": 0.871,
+        "class": "near"
+      },
+      {
+        "id": "N258308319884130",
+        "family": "NUMERIC",
+        "gold_sentence": "Quy trinh xét trao danh hieu, giai thurong\n15.1.",
+        "best_token_overlap": 0.9,
+        "class": "near"
+      },
+      {
+        "id": "N228056393690510",
+        "family": "NUMERIC",
+        "gold_sentence": "Nhung tac pham da\ndang tai tren phuong tien thong tin dai chung va mang xa hoi t",
+        "best_token_overlap": 0.967,
+        "class": "near"
+      },
+      {
+        "id": "N57312825590941",
+        "family": "NUMERIC",
+        "gold_sentence": "Chu dé chung cua Cuoc thi nam 2026 la “\"Bao ve nén\ntang tu turong cia Dang trong",
+        "best_token_overlap": 0.923,
+        "class": "near"
+      },
+      {
+        "id": "N16747926978751",
+        "family": "NUMERIC",
+        "gold_sentence": "- Tir ngay 10/6/2026 dén ngay 15/7/2026:",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "N181641656816832",
+        "family": "NUMERIC",
+        "gold_sentence": "IV- GIAI THUONG\n- Moi tac pham xuat sac se dugc tang Bang khen cua Ban Thuong vu",
+        "best_token_overlap": 0.815,
+        "class": "near"
+      },
+      {
+        "id": "N180172783248395",
+        "family": "NUMERIC",
+        "gold_sentence": "Cap tinh\n- Lé trao giai Cuoc thi cap tinh dugc to churc vao quy IV/2026.",
+        "best_token_overlap": 0.786,
+        "class": "near"
+      },
+      {
+        "id": "N263192367671470",
+        "family": "NUMERIC",
+        "gold_sentence": "- [Phần mở đầu] \n 09/8607123)\nNoi nhan:",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "N114107407574579",
+        "family": "NUMERIC",
+        "gold_sentence": "mot bai viét tur 4.000 tur déen 6.000 tur (khong tinh chu thich va\ntai lieu tham",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "N201276857986690",
+        "family": "NUMERIC",
+        "gold_sentence": "Khong qua 100 tur, khoang 07 dong (in nghieng)\nDung lurgng:",
+        "best_token_overlap": 0.818,
+        "class": "near"
+      },
+      {
+        "id": "N153558676427472",
+        "family": "NUMERIC",
+        "gold_sentence": "mot bai viét khong qua 3.000 tu (khong tinh chu thich tai lieu, thong\ntin tac gi",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "N34076642453631",
+        "family": "NUMERIC",
+        "gold_sentence": "khong qua 03 bai, moi bai khong qua 3.000 tur.",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "N153552888961030",
+        "family": "NUMERIC",
+        "gold_sentence": "- Ban in va file méem bai viét dinh dang A4, co chu 14, font Times New Roman,\ngi",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "N158294650690097",
+        "family": "NUMERIC",
+        "gold_sentence": "- Mot bai viét khong qua 2.500 tu (khong tinh chu thich tai lieu, thong tin tac\n",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "N251284973492139",
+        "family": "NUMERIC",
+        "gold_sentence": "Ho so dur thi cap tinh\nHo so duy thi do cac co quan, don vi, dja phuong neu tai ",
+        "best_token_overlap": 0.85,
+        "class": "near"
+      },
+      {
+        "id": "N10941358637239",
+        "family": "NUMERIC",
+        "gold_sentence": "- Bao ve, lan toa quan diém chi dao cua Dang, két qua cua cac Hoi nghi Trung\nuro",
+        "best_token_overlap": 0.96,
+        "class": "near"
+      },
+      {
+        "id": "N213363882950657",
+        "family": "NUMERIC",
+        "gold_sentence": "- Bao ve, lan toa gia tri, y nghia cua cac su kien chinh tri, lich sir trong dai",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "N178677683132557",
+        "family": "NUMERIC",
+        "gold_sentence": "Nhan dien, dau tranh voi nhung luan dieu moi cua cac thé\nluc thu dich, phan dong",
+        "best_token_overlap": 0.976,
+        "class": "near"
+      },
+      {
+        "id": "N182626167637764",
+        "family": "NUMERIC",
+        "gold_sentence": "thé\nluc thu dich, phan dong, phan tu co hoi chinh tri loi dung dip ky niem cac s",
+        "best_token_overlap": 0.969,
+        "class": "near"
+      },
+      {
+        "id": "N182626167637764#2",
+        "family": "NUMERIC",
+        "gold_sentence": "thé\nluc thu dich, phan dong, phan tu co hoi chinh tri loi dung dip ky niem cac s",
+        "best_token_overlap": 0.969,
+        "class": "near"
+      },
+      {
+        "id": "N109115715876139",
+        "family": "NUMERIC",
+        "gold_sentence": "Can cie Luat thi dua, khen thuong ngay 26/11/2003;",
+        "best_token_overlap": 0.909,
+        "class": "near"
+      },
+      {
+        "id": "N194013232600442",
+        "family": "NUMERIC",
+        "gold_sentence": "Luat sira doi, bo sung mot so\ndieu cua Luat thi dua, khen thuong ngay 14/6/2005;",
+        "best_token_overlap": 0.941,
+        "class": "near"
+      },
+      {
+        "id": "N244127642424168",
+        "family": "NUMERIC",
+        "gold_sentence": "Co 100% ca nhan trong tap the hoan thanh nhiem vu durgc giao, trong do co it\nnha",
+        "best_token_overlap": 0.957,
+        "class": "near"
+      },
+      {
+        "id": "N89276477201091",
+        "family": "NUMERIC",
+        "gold_sentence": "Theo Nghi dinh 91/2017/ND-CP.",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "N259544342214804",
+        "family": "NUMERIC",
+        "gold_sentence": "Trurong DHAG thuc hien chi thuong theo quy dinh tai Nghi dinh so\n91/2017/ND-CP c",
+        "best_token_overlap": 0.966,
+        "class": "near"
+      },
+      {
+        "id": "N37889511341839",
+        "family": "NUMERIC",
+        "gold_sentence": "Can cit Nghi dinh 186/2013/ND-CP ngay 17 thdng 11 nam 2013 cia Chinh phu\nve Dai ",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "N164717982434349",
+        "family": "NUMERIC",
+        "gold_sentence": "Quyet dinh nay thay the Quyet\ndinh s6 1589/QD-DHQG-CTSV ngay 30/12/2014 cua Giam",
+        "best_token_overlap": 0.944,
+        "class": "near"
+      },
+      {
+        "id": "N278861476914894",
+        "family": "NUMERIC",
+        "gold_sentence": "e) Sinh vien tot nghiep dai hoc dat loai xuat sac, co diem trung binh tich luy t",
+        "best_token_overlap": 0.903,
+        "class": "near"
+      },
+      {
+        "id": "N256452387567079",
+        "family": "NUMERIC",
+        "gold_sentence": "2.Can cuThong tur10/2016/TT-BGDDT ngay05/4/2016 cuaBoGiaoducva\nDao tao ban hanh ",
+        "best_token_overlap": 0.865,
+        "class": "near"
+      },
+      {
+        "id": "N116917021986859",
+        "family": "NUMERIC",
+        "gold_sentence": "Phai co ket qua hoc tap dat trung binh-kha\n(turong duong 6.0/10) tro len va dat ",
+        "best_token_overlap": 0.92,
+        "class": "near"
+      },
+      {
+        "id": "N157076586018706",
+        "family": "NUMERIC",
+        "gold_sentence": "+ Nham dam bao viec thanh toan lai vay cua sinh vien dugc thuc hien dung han, AC",
+        "best_token_overlap": 0.936,
+        "class": "near"
+      },
+      {
+        "id": "N156011813140130",
+        "family": "NUMERIC",
+        "gold_sentence": "bo thoi gian an han von goc, tuong ung voi khoan\nvay thuc te va murc lai suat 2,",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "N156011813140130#2",
+        "family": "NUMERIC",
+        "gold_sentence": "bo thoi gian an han von goc, tuong ung voi khoan\nvay thuc te va murc lai suat 2,",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "N49416901773191",
+        "family": "NUMERIC",
+        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -\ntranthien@agu.ed",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "N141690845650560",
+        "family": "NUMERIC",
+        "gold_sentence": "Can cur vao Chuong trinh ACB dong hanh cung sinh vien DHQG-HCM dugc trién khai\nt",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "N135865507843783",
+        "family": "NUMERIC",
+        "gold_sentence": "Toi kinh de nghi QPT va ACB xem xét, ho trg cho toi vay mot khoan kinh phi bang ",
+        "best_token_overlap": 0.914,
+        "class": "near"
+      },
+      {
+        "id": "N263337507686393",
+        "family": "NUMERIC",
+        "gold_sentence": "éu rang trong thoi gian an han von goc (gom thoi gian hoc con lai va 01 nam sau ",
+        "best_token_overlap": 0.968,
+        "class": "near"
+      },
+      {
+        "id": "N257353677821214",
+        "family": "NUMERIC",
+        "gold_sentence": "Du kien tir ngay 03/05/2027 dén ngay 09/05/2027\nz/0 g :",
+        "best_token_overlap": 0.5,
+        "class": "absent"
+      },
+      {
+        "id": "N5831596481650",
+        "family": "NUMERIC",
+        "gold_sentence": "8 1\n:(Bni y g Sn Sgi na l/\nNAMHQC 2026-2027\nnganh Cong nghe thong tin trinh do d",
+        "best_token_overlap": 0.565,
+        "class": "absent"
+      },
+      {
+        "id": "N259964421820305",
+        "family": "NUMERIC",
+        "gold_sentence": "Thoi gian\n20/12/2026\n02/11 -\n23/11 -\nKé hoach TTCK-KLTN DH24TH\nsu dong y cia Bo ",
+        "best_token_overlap": 0.526,
+        "class": "absent"
+      },
+      {
+        "id": "N169166823057659",
+        "family": "NUMERIC",
+        "gold_sentence": "Nay, Phong Cong tac Sinh vien huong dan ve viec thuc hien chinh sach mien, giam\n",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "N13560832540059",
+        "family": "NUMERIC",
+        "gold_sentence": "Doi voi sinh vien durgc mién (100%) hoc phi\nHO SO\nTT\nDOI TUQNG\n(Cac ban sao co c",
+        "best_token_overlap": 0.846,
+        "class": "near"
+      },
+      {
+        "id": "N237420607576716",
+        "family": "NUMERIC",
+        "gold_sentence": "Ban sao co cong churng thé\ncach mang tu ngay 01/01/1945 dén\nthuong binh, benh bi",
+        "best_token_overlap": 0.909,
+        "class": "near"
+      },
+      {
+        "id": "N121989377006900",
+        "family": "NUMERIC",
+        "gold_sentence": "con\nthuong binh, benh binh, nguoi huong\ncua Anh hung Lao dong trong thoi ky\n1.1\n",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "N40019243604570",
+        "family": "NUMERIC",
+        "gold_sentence": "Sinh vien mo coi ca cha lan me,\n1.3\n2.",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "N187499212897744",
+        "family": "NUMERIC",
+        "gold_sentence": "Ban sao giay khai sinh hoac giay\n1.4\nong ba (trong trurong hop é voi ong\nchung n",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "N221869831866072",
+        "family": "NUMERIC",
+        "gold_sentence": "Ban sao so huong tro cap hang\n3.1\nbi tai nan lao dong hoac mac benh\nthang cua ch",
+        "best_token_overlap": 0.71,
+        "class": "near"
+      },
+      {
+        "id": "N160888478427435",
+        "family": "NUMERIC",
+        "gold_sentence": "a) Sinh vien An Giang thuoc doi tuong muc 2.1 xem thon dac biet kho khan, xa khu",
+        "best_token_overlap": 0.935,
+        "class": "near"
+      },
+      {
+        "id": "N208003242098454",
+        "family": "NUMERIC",
+        "gold_sentence": "- Thon dac biet kho khan (QD 612/QD-UBDT ngay 16/9/2021):",
+        "best_token_overlap": 0.833,
+        "class": "near"
+      },
+      {
+        "id": "N65569467995870",
+        "family": "NUMERIC",
+        "gold_sentence": "- Cac xa khu vurc III vung dan toc va mien nui (QD 861/QD-TTg ngay 04/6/2021):",
+        "best_token_overlap": 0.833,
+        "class": "near"
+      },
+      {
+        "id": "N245202928509085",
+        "family": "NUMERIC",
+        "gold_sentence": "c) Sinh vien da huong mien, giam hoc phi HKII nam hoc 2024-2025 tiép tuc dugc hu",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "N269981552137906",
+        "family": "NUMERIC",
+        "gold_sentence": "Nop truc tiep tai Phong Cong tac Sinh vien (SV3) (So 18 Ung Van\nKhiem, Phuong Lo",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "N237941013237952",
+        "family": "NUMERIC",
+        "gold_sentence": "Thong tu lien tich 35/2014/TTLT-BGDDT-BTC ngay\n15/10/2014 ve viec huong dan thuc",
+        "best_token_overlap": 0.92,
+        "class": "near"
+      },
+      {
+        "id": "N148113813945738",
+        "family": "NUMERIC",
+        "gold_sentence": "Phong Cong tac Sinh vien thong bao vé viec nop ho so huong ché do ho trg chi\nphi",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "N45880555313457",
+        "family": "NUMERIC",
+        "gold_sentence": "Ban sao co cong churng so ho ngheo hoac can ngheo nam 2025;",
+        "best_token_overlap": 0.917,
+        "class": "near"
+      },
+      {
+        "id": "N93156282709812",
+        "family": "NUMERIC",
+        "gold_sentence": "Sinh vien da nhan h trg chi phi hoc tap HKII nam hoc 2024-2025 tiép\ntuc dugc huo",
+        "best_token_overlap": 0.87,
+        "class": "near"
+      },
+      {
+        "id": "N193598839567568",
+        "family": "NUMERIC",
+        "gold_sentence": "Lai suat cho vay\n- Lai suat cho vay la 4,8%/nam.",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "N236074514590174",
+        "family": "NUMERIC",
+        "gold_sentence": "- Lai suat ng qua han dugc tinh bang 130% lai suat cho vay.",
+        "best_token_overlap": 0.727,
+        "class": "near"
+      },
+      {
+        "id": "N279657848193549",
+        "family": "NUMERIC",
+        "gold_sentence": "SV dien thong tin link https:/vnu.app/138cfeca truoc ngay 01/10/2025.",
+        "best_token_overlap": 0.786,
+        "class": "near"
+      },
+      {
+        "id": "N67006183887694",
+        "family": "NUMERIC",
+        "gold_sentence": "Tur ngay 15/02/2027 den ngay 11/04/2027\n31/12/2025 cua Hieu truong Truong Dai ho",
+        "best_token_overlap": 0.722,
+        "class": "near"
+      },
+      {
+        "id": "N2708922838042",
+        "family": "NUMERIC",
+        "gold_sentence": "DAI HOC QUOC GIA TP.HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONG DAI HQC AN GIA",
+        "best_token_overlap": 0.976,
+        "class": "near"
+      },
+      {
+        "id": "N32362936840085",
+        "family": "NUMERIC",
+        "gold_sentence": "uen Huu Tri\nDAI HOC QUOC GIA TP.HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONG DA",
+        "best_token_overlap": 0.932,
+        "class": "near"
+      },
+      {
+        "id": "N192649520484060",
+        "family": "NUMERIC",
+        "gold_sentence": "Ky nang tu duy, sang tao\nDAI HQC QUOC GIA TP.HCM\nCONG HOA XA HOI CHU NGHIA VIET ",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "O10364377056039",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cit Quyét dinh so 42/2007/QD-BGDDT, ngay 13 thang 8 nam 2007 cua\nBo truong B",
+        "best_token_overlap": 0.927,
+        "class": "near"
+      },
+      {
+        "id": "O68233203974462",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cit Quyét dinh so 42/2007/QD-BGDDT, ngay 13 thang 8 nam 2007 cua\nBo truong B",
+        "best_token_overlap": 0.927,
+        "class": "near"
+      },
+      {
+        "id": "O171117388605892",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Thong tu so 10/2016/TT-BGDDT ngay 05 thang 4 nam 2016 cua Bo truong\nBo Gi",
+        "best_token_overlap": 0.925,
+        "class": "near"
+      },
+      {
+        "id": "O179439870134712",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Thong tu so 10/2016/TT-BGDDT ngay 05 thang 4 nam 2016 cua Bo truong\nBo Gi",
+        "best_token_overlap": 0.925,
+        "class": "near"
+      },
+      {
+        "id": "O1977356517105",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- [Phần mở đầu] \n 5 thang 4 nam 2016 cua Bo truong\nBo Gido duc va Dao tao ve vie",
+        "best_token_overlap": 0.941,
+        "class": "near"
+      },
+      {
+        "id": "O45047821833813",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "5 thang 4 nam 2016 cua Bo truong\nBo Gido duc va Dao tao ve viec ban hanh Quy ché",
+        "best_token_overlap": 0.935,
+        "class": "near"
+      },
+      {
+        "id": "O151584480372662",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "110\nCan cit Quyet dinh so 1325/QD-BGDDT, ngay 25 thdng 4 nam 2016 cua Bo truong\n",
+        "best_token_overlap": 0.872,
+        "class": "near"
+      },
+      {
+        "id": "O172942237695496",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "110\nCan cit Quyet dinh so 1325/QD-BGDDT, ngay 25 thdng 4 nam 2016 cua Bo truong\n",
+        "best_token_overlap": 0.872,
+        "class": "near"
+      },
+      {
+        "id": "P143026355251188",
+        "family": "TRAP_OCR",
+        "gold_sentence": "110\nCan cit Quyet dinh so 1325/QD-BGDDT, ngay 25 thdng 4 nam 2016 cua Bo truong\n",
+        "best_token_overlap": 0.872,
+        "class": "near"
+      },
+      {
+        "id": "O61444435048915",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Quyet dinh so 953/QD-DHQG ngay 15 thang 7 nam 2019 cua Giam doc\nDai hoc Q",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "O76696386198132",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Quyet dinh so 953/QD-DHQG ngay 15 thang 7 nam 2019 cua Giam doc\nDai hoc Q",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "O106830364358307",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONGDAIHOCANGIANG\nDoclap-Tu do -Hanh ph",
+        "best_token_overlap": 0.844,
+        "class": "near"
+      },
+      {
+        "id": "O75491186468985",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONGDAIHOCANGIANG\nDoclap-Tu do -Hanh ph",
+        "best_token_overlap": 0.844,
+        "class": "near"
+      },
+      {
+        "id": "P12229821829229",
+        "family": "TRAP_OCR",
+        "gold_sentence": "HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONGDAIHOCANGIANG\nDoclap-Tu do -Hanh ph",
+        "best_token_overlap": 0.844,
+        "class": "near"
+      },
+      {
+        "id": "O116339851449379",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quy che nay thay the cho Quy che Cong tac sinh vien doi voi churong trinh dao ta",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "O53890629737271",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Thanh lap, tham gia cac hoat dong\nNéu nghiem trong,\n211\nmang tinh chat chinh tri",
+        "best_token_overlap": 0.957,
+        "class": "near"
+      },
+      {
+        "id": "P223055787265717",
+        "family": "TRAP_OCR",
+        "gold_sentence": "Thanh lap, tham gia cac hoat dong\nNéu nghiem trong,\n211\nmang tinh chat chinh tri",
+        "best_token_overlap": 0.957,
+        "class": "near"
+      },
+      {
+        "id": "O164467657005480",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cut Quyét dinh so 1250/QD-DHAG ngay 09 thdng 6 nam 2017 cua Hieu truong\nTruo",
+        "best_token_overlap": 0.848,
+        "class": "near"
+      },
+      {
+        "id": "O75259981414362",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cut Quyét dinh so 1250/QD-DHAG ngay 09 thdng 6 nam 2017 cua Hieu truong\nTruo",
+        "best_token_overlap": 0.848,
+        "class": "near"
+      },
+      {
+        "id": "P130454697636340",
+        "family": "TRAP_OCR",
+        "gold_sentence": "Can cut Quyét dinh so 1250/QD-DHAG ngay 09 thdng 6 nam 2017 cua Hieu truong\nTruo",
+        "best_token_overlap": 0.848,
+        "class": "near"
+      },
+      {
+        "id": "O144152802754301",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cut Thong tu so 16/2015/TT-BGDDT ngay 12 thang 8 nam 2015 cua Bo truong\nBo G",
+        "best_token_overlap": 0.854,
+        "class": "near"
+      },
+      {
+        "id": "O219851008429342",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cut Thong tu so 16/2015/TT-BGDDT ngay 12 thang 8 nam 2015 cua Bo truong\nBo G",
+        "best_token_overlap": 0.854,
+        "class": "near"
+      },
+      {
+        "id": "O25868128858056",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can ci Quyet dinh so 964/QD-DHQG ngay 19 thang 7 nam 2019 cua Giam doc Dai\nhoc Q",
+        "best_token_overlap": 0.878,
+        "class": "near"
+      },
+      {
+        "id": "O216339431320425",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can ci Quyet dinh so 964/QD-DHQG ngay 19 thang 7 nam 2019 cua Giam doc Dai\nhoc Q",
+        "best_token_overlap": 0.878,
+        "class": "near"
+      },
+      {
+        "id": "O263386328293593",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quy che nay ap dung doi voi sinh vien trinh do dai hoc va trinh do cao dang\nngan",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "O40981686903784",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Diém ren luyen dugc danh gia bang thang diém 100\nChurong II\nCACTIEUCHIDANHGIAVAK",
+        "best_token_overlap": 0.667,
+        "class": "near"
+      },
+      {
+        "id": "O170968002582340",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Diem danh gia quy dinh tai dieu nay\ndugc tinh vao tong diem danh gia ket qua ren",
+        "best_token_overlap": 0.87,
+        "class": "near"
+      },
+      {
+        "id": "O112922606788277",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quy ché nay thay the cho Quy dinh Danh gia ket qua ren luyen cua nguoi hoc\nhinh ",
+        "best_token_overlap": 0.927,
+        "class": "near"
+      },
+      {
+        "id": "O227140514479225",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quy ché nay thay the cho Quy dinh Danh gia ket qua ren luyen cua nguoi hoc\nhinh ",
+        "best_token_overlap": 0.927,
+        "class": "near"
+      },
+      {
+        "id": "O197145853144407",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "ap dung doi voi sinh vien\ntrinh do dai hoc va trinh do cao dang nganh Giao duc M",
+        "best_token_overlap": 0.935,
+        "class": "near"
+      },
+      {
+        "id": "O103535137665293",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "TONGCONG\n100\nKHUNG DANH GIA KET QUA REN LUYEN SINH VIEN\nHINH THUC CHINH QUY\n(Kem",
+        "best_token_overlap": 0.872,
+        "class": "near"
+      },
+      {
+        "id": "O115656534844418",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "TONGCONG\n100\nKHUNG DANH GIA KET QUA REN LUYEN SINH VIEN\nHINH THUC CHINH QUY\n(Kem",
+        "best_token_overlap": 0.872,
+        "class": "near"
+      },
+      {
+        "id": "P74867920314535",
+        "family": "TRAP_OCR",
+        "gold_sentence": "TONGCONG\n100\nKHUNG DANH GIA KET QUA REN LUYEN SINH VIEN\nHINH THUC CHINH QUY\n(Kem",
+        "best_token_overlap": 0.872,
+        "class": "near"
+      },
+      {
+        "id": "O147156104306717",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Két qua hoc tap\n10\n- C6 DTBCHT tur 5 den can 7 hoac tur 2,00 den 2,49\n- Co DTBCH",
+        "best_token_overlap": 0.929,
+        "class": "near"
+      },
+      {
+        "id": "O158220585753693",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Két qua hoc tap\n10\n- C6 DTBCHT tur 5 den can 7 hoac tur 2,00 den 2,49\n- Co DTBCH",
+        "best_token_overlap": 0.929,
+        "class": "near"
+      },
+      {
+        "id": "O84636958048070",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "T tur 7 den can 8 hoac tur 2,50 den 3,19\n- C6 DTBCHT tur 8 den can 9 hoac tur 3,",
+        "best_token_overlap": 0.87,
+        "class": "near"
+      },
+      {
+        "id": "O155283468795673",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "T tur 7 den can 8 hoac tur 2,50 den 3,19\n- C6 DTBCHT tur 8 den can 9 hoac tur 3,",
+        "best_token_overlap": 0.87,
+        "class": "near"
+      },
+      {
+        "id": "O123508198751185",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "118/QD-HSV\nAn Giang, ngay 23 thdng 6 nam 2026\nQUYET DINH\nVlv ban hanh Quy ché da",
+        "best_token_overlap": 0.915,
+        "class": "near"
+      },
+      {
+        "id": "O105878724802157",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "118/QD-HSV\nAn Giang, ngay 23 thdng 6 nam 2026\nQUYET DINH\nVlv ban hanh Quy ché da",
+        "best_token_overlap": 0.915,
+        "class": "near"
+      },
+      {
+        "id": "O91364623210229",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- [Phần mở đầu] \n AN GI\n- Can ci Quyét dinh so 09-QD/TDTN-TTNTH cua Ban Thuong v",
+        "best_token_overlap": 0.931,
+        "class": "near"
+      },
+      {
+        "id": "O83377574823489",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- [Phần mở đầu] \n AN GI\n- Can ci Quyét dinh so 09-QD/TDTN-TTNTH cua Ban Thuong v",
+        "best_token_overlap": 0.931,
+        "class": "near"
+      },
+      {
+        "id": "O233094575900738",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Can cit Quyeét adinh so 37-QD/BCSD ngay 26/10/2022 cua Ban Can su\nDoan Dai hoc",
+        "best_token_overlap": 0.9,
+        "class": "near"
+      },
+      {
+        "id": "O253349004320842",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Can cit Quyét dinh so 48-QD/BCSD ngay 21/4/2023 cua Ban Can su\nDoan Dai hoc Qu",
+        "best_token_overlap": 0.654,
+        "class": "near"
+      },
+      {
+        "id": "O206921069414913",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Can cit Quy ché lam viec cia Ban Chap hanh Hoi Sinh vien Viet Nam\nTruong Dai h",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O128625877407949",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Can cit Quy ché lam viec cia Ban Chap hanh Hoi Sinh vien Viet Nam\nTruong Dai h",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O27622775218386",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Can cit Quy ché Thi dua, Khen thuong cia Ban Chap hanh Hoi Sinh vien\nViet Nam ",
+        "best_token_overlap": 0.923,
+        "class": "near"
+      },
+      {
+        "id": "O41694794683362",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Can cit Quy ché Thi dua, Khen thuong cia Ban Chap hanh Hoi Sinh vien\nViet Nam ",
+        "best_token_overlap": 0.923,
+        "class": "near"
+      },
+      {
+        "id": "O81949013801653",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Ban hanh kem theo Quyét dinh nay Quy ché danh hieu “Sinh vien\n5 tot\", “Tap thé S",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "O2119650161549",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Ban hanh kem theo Quyét dinh nay Quy ché danh hieu “Sinh vien\n5 tot\", “Tap thé S",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "O162051881516584",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quy ché danh hieu “Sinh vien 5 tot\", “Tap thé Sinh vien 5 tot\"' va\ngiai thuong “",
+        "best_token_overlap": 0.971,
+        "class": "near"
+      },
+      {
+        "id": "O53881474598259",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quy ché danh hieu “Sinh vien 5 tot\", “Tap thé Sinh vien 5 tot\"' va\ngiai thuong “",
+        "best_token_overlap": 0.971,
+        "class": "near"
+      },
+      {
+        "id": "O195921406935571",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Quyét dinh s6 68-QD/TWHSV ngay 23/10/2025 cua Ban Thu ky Trung\nuong Hoi Sinh v",
+        "best_token_overlap": 0.909,
+        "class": "near"
+      },
+      {
+        "id": "O147175335380561",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Quyét dinh so 09-QD/TDTN-TTNTH cua Ban Thuong vu Tinh Doan An\nvien 5 tot\"' cap",
+        "best_token_overlap": 0.952,
+        "class": "near"
+      },
+      {
+        "id": "O101995178075997",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Quyét dinh so 09-QD/TDTN-TTNTH cua Ban Thuong vu Tinh Doan An\nvien 5 tot\"' cap",
+        "best_token_overlap": 0.952,
+        "class": "near"
+      },
+      {
+        "id": "O94257696791846",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Quyét dinh so 37-QD/BCSD ngay 26/10/2022 cua Ban Can su Doan Dai\nhoc Quoc gia ",
+        "best_token_overlap": 0.953,
+        "class": "near"
+      },
+      {
+        "id": "O250897258330861",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Quyét dinh sé 48-QD/BCSD ngay 21/4/2023 cua Ban Can su Doan Dai\nhoc Quoc gia T",
+        "best_token_overlap": 0.918,
+        "class": "near"
+      },
+      {
+        "id": "O260207225642691",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Diém ren luyen trung binh chung ca nam hoc dat tu 90 diem tro len (tren\nthang ",
+        "best_token_overlap": 0.886,
+        "class": "near"
+      },
+      {
+        "id": "O229536072877995",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Diém trung binh chung hoc tap ca nam hoc dat tu 8.5/10 (khong ap dung\nthang di",
+        "best_token_overlap": 0.952,
+        "class": "near"
+      },
+      {
+        "id": "O225437578546291",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Tieu chuan cu thé doi voi danh hieu \"Tap thé Sinh vien 5 tot\"\ncap Trurong\n- 100%",
+        "best_token_overlap": 0.95,
+        "class": "near"
+      },
+      {
+        "id": "O277363857651909",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- C6 diém trung binh chung hoc tap ca nam hoc dat tu 8.7/10, ngoai ra doi\nTF\nvoi",
+        "best_token_overlap": 0.893,
+        "class": "near"
+      },
+      {
+        "id": "O128706202662534",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- C6 diém trung binh chung hoc tap ca nam hoc dat tu 8.7/10, ngoai ra doi\nTF\nvoi",
+        "best_token_overlap": 0.893,
+        "class": "near"
+      },
+      {
+        "id": "O273233375430123",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Diém ren luyen nam hoc dat tur 95 diém tro len (tren thang diem 100 theo quy)\n",
+        "best_token_overlap": 0.871,
+        "class": "near"
+      },
+      {
+        "id": "O152265474514363",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Cong van s 547-CV/BTGDVTU, ngay 02/4/2026 cua Ban\nTuyén giao va Dan van Tinh uy ",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O175493257586658",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Cong van s 547-CV/BTGDVTU, ngay 02/4/2026 cua Ban\nTuyén giao va Dan van Tinh uy ",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O206779045091790",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Tac pham du thi la san pham sang tao lan dau, chua tung dugc cong bo tren\ncac ",
+        "best_token_overlap": 0.932,
+        "class": "near"
+      },
+      {
+        "id": "O231059125133532",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Tac pham du thi la san pham sang tao lan dau, chua tung dugc cong bo tren\ncac ",
+        "best_token_overlap": 0.932,
+        "class": "near"
+      },
+      {
+        "id": "O246225404273083",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- [Phần mở đầu] \n bo tren\ncac phuong tien thong tin dai chung va mang xa hoi tin",
+        "best_token_overlap": 0.971,
+        "class": "near"
+      },
+      {
+        "id": "O88378819487018",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- [Phần mở đầu] \n bo tren\ncac phuong tien thong tin dai chung va mang xa hoi tin",
+        "best_token_overlap": 0.971,
+        "class": "near"
+      },
+      {
+        "id": "O226845870277832",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "bo tren\ncac phuong tien thong tin dai chung va mang xa hoi tinh den thoi diem Tr",
+        "best_token_overlap": 0.969,
+        "class": "near"
+      },
+      {
+        "id": "O248212920247094",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "bo tren\ncac phuong tien thong tin dai chung va mang xa hoi tinh den thoi diem Tr",
+        "best_token_overlap": 0.969,
+        "class": "near"
+      },
+      {
+        "id": "O138975860503727",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nhung tac pham da\ndang tai tren phuong tien thong tin dai chung va mang xa hoi t",
+        "best_token_overlap": 0.967,
+        "class": "near"
+      },
+      {
+        "id": "O204372844127356",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Chu dé chung cua Cuoc thi nam 2026 la “\"Bao ve nén\ntang tu turong cia Dang trong",
+        "best_token_overlap": 0.923,
+        "class": "near"
+      },
+      {
+        "id": "O274777639028337",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "D/c Doan Thanh Nghi\nDang üy vién, Trurong khoa Khoa Cong nghé\nthong tin, thanh v",
+        "best_token_overlap": 0.929,
+        "class": "near"
+      },
+      {
+        "id": "O23160550446307",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "IV- GIAI THUONG\n- Moi tac pham xuat sac se dugc tang Bang khen cua Ban Thuong vu",
+        "best_token_overlap": 0.815,
+        "class": "near"
+      },
+      {
+        "id": "P246967067930891",
+        "family": "TRAP_OCR",
+        "gold_sentence": "IV- GIAI THUONG\n- Moi tac pham xuat sac se dugc tang Bang khen cua Ban Thuong vu",
+        "best_token_overlap": 0.815,
+        "class": "near"
+      },
+      {
+        "id": "O256695554294691",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "thong nhat cac noi dung cong viéc va\nthi cap tinh qua Ban To churc Cuoc thi cap ",
+        "best_token_overlap": 0.952,
+        "class": "near"
+      },
+      {
+        "id": "O235423294514018",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Cap tinh\n- Lé trao giai Cuoc thi cap tinh dugc to churc vao quy IV/2026.",
+        "best_token_overlap": 0.786,
+        "class": "near"
+      },
+      {
+        "id": "O149745274291420",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Tran Van Dat\nTHE LE\nCuoc thi chinh luan vé bao ve nen tang tur turong cia Dang\nt",
+        "best_token_overlap": 0.86,
+        "class": "near"
+      },
+      {
+        "id": "O110351889344961",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Tran Van Dat\nTHE LE\nCuoc thi chinh luan vé bao ve nen tang tur turong cia Dang\nt",
+        "best_token_overlap": 0.86,
+        "class": "near"
+      },
+      {
+        "id": "O253758075040476",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "mot bai viét tur 4.000 tur déen 6.000 tur (khong tinh chu thich va\ntai lieu tham",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O9237514687994",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "mot bai viét tur 4.000 tur déen 6.000 tur (khong tinh chu thich va\ntai lieu tham",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "P69949835104363",
+        "family": "TRAP_OCR",
+        "gold_sentence": "mot bai viét tur 4.000 tur déen 6.000 tur (khong tinh chu thich va\ntai lieu tham",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O60013889095855",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "mot bai viét khong qua 3.000 tu (khong tinh chu thich tai lieu, thong\ntin tac gi",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "P77798650152135",
+        "family": "TRAP_OCR",
+        "gold_sentence": "mot bai viét khong qua 3.000 tu (khong tinh chu thich tai lieu, thong\ntin tac gi",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "O61918926166095",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Mot bai viét khong qua 2.500 tu (khong tinh chu thich tai lieu, thong tin tac\n",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "P240108212168426",
+        "family": "TRAP_OCR",
+        "gold_sentence": "- Mot bai viét khong qua 2.500 tu (khong tinh chu thich tai lieu, thong tin tac\n",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "O269614806970236",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "13\nPHU LUC\nDinh huong chu de tac pham tham gia Cuoc thi chinh luan ve bao ve\nnen",
+        "best_token_overlap": 0.935,
+        "class": "near"
+      },
+      {
+        "id": "O227735467128149",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "13\nPHU LUC\nDinh huong chu de tac pham tham gia Cuoc thi chinh luan ve bao ve\nnen",
+        "best_token_overlap": 0.935,
+        "class": "near"
+      },
+      {
+        "id": "O10235702435549",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Bao ve, lan toa y nghia cua cuoc bau cu dai biéu Quoc hoi khoa XVI va dai\nbiéu",
+        "best_token_overlap": 0.962,
+        "class": "near"
+      },
+      {
+        "id": "O237575730998260",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Bao ve, lan toa y nghia cua cuoc bau cu dai biéu Quoc hoi khoa XVI va dai\nbiéu",
+        "best_token_overlap": 0.962,
+        "class": "near"
+      },
+      {
+        "id": "O226533496099535",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Bao ve, lan toa quan diém chi dao cua Dang, két qua cua cac Hoi nghi Trung\nuro",
+        "best_token_overlap": 0.96,
+        "class": "near"
+      },
+      {
+        "id": "O116387805961189",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Dau tranh voi nhung\nluan dieu chong pha duong loi, quan diém chi dao moi cua Dan",
+        "best_token_overlap": 0.974,
+        "class": "near"
+      },
+      {
+        "id": "O30172672937963",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Dau tranh voi nhung\nluan dieu chong pha duong loi, quan diém chi dao moi cua Dan",
+        "best_token_overlap": 0.974,
+        "class": "near"
+      },
+      {
+        "id": "O198612357100393",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Bao ve, lan toa gia tri, y nghia cua cac su kien chinh tri, lich sir trong dai",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "O225176582206324",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nhan dien, dau tranh voi nhung luan dieu moi cua cac thé\nluc thu dich, phan dong",
+        "best_token_overlap": 0.976,
+        "class": "near"
+      },
+      {
+        "id": "O36137182550445",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "thé\nluc thu dich, phan dong, phan tu co hoi chinh tri loi dung dip ky niem cac s",
+        "best_token_overlap": 0.969,
+        "class": "near"
+      },
+      {
+        "id": "O39959103749761",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Nhan dien, dau tranh phan bac cac luan dieu moi cua cac thé luc thu dich,\n15\n\"",
+        "best_token_overlap": 0.972,
+        "class": "near"
+      },
+      {
+        "id": "O272154340865166",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Nhan dien, dau tranh phan bac cac luan dieu moi cua cac thé luc thu dich,\n15\n\"",
+        "best_token_overlap": 0.972,
+        "class": "near"
+      },
+      {
+        "id": "O9429480777381",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "thé luc thu dich,\n15\n\"dan chu\", “nhan quyen\", chu quyen trong boi canh Viet Nam ",
+        "best_token_overlap": 0.962,
+        "class": "near"
+      },
+      {
+        "id": "O102464711059095",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "thé luc thu dich,\n15\n\"dan chu\", “nhan quyen\", chu quyen trong boi canh Viet Nam ",
+        "best_token_overlap": 0.962,
+        "class": "near"
+      },
+      {
+        "id": "O30340357603330",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Luat sira doi, bo sung mot so\ndieu cua Luat thi dua, khen thuong ngay 14/6/2005;",
+        "best_token_overlap": 0.941,
+        "class": "near"
+      },
+      {
+        "id": "O228704020340121",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Luat sira doi, bo sung mot so adieu\ncia Luat thi dua, khen thuong ngay 16/11/201",
+        "best_token_overlap": 0.824,
+        "class": "near"
+      },
+      {
+        "id": "O216054540969339",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Nghi dinh so 91/2017/ND-CP ngay 31/7/2017 cua Chinh phi Quy dinh\nchi tiét",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "O54552925416350",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Nghi dinh so 91/2017/ND-CP ngay 31/7/2017 cua Chinh phi Quy dinh\nchi tiét",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "O140158698164818",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Thong tu so 12/2019/TT-BNV ngay 04/11/2019 cua Bo Noi vu Quy dinh\nchi tie",
+        "best_token_overlap": 0.939,
+        "class": "near"
+      },
+      {
+        "id": "O274474689195259",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Thong tu so 12/2019/TT-BNV ngay 04/11/2019 cua Bo Noi vu Quy dinh\nchi tie",
+        "best_token_overlap": 0.939,
+        "class": "near"
+      },
+      {
+        "id": "O136589372385145",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- [Phần mở đầu] \n Can ci Thong tu so 21/2020/TT-BGDDT ngay 31/7/2020 cua Bo Gido",
+        "best_token_overlap": 0.844,
+        "class": "near"
+      },
+      {
+        "id": "O114508989116049",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- [Phần mở đầu] \n Can ci Thong tu so 21/2020/TT-BGDDT ngay 31/7/2020 cua Bo Gido",
+        "best_token_overlap": 0.844,
+        "class": "near"
+      },
+      {
+        "id": "O190280838831485",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can ci Huong dan so 2851/BGDDT-TDKT ngay 12/7/2021 cua Bo Gido duc va\nDao tao vé",
+        "best_token_overlap": 0.826,
+        "class": "near"
+      },
+      {
+        "id": "O120888997145836",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can ci Huong dan so 2851/BGDDT-TDKT ngay 12/7/2021 cua Bo Gido duc va\nDao tao vé",
+        "best_token_overlap": 0.826,
+        "class": "near"
+      },
+      {
+        "id": "O266596280889120",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cit Quyet dinh so 341/QD-DHQG ngay 15/4/2021 cua DHQG-HCM ve viec\nban hanh Q",
+        "best_token_overlap": 0.885,
+        "class": "near"
+      },
+      {
+        "id": "O70929883525827",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cit Quyet dinh so 341/QD-DHQG ngay 15/4/2021 cua DHQG-HCM ve viec\nban hanh Q",
+        "best_token_overlap": 0.885,
+        "class": "near"
+      },
+      {
+        "id": "O191091639330063",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Quyét dinh so 1083/QD-DHQG ngay 23/8/2021 cua DHQG-HCM ve\nviec dieu chinh",
+        "best_token_overlap": 0.964,
+        "class": "near"
+      },
+      {
+        "id": "O147585762839664",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Quyét dinh so 1083/QD-DHQG ngay 23/8/2021 cua DHQG-HCM ve\nviec dieu chinh",
+        "best_token_overlap": 0.964,
+        "class": "near"
+      },
+      {
+        "id": "O50861818320420",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quyét dinh nay co hieu luc ké tur ngay ky va thay thé Quyét dinh so\n626/QD-DHAG ",
+        "best_token_overlap": 0.868,
+        "class": "near"
+      },
+      {
+        "id": "O32147685053628",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quyét dinh nay co hieu luc ké tur ngay ky va thay thé Quyét dinh so\n626/QD-DHAG ",
+        "best_token_overlap": 0.868,
+        "class": "near"
+      },
+      {
+        "id": "O82788970728167",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Co 100% ca nhan trong tap the hoan thanh nhiem vu durgc giao, trong do co it\nnha",
+        "best_token_overlap": 0.957,
+        "class": "near"
+      },
+      {
+        "id": "O191314217054133",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Ky niem churong“Vi su nghiep giao duc\"\nTieu chuan xét tang Ky niem chuong \"Vi su",
+        "best_token_overlap": 0.906,
+        "class": "near"
+      },
+      {
+        "id": "O206486579734043",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Ky niem churong“Vi su nghiep giao duc\"\nTieu chuan xét tang Ky niem chuong \"Vi su",
+        "best_token_overlap": 0.906,
+        "class": "near"
+      },
+      {
+        "id": "O152923660886474",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Khen thurong cap Nha nuoc\nTieu chuan khen thuong cap Nha nuoc dugc quy dinh tai ",
+        "best_token_overlap": 0.848,
+        "class": "near"
+      },
+      {
+        "id": "O126962814314930",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Khen thurong cap Nha nuoc\nTieu chuan khen thuong cap Nha nuoc dugc quy dinh tai ",
+        "best_token_overlap": 0.848,
+        "class": "near"
+      },
+      {
+        "id": "O198108430117848",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Hoi dong sang kién dugc thanh lap theo quy dinh tai Dieu 8 Thong tur so\n18/2013/",
+        "best_token_overlap": 0.844,
+        "class": "near"
+      },
+      {
+        "id": "O34690428167817",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Hoi dong sang kién dugc thanh lap theo quy dinh tai Dieu 8 Thong tur so\n18/2013/",
+        "best_token_overlap": 0.844,
+        "class": "near"
+      },
+      {
+        "id": "O139551649589173",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Trurong DHAG thuc hien chi thuong theo quy dinh tai Nghi dinh so\n91/2017/ND-CP c",
+        "best_token_overlap": 0.966,
+        "class": "near"
+      },
+      {
+        "id": "O10172700165077",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cit Nghi dinh 186/2013/ND-CP ngay 17 thdng 11 nam 2013 cia Chinh phu\nve Dai ",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O242918521887386",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cit Nghi dinh 186/2013/ND-CP ngay 17 thdng 11 nam 2013 cia Chinh phu\nve Dai ",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O78685649173873",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can ci Quyét dinh so 26/2014/QD-TTg ngay 26 thang 3 nam 2014 cua Thu\nturong Chin",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "O1440649518184",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can ci Quyét dinh so 26/2014/QD-TTg ngay 26 thang 3 nam 2014 cua Thu\nturong Chin",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "O128526956262564",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cie Quyét dinh so 867/QD-DHQG ngay 17 thang 8 nam 2016 cua Giam doc\nDai hoc ",
+        "best_token_overlap": 0.907,
+        "class": "near"
+      },
+      {
+        "id": "O248020197945723",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cie Quyét dinh so 867/QD-DHQG ngay 17 thang 8 nam 2016 cua Giam doc\nDai hoc ",
+        "best_token_overlap": 0.907,
+        "class": "near"
+      },
+      {
+        "id": "O273890223542925",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cir Quyet dinh so 953/QD-DHQG ngay 15 thang 7 nam 2019 cua Giam doc\nDHQG-HCM",
+        "best_token_overlap": 0.962,
+        "class": "near"
+      },
+      {
+        "id": "O89690948507010",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cir Quyet dinh so 953/QD-DHQG ngay 15 thang 7 nam 2019 cua Giam doc\nDHQG-HCM",
+        "best_token_overlap": 0.962,
+        "class": "near"
+      },
+      {
+        "id": "O65039467221602",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quyet dinh nay thay the Quyet\ndinh s6 1589/QD-DHQG-CTSV ngay 30/12/2014 cua Giam",
+        "best_token_overlap": 0.944,
+        "class": "near"
+      },
+      {
+        "id": "O274173929883388",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Quyet dinh nay thay the Quyet\ndinh s6 1589/QD-DHQG-CTSV ngay 30/12/2014 cua Giam",
+        "best_token_overlap": 0.944,
+        "class": "near"
+      },
+      {
+        "id": "O6485670760357",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Murc tien thuong tap the, ca nhan HSSV can cur theo Nghi dinh 91/2017/ND-\nCP nga",
+        "best_token_overlap": 0.943,
+        "class": "near"
+      },
+      {
+        "id": "O41643576239757",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Murc tien thuong tap the, ca nhan HSSV can cur theo Nghi dinh 91/2017/ND-\nCP nga",
+        "best_token_overlap": 0.943,
+        "class": "near"
+      },
+      {
+        "id": "O162438923367627",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "2.Can cuThong tur10/2016/TT-BGDDT ngay05/4/2016 cuaBoGiaoducva\nDao tao ban hanh ",
+        "best_token_overlap": 0.865,
+        "class": "near"
+      },
+      {
+        "id": "O195974862896680",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "2.Can cuThong tur10/2016/TT-BGDDT ngay05/4/2016 cuaBoGiaoducva\nDao tao ban hanh ",
+        "best_token_overlap": 0.865,
+        "class": "near"
+      },
+      {
+        "id": "O149617447346637",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "MAU\nDANH SACH TAP THE VA CA NHAN\nDE XUAT KHEN THUONG CAP DAI HOC QUOC GIA THANH ",
+        "best_token_overlap": 0.925,
+        "class": "near"
+      },
+      {
+        "id": "O167068396196281",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Phai co ket qua hoc tap dat trung binh-kha\n(turong duong 6.0/10) tro len va dat ",
+        "best_token_overlap": 0.92,
+        "class": "near"
+      },
+      {
+        "id": "O149738033006978",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Phai co ket qua hoc tap dat trung binh-kha\n(turong duong 6.0/10) tro len va dat ",
+        "best_token_overlap": 0.92,
+        "class": "near"
+      },
+      {
+        "id": "O256341394116235",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -\ntranthien@agu.ed",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "O176417486352910",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -\ntranthien@agu.ed",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "P124557295996989",
+        "family": "TRAP_OCR",
+        "gold_sentence": "Phong Cong tac sinh vien (SV03), anh Tran Thien (0919.304.442 -\ntranthien@agu.ed",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "O154476170998515",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cur vao Chuong trinh ACB dong hanh cung sinh vien DHQG-HCM dugc trién khai\nt",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "O235710818844580",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cur vao Chuong trinh ACB dong hanh cung sinh vien DHQG-HCM dugc trién khai\nt",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "O161699339757119",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Toi kinh de nghi QPT va ACB xem xét, ho trg cho toi vay mot khoan kinh phi bang ",
+        "best_token_overlap": 0.914,
+        "class": "near"
+      },
+      {
+        "id": "O174396896881646",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Toi kinh de nghi QPT va ACB xem xét, ho trg cho toi vay mot khoan kinh phi bang ",
+        "best_token_overlap": 0.914,
+        "class": "near"
+      },
+      {
+        "id": "P121850313458897",
+        "family": "TRAP_OCR",
+        "gold_sentence": "Toi kinh de nghi QPT va ACB xem xét, ho trg cho toi vay mot khoan kinh phi bang ",
+        "best_token_overlap": 0.914,
+        "class": "near"
+      },
+      {
+        "id": "O135629422984729",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "8 1\n:(Bni y g Sn Sgi na l/\nNAMHQC 2026-2027\nnganh Cong nghe thong tin trinh do d",
+        "best_token_overlap": 0.565,
+        "class": "absent"
+      },
+      {
+        "id": "O192603998613258",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "8 1\n:(Bni y g Sn Sgi na l/\nNAMHQC 2026-2027\nnganh Cong nghe thong tin trinh do d",
+        "best_token_overlap": 0.565,
+        "class": "absent"
+      },
+      {
+        "id": "O208859425530595",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Moi\n- Sau khi két thuc viec thuc tap cuoi khoa, sinh vien se nop bao cao TTCK va",
+        "best_token_overlap": 0.604,
+        "class": "near"
+      },
+      {
+        "id": "O263405977512240",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "(Bat dau - Ket thuc)\n21-27/12/2026\n07-20/12/2026\n22/09/2026\n06/12/2026\nhieu duye",
+        "best_token_overlap": 0.526,
+        "class": "absent"
+      },
+      {
+        "id": "O275406454107529",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "(Bat dau - Ket thuc)\n21-27/12/2026\n07-20/12/2026\n22/09/2026\n06/12/2026\nhieu duye",
+        "best_token_overlap": 0.526,
+        "class": "absent"
+      },
+      {
+        "id": "O32296082393238",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Thoi gian\n20/12/2026\n02/11 -\n23/11 -\nKé hoach TTCK-KLTN DH24TH\nsu dong y cia Bo ",
+        "best_token_overlap": 0.526,
+        "class": "absent"
+      },
+      {
+        "id": "O106002750552266",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "hong\ntrinh cai aat, bao cao (dang word, pdf)\ndoan 1 cho Van phong Khoa CNTT,\nSin",
+        "best_token_overlap": 0.552,
+        "class": "absent"
+      },
+      {
+        "id": "O121131343796924",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Xet tot nghiep cho sinh vien\nKét thuc thuc hien KLTN\nKhoa CNTT, bao gom:",
+        "best_token_overlap": 0.786,
+        "class": "near"
+      },
+      {
+        "id": "O48450127192075",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "03/TB-CTSV\nAn Giang, ngay 11 thang 8 nam 2025\nTHONG BAO\nvée viec nop ho so mién,",
+        "best_token_overlap": 0.816,
+        "class": "near"
+      },
+      {
+        "id": "O197562482008393",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "03/TB-CTSV\nAn Giang, ngay 11 thang 8 nam 2025\nTHONG BAO\nvée viec nop ho so mién,",
+        "best_token_overlap": 0.816,
+        "class": "near"
+      },
+      {
+        "id": "O5950251612098",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nay, Phong Cong tac Sinh vien huong dan ve viec thuc hien chinh sach mien, giam\n",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "O58478332269913",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nay, Phong Cong tac Sinh vien huong dan ve viec thuc hien chinh sach mien, giam\n",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "O133168744265013",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Doi voi sinh vien durgc mién (100%) hoc phi\nHO SO\nTT\nDOI TUQNG\n(Cac ban sao co c",
+        "best_token_overlap": 0.846,
+        "class": "near"
+      },
+      {
+        "id": "O219548918530140",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Ban sao co cong churng thé\ncach mang tu ngay 01/01/1945 dén\nthuong binh, benh bi",
+        "best_token_overlap": 0.909,
+        "class": "near"
+      },
+      {
+        "id": "O120013109966068",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Ban sao co cong churng thé\ncach mang tu ngay 01/01/1945 dén\nthuong binh, benh bi",
+        "best_token_overlap": 0.909,
+        "class": "near"
+      },
+      {
+        "id": "O168172403316254",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Cac xa khu vurc III vung dan toc va mien nui (QD 861/QD-TTg ngay 04/6/2021):",
+        "best_token_overlap": 0.833,
+        "class": "near"
+      },
+      {
+        "id": "O66635069367795",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "- Cac xa khu vurc III vung dan toc va mien nui (QD 861/QD-TTg ngay 04/6/2021):",
+        "best_token_overlap": 0.833,
+        "class": "near"
+      },
+      {
+        "id": "O103189525480643",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "c) Sinh vien da huong mien, giam hoc phi HKII nam hoc 2024-2025 tiép tuc dugc hu",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "O124183556332777",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "c) Sinh vien da huong mien, giam hoc phi HKII nam hoc 2024-2025 tiép tuc dugc hu",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "O146794384575121",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nop truc tiep tai Phong Cong tac Sinh vien (SV3) (So 18 Ung Van\nKhiem, Phuong Lo",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "O81142378331772",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nop truc tiep tai Phong Cong tac Sinh vien (SV3) (So 18 Ung Van\nKhiem, Phuong Lo",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "O7358251256014",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Thong tu lien tich 35/2014/TTLT-BGDDT-BTC ngay\n15/10/2014 ve viec huong dan thuc",
+        "best_token_overlap": 0.92,
+        "class": "near"
+      },
+      {
+        "id": "O42798419881926",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Thong tu lien tich 35/2014/TTLT-BGDDT-BTC ngay\n15/10/2014 ve viec huong dan thuc",
+        "best_token_overlap": 0.92,
+        "class": "near"
+      },
+      {
+        "id": "O267004249972590",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Thong tu lien tich so 42/2013/TTLT-BGDDT-BLDTBXH-BTC ngay\n31/12/2013 cua ",
+        "best_token_overlap": 0.949,
+        "class": "near"
+      },
+      {
+        "id": "O168661942720122",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Can cu Thong tu lien tich so 42/2013/TTLT-BGDDT-BLDTBXH-BTC ngay\n31/12/2013 cua ",
+        "best_token_overlap": 0.949,
+        "class": "near"
+      },
+      {
+        "id": "O72475125815694",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Phong Cong tac Sinh vien thong bao vé viec nop ho so huong ché do ho trg chi\nphi",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "O17842968088874",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Phong Cong tac Sinh vien thong bao vé viec nop ho so huong ché do ho trg chi\nphi",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "O272454068717979",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Sinh vien da nhan h trg chi phi hoc tap HKII nam hoc 2024-2025 tiép\ntuc dugc huo",
+        "best_token_overlap": 0.87,
+        "class": "near"
+      },
+      {
+        "id": "O273198125080672",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Sinh vien da nhan h trg chi phi hoc tap HKII nam hoc 2024-2025 tiép\ntuc dugc huo",
+        "best_token_overlap": 0.87,
+        "class": "near"
+      },
+      {
+        "id": "O278609983999214",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nop truc tiep tai Phong Cong tac sinh vien (SV3) hoac lien he Co\nDuong (SDT 0981",
+        "best_token_overlap": 0.944,
+        "class": "near"
+      },
+      {
+        "id": "O266255178265273",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nop truc tiep tai Phong Cong tac sinh vien (SV3) hoac lien he Co\nDuong (SDT 0981",
+        "best_token_overlap": 0.944,
+        "class": "near"
+      },
+      {
+        "id": "O93643728236060",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "SV dien thong tin link https:/vnu.app/138cfeca truoc ngay 01/10/2025.",
+        "best_token_overlap": 0.786,
+        "class": "near"
+      },
+      {
+        "id": "O67035465532544",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "SV dien thong tin link https:/vnu.app/138cfeca truoc ngay 01/10/2025.",
+        "best_token_overlap": 0.786,
+        "class": "near"
+      },
+      {
+        "id": "O1530003413487",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "NGANH KY THUAT PHAN MEM TRiNH DO DAI HQC\nCan cie ké hoach nam hoc 2026-2027 cua ",
+        "best_token_overlap": 0.739,
+        "class": "near"
+      },
+      {
+        "id": "O190809916580954",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "NGANH KY THUAT PHAN MEM TRiNH DO DAI HQC\nCan cie ké hoach nam hoc 2026-2027 cua ",
+        "best_token_overlap": 0.739,
+        "class": "near"
+      },
+      {
+        "id": "O197915915303265",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Tur ngay 15/02/2027 den ngay 11/04/2027\n31/12/2025 cua Hieu truong Truong Dai ho",
+        "best_token_overlap": 0.722,
+        "class": "near"
+      },
+      {
+        "id": "O220543832072695",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Tur ngay 15/02/2027 den ngay 11/04/2027\n31/12/2025 cua Hieu truong Truong Dai ho",
+        "best_token_overlap": 0.722,
+        "class": "near"
+      },
+      {
+        "id": "O98139701992717",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Noi dung cia de tai TTCK\nSau khi két thuc viec thuc tap cuoi khoa, sinh vien se ",
+        "best_token_overlap": 0.638,
+        "class": "near"
+      },
+      {
+        "id": "O273357807554180",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "(Bat dau - Ket thic)\n04-10/01/2027\n02/11/2026 -\n30/11/2026 -\n20/12/2026\n04/12/20",
+        "best_token_overlap": 0.455,
+        "class": "absent"
+      },
+      {
+        "id": "O137831332378968",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "(Bat dau - Ket thic)\n04-10/01/2027\n02/11/2026 -\n30/11/2026 -\n20/12/2026\n04/12/20",
+        "best_token_overlap": 0.455,
+        "class": "absent"
+      },
+      {
+        "id": "O223025003051734",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "DAI HOC QUOC GIA TP.HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONG DAI HQC AN GIA",
+        "best_token_overlap": 0.976,
+        "class": "near"
+      },
+      {
+        "id": "O154290667408875",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "DAI HOC QUOC GIA TP.HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONG DAI HQC AN GIA",
+        "best_token_overlap": 0.976,
+        "class": "near"
+      },
+      {
+        "id": "O275906698233777",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nhing noi dung moi cia chuyen de toan khoa Dai hoi XiV ve hoc tap va thuc hanh t",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "O155070152657775",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "uen Huu Tri\nDAI HOC QUOC GIA TP.HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONG DA",
+        "best_token_overlap": 0.932,
+        "class": "near"
+      },
+      {
+        "id": "O13972680723089",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "uen Huu Tri\nDAI HOC QUOC GIA TP.HCM\nCONG HOA XA HOI CHU NGHIA VIET NAM\nTRUONG DA",
+        "best_token_overlap": 0.932,
+        "class": "near"
+      },
+      {
+        "id": "O63675526800468",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nhting noi dung mdi cua chuyen de toan khoa Dai hoi XIV ve hoc tap\nDAI HOC\nva th",
+        "best_token_overlap": 0.839,
+        "class": "near"
+      },
+      {
+        "id": "O172750923353984",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Ky nang tu duy, sang tao\nDAI HQC QUOC GIA TP.HCM\nCONG HOA XA HOI CHU NGHIA VIET ",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "O211125759564096",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Bai 4 (phan 2)\n17/10 - 22/10/2026\nKiém tra\nHIEU TRUONGA\nBai I:",
+        "best_token_overlap": 0.769,
+        "class": "near"
+      },
+      {
+        "id": "O65274241575154",
+        "family": "CLOZE_OCR",
+        "gold_sentence": "Nhung noi dung moi cua chuyen de toan khoa Dai hoi XIV ve hoc tap\nHN\nAN GIANG\nva",
+        "best_token_overlap": 0.867,
+        "class": "near"
+      },
+      {
+        "id": "HQ01",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Thiết kế và cài đặt mạng' có mã MH là CON915, khối lượng 2 tín chỉ bắt buộc",
+        "best_token_overlap": 0.775,
+        "class": "near"
+      },
+      {
+        "id": "HQ02",
+        "family": "HUMAN",
+        "gold_sentence": "- ELO 6: Phân tích, lập luận, và giải quyết vấn đề liên quan đến lĩnh vực CNTT đ",
+        "best_token_overlap": 0.811,
+        "class": "near"
+      },
+      {
+        "id": "HQ03",
+        "family": "HUMAN",
+        "gold_sentence": "Tổng số tín chỉ của toàn chương trình là 140 tín chỉ, trong đó Bắt buộc là 114 t",
+        "best_token_overlap": 0.789,
+        "class": "near"
+      },
+      {
+        "id": "HQ04",
+        "family": "HUMAN",
+        "gold_sentence": "Khối kiến thức đại cương có 40 tín chỉ (Bắt buộc: 40 TC; Tự chọn: 0 TC), chiếm 2",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "HQ05",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Giới thiệu ngành – ĐH CNTT' có mã môn học là COS104, khối lượng 1 tín chỉ b",
+        "best_token_overlap": 0.696,
+        "class": "near"
+      },
+      {
+        "id": "HQ06",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên bắt buộc phải học trước môn 'Nhập môn lập trình' (mã môn học COS101 - ",
+        "best_token_overlap": 0.556,
+        "class": "absent"
+      },
+      {
+        "id": "HQ07",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Thực tập tốt nghiệp' có khối lượng 5 tín chỉ bắt buộc (thực hành/thực tập),",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "HQ08",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên chọn học 3 trong số 4 môn tự chọn thay thế KLTN gồm: Phát triển ứng dụ",
+        "best_token_overlap": 0.636,
+        "class": "near"
+      },
+      {
+        "id": "HQ09",
+        "family": "HUMAN",
+        "gold_sentence": "- ELO 1: Áp dụng được kiến thức khoa học tự nhiên, toán học, xã hội và nhân văn ",
+        "best_token_overlap": 0.955,
+        "class": "near"
+      },
+      {
+        "id": "HQ10",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Toán rời rạc' có mã môn học là MAT106, khối lượng 3 tín chỉ bắt buộc (3 lý ",
+        "best_token_overlap": 0.72,
+        "class": "near"
+      },
+      {
+        "id": "HQ11",
+        "family": "HUMAN",
+        "gold_sentence": "Khối kiến thức Chuyên ngành có tổng cộng 43 tín chỉ, bao gồm 27 tín chỉ Bắt buộc",
+        "best_token_overlap": 0.9,
+        "class": "near"
+      },
+      {
+        "id": "HQ12",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Đồ án ngành CNTT' có môn học trước là môn 'Phân tích và thiết kế hệ thống t",
+        "best_token_overlap": 0.842,
+        "class": "near"
+      },
+      {
+        "id": "HQ13",
+        "family": "HUMAN",
+        "gold_sentence": "Các môn Giáo dục thể chất (4 tín chỉ) là môn học điều kiện, cấp chứng chỉ, không",
+        "best_token_overlap": 0.704,
+        "class": "near"
+      },
+      {
+        "id": "HQ14",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Cấu trúc dữ liệu và giải thuật' có mã COS201, khối lượng 3 tín chỉ bắt buộc",
+        "best_token_overlap": 0.897,
+        "class": "near"
+      },
+      {
+        "id": "HQ15",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Hệ quản trị cơ sở dữ liệu' yêu cầu môn học trước là môn 'Cơ sở dữ liệu' (mã",
+        "best_token_overlap": 0.647,
+        "class": "near"
+      },
+      {
+        "id": "HQ16",
+        "family": "HUMAN",
+        "gold_sentence": "Khối kiến thức Cơ sở ngành gồm 42 tín chỉ, trong đó Bắt buộc là 32 tín chỉ và Tự",
+        "best_token_overlap": 0.9,
+        "class": "near"
+      },
+      {
+        "id": "HQ17",
+        "family": "HUMAN",
+        "gold_sentence": "- ELO 10: Tự định hướng, thích ứng với môi trường làm việc thay đổi; tự học hỏi,",
+        "best_token_overlap": 0.75,
+        "class": "near"
+      },
+      {
+        "id": "HQ18",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Hệ điều hành' có mã COS202, khối lượng 3 tín chỉ bắt buộc (2 lý thuyết, 1 t",
+        "best_token_overlap": 0.88,
+        "class": "near"
+      },
+      {
+        "id": "HQ19",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Kiến trúc máy tính và Hợp ngữ' học ở học kỳ II, khối lượng 3 tín chỉ và khô",
+        "best_token_overlap": 0.81,
+        "class": "near"
+      },
+      {
+        "id": "HQ20",
+        "family": "HUMAN",
+        "gold_sentence": "Thời gian đào tạo thiết kế chuẩn là 4,0 năm (gồm 8 học kỳ chính).",
+        "best_token_overlap": 0.688,
+        "class": "near"
+      },
+      {
+        "id": "HQ21",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Trí tuệ nhân tạo' có mã CON303, khối lượng 3 tín chỉ bắt buộc (2 lý thuyết,",
+        "best_token_overlap": 0.704,
+        "class": "near"
+      },
+      {
+        "id": "HQ22",
+        "family": "HUMAN",
+        "gold_sentence": "Môn 'Lập trình Web' yêu cầu môn học trước là môn 'Lập trình hướng đối tượng' (mã",
+        "best_token_overlap": 0.714,
+        "class": "near"
+      },
+      {
+        "id": "HQ23",
+        "family": "HUMAN",
+        "gold_sentence": "- Từ 90 đến 100 điểm: Xuất sắc\n- Từ 80 đến dưới 90 điểm: Tốt\n- Từ 65 đến dưới 80",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "HQ24",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên bị xếp loại rèn luyện Yếu, Kém trong 2 học kỳ chính liên tiếp thì bị t",
+        "best_token_overlap": 0.879,
+        "class": "near"
+      },
+      {
+        "id": "HQ25",
+        "family": "HUMAN",
+        "gold_sentence": "Khung đánh giá gồm 5 tiêu chí chính với tổng số điểm tối đa là 100 điểm.",
+        "best_token_overlap": 0.75,
+        "class": "near"
+      },
+      {
+        "id": "HQ26",
+        "family": "HUMAN",
+        "gold_sentence": "Điểm tối đa Tiêu chí 1 là 20 điểm. Gồm đánh giá ý thức tham gia học tập, thái độ",
+        "best_token_overlap": 0.706,
+        "class": "near"
+      },
+      {
+        "id": "HQ27",
+        "family": "HUMAN",
+        "gold_sentence": "Được cộng tối đa 6 điểm rèn luyện vào Tiêu chí 1.",
+        "best_token_overlap": 0.833,
+        "class": "near"
+      },
+      {
+        "id": "HQ28",
+        "family": "HUMAN",
+        "gold_sentence": "Điểm tối đa Tiêu chí 2 là 25 điểm.",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "HQ29",
+        "family": "HUMAN",
+        "gold_sentence": "Bị trừ 10 điểm rèn luyện trong học kỳ vi phạm.",
+        "best_token_overlap": 0.909,
+        "class": "near"
+      },
+      {
+        "id": "HQ30",
+        "family": "HUMAN",
+        "gold_sentence": "Điểm tối đa Tiêu chí 3 là 20 điểm.",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "HQ31",
+        "family": "HUMAN",
+        "gold_sentence": "Điểm tối đa Tiêu chí 4 là 25 điểm.",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "HQ32",
+        "family": "HUMAN",
+        "gold_sentence": "Điểm tối đa Tiêu chí 5 là 10 điểm.",
+        "best_token_overlap": 0.875,
+        "class": "near"
+      },
+      {
+        "id": "HQ33",
+        "family": "HUMAN",
+        "gold_sentence": "Điểm rèn luyện toàn khóa = Tổng điểm rèn luyện các học kỳ / Số học kỳ. Xếp loại ",
+        "best_token_overlap": 0.765,
+        "class": "near"
+      },
+      {
+        "id": "HQ34",
+        "family": "HUMAN",
+        "gold_sentence": "ĐTBCHĐ năm học đạt từ 3.20 đến 3.59 (thang 4) và ĐRL năm học đạt loại Tốt (từ 80",
+        "best_token_overlap": 0.737,
+        "class": "near"
+      },
+      {
+        "id": "HQ35",
+        "family": "HUMAN",
+        "gold_sentence": "ĐTBCHĐ năm học đạt từ 3.60 đến 4.00 (thang 4) và ĐRL năm học đạt loại Xuất sắc (",
+        "best_token_overlap": 0.75,
+        "class": "near"
+      },
+      {
+        "id": "HQ36",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên bị xử lý kỷ luật từ hình thức Khiển trách trở lên trong năm học thì kh",
+        "best_token_overlap": 0.88,
+        "class": "near"
+      },
+      {
+        "id": "HQ37",
+        "family": "HUMAN",
+        "gold_sentence": "Phải có từ 25% sinh viên trong lớp đạt danh hiệu Sinh viên Khá trở lên và không ",
+        "best_token_overlap": 0.905,
+        "class": "near"
+      },
+      {
+        "id": "HQ38",
+        "family": "HUMAN",
+        "gold_sentence": "Phải đạt danh hiệu Lớp Tiên tiến và có từ 10% sinh viên đạt danh hiệu Sinh viên ",
+        "best_token_overlap": 0.944,
+        "class": "near"
+      },
+      {
+        "id": "HQ39",
+        "family": "HUMAN",
+        "gold_sentence": "Thưởng tiền theo quy định tài chính hiện hành của Trường (mức chi khen thưởng cấ",
+        "best_token_overlap": 0.85,
+        "class": "near"
+      },
+      {
+        "id": "HQ40",
+        "family": "HUMAN",
+        "gold_sentence": "Hiệu trưởng Trường Đại học An Giang ra quyết định tặng thưởng và trao Giấy khen.",
+        "best_token_overlap": 0.8,
+        "class": "near"
+      },
+      {
+        "id": "HQ41",
+        "family": "HUMAN",
+        "gold_sentence": "Được Hiệu trưởng tặng Giấy khen kèm theo mức tiền thưởng quy định cho giải Nhất ",
+        "best_token_overlap": 0.778,
+        "class": "near"
+      },
+      {
+        "id": "HQ42",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên được đăng ký học lại để cải thiện điểm đối với các học phần đạt điểm D",
+        "best_token_overlap": 0.731,
+        "class": "near"
+      },
+      {
+        "id": "HQ43",
+        "family": "HUMAN",
+        "gold_sentence": "Phòng Công tác Sinh viên phối hợp với các Khoa quản lý ngành chủ trì tổng hợp hồ",
+        "best_token_overlap": 0.808,
+        "class": "near"
+      },
+      {
+        "id": "HQ44",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên phải học tối thiểu 01 học kỳ tại Trường và không thuộc các trường hợp ",
+        "best_token_overlap": 0.75,
+        "class": "near"
+      },
+      {
+        "id": "HQ45",
+        "family": "HUMAN",
+        "gold_sentence": "Thời gian nghỉ học tạm thời vì lý do cá nhân được tính vào tổng thời gian tối đa",
+        "best_token_overlap": 0.737,
+        "class": "near"
+      },
+      {
+        "id": "HQ46",
+        "family": "HUMAN",
+        "gold_sentence": "Không. Sinh viên đã bị kỷ luật buộc thôi học không được phép xin nhập học lại.",
+        "best_token_overlap": 0.867,
+        "class": "near"
+      },
+      {
+        "id": "HQ47",
+        "family": "HUMAN",
+        "gold_sentence": "Cố vấn học tập tư vấn, hướng dẫn sinh viên lựa chọn môn học theo đúng tiến trình",
+        "best_token_overlap": 0.833,
+        "class": "near"
+      },
+      {
+        "id": "HQ48",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên bắt buộc phải đeo thẻ sinh viên trong suốt thời gian học tập, sinh hoạ",
+        "best_token_overlap": 0.762,
+        "class": "near"
+      },
+      {
+        "id": "HQ49",
+        "family": "HUMAN",
+        "gold_sentence": "Tùy mức độ, sinh viên bị trừ điểm, hủy kết quả thi, bị kỷ luật từ Khiển trách đế",
+        "best_token_overlap": 0.773,
+        "class": "near"
+      },
+      {
+        "id": "HQ50",
+        "family": "HUMAN",
+        "gold_sentence": "Phải đạt đủ 5 tiêu chuẩn: Đạo đức tốt, Học tập tốt, Thể lực tốt, Tình nguyện tốt",
+        "best_token_overlap": 0.941,
+        "class": "near"
+      },
+      {
+        "id": "HQ51",
+        "family": "HUMAN",
+        "gold_sentence": "ĐTBCHĐ năm học phải đạt từ 3.20/4.00 trở lên (đối với đào tạo tín chỉ) và không ",
+        "best_token_overlap": 0.75,
+        "class": "near"
+      },
+      {
+        "id": "HQ52",
+        "family": "HUMAN",
+        "gold_sentence": "Điểm rèn luyện năm học đạt từ 80 điểm trở lên (loại Tốt trở lên).",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "HQ53",
+        "family": "HUMAN",
+        "gold_sentence": "Dành cho sinh viên là Cán bộ Đoàn - Hội (Lớp trưởng, Lớp phó, Bí thư, Phó Bí thư",
+        "best_token_overlap": 0.769,
+        "class": "near"
+      },
+      {
+        "id": "HQ54",
+        "family": "HUMAN",
+        "gold_sentence": "Điểm rèn luyện năm học xét tuyển đạt từ 90 điểm trở lên (loại Xuất sắc).",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "HQ55",
+        "family": "HUMAN",
+        "gold_sentence": "Gồm: Báo cáo thành tích cá nhân (mẫu), Bảng điểm học tập có xác nhận, Phiếu điểm",
+        "best_token_overlap": 0.688,
+        "class": "near"
+      },
+      {
+        "id": "HQ56",
+        "family": "HUMAN",
+        "gold_sentence": "Thời gian thực tập tại doanh nghiệp/đơn vị là 8 tuần liên tục theo kế hoạch.",
+        "best_token_overlap": 0.647,
+        "class": "near"
+      },
+      {
+        "id": "HQ57",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên tích lũy đủ số tín chỉ quy định, ĐTBCTL đạt từ 2.50 trở lên và không đ",
+        "best_token_overlap": 0.769,
+        "class": "near"
+      },
+      {
+        "id": "HQ58",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên nộp chậm không có lý do chính đáng bị trừ điểm đánh giá hoặc nhận điểm",
+        "best_token_overlap": 0.769,
+        "class": "near"
+      },
+      {
+        "id": "HQ59",
+        "family": "HUMAN",
+        "gold_sentence": "Gồm điểm đánh giá của Giảng viên hướng dẫn và điểm đánh giá của Cán bộ hướng dẫn",
+        "best_token_overlap": 0.737,
+        "class": "near"
+      },
+      {
+        "id": "HQ60",
+        "family": "HUMAN",
+        "gold_sentence": "Hội đồng chấm Khóa luận tốt nghiệp gồm 3 đến 5 thành viên (Chủ tịch, Thư ký, Ủy ",
+        "best_token_overlap": 0.75,
+        "class": "near"
+      },
+      {
+        "id": "HQ61",
+        "family": "HUMAN",
+        "gold_sentence": "Soạn thảo trên khổ giấy A4, font Times New Roman, cỡ chữ 13-14, dãn dòng 1.5, đó",
+        "best_token_overlap": 0.577,
+        "class": "absent"
+      },
+      {
+        "id": "HQ62",
+        "family": "HUMAN",
+        "gold_sentence": "- Hộ nghèo: Miễn 100% học phí.\n- Hộ cận nghèo: Giảm 50% học phí (theo chính sách",
+        "best_token_overlap": 0.812,
+        "class": "near"
+      },
+      {
+        "id": "HQ63",
+        "family": "HUMAN",
+        "gold_sentence": "Gồm: Đơn đề nghị miễn giảm học phí (mẫu), bản sao Giấy xác nhận khuyết tật do UB",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "HQ64",
+        "family": "HUMAN",
+        "gold_sentence": "Theo mốc thời gian cụ thể trong thông báo đầu mỗi học kỳ của Phòng Công tác Sinh",
+        "best_token_overlap": 0.773,
+        "class": "near"
+      },
+      {
+        "id": "HQ65",
+        "family": "HUMAN",
+        "gold_sentence": "Theo Nghị định 81/2021/NĐ-CP của Chính phủ và quy định hướng dẫn chi tiết của Tr",
+        "best_token_overlap": 0.889,
+        "class": "near"
+      },
+      {
+        "id": "HQ66",
+        "family": "HUMAN",
+        "gold_sentence": "Không. Trong thời gian tạm ngưng học tập, sinh viên không được hưởng chính sách ",
+        "best_token_overlap": 0.824,
+        "class": "near"
+      },
+      {
+        "id": "HQ67",
+        "family": "HUMAN",
+        "gold_sentence": "Hồ sơ nộp trễ hạn không được giải quyết cho học kỳ đó mà xem xét cho học kỳ kế t",
+        "best_token_overlap": 0.708,
+        "class": "near"
+      },
+      {
+        "id": "HQ68",
+        "family": "HUMAN",
+        "gold_sentence": "Học phí học kỳ = Tổng số tín chỉ đăng ký x Đơn giá học phí/tín chỉ quy định cho ",
+        "best_token_overlap": 0.765,
+        "class": "near"
+      },
+      {
+        "id": "HQ69",
+        "family": "HUMAN",
+        "gold_sentence": "Tính theo đơn giá tín chỉ tương ứng của năm học hiện hành triển khai môn học đó.",
+        "best_token_overlap": 0.765,
+        "class": "near"
+      },
+      {
+        "id": "HQ70",
+        "family": "HUMAN",
+        "gold_sentence": "Bị nợ học phí, không có tên trong danh sách thi kết thúc học phần và bị khóa tài",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "HQ71",
+        "family": "HUMAN",
+        "gold_sentence": "Thời gian gia hạn tối đa không quá 04 tuần kể từ ngày hết hạn nộp học phí theo t",
+        "best_token_overlap": 0.7,
+        "class": "near"
+      },
+      {
+        "id": "HQ72",
+        "family": "HUMAN",
+        "gold_sentence": "Mỗi tín chỉ thực hành/thực nghiệm có đơn giá cao hơn hoặc bằng tín chỉ lý thuyết",
+        "best_token_overlap": 0.708,
+        "class": "near"
+      },
+      {
+        "id": "HQ73",
+        "family": "HUMAN",
+        "gold_sentence": "Thanh toán chuyển khoản qua cổng thanh toán trực tuyến của Trường hoặc qua ứng d",
+        "best_token_overlap": 0.765,
+        "class": "near"
+      },
+      {
+        "id": "HQ74",
+        "family": "HUMAN",
+        "gold_sentence": "Bảo vệ, vận dụng phát triển chủ nghĩa Mác-Lênin, tư tưởng Hồ Chí Minh; đấu tranh",
+        "best_token_overlap": 0.967,
+        "class": "near"
+      },
+      {
+        "id": "HQ75",
+        "family": "HUMAN",
+        "gold_sentence": "Gồm các loại hình: Bài viết Tạp chí (in hoặc điện tử), Bài viết Báo (in hoặc điệ",
+        "best_token_overlap": 1.0,
+        "class": "near"
+      },
+      {
+        "id": "HQ76",
+        "family": "HUMAN",
+        "gold_sentence": "Toàn thể cán bộ, giảng viên, viên chức, người lao động và sinh viên, học viên đa",
+        "best_token_overlap": 0.778,
+        "class": "near"
+      },
+      {
+        "id": "HQ77",
+        "family": "HUMAN",
+        "gold_sentence": "Độ dài từ 2.000 đến 4.000 từ (không tính tài liệu tham khảo).",
+        "best_token_overlap": 0.846,
+        "class": "near"
+      },
+      {
+        "id": "HQ78",
+        "family": "HUMAN",
+        "gold_sentence": "Theo mốc thời gian ấn định trong Kế hoạch tổ chức cuộc thi cấp Trường (thời hạn ",
+        "best_token_overlap": 0.682,
+        "class": "near"
+      },
+      {
+        "id": "HQ79",
+        "family": "HUMAN",
+        "gold_sentence": "Gồm các giải Nhất, Nhì, Ba, Khuyến khích cho từng thể loại bài thi và giải tập t",
+        "best_token_overlap": 0.652,
+        "class": "near"
+      },
+      {
+        "id": "HQ80",
+        "family": "HUMAN",
+        "gold_sentence": "Tác phẩm dự thi phải là tác phẩm mới, chưa được công bố trên các phương tiện thô",
+        "best_token_overlap": 0.929,
+        "class": "near"
+      },
+      {
+        "id": "HQ81",
+        "family": "HUMAN",
+        "gold_sentence": "Tuyên truyền, vận động đông đảo đoàn viên, hội viên, sinh viên tích cực hưởng ứn",
+        "best_token_overlap": 0.8,
+        "class": "near"
+      },
+      {
+        "id": "HQ82",
+        "family": "HUMAN",
+        "gold_sentence": "Đánh giá tính chủ đề/chính trị, tính khoa học, tính chiến đấu, tính sáng tạo và ",
+        "best_token_overlap": 0.778,
+        "class": "near"
+      },
+      {
+        "id": "HQ83",
+        "family": "HUMAN",
+        "gold_sentence": "Được Ban Tổ chức lựa chọn gửi tham dự Cuộc thi Chính luận cấp Đại học Quốc gia T",
+        "best_token_overlap": 0.667,
+        "class": "near"
+      },
+      {
+        "id": "HQ84",
+        "family": "HUMAN",
+        "gold_sentence": "Mỗi tác giả/nhóm tác giả được gửi tối đa 02 tác phẩm dự thi khác thể loại.",
+        "best_token_overlap": 0.933,
+        "class": "near"
+      },
+      {
+        "id": "HQ85",
+        "family": "HUMAN",
+        "gold_sentence": "Phòng Tuyên giáo - Dân vận / Phòng Công tác Sinh viên (hoặc Ban Tuyên giáo Đảng ",
+        "best_token_overlap": 0.857,
+        "class": "near"
+      },
+      {
+        "id": "HQ86",
+        "family": "HUMAN",
+        "gold_sentence": "Triển khai vào học kỳ VII theo kế hoạch năm học của Khoa CNTT.",
+        "best_token_overlap": 0.692,
+        "class": "near"
+      },
+      {
+        "id": "HQ87",
+        "family": "HUMAN",
+        "gold_sentence": "Nộp Sổ nhật ký thực tập, Phiếu đánh giá của doanh nghiệp và Báo cáo tổng kết thự",
+        "best_token_overlap": 0.737,
+        "class": "near"
+      },
+      {
+        "id": "HQ88",
+        "family": "HUMAN",
+        "gold_sentence": "Sinh viên phải nộp Đơn xin tự liên hệ thực tập kèm Giấy chấp thuận tiếp nhận của",
+        "best_token_overlap": 0.583,
+        "class": "absent"
+      },
+      {
+        "id": "HQ89",
+        "family": "HUMAN",
+        "gold_sentence": "ĐTBCTL toàn khóa đạt từ 3.60/4.00 trở lên và điểm rèn luyện toàn khóa đạt loại X",
+        "best_token_overlap": 0.833,
+        "class": "near"
+      },
+      {
+        "id": "HQ90",
+        "family": "HUMAN",
+        "gold_sentence": "Do Đại học Quốc gia TP.HCM cấp và chi trả từ Quỹ khen thưởng ĐHQG-HCM.",
+        "best_token_overlap": 0.938,
+        "class": "near"
+      },
+      {
+        "id": "HQ91",
+        "family": "HUMAN",
+        "gold_sentence": "Giờ đóng cửa Ký túc xá ban đêm là 22:00. Sinh viên ra/vào sau giờ quy định phải ",
+        "best_token_overlap": 0.679,
+        "class": "near"
+      },
+      {
+        "id": "HQ92",
+        "family": "HUMAN",
+        "gold_sentence": "Bị tịch thu thiết bị, xử lý vi phạm nội quy KTX và trừ điểm rèn luyện trong học ",
+        "best_token_overlap": 0.684,
+        "class": "near"
+      },
+      {
+        "id": "HQ93",
+        "family": "HUMAN",
+        "gold_sentence": "Gồm: Giấy xác nhận sinh viên của Trường, CCCD, Giấy đề nghị vay vốn và minh chứn",
+        "best_token_overlap": 0.714,
+        "class": "near"
+      },
+      {
+        "id": "HQ94",
+        "family": "HUMAN",
+        "gold_sentence": "Lãi suất áp dụng theo thỏa thuận ưu đãi dành cho sinh viên; nợ gốc bắt đầu trả s",
+        "best_token_overlap": 0.75,
+        "class": "near"
+      },
+      {
+        "id": "HQ95",
+        "family": "HUMAN",
+        "gold_sentence": "Cần có xác nhận và đóng dấu đỏ của Ủy ban nhân dân xã/phường/thị trấn nơi sinh v",
+        "best_token_overlap": 0.739,
+        "class": "near"
+      },
+      {
+        "id": "HQ99",
+        "family": "HUMAN",
+        "gold_sentence": "Tại Mục II (Đối với sinh viên khóa mới DH27), đề nghị Cố vấn học tập đôn đốc lớp",
+        "best_token_overlap": 0.963,
+        "class": "near"
+      },
+      {
+        "id": "HQ100",
+        "family": "HUMAN",
+        "gold_sentence": "Theo Mục III, sinh viên phải cài đặt ứng dụng VssID-BHXH số và tích hợp thẻ BHYT",
+        "best_token_overlap": 0.983,
+        "class": "near"
+      }
+    ],
+    "paired": {
+      "old_missing_rate": 0.1217,
+      "old_missing_n": 97,
+      "regressed_by_rebuild_n": 292,
+      "regressed_rate_of_checkable": 0.3664,
+      "regressed_ids": [
+        "N756350275574",
+        "N245049948094349",
+        "N30699320639996",
+        "N235983475041132",
+        "N220576577836355",
+        "N140089310187598",
+        "N88764683610227",
+        "N277130098950786",
+        "N28977478083074",
+        "N280337701016470",
+        "N72681999194812",
+        "N7586938380832",
+        "N52859559320835",
+        "N258863825901835",
+        "N1985685272778",
+        "N223229978542077",
+        "N110205502928361",
+        "N23756721748812",
+        "N110129844915891",
+        "N160302746487501",
+        "N143662722487347",
+        "N121570199836064",
+        "N39118644401422",
+        "N118865460700722",
+        "N32286231372080",
+        "N23208489130806",
+        "N45769564669798",
+        "N71911179964895",
+        "N30788122789136",
+        "N150829289124940",
+        "N141022220541295",
+        "N122999315496359",
+        "N258308319884130",
+        "N228056393690510",
+        "N57312825590941",
+        "N16747926978751",
+        "N181641656816832",
+        "N180172783248395",
+        "N263192367671470",
+        "N114107407574579",
+        "N201276857986690",
+        "N153558676427472",
+        "N34076642453631",
+        "N153552888961030",
+        "N158294650690097",
+        "N251284973492139",
+        "N10941358637239",
+        "N213363882950657",
+        "N178677683132557",
+        "N182626167637764",
+        "N182626167637764#2",
+        "N109115715876139",
+        "N194013232600442",
+        "N244127642424168",
+        "N89276477201091",
+        "N259544342214804",
+        "N37889511341839",
+        "N164717982434349",
+        "N278861476914894",
+        "N256452387567079",
+        "N116917021986859",
+        "N157076586018706",
+        "N156011813140130",
+        "N156011813140130#2",
+        "N49416901773191",
+        "N141690845650560",
+        "N135865507843783",
+        "N263337507686393",
+        "N257353677821214",
+        "N5831596481650",
+        "N259964421820305",
+        "N169166823057659",
+        "N13560832540059",
+        "N237420607576716",
+        "N121989377006900",
+        "N40019243604570",
+        "N187499212897744",
+        "N221869831866072",
+        "N160888478427435",
+        "N208003242098454",
+        "N65569467995870",
+        "N245202928509085",
+        "N269981552137906",
+        "N237941013237952",
+        "N148113813945738",
+        "N45880555313457",
+        "N93156282709812",
+        "N193598839567568",
+        "N236074514590174",
+        "N279657848193549",
+        "N67006183887694",
+        "N2708922838042",
+        "N32362936840085",
+        "N192649520484060",
+        "O10364377056039",
+        "O68233203974462",
+        "O171117388605892",
+        "O179439870134712",
+        "O1977356517105",
+        "O45047821833813",
+        "O151584480372662",
+        "O172942237695496",
+        "P143026355251188",
+        "O61444435048915",
+        "O76696386198132",
+        "O106830364358307",
+        "O75491186468985",
+        "P12229821829229",
+        "O116339851449379",
+        "O53890629737271",
+        "P223055787265717",
+        "O164467657005480",
+        "O75259981414362",
+        "P130454697636340",
+        "O144152802754301",
+        "O219851008429342",
+        "O25868128858056",
+        "O216339431320425",
+        "O263386328293593",
+        "O40981686903784",
+        "O170968002582340",
+        "O112922606788277",
+        "O227140514479225",
+        "O197145853144407",
+        "O103535137665293",
+        "O115656534844418",
+        "P74867920314535",
+        "O147156104306717",
+        "O158220585753693",
+        "O84636958048070",
+        "O155283468795673",
+        "O123508198751185",
+        "O105878724802157",
+        "O91364623210229",
+        "O83377574823489",
+        "O233094575900738",
+        "O253349004320842",
+        "O206921069414913",
+        "O128625877407949",
+        "O27622775218386",
+        "O41694794683362",
+        "O81949013801653",
+        "O2119650161549",
+        "O162051881516584",
+        "O53881474598259",
+        "O195921406935571",
+        "O147175335380561",
+        "O101995178075997",
+        "O94257696791846",
+        "O250897258330861",
+        "O260207225642691",
+        "O229536072877995",
+        "O225437578546291",
+        "O277363857651909",
+        "O128706202662534",
+        "O273233375430123",
+        "O152265474514363",
+        "O175493257586658",
+        "O206779045091790",
+        "O231059125133532",
+        "O246225404273083",
+        "O88378819487018",
+        "O226845870277832",
+        "O248212920247094",
+        "O138975860503727",
+        "O204372844127356",
+        "O274777639028337",
+        "O23160550446307",
+        "P246967067930891",
+        "O256695554294691",
+        "O235423294514018",
+        "O149745274291420",
+        "O110351889344961",
+        "O253758075040476",
+        "O9237514687994",
+        "P69949835104363",
+        "O60013889095855",
+        "P77798650152135",
+        "O61918926166095",
+        "P240108212168426",
+        "O269614806970236",
+        "O227735467128149",
+        "O10235702435549",
+        "O237575730998260",
+        "O226533496099535",
+        "O116387805961189",
+        "O30172672937963",
+        "O198612357100393",
+        "O225176582206324",
+        "O36137182550445",
+        "O39959103749761",
+        "O272154340865166",
+        "O9429480777381",
+        "O102464711059095",
+        "O30340357603330",
+        "O228704020340121",
+        "O216054540969339",
+        "O54552925416350",
+        "O140158698164818",
+        "O274474689195259",
+        "O136589372385145",
+        "O114508989116049",
+        "O190280838831485",
+        "O120888997145836",
+        "O266596280889120",
+        "O70929883525827",
+        "O191091639330063",
+        "O147585762839664",
+        "O50861818320420",
+        "O32147685053628",
+        "O82788970728167",
+        "O191314217054133",
+        "O206486579734043",
+        "O152923660886474",
+        "O126962814314930",
+        "O198108430117848",
+        "O34690428167817",
+        "O139551649589173",
+        "O10172700165077",
+        "O242918521887386",
+        "O78685649173873",
+        "O1440649518184",
+        "O128526956262564",
+        "O248020197945723",
+        "O273890223542925",
+        "O89690948507010",
+        "O65039467221602",
+        "O274173929883388",
+        "O6485670760357",
+        "O41643576239757",
+        "O162438923367627",
+        "O195974862896680",
+        "O149617447346637",
+        "O167068396196281",
+        "O149738033006978",
+        "O256341394116235",
+        "O176417486352910",
+        "P124557295996989",
+        "O154476170998515",
+        "O235710818844580",
+        "O161699339757119",
+        "O174396896881646",
+        "P121850313458897",
+        "O135629422984729",
+        "O192603998613258",
+        "O208859425530595",
+        "O263405977512240",
+        "O275406454107529",
+        "O32296082393238",
+        "O106002750552266",
+        "O121131343796924",
+        "O48450127192075",
+        "O197562482008393",
+        "O5950251612098",
+        "O58478332269913",
+        "O133168744265013",
+        "O219548918530140",
+        "O120013109966068",
+        "O168172403316254",
+        "O66635069367795",
+        "O103189525480643",
+        "O124183556332777",
+        "O146794384575121",
+        "O81142378331772",
+        "O7358251256014",
+        "O42798419881926",
+        "O267004249972590",
+        "O168661942720122",
+        "O72475125815694",
+        "O17842968088874",
+        "O272454068717979",
+        "O273198125080672",
+        "O278609983999214",
+        "O266255178265273",
+        "O93643728236060",
+        "O67035465532544",
+        "O1530003413487",
+        "O190809916580954",
+        "O197915915303265",
+        "O220543832072695",
+        "O98139701992717",
+        "O273357807554180",
+        "O137831332378968",
+        "O223025003051734",
+        "O154290667408875",
+        "O275906698233777",
+        "O155070152657775",
+        "O13972680723089",
+        "O63675526800468",
+        "O172750923353984",
+        "O211125759564096",
+        "O65274241575154"
+      ],
+      "reading": "old_missing = mất neo VỐN ĐÃ có (gold_sentence không khớp cả index nó sinh ra); regressed = mất thêm DO rebuild corpus"
+    }
+  },
+  "referee_fingerprint": "2911c69f740d",
+  "index_signature_old": {
+    "n_chunks": 361,
+    "signature": "8031beea81da"
+  },
+  "index_signature_new": {
+    "n_chunks": 342,
+    "signature": "6aa8c0fd9162"
+  },
+  "index_signature_changed": true,
+  "rounds_to_rescore": [
+    "r0",
+    "r0_pilot",
+    "r1",
+    "r10",
+    "r11",
+    "r12",
+    "r13",
+    "r14_repro_off",
+    "r15_repro_on",
+    "r2",
+    "r20",
+    "r21_A",
+    "r21_B",
+    "r21b_A",
+    "r21b_B",
+    "r21c_A",
+    "r21c_B",
+    "r23_A",
+    "r23_B",
+    "r3",
+    "r4",
+    "r5",
+    "r5b",
+    "r6",
+    "r7",
+    "r8",
+    "r9"
+  ]
+}
