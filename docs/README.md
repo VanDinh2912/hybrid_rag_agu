@@ -9,6 +9,7 @@ lịch sử P5).
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Bản đồ tầng, module, bất biến vận hành | Trước khi sửa mã hoặc mở round mới |
 | [EXPERIMENTS.md](EXPERIMENTS.md) | **Hai bảng** thí nghiệm (A khoa học / B quy trình): giả thuyết · kết quả · n · CI 95% · tệp nguồn | Cần số đo và nguồn để trích dẫn |
 | [REPRODUCE.md](REPRODUCE.md) | Lệnh tái lập: index, đánh giá, round, máy kiểm, số neo | Muốn chạy lại từ máy sạch |
+| [REPO_LAYOUT.md](REPO_LAYOUT.md) | Ranh giới `src/` · `scripts/` · `tools/` · `ui/`; vòng đời từng thư mục artifact (nguồn, xoá được?, tái tạo, runtime hay báo cáo); trạng thái §9/§10 của REVIEW | Trước khi thêm tệp mới hoặc dọn/xoá artifact |
 | [DECISION_LOG.md](DECISION_LOG.md) | Sổ quyết định 6 cột (D-01…D-42); mỗi nguồn phải tồn tại trên đĩa | Cần biết vì sao một lever bị bác/giữ |
 | [CLEANUP_ANCHORS.md](CLEANUP_ANCHORS.md) | Neo dọn repo 26-10: fingerprint, số test, round neo — **số đóng băng** | Kiểm "dọn cấu trúc không đổi số đo" |
 | [CLEANUP_REPORT.md](CLEANUP_REPORT.md) | Báo cáo KẾT PHIẾN đợt dọn B0–B7: việc đã làm, việc cắt, PA chờ duyệt, bảng neo trước/sau | Nghiệm thu đợt dọn cấu trúc |

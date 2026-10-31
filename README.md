@@ -282,7 +282,9 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-Khai báo API key và cấu hình trong file `.env` (toàn bộ key đều có trong `.env.example` kèm chú thích):
+Khai báo API key và cấu hình trong file `.env` (toàn bộ key đều có trong `.env.example` kèm chú thích).
+Muốn dùng theo chế độ (vận hành / offline / đánh giá / thí nghiệm) thì chép thêm profile tương ứng
+trong `config/` — xem `config/README.md`; profile vận hành không bật cờ thí nghiệm nào.
 
 ```env
 # Bắt buộc

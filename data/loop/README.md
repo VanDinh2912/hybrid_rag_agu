@@ -5,6 +5,20 @@ không đủ căn cứ thì nói "không đủ thông tin" — tuyệt đối kh
 tự nó làm AI giỏi hơn; nó chỉ ra *chính xác* chỗ nào AI sai và chỗ nào thuộc tầng nào
 để sửa, rồi bắt mọi sửa đổi phải vượt qua một cổng đo được.
 
+## Vòng đời artifact trong thư mục này (REVIEW §10)
+
+Bảng đầy đủ cho mọi vùng artifact nằm ở `docs/REPO_LAYOUT.md` §2; ở đây chỉ tóm tắt
+phần thuộc `data/loop/`:
+
+| Đường dẫn | Nguồn tạo | Xoá được? | Tái tạo | Runtime hay báo cáo |
+|---|---|---|---|---|
+| `testset_v1.jsonl` (+ manifest) | `tools/loop/testset.py` | ❌ Không — là **tập đo cố định**, bất biến #3 (đổi tập đo = mọi round cũ mất nghĩa) | Sinh lại được về kỹ thuật nhưng sẽ là tập KHÁC ⇒ không làm | Chỉ đo (round đọc) |
+| `rounds/r*/` | `tools/loop/run_round.py` | ⚠️ Đo lại được nhưng tốn GPU và phải đăng ký trước ⇒ coi như **không xoá** (bằng chứng đã công bố) | `run_round.py --phase retrieval` / `--phase full` sau khi đăng ký round trong tệp này | Chỉ báo cáo |
+| `rounds_v2/` | `tools/diag/rescore_rounds_v2.py` (trọng tài v2 `2911c69f740d`) | ⚠️ Như trên | Chạy lại máy chấm lại trên `rounds/` gốc | Chỉ báo cáo |
+| `diag/` | từng `tools/diag/*` đo một lần | ✅ Đo lại được — trừ tệp đã commit làm bằng chứng; một số còn PII chưa che (PA-31) nên cố ý không commit | Chạy lại đúng công cụ đã sinh tệp | Chỉ báo cáo |
+| `noise_floor.json` | `tools/loop/noise_floor.py` | ❌ Không — là **ngưỡng đăng ký trước** | Không đo lại sau khi đã dùng để phán quyết | Chỉ đo |
+| `README.md` (tệp này) | người viết, **trước** mỗi round | ❌ Không | — | Tài liệu sống |
+
 ## Sơ đồ một vòng
 
 ```
