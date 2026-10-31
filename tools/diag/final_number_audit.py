@@ -224,7 +224,9 @@ ROWS: list[tuple[str, str, str, str]] = [
     # --- T5
     ("T5", "33 + 42 = 75 test", "collect-only 2 file",
      lambda: n_tests("test_t5_reranker_contract.py", "test_t5_contextual_header.py")),
-    ("T5", "46 test cờ RERANKER_FALLBACK", "collect-only", lambda: n_test("test_reranker_flag.py")),
+    # PA-41: kỳ vọng cũ "46 test" (tới 25-10) đã đổi thành 51 vì B3 thêm test khoá
+    # `query_convention` của PA-25 vào đúng file này — xem D-41, D-42.
+    ("T5", "51 test cờ RERANKER_FALLBACK", "collect-only", lambda: n_test("test_reranker_flag.py")),
     ("T5", "13/13 đột biến bị bắt", "`tmp/mutation_check_t5.log`", lambda: mutation_total("tmp/mutation_check_t5.log")),
     ("T5", "gold = 0,7400 và FAIL_RETRIEVAL 182", "gate.metrics trên round đã đóng **r11**", lambda: gold_rel("r11")),
     ("T5", "delta −0,0714 CI [−0,1014; −0,0414] p=3,9e−06", "`reranker_paired_r11_r12.json`",
@@ -318,7 +320,9 @@ ROWS: list[tuple[str, str, str, str]] = [
      lambda: n_tests("test_run_chain.py", "test_cache_policy.py", "test_t7_chain_env_manifest.py",
                      "test_t7_cache_reuse_e2e.py", "test_t7_tmp_cleanup.py", "test_t7_docs_consistency.py")),
     # --- trọng tài / toàn repo
-    ("Chung", "chữ ký trọng tài `9f1179ccab74`", "`verify.referee_fingerprint()`",
+    # PA-41: kỳ vọng cũ "`9f1179ccab74`" (tới 25-10) đã đổi thành v2 `2911c69f740d` vì B2 áp
+    # PA-2 + PA-20 — xem D-41, D-42.
+    ("Chung", "chữ ký trọng tài `2911c69f740d`", "`verify.referee_fingerprint()`",
      lambda: __import__("verify").referee_fingerprint()),
     ("Chung", "SHA gate.py `bf4bda89d8a360abbba25742`", "sha256 tools/loop/gate.py",
      lambda: sha_prefix(ROOT / "tools/loop/gate.py", 24)),
