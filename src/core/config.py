@@ -75,7 +75,8 @@ TRACKED_ENV: tuple[str, ...] = (
     "OCR_DPI",
     "OCR_MIN_CHARS_PER_PAGE",
     "OCR_CACHE_DIR",
-    # vector DB / trọng số RRF
+    # vector DB / trọng số RRF (riêng CHROMA_PERSIST_DIR nay do src/core/paths.py đọc;
+    # giữ tên trong ảnh chụp để không mất dấu vết biến môi trường của tiến trình)
     "CHROMA_PERSIST_DIR",
     "BM25_WEIGHT",
     "CHROMA_WEIGHT",

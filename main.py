@@ -102,8 +102,8 @@ def build_pipeline(top_k: int) -> tuple[HybridRAGPipeline, int]:
 
     # Bước 1: nối ChromaDB đã persist. bge-m3 được nạp chỉ để nhúng CÂU HỎI,
     # corpus không bị đọc hay index lại.
-    print(f"[1/3] Kết nối ChromaDB tại '{os.getenv('CHROMA_PERSIST_DIR', './chroma_db')}' (không index lại)...")
     db_manager = VectorStoreManager()
+    print(f"[1/3] Kết nối ChromaDB tại '{db_manager.persist_directory}' (không index lại)...")
     vector_db = db_manager.load_vector_store()
     try:
         indexed = vector_db._collection.count()

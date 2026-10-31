@@ -186,7 +186,7 @@ Chương 03. **Quy tắc:** so khớp tiếng Việt phải fold **cả hai phí
 | 61 | `_get_ocr_engine` | `()` | Singleton RapidOCR; báo lỗi cài đặt. |
 | 73 | `_ocr_page_text` | `(engine, image)` | OCR một trang → dòng. |
 | 83 | `class DocumentLoader` | — | Loader đa định dạng + OCR theo trang + cache. |
-| 96 | └ `__init__` | `(data_dir='./data/corpus', default_tier='Khác', enable_ocr=None, ocr_dpi=None, min_chars_per_page=None, ocr_cache_dir=None)` | Cấu hình. |
+| 96 | └ `__init__` | `(data_dir=str(CORPUS_DIR), default_tier='Khác', enable_ocr=None, ocr_dpi=None, min_chars_per_page=None, ocr_cache_dir=None)` | Cấu hình; `CORPUS_DIR` neo theo gốc dự án. |
 | 115 | └ `_tier_of` | `(path)` | Suy tầng từ thư mục cấp 1. |
 | 119 | └ `_skip` | `(path, reason)` | Ghi nhận file bỏ qua. |
 | 125 | └ `_cache_file` | `(path)` | Tên cache gắn nội dung + tham số OCR. |

@@ -21,6 +21,7 @@ from docx import Document as DocxDocument
 from pypdf import PdfReader
 
 from src.core.config import settings
+from src.core.paths import CORPUS_DIR, OCR_CACHE_DIR
 
 # Trang ít ký tự hơn ngưỡng này bị coi là trang scan và đưa sang OCR: văn bản hành
 # chính một trang thường > 1.000 ký tự, trang scan trả về 0, nên ngưỡng thấp vẫn an
@@ -29,7 +30,8 @@ DEFAULT_MIN_CHARS_PER_PAGE = 50
 # 200 dpi đo trên corpus thật cho chất lượng ngang 300 dpi (model OCR là nút thắt,
 # không phải độ phân giải) nhưng nhanh hơn ~15%.
 DEFAULT_OCR_DPI = 200
-DEFAULT_CACHE_DIR = "./.cache/ocr/rapidocr"
+# Neo theo gốc dự án (REVIEW §4); biến `OCR_CACHE_DIR` vẫn override như trước.
+DEFAULT_CACHE_DIR = str(OCR_CACHE_DIR)
 OCR_INSTALL_HINT = "pip install pypdfium2 rapidocr-onnxruntime Pillow"
 
 # Nạp model ONNX một lần cho cả tiến trình: dựng engine mất ~1s và 13 file scan
@@ -95,7 +97,7 @@ class DocumentLoader:
     cáo tổng kết thay vì thất thoát dữ liệu trong im lặng.
     """
 
-    def __init__(self, data_dir: str = "./data/corpus", default_tier: str = "Khác",
+    def __init__(self, data_dir: str = str(CORPUS_DIR), default_tier: str = "Khác",
                  enable_ocr: bool | None = None, ocr_dpi: int | None = None,
                  min_chars_per_page: int | None = None, ocr_cache_dir: str | None = None):
         self.data_dir = data_dir

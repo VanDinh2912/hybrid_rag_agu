@@ -64,8 +64,10 @@ Phải in `None` (regime chuẩn). Nếu in token lạ, `.env` máy đó đang b
 PYTHONIOENCODING=utf-8 venv/Scripts/python.exe ingest.py
 ```
 
-Cảnh báo (D-29): `ingest.py` **xoá collection** trong `CHROMA_PERSIST_DIR` (mặc định `./chroma_db`)
-trước khi index. Muốn giữ index đang chạy, đặt `CHROMA_PERSIST_DIR` sang thư mục mới trước khi chạy.
+Cảnh báo (D-29): `ingest.py` **xoá collection** trong `CHROMA_PERSIST_DIR` (mặc định
+`<gốc dự án>/chroma_db`; mẫu `.env` vẫn ghi `./chroma_db`) trước khi index. Đường dẫn tương đối
+được hiểu theo gốc dự án (`src/core/paths.py`, REVIEW §4), không theo thư mục đang đứng. Muốn giữ
+index đang chạy, đặt `CHROMA_PERSIST_DIR` sang thư mục mới trước khi chạy.
 Index sản xuất hiện có 361 chunk (gốc repo, `./chroma_db`), dựng từ **26 tệp nguồn**;
 `indexes/experimental/chroma_db_vie/` (342 chunk — đường dẫn cũ `chroma_db_vie/`, đổi 28-10)
 là index re-OCR **chưa kích hoạt** (PA-17).

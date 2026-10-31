@@ -86,13 +86,15 @@ from src.generator import (
 )
 from src.generation.local_slm import LocalSLM
 from src.core.config import DEFAULT_TOP_K
+from src.core.paths import EVALUATION_DIR, OUTPUTS_DIR
 from src.core.pipeline import HybridRAGPipeline
 from src.text_utils import fold
 from src.retrieval.vector_db import VectorStoreManager
 
-BENCHMARK_PATH = Path("data/evaluation/benchmark_100_questions_v2.json")
-RESULTS_PATH = Path("outputs/evaluation_results.json")
-SUMMARY_PATH = Path("outputs/evaluation_summary.md")
+# Neo theo gốc dự án (REVIEW §4) — không đổi tên hành vi của runner đo.
+BENCHMARK_PATH = EVALUATION_DIR / "benchmark_100_questions_v2.json"
+RESULTS_PATH = OUTPUTS_DIR / "evaluation_results.json"
+SUMMARY_PATH = OUTPUTS_DIR / "evaluation_summary.md"
 # Luôn lấy tối thiểu 6 chunk để tính đồng thời Hit@3, Hit@5 và Hit@6 từ MỘT lượt truy xuất.
 # Kết hợp với oversampling ×2 trong pipeline, evaluation_k=6 → ChromaDB thực trả 12 chunk.
 MIN_TOP_K = 6

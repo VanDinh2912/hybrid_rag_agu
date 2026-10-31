@@ -26,11 +26,13 @@ from ingest import run_ingestion
 from src.generator import GeminiGenerator
 from src.generation.local_slm import LocalSLM
 from src.core.config import DEFAULT_TOP_K
+from src.core.paths import CORPUS_DIR, LOGS_DIR
 from src.core.pipeline import HybridRAGPipeline, RetrieverRebuildError
 from src.retrieval.vector_db import VectorStoreManager
 
-NOTES_PATH = os.path.join("data", "corpus", "ghi_chu_hoc_them.txt")
-LOG_PATH = os.path.join("logs", "learning", "learning_log.csv")
+# Neo theo gốc dự án (REVIEW §4) — script chạy được từ bất kỳ CWD nào.
+NOTES_PATH = str(CORPUS_DIR / "ghi_chu_hoc_them.txt")
+LOG_PATH = str(LOGS_DIR / "learning" / "learning_log.csv")
 
 
 def read_correction() -> str:

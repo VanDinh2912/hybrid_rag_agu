@@ -7,6 +7,7 @@ from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 
 from src.core.config import settings
+from src.core.paths import CHROMA_DIR
 from src.text_utils import fold
 
 try:
@@ -60,8 +61,9 @@ class VectorStoreManager:
             model_kwargs={'device': 'cpu'}, # Đổi thành 'cuda' nếu máy hỗ trợ GPU tốt
             encode_kwargs={'normalize_embeddings': True}
         )
-        self.persist_directory = persist_directory or settings().text(
-            "CHROMA_PERSIST_DIR", "./chroma_db")
+        # `paths.CHROMA_DIR` đọc `CHROMA_PERSIST_DIR` và hiểu đường dẫn tương đối theo
+        # gốc dự án (REVIEW §4) — không còn phụ thuộc CWD.
+        self.persist_directory = persist_directory or str(CHROMA_DIR)
 
     def create_vector_store(self, chunks: list[dict], collection_name="agu_regulations"):
         """Nạp chunk (kết quả của DocumentChunker.chunk_document) vào ChromaDB.

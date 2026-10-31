@@ -62,16 +62,17 @@ from src.assessment.evaluation import (
 from src.generator import GeminiGenerator, QwenGenerator
 from src.indexing.loader import DocumentLoader
 from src.generation.local_slm import LocalSLM
+from src.core import paths
 from src.core.pipeline import HybridRAGPipeline
 from src.text_utils import fold
 from src.retrieval.vector_db import VectorStoreManager
 
 # --------------------------------------------------------------------------- hằng số
-
-BENCHMARK_PATH = Path("data/evaluation/benchmark_50_questions.json")
-LOGS_DIR = Path("logs")
+# Neo theo gốc dự án (REVIEW §4) — Streamlit có thể chạy với CWD khác root.
+BENCHMARK_PATH = paths.EVALUATION_DIR / "benchmark_50_questions.json"
+LOGS_DIR = paths.LOGS_DIR
 LOGS_BENCHMARK_DIR = LOGS_DIR / "benchmark"
-LEGACY_BENCHMARK_DIR = Path("benchmark_logs")
+LEGACY_BENCHMARK_DIR = paths.PROJECT_ROOT / "benchmark_logs"
 COLLECTION_PREFIX = "bench"  # trùng COLLECTION_PREFIX của benchmark_chunking.py
 
 GENERATOR_QWEN = "Qwen local (offline, không tốn quota)"
@@ -109,7 +110,7 @@ def get_tokenizer() -> Any:
 @st.cache_resource(show_spinner="Đang nạp corpus từ data/corpus (OCR đã cache)...")
 def get_corpus() -> tuple[dict[str, Any], ...]:
     """Nạp corpus MỘT lần duy nhất: list[{title, content, tier}] từ DocumentLoader."""
-    loader = DocumentLoader(data_dir="./data/corpus")
+    loader = DocumentLoader(data_dir=str(paths.CORPUS_DIR))
     documents = loader.load_documents()
     return tuple(documents)
 

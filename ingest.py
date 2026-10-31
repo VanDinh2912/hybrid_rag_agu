@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv() # Tự động nạp file .env (CHROMA_PERSIST_DIR, ...)
 
+from src.core.paths import CHROMA_DIR, CORPUS_DIR
 from src.indexing.chunking import DocumentChunker, has_article_structure
 from src.indexing.loader import DocumentLoader
 from src.retrieval.vector_db import VectorStoreManager
@@ -19,7 +20,8 @@ def run_ingestion(db_manager: VectorStoreManager | None = None, reset: bool = Tr
     xóa an toàn ngay trong create_vector_store — tránh rmtree vấp khóa file khi
     client ChromaDB trong learn.py còn mở.
     """
-    persist_dir = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
+    # Neo theo gốc dự án (REVIEW §4): cùng một thư mục dù chạy từ đâu.
+    persist_dir = str(CHROMA_DIR)
 
     if reset:
         if os.path.isdir(persist_dir):
@@ -30,7 +32,7 @@ def run_ingestion(db_manager: VectorStoreManager | None = None, reset: bool = Tr
     else:
         print("\n[1/4] Không reset thư mục DB (chế độ learn) — collection cũ bị xóa khi nạp mới.")
 
-    loader = DocumentLoader(data_dir="./data/corpus")
+    loader = DocumentLoader(data_dir=str(CORPUS_DIR))
     documents = loader.load_documents()
     if not documents:
         raise SystemExit(

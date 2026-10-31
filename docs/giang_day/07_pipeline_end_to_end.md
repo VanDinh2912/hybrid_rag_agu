@@ -282,7 +282,7 @@ luồng thì có. Chương 09 sẽ nhắc lại.
 | `QWEN_FALLBACK` | `1` | Gemini lỗi → Qwen | |
 | `OLLAMA_HOST`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT` | localhost, qwen2.5:1.5b, 90s | chuẩn hóa/classifier/fallback | |
 | `CLASSIFIER_MODEL`, `CLASSIFIER_TIMEOUT` | trống → OLLAMA_MODEL; 20s | classifier | |
-| `CHROMA_PERSIST_DIR` | `./chroma_db` | vị trí DB | |
+| `CHROMA_PERSIST_DIR` | `<gốc dự án>/chroma_db` (mẫu `./chroma_db`) | vị trí DB; tương đối hiểu theo gốc dự án, không theo CWD (`src/core/paths.py`, REVIEW §4) | |
 | `EMBEDDING_MODEL` | `BAAI/bge-m3` | **chỉ** tokenizer của benchmark chunking | `VectorStoreManager` hard-code bge-m3, không đọc cờ này |
 
 ### 5.2. Nguồn `top_k`

@@ -646,7 +646,7 @@ hybrid_rag_agu/
 | `GEMINI_MODEL` | `gemini-2.5-flash` | Model Gemini dùng cho generator |
 | `OLLAMA_HOST` | `http://localhost:11434` | Địa chỉ Ollama server |
 | `OLLAMA_MODEL` | `qwen2.5:1.5b-instruct` | Model Qwen dùng cho normalization/fallback |
-| `CHROMA_PERSIST_DIR` | `./chroma_db` | Thư mục lưu ChromaDB |
+| `CHROMA_PERSIST_DIR` | `<gốc dự án>/chroma_db` (mẫu `./chroma_db`) | Thư mục lưu ChromaDB; đường dẫn tương đối hiểu theo gốc dự án |
 | `ENABLE_HYBRID_SEARCH` | `1` | Bật/tắt True Hybrid Search (BM25 + Chroma) |
 | `ENABLE_QUERY_EXPANSION` | `1` | Bật/tắt Query Expansion (từ đồng nghĩa) |
 | `BM25_WEIGHT` | `0.5` | Trọng số BM25 trong RRF |

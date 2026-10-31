@@ -33,21 +33,22 @@ import json
 import os
 import re
 from datetime import datetime
-from pathlib import Path
 from typing import Any, Optional
 
 import ollama
 
+from src.core.paths import CORPUS_DIR, EVALUATION_DIR, LEARNING_DIR
 from src.text_utils import fold
 
 DEFAULT_MODEL = "qwen2.5:1.5b-instruct"
 DEFAULT_HOST = "http://localhost:11434"
 DEFAULT_TIMEOUT = 90.0
 
-# Đường dẫn file Active Learning (tệp GUI tự sinh; 28-10 dời vào `data/learning/`)
-NORMALIZATION_PAIRS_PATH = Path("data/learning/normalization_pairs.json")
-GHI_CHU_HOC_THEM_PATH = Path("data/corpus/ghi_chu_hoc_them.txt")
-BENCHMARK_QUESTIONS_PATH = Path("data/evaluation/benchmark_questions.json")
+# Đường dẫn file Active Learning (tệp GUI tự sinh; 28-10 dời vào `data/learning/`).
+# Neo theo gốc dự án (REVIEW §4) để chạy từ CWD nào cũng đọc đúng một tệp.
+NORMALIZATION_PAIRS_PATH = LEARNING_DIR / "normalization_pairs.json"
+GHI_CHU_HOC_THEM_PATH = CORPUS_DIR / "ghi_chu_hoc_them.txt"
+BENCHMARK_QUESTIONS_PATH = EVALUATION_DIR / "benchmark_questions.json"
 
 NORMALIZER_SYSTEM_PROMPT = """Bạn là một bộ chuẩn hóa câu hỏi học vụ cho Trường Đại học An Giang.
 Nhiệm vụ: Chuyển đổi từ ngữ thông tục/viết tắt trong câu hỏi thành thuật ngữ chuẩn quy chế.
