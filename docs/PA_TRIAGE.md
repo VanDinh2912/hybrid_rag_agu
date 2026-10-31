@@ -1,4 +1,4 @@
-# Phân loại PA-1…PA-48 + PA-54…PA-59 (27-10; PA-48 thêm 28-10, **đã áp `ed0fc74` 29-10**; PA-54–55 thêm 29-10, **đã đóng 29-10**; PA-56–59 đề xuất 31-10, **PA-57 đã áp `18ecc88`**, còn lại hoãn/đóng — xem mục cuối)
+# Phân loại PA-1…PA-48 + PA-54…PA-59 (27-10; PA-48 thêm 28-10, **đã áp `ed0fc74` 29-10**; PA-54–55 thêm 29-10, **đã đóng 29-10**; PA-56–59 đề xuất 31-10, **PA-57 đã áp `18ecc88`**, còn lại hoãn/đóng — xem mục cuối; **PA-30/40/41/42 đã áp 01-11**)
 
 PA-49…PA-53 không nằm trong bảng này — ghi thành mục riêng trong `docs/archive/PENDING_APPROVAL.md`.
 PA-56…PA-60 là đề xuất 31-10, ghi ở mục riêng cuối tệp (đã chốt quyết định 31-10).
@@ -14,10 +14,10 @@ Cột "khuyến nghị": **duyệt** = nên làm, thường rẻ và không đ�
 đã bị số đo bác, hoặc khuyến nghị giữ nguyên); **hoãn** = cần điều kiện khác (duyệt ngưỡng, quota,
 PA-26, re-anchor) trước khi làm.
 
-Đếm: (a) 26 · (b) 19 · (c) 5 (50 hàng; PA-55 thuộc (b) nhưng dòng đếm cũ ghi 18). Đã đóng 18:
+Đếm: (a) 26 · (b) 19 · (c) 5 (50 hàng; PA-55 thuộc (b) nhưng dòng đếm cũ ghi 18). Đã đóng 22:
 PA-2, 5, 6, 9, 10, 19, 20, 25, 34, 45, 47, **48 (đã áp `ed0fc74`), 54 (hướng phát triển),
 55 (bản ghi lịch sử)**, **31 (đã áp 01-11, merge ff vào `main`)**, **8, 26, 33 (đối soát cây
-01-11 — xem cột lý do)**.
+01-11 — xem cột lý do)**, **30, 40, 41 (đã áp 01-11), 42 (đã áp 27-10, đối soát 01-11)**.
 
 | PA | Việc | Nhóm | Khuyến nghị | Lý do ngắn |
 |---|---|---|---|---|
@@ -50,7 +50,7 @@ PA-2, 5, 6, 9, 10, 19, 20, 25, 34, 45, 47, **48 (đã áp `ed0fc74`), 54 (hướ
 | PA-27 | Khoá cache tách theo lever TẮT | a | **hoãn** | sửa `cache_policy`; phải giữ byte-identical khi TẮT |
 | PA-28 | Bộ sinh SFT giữ dòng thiếu thực thể | a | **hoãn** | đụng dữ liệu train; cần chốt đặc tả T4 |
 | PA-29 | 5 script thiếu argparse; `ingest` xoá index | b | **duyệt** | rẻ: thêm dry-run/xác nhận; không đổi số |
-| PA-30 | `.env.example` thiếu 13 cờ lever | b | **duyệt** | rẻ, chỉ tài liệu |
+| PA-30 | `.env.example` thiếu 13 cờ lever | b | **ĐÃ ÁP 01-11** | Thêm khối `LOOP LEVERS — mặc định TẮT` đủ **14 cờ/ngưỡng** đăng ký, giá trị đúng mặc định trong code (11 × `0`, `ROUTER_SOURCE_QUOTA=0`, `ROUTER_FILTER_RANK_BONUS=3`, `RESCUE_MIN_SCORE=0.8`); bỏ khai báo lặp ở khối r23 (chỉ dẫn sửa giá trị trong khối mới). Đo lại `tools/diag/env_flag_audit.py`: **ĐẠT 14, THƯ_TU 0, LỖI 0; 14/14 cờ có trong `.env.example`** (32→46 key). Thêm test `test_dotenv_example_khai_bao_du_moi_lever`; `pytest tests/test_final_env_flag_defaults.py tests/test_config_profiles.py` = **57 passed, 1 skipped** |
 | PA-31 | PII nhân thân trong artifact đã commit (89 khớp/8 tệp lúc 25-10; **640 khớp/18 tệp** trên dòng `main` sau `ea9416d`) | b | **ĐÃ ÁP 01-11** (nhánh `refactor/phase1-runtime`, merge ff vào `main`) | Che 17/18 tệp bằng `tools/diag/redact_pii.py --set full`: **564 khớp PII + 1 đường dẫn cá nhân → 0**, giữ số dòng và JSON hợp lệ. `data/loop/testset_v1.jsonl` **giữ nguyên** (76 khớp, sha `202ca508…`) vì che nó là đổi tập đo đóng băng ⇒ pin test hạ `165/9 → 76/1` có chủ đích. `thesis-final` `9c1c00e` **không đổi**, không tag `thesis-final-pii` |
 | PA-32 | 3 id trùng tên train/val/benchmark | a | **hoãn** | đụng dữ liệu train; cần quyết định tách id |
 | PA-33 | `.gitignore` chưa phủ vùng artifact | b | **đóng** | **ĐỐI SOÁT 01-11: đã áp 29-10** — khối "PA-33 (29-10)" phủ `tmp/`, `models/`, `data/loop/rounds/`, `data/loop/rounds_v2/`, `data/training/`, `data/loop/diag/**/cache/`; đo ngay trước khi thêm luật: 2.655 đường dẫn / 406,6 MiB chưa bị ignore (ghi trong `.gitignore`). Artifact vẫn nằm trên đĩa + được manifest theo dõi, chỉ không vào git |
@@ -60,9 +60,9 @@ PA-2, 5, 6, 9, 10, 19, 20, 25, 34, 45, 47, **48 (đã áp `ed0fc74`), 54 (hướ
 | PA-37 | Tải cross-encoder nhỏ để trả lời B4 | a | **hoãn** | chưa cần; model 568M hiện có đủ |
 | PA-38 | Đăng ký lại mốc "hạng truy xuất" | a | **hoãn** | nhãn degenerate 0,5; cần phép đo mới trước |
 | PA-39 | Logits theo vị trí đáp án + 1 lượt train thật | a | **hoãn** | cần GPU/thời gian; câu hỏi train thật mở |
-| PA-40 | Quy ước phát ngôn về bộ nhớ | b | **duyệt** | rẻ; chỉ sửa cách nói trong tài liệu |
-| PA-41 | Hai kỳ vọng cũ trong audit | b | **duyệt** | rẻ; chỉ máy kiểm, không đổi số đo |
-| PA-42 | Chữ ký trọng tài băm byte thô | a | **duyệt** | (a) commit 2 file untracked byte-nguyên; không chuẩn hoá EOL |
+| PA-40 | Quy ước phát ngôn về bộ nhớ | b | **ĐÃ ÁP 01-11** | Sửa cách phát ngôn ở `README.md` mục 7, `docs/archive/reports/T4.md` §2.6, `docs/archive/reports/test_T4.md` §2.4/§10.1, `docs/archive/STATE.md`, `docs/planning/ROADMAP.md` P5.20: **giữ nguyên mọi con số**, thêm "peak > VRAM = **oversubscription (WDDM)**, chưa phải thất bại; **chưa quan sát thất bại thật có artifact tái lập**; câu hỏi train thật **MỞ** (D-39/PA-39)". Không sửa `B5.md` (đã đúng từ 26-10) |
+| PA-41 | Hai kỳ vọng cũ trong audit | b | **ĐÃ ÁP 01-11** | Cập nhật `tools/diag/final_number_audit.py`: **46 → 51** test `test_reranker_flag.py` (B3/PA-25) và chữ ký **`9f1179ccab74` → `2911c69f740d`** (B2/PA-2+PA-20), giữ chú thích nguồn + D-41/D-42. Chạy lại bằng venv: **61/63 KHỚP** — 2 dòng LỆCH còn lại **không thuộc PA-41**: `T5 33+42=75 → 33+44=77` (PA-48 `ed0fc74` thêm 2 test) và `T7 100 đường dẫn → 119` (tài liệu đổi sau 25-10; đo `referenced_paths` = 58+61 ở cả HEAD lẫn cây hiện tại). **Không tự sửa** hai dòng ngoài phạm vi; bằng chứng `tmp/pa41_audit_residual.md` |
+| PA-42 | Chữ ký trọng tài băm byte thô | a | **ĐÓNG — (a) đã áp 27-10, đối soát 01-11** | Ba `REFEREE_FILES` đều **tracked**: `tools/loop/verify.py` + `src/answer_guard.py` (vào kho ở `16b75fc`/`1f54056`), `src/text_utils.py`; `.gitattributes` ghim **`-text`** cho đúng 3 đường dẫn (commit `83843bf`), giữ worktree LF/LF/CRLF như byte đã băm. `git ls-files` xác nhận 3/3; `verify.referee_fingerprint()` = **`2911c69f740d`**; dòng `final_number_audit` nay kỳ vọng v2. Không chuẩn hoá EOL (hướng (b)/(c) không làm) |
 | PA-43 | Chuyển 2 script công cụ vào `tools/` | c | **hoãn** | đỏ bất biến #7 (74 dòng train); phải đổi dữ liệu cùng lúc |
 | PA-44 | Gom 45 site đọc env còn lại | c | **hoãn** | rủi ro cao; nhóm (c) vẫn cần duyệt riêng, không đổi số |
 | PA-45 | Tách 3 tệp đánh giá khỏi `src/` | c | **đóng** | khuyến nghị giữ nguyên (bất biến #7 + import thư viện) — **đã bị Phase 3 vượt**: commit `876e017` move cả 3 tệp vào `src/assessment/` sau khi user duyệt phạm vi đóng gói `src/`, giải #7 bằng 704 citation `metadata.file` (tiền lệ Phase 1 đã duyệt), import thư viện không đổi vì chỉ đổi path. Chi tiết + cổng: `docs/RESTRUCTURE_MAP.md` §6 |
@@ -72,10 +72,10 @@ PA-2, 5, 6, 9, 10, 19, 20, 25, 34, 45, 47, **48 (đã áp `ed0fc74`), 54 (hướ
 | PA-54 | Đóng gói nốt `src/generator.py` (và nếu muốn, 2 tệp trọng tài) vào `src/generation/` | c | **đóng** | **ĐÓNG 29-10 theo chỉ đạo user — ghi nhận là HƯỚNG PHÁT TRIỂN, không làm.** Điều kiện cứng: `src/answer_guard.py` import `REFUSAL_TEXT` của generator lúc chạy và là tệp bị băm trong `REFEREE_FILES`; move generator ⇒ phải đổi byte `answer_guard` ⇒ **đổi chữ ký trọng tài** `2911c69f740d` + vỡ 2 SHA-12 ghim ở `tests/test_final_council_scripts.py:446-447`. Đây là sửa dụng cụ đo. `generator.py` ở lại gốc `src/`; không đụng 4 tệp trọng tài/cây đo. Phase 3 đã thử và hoàn tác (bằng chứng `tmp/restructure/phase3_attempt1_apply.txt`) — xem `docs/RESTRUCTURE_MAP.md` §6.1, §6.5 |
 | PA-55 | Xử lý 2.230 chuỗi `src/<mod>.py` cũ trong ANSWER của `data/training/sft_*.jsonl` + 293 lần trong 42 tệp tài liệu lịch sử đã track (`docs/archive/*`, `dev/prompts/*`, `data/loop/README.md`) | b | **đóng** | **ĐÓNG 29-10 theo chỉ đạo user — BẢN GHI LỊCH SỬ.** Đây là nội dung dữ liệu đã sinh và tài liệu đã công bố, không phải citation hỏng ⇒ để nguyên là đúng luật "không sửa dữ liệu đã công bố". Muốn sạch phải **rebuild** `data/training` (đổi bộ train đã công bố, đụng benchmark) — không tự làm. Chi tiết: `docs/RESTRUCTURE_MAP.md` §6.5, §7 |
 
-**Thứ tự rẻ trước (nếu duyệt một lượt):** PA-41, PA-30, PA-29, PA-16, PA-40 — toàn bộ là
-môi trường/tài liệu, không đụng số đo. PA-42 cũng rẻ (chỉ `git add` hai tệp byte-nguyên) nhưng xếp (a)
-vì đụng chữ ký trọng tài. PA-26 **đã đóng 01-11** nên nhóm (c) không còn bị nó chặn, nhưng vẫn cần
-duyệt riêng từng mục; nhóm (a) chờ quyết định ngưỡng và PA-17. Không mục nào trong bảng này được tự áp.
+**Thứ tự rẻ trước (còn lại sau 01-11):** PA-29, PA-16 — toàn bộ là môi trường/tài liệu, không đụng
+số đo. PA-41, PA-30, PA-40 đã áp 01-11; PA-42 đã đóng (đã áp 27-10); PA-33 đã đóng. PA-26 **đã đóng
+01-11** nên nhóm (c) không còn bị nó chặn, nhưng vẫn cần duyệt riêng từng mục; nhóm (a) chờ quyết
+định ngưỡng và PA-17. Không mục nào trong bảng này được tự áp.
 
 
 ---
