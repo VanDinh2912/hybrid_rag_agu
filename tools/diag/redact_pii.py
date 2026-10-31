@@ -181,14 +181,35 @@ def display_path(path: Path) -> str:
         return path.as_posix()
 
 
+#: Token ngay sau một dãy backslash trong tệp JSON (kể cả token của lượt RỘNG `PHONE_B`).
+JSON_TOKEN_RE = re.compile(r"(\\+)(\[(?:EMAIL|PHONE_B|PHONE|ID)_\d+\])")
+
+
+def fix_json_escape(line: str) -> str:
+    """Bảo đảm backslash trước token luôn là escape HỢP LỆ, và **lặp lại không đổi**.
+
+    Lượt che 01-11 thay email nằm sát escape (`"dong1\\nsv1@…"`: khuôn email khớp từ chữ `n`
+    của `\\n`) nên sinh `\\[EMAIL_1]` — một backslash đơn = escape KHÔNG hợp lệ. Cách cũ nhân
+    đôi MỌI backslash đứng trước token, kể cả khi nó đã thuộc cặp `\\\\`: chạy lượt hai trên
+    bản đã che sinh `\\\\\\[EMAIL_1]` ⇒ JSON hỏng (phát hiện bằng `--dry` trên
+    `outputs/ab_results_with_classifier.json`, 01-11).
+
+    Luật mới: dãy backslash **lẻ** (backslash cuối đang escape `[`) ⇒ thêm một; dãy **chẵn**
+    (đã là `\\\\` hợp lệ) ⇒ giữ nguyên. Nhờ vậy hàm bất biến qua nhiều lượt.
+    """
+    def repl(m: "re.Match") -> str:
+        run, token = m.group(1), m.group(2)
+        return run + "\\" + token if len(run) % 2 else m.group(0)
+    return JSON_TOKEN_RE.sub(repl, line)
+
+
 def mask_line(line: str, start_index: Dict[str, int], seen: Dict[str, str], json_mode: bool = False):
     """Che MỌI khớp PII trên một dòng; trả (dòng mới, số khớp).
 
     `json_mode`: chuỗi JSON có escape `\\n`, `\\t`… nên một khớp có thể BẮT ĐẦU giữa escape
     (ví dụ dấu `-` + escape `\\n` + email viết liền ⇒ khuôn email khớp từ chữ `n` của `\\n`), và
-    thay bằng `[EMAIL_1]` sẽ tạo `\\[` = escape KHÔNG hợp lệ. Sau khi che, mọi `\\` đứng ngay trước
-    token được nhân đôi (`\\\\`) để JSON vẫn hợp lệ; chuỗi gốc parse được nên `\\[` chỉ có thể do ta
-    sinh.
+    thay bằng `[EMAIL_1]` sẽ tạo `\\[` = escape KHÔNG hợp lệ. Sau khi che, `fix_json_escape`
+    thêm backslash CHỈ khi dãy đang lẻ, nhờ vậy chạy lại trên bản đã che không đổi byte.
     """
     n = 0
     for kind, name, rx in PII_PATTERNS:
@@ -213,8 +234,7 @@ def mask_line(line: str, start_index: Dict[str, int], seen: Dict[str, str], json
 
         line = rx.sub(repl, line)
     if json_mode:
-        line = re.sub(r"\\(\[(?:EMAIL|PHONE|ID)_\d+\])",
-                      lambda m: "\\\\" + m.group(1), line)
+        line = fix_json_escape(line)
     return line, n
 
 
@@ -273,8 +293,7 @@ def redact_file(rel: str, out_dir: Path, dry: bool) -> Dict:
         broad_hits += nb
         path_hits += npath
         if json_mode:
-            masked = re.sub(r"\\(\[(?:EMAIL|PHONE|ID)_\d+\])",
-                            lambda m: "\\\\" + m.group(1), masked)
+            masked = fix_json_escape(masked)
         new_lines.append(masked + eol)
     out_text = "".join(new_lines)
 
