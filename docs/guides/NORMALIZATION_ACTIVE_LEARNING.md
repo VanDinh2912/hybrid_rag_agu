@@ -246,8 +246,12 @@ self.entry_normalized_truth.insert(0, current_normalized)
 
 **Lưu cặp chuẩn hóa:**
 ```python
-def _save_normalization_pair(self, raw_query: str, normalized_query: str):
-    """Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file normalization_pairs.json"""
+def _save_normalization_pair(self, raw_query: str, normalized_query: str) -> tuple[bool, str]:
+    """Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file normalization_pairs.json.
+
+    Trả (True, "") khi ghi xong, (False, lỗi) khi hỏng để hộp thoại báo đúng
+    trạng thái từng phần thay vì luôn báo thành công.
+    """
     # Kiểm tra trùng lặp
     # Thêm hoặc cập nhật
     # Lưu file JSON

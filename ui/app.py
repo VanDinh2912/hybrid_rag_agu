@@ -772,7 +772,14 @@ class RAGApplication(tk.Tk):
             messagebox.showwarning("Chưa có dữ liệu", "Vui lòng chạy kiểm tra một câu hỏi trước khi đánh giá!")
             return
 
-        self._save_feedback_record(feedback_type="correct", correct_answer=None)
+        try:
+            self._save_feedback_record(feedback_type="correct", correct_answer=None)
+        except Exception as exc:
+            messagebox.showerror(
+                "Lỗi lưu phản hồi",
+                f"Không ghi được logs/feedback/user_feedback.json:\n{exc}",
+            )
+            return
         self.wrong_frame.pack_forget()
         messagebox.showinfo("Đã ghi nhận", "Cảm ơn bạn! Đã ghi nhận câu trả lời ĐÚNG vào logs/feedback/user_feedback.json.")
 
@@ -817,23 +824,42 @@ class RAGApplication(tk.Tk):
         if normalized_truth:
             feedback_detail += f"Chuẩn hóa: {normalized_truth}\n"
 
-        # 1. Lưu vào logs/feedback/user_feedback.json
-        self._save_feedback_record(feedback_type="wrong", correct_answer=feedback_detail)
+        # 1. Lưu vào logs/feedback/user_feedback.json — đây là bản ghi gốc; hỏng thì dừng
+        #    để không báo "thành công" cho một thao tác chưa xong.
+        try:
+            self._save_feedback_record(feedback_type="wrong", correct_answer=feedback_detail)
+        except Exception as exc:
+            messagebox.showerror(
+                "Lỗi lưu phản hồi",
+                f"Không ghi được logs/feedback/user_feedback.json:\n{exc}",
+            )
+            return
+
+        STATUSES = ("benchmark_saved", "normalization_pair_saved", "note_saved", "rebuild_succeeded")
+        status = {key: None for key in STATUSES}  # None = không yêu cầu thao tác này
+        errors = []
 
         # 2. Lưu vào benchmark_questions.json nếu đầy đủ thông tin
         if citation and source_doc:
-            self._save_to_benchmark(ground_truth, citation, source_doc, normalized_truth)
+            status["benchmark_saved"], err = self._save_to_benchmark(
+                ground_truth, citation, source_doc, normalized_truth
+            )
+            if err:
+                errors.append(f"benchmark_questions.json: {err}")
 
         # 3. Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file riêng cho Qwen học
         if normalized_truth:
-            self._save_normalization_pair(self.current_test_data["raw_query"], normalized_truth)
+            status["normalization_pair_saved"], err = self._save_normalization_pair(
+                self.current_test_data["raw_query"], normalized_truth
+            )
+            if err:
+                errors.append(f"normalization_pairs.json: {err}")
 
         # 4. Nếu người dùng chọn học ngay qua ghi_chu_hoc_them.txt
         learn_now = self.learn_now_var.get()
         if learn_now:
             raw_query = self.current_test_data["raw_query"]
             wrong_ans = self.current_test_data["answer"]
-            chunks_before = self.pipeline.vector_db._collection.count()
 
             # Ghi vào ghi_chu_hoc_them.txt với format có cấu trúc
             note = f"Câu hỏi: {raw_query}\n"
@@ -846,30 +872,73 @@ class RAGApplication(tk.Tk):
                 note += f"Chuẩn hóa: {normalized_truth}\n"
             note += "-" * 80 + "\n"
 
-            append_note(note)
-
-            # Rebuild nhẹ nhàng không reset thư mục
             try:
-                _db, new_vector_db, _total = run_ingestion(db_manager=self.db_manager, reset=False)
-                self.pipeline.vector_db = new_vector_db
-                chunks_after = new_vector_db._collection.count()
-                log_learning(raw_query, wrong_ans, feedback_detail, chunks_before, chunks_after)
-                self.status_var.set(f"Đã học bài mới! Chunks: {chunks_before} → {chunks_after}")
-            except Exception as e:
-                print(f"[Learn Error] Không thể tự động rebuild: {e}")
+                chunks_before = self.pipeline.vector_db._collection.count()
+                append_note(note)
+                status["note_saved"] = True
+            except Exception as exc:
+                status["note_saved"] = False
+                status["rebuild_succeeded"] = False
+                errors.append(f"bước ghi bài học: {exc}")
+            else:
+                # Rebuild nhẹ nhàng không reset thư mục; phải dựng lại cả bộ truy xuất,
+                # nếu không BM25 vẫn phục vụ corpus cũ (REVIEW §2.1).
+                try:
+                    _db, new_vector_db, _total = run_ingestion(db_manager=self.db_manager, reset=False)
+                    self.pipeline.replace_vector_db(new_vector_db)
+                    chunks_after = new_vector_db._collection.count()
+                    log_learning(raw_query, wrong_ans, feedback_detail, chunks_before, chunks_after)
+                    status["rebuild_succeeded"] = True
+                    self.status_var.set(f"Đã học bài mới! Chunks: {chunks_before} → {chunks_after}")
+                except Exception as exc:
+                    status["rebuild_succeeded"] = False
+                    errors.append(f"rebuild ChromaDB/retriever: {exc}")
 
         self.wrong_frame.pack_forget()
-        msg = "Đã lưu phản hồi vào logs/feedback/user_feedback.json!"
-        if normalized_truth:
-            msg += "\nĐã lưu cặp chuẩn hóa cho Qwen học!"
-        if citation and source_doc:
-            msg += "\nĐã cập nhật benchmark_questions.json!"
-        if learn_now:
-            msg += "\nHệ thống cũng đã cập nhật bài học vào corpus và nạp lại ChromaDB thành công!"
-        messagebox.showinfo("Thành công", msg)
+        self._report_feedback_result(status, errors)
 
-    def _save_to_benchmark(self, ground_truth: str, citation: str, source_doc: str, normalized_query: str):
-        """Lưu câu hỏi mới vào benchmark_questions.json với đầy đủ thông tin."""
+    def _report_feedback_result(self, status: dict, errors: list[str]):
+        """Thông báo kết quả từng phần — chỉ nói "thành công" cho việc thật sự xong."""
+        lines = ["Đã lưu phản hồi vào logs/feedback/user_feedback.json!"]
+        if status["benchmark_saved"] is True:
+            lines.append("Đã cập nhật benchmark_questions.json!")
+        elif status["benchmark_saved"] is False:
+            lines.append("CHƯA cập nhật được benchmark_questions.json.")
+        if status["normalization_pair_saved"] is True:
+            lines.append("Đã lưu cặp chuẩn hóa cho Qwen học!")
+        elif status["normalization_pair_saved"] is False:
+            lines.append("CHƯA lưu được cặp chuẩn hóa cho Qwen.")
+        if status["note_saved"] is True:
+            lines.append("Đã ghi bài học vào data/corpus/ghi_chu_hoc_them.txt.")
+        elif status["note_saved"] is False:
+            lines.append("CHƯA ghi được bài học vào corpus.")
+        if status["rebuild_succeeded"] is True:
+            lines.append("Đã nạp lại corpus và làm mới bộ truy xuất thành công.")
+        elif status["rebuild_succeeded"] is False:
+            lines.append(
+                "ChromaDB/bộ truy xuất CHƯA được cập nhật — lượt hỏi tiếp theo vẫn dùng corpus cũ."
+            )
+        if errors:
+            lines.append("\nChi tiết lỗi:")
+            lines.extend(f"- {err}" for err in errors)
+
+        failed = bool(errors) or any(
+            status[key] is False
+            for key in ("benchmark_saved", "normalization_pair_saved", "note_saved", "rebuild_succeeded")
+        )
+        if failed:
+            messagebox.showwarning("Đã lưu một phần", "\n".join(lines))
+        else:
+            messagebox.showinfo("Thành công", "\n".join(lines))
+
+    def _save_to_benchmark(
+        self, ground_truth: str, citation: str, source_doc: str, normalized_query: str
+    ) -> tuple[bool, str]:
+        """Lưu câu hỏi mới vào benchmark_questions.json.
+
+        Trả `(True, "")` khi ghi xong, `(False, lỗi)` khi hỏng — caller phải báo đúng
+        trạng thái thay vì coi mọi nhánh là thành công.
+        """
         try:
             # Đọc benchmark hiện tại
             if BENCHMARK_PATH.exists():
@@ -901,11 +970,16 @@ class RAGApplication(tk.Tk):
                 json.dump(benchmark, f, ensure_ascii=False, indent=2)
 
             print(f"[Benchmark] Đã thêm câu hỏi {new_question['id']} vào benchmark_questions.json")
+            return True, ""
         except Exception as e:
             print(f"[Benchmark Error] Không thể lưu vào benchmark: {e}")
+            return False, str(e)
 
-    def _save_normalization_pair(self, raw_query: str, normalized_query: str):
-        """Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file normalization_pairs.json để Qwen học."""
+    def _save_normalization_pair(self, raw_query: str, normalized_query: str) -> tuple[bool, str]:
+        """Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file normalization_pairs.json để Qwen học.
+
+        Trả `(True, "")` khi ghi xong, `(False, lỗi)` khi hỏng — caller báo đúng trạng thái.
+        """
         try:
             # Đọc pairs hiện tại
             if NORMALIZATION_PAIRS_PATH.exists():
@@ -940,8 +1014,10 @@ class RAGApplication(tk.Tk):
                 json.dump(pairs, f, ensure_ascii=False, indent=2)
 
             print(f"[Normalization] Đã lưu vào {NORMALIZATION_PAIRS_PATH}")
+            return True, ""
         except Exception as e:
             print(f"[Normalization Error] Không thể lưu cặp chuẩn hóa: {e}")
+            return False, str(e)
 
     def _save_feedback_record(self, feedback_type: str, correct_answer: str | None):
         """Ghi nhận log đánh giá của người dùng vào logs/feedback/user_feedback.json."""
