@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-29T03:46:49",
+ "generated_at": "2026-10-31T18:00:05",
  "root": ".",
  "algorithm": "sha256",
  "scopes": [
@@ -502,7 +502,7 @@
    "name": "logs",
    "dir": "logs",
    "file_count": 44,
-   "total_bytes": 30720022,
+   "total_bytes": 30720057,
    "files": [
     {
      "path": "logs/ab_frame_reports.md",
@@ -764,8 +764,8 @@
     },
     {
      "path": "logs/README.md",
-     "bytes": 1955,
-     "sha256": "7e2ec94e4d343618233bb477f2fd6ca4b8faf5868487129f9c48340a9ce2a40c",
+     "bytes": 1990,
+     "sha256": "902d0693fb8cb191a929d4eed79750fb981c3efcc5a6080a359e1dd6b6707d32",
      "tracked": true
     }
    ]
@@ -1059,6 +1059,6 @@
  ],
  "summary": {
   "file_count": 158,
-  "total_bytes": 390961924
+  "total_bytes": 390961959
  }
 }

@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated_at": "2026-10-29T21:41:42",
+ "generated_at": "2026-10-31T18:00:05",
  "algorithm": "sha256",
  "root": ".",
  "note": "sha256 trên byte thô, không chuẩn hoá EOL; artifact nặng không commit",
@@ -362,13 +362,13 @@
    "path": "data/loop/diag/bonus_paired.json",
    "bytes": 39740,
    "sha256": "d090df9693d49cf0abdf1c59cca470dc48af3a4aeaad57500dea9826c314f786",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/bonus_paired_r1_r2.json",
    "bytes": 50083,
    "sha256": "e29bd3f8a8107cc87559ad72f3fc0a4d8ab46ef0217d9dc16d11405e30efb0bc",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/rounds/r8/round_summary_full.json",
@@ -422,31 +422,31 @@
    "path": "data/loop/diag/one_variable_check.json",
    "bytes": 1394,
    "sha256": "87e802b10ff3db15bbe059c0c073bbc0d940cc429b1a48145526cb495a7f5e7d",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/t4_latency_20q.json",
    "bytes": 3702,
    "sha256": "8c9819fbf7d75f0e036fd21d4570cb55116ae6a0f1d12e85d9b1aafb32c88fe4",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/t4b_memory_probe_len.json",
    "bytes": 3103,
    "sha256": "f7772219b13fec1dd4d8e891a5ac8c3417b0401385be65fd0b80b2082c290643",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/t4b_memory_probe.json",
    "bytes": 2635,
    "sha256": "386aae7f9f24eaea91642d5f2acefe206a06f9be494f733e53783aebd0ee9d1c",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/reranker_paired_r11_r12.json",
    "bytes": 166377,
    "sha256": "b7d823dd02d2b53349d7988c35cc1d54585a6e48fb543e008a804f882af3f0f0",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "tmp/probe_r12_fold.json",
@@ -554,7 +554,7 @@
    "path": "data/loop/diag/reranker_cost_gpu.json",
    "bytes": 38663,
    "sha256": "bd6bbee25d18e78a54a7fbec6239d382d8b1e5a3dd39b1919bbad40c630b3bd2",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/reranker_cost.json",
@@ -590,7 +590,7 @@
    "path": "data/loop/diag/chain_manifest_t7_repro_r0.json",
    "bytes": 1330,
    "sha256": "295413c196de90619e79d2e86e7a394b275451acbaa0526182f8d30a9b13b546",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "docs/archive/reports/test_final.md",
@@ -608,7 +608,7 @@
    "path": "data/loop/diag/reranker_paired_r11_r16.json",
    "bytes": 125562,
    "sha256": "1c0cdd686965197ffc8efce81d54bdb88ebb8f3bb57b646231dd38fc0f612e87",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/rounds_v2/r16/round_summary_retrieval.json",
@@ -620,79 +620,79 @@
    "path": "data/loop/diag/answerability_probe_r5.json",
    "bytes": 40156,
    "sha256": "577bf36a813338efa5be914d1d0ba448607d2567a1ec19b6cab2acd133c213c1",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/answerability_labelset_r5.jsonl",
    "bytes": 888362,
    "sha256": "182dd5cb71a65f1c7cf73e9bff6367dee7133faecf369ed114d4fceaed288cc1",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/answerability_probe_r5_buildonly.json",
    "bytes": 1617,
    "sha256": "ce03a3e7c30087cb8388759a7f8f7de2a6624418b5216995c0ed4bc881a57dd4",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/answerability_probe_r11_retrieval.json",
    "bytes": 322961,
    "sha256": "325ac38914dea5cd3198df9a6a061329d487d8c8e8459200844d879bbbf3d342",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/answerability_probe_r12_retrieval.json",
    "bytes": 292037,
    "sha256": "214555de030a4ad7950cac2940f19e4aecb377447e8a7a5048a7612f0106d25b",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/answer_token_logits_probe_real_fraction.json",
    "bytes": 10292,
    "sha256": "7fbae749a7a414fb1d7b046f037fface9e0eb18b10702231b40336ce369c01e3",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/answer_token_logits_probe.json",
    "bytes": 5636,
    "sha256": "5e3a19f214b02f075833f44b0d3aeb33f6274c376da45b13a455dc8f35802727",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/answer_token_logits_probe_oom_bound.json",
    "bytes": 5649,
    "sha256": "ef6172c7b9d5229efae2112b6df0510c865a36294d8e7dac3c8f8df497376844",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/b5_answer_fraction.json",
    "bytes": 22449,
    "sha256": "b9c55781b8f945c4d9e8150701527a64bc5d430f466458030903e487a29d64af",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/b5_wddm_oversubscription.json",
    "bytes": 2665,
    "sha256": "89bdfe3cfed4a281d15d8f997cda4b80594ce3bda8580007c39f33c917a841db",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/b1_cprime/analysis.json",
    "bytes": 15728,
    "sha256": "2669243d4109c09a66cdcbb6d0598f32bf080e7c04d3d87a22730703ab75f18c",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/b1_cprime/mapping.json",
    "bytes": 21716,
    "sha256": "3252e0969a4bcaeb3085dd84a3729abe230128e618eb4f2eb00953a67f3eaa70",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/diag/b1_cprime/settings.json",
    "bytes": 455,
    "sha256": "a3c1ee9ce498124ba76b0cb1dcc2c517c86ef0fa041e8be2dbafcccdb85fdff6",
-   "tracked": false
+   "tracked": true
   },
   {
    "path": "data/loop/rounds_v2/compare_v1_v2.json",
@@ -769,7 +769,7 @@
   {
    "path": "ARTIFACT_MANIFEST.json",
    "bytes": 37225,
-   "sha256": "c265687e62e53b464374224769f071100f4b8aaefeabdbf323174ac03b16c1ad",
+   "sha256": "414bbb81776d24f9dac1436c9cbd55adfc2541e01e279e2e05713145fd6e1ee1",
    "tracked": true
   }
  ],
