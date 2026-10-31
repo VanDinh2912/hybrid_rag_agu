@@ -109,6 +109,17 @@ class TestDuoiTinh:
             assert key not in TEN_CO, f"{key} là lever mới nhưng đang bật sẵn trong .env.example"
             assert value == "1"
 
+    def test_dotenv_example_khai_bao_du_moi_lever(self):
+        """PA-30: người clone phải THẤY đủ danh sách lever trong tệp mẫu.
+
+        Trước PA-30, `.env.example` không khai báo cờ nào trong `LEVERS` (14 cờ) nên người mới
+        không thể bật/tắt lever một cách có ý thức. Test này ghim phần "phải khai báo"; phần
+        "không được bật" đã do test phía trên ghim.
+        """
+        example = env_flag_audit.dotenv_example()
+        thieu = [name for name in TEN_CO if name not in example]
+        assert thieu == [], f".env.example thiếu khai báo lever: {thieu}"
+
 
 # ---------------------------------------------------------------- 3. checker có răng
 class TestCuaChecker:
