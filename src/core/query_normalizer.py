@@ -30,13 +30,13 @@ Xem chi tiết kiến trúc: docs/architecture/SYSTEM_ARCHITECTURE.md - Section 
 """
 
 import json
-import os
 import re
 from datetime import datetime
 from typing import Any, Optional
 
 import ollama
 
+from src.core.config import settings
 from src.core.paths import CORPUS_DIR, EVALUATION_DIR, LEARNING_DIR
 from src.text_utils import fold
 
@@ -301,23 +301,17 @@ _CONTENT_TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 def normalize_sanity_guard_enabled() -> bool:
     """Mặc định TẮT — bật bằng `NORMALIZE_SANITY_GUARD=1` (đường production cũ không đổi)."""
-    return (os.getenv(NORMALIZE_SANITY_GUARD_ENV) or "0").strip().lower() not in (
-        "",
-        "0",
-        "false",
-        "no",
-        "off",
-    )
+    return settings()._env_flag(NORMALIZE_SANITY_GUARD_ENV, "0")
 
 
 def normalize_min_containment() -> float:
     """Ngưỡng tối thiểu tỉ lệ token gốc còn sót trong output (0..1, giá trị hỏng -> mặc định)."""
-    raw = (os.getenv(NORMALIZE_MIN_CONTAINMENT_ENV) or "").strip()
-    try:
-        value = float(raw)
-    except ValueError:
-        return DEFAULT_NORMALIZE_MIN_CONTAINMENT
-    return min(1.0, max(0.0, value))
+    return settings()._env_float_clamped(
+        NORMALIZE_MIN_CONTAINMENT_ENV,
+        DEFAULT_NORMALIZE_MIN_CONTAINMENT,
+        lo=0.0,
+        hi=1.0,
+    )
 
 
 def content_tokens(text: str) -> set:
@@ -417,9 +411,10 @@ def normalize_user_query(llm_client: Any, user_query: str) -> str:
         return raw_text
 
     try:
-        model_name = os.getenv("OLLAMA_MODEL") or DEFAULT_MODEL
-        host = os.getenv("OLLAMA_HOST") or DEFAULT_HOST
-        timeout = float(os.getenv("OLLAMA_TIMEOUT", str(DEFAULT_TIMEOUT)))
+        env = settings()
+        model_name = env.text_or("OLLAMA_MODEL", DEFAULT_MODEL)
+        host = env.text_or("OLLAMA_HOST", DEFAULT_HOST)
+        timeout = env.float_required("OLLAMA_TIMEOUT", DEFAULT_TIMEOUT)
 
         # Load learning pairs từ phản hồi người dùng
         learning_pairs = load_normalization_pairs()

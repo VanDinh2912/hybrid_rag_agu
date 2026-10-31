@@ -138,8 +138,12 @@ class HybridRAGPipeline:
         self.generator = generator
         self.oversample_factor = max(1, int(oversample_factor))
         self.use_hybrid = use_hybrid and os.getenv("ENABLE_HYBRID_SEARCH", "1").lower() not in {"0", "false", "no"}
-        self.bm25_weight = float(os.getenv("BM25_WEIGHT", str(bm25_weight)))
-        self.vector_weight = float(os.getenv("CHROMA_WEIGHT", str(vector_weight)))
+        # PA-26: giữ nguyên hai site đọc thô (không strip, tập TẮT hẹp) — chuyển sang
+        # accessor gom sẽ đổi hành vi biên với env rỗng/khoảng trắng. Chỉ trọng số RRF
+        # được gom (REVIEW §5) vì `float_required` sao chép đúng `float(os.getenv(...))`.
+        env = settings()
+        self.bm25_weight = env.float_required("BM25_WEIGHT", bm25_weight)
+        self.vector_weight = env.float_required("CHROMA_WEIGHT", vector_weight)
         self.expand_query = expand_query and os.getenv("ENABLE_QUERY_EXPANSION", "1").lower() not in {"0", "false", "no"}
         # Tầng phân loại + router (P3.2): chỉ bật khi ENABLE_CLASSIFIER=1; tắt thì
         # đường chạy giữ nguyên y như trước (không gọi classifier, không đổi cấu hình).

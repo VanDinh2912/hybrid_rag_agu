@@ -55,6 +55,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Optional, Sequence
 
+from src.core.config import settings
+
 # PA-25: `fold` KHÔNG còn được dùng ở đây — score_pairs chấm query nguyên văn. Import
 # bỏ đi để ai thêm lại fold phải sửa cả docstring Qui ước chấm điểm, không trượt âm thầm.
 
@@ -73,9 +75,9 @@ DEFAULT_CANDIDATE_POOL = 20
 DEFAULT_MAX_LENGTH = 512
 DEFAULT_BATCH_SIZE = 4
 
-#: Tập giá trị BẬT tường minh (như `router_soft_filter_enabled`) — một giá trị rác
-#: trong env không được vô tình bật lever.
-_ON_VALUES = {"1", "true", "yes", "on"}
+#: Tập giá trị BẬT tường minh (như `router_soft_filter_enabled`) do
+#: `src.core.config.Settings._flag` áp dụng — một giá trị rác trong env không được
+#: vô tình bật lever.
 
 
 class RerankerUnavailable(RuntimeError):
@@ -83,17 +85,13 @@ class RerankerUnavailable(RuntimeError):
 
 
 def _flag(name: str, default: str = "0") -> bool:
-    return os.getenv(name, default).strip().lower() in _ON_VALUES
+    """Giữ tên cũ cho tương thích nội bộ; hành vi do `settings()._flag` quyết định."""
+    return settings()._flag(name, default)
 
 
 def _int_env(name: str, default: int, *, minimum: int = 1) -> int:
-    raw = os.getenv(name, "").strip()
-    if not raw:
-        return default
-    try:
-        return max(minimum, int(float(raw)))
-    except ValueError:
-        return default
+    """Giữ tên cũ cho tương thích nội bộ; hành vi do `settings()._int_env` quyết định."""
+    return settings()._int_env(name, default, minimum=minimum)
 
 
 def reranker_enabled() -> bool:
@@ -103,7 +101,7 @@ def reranker_enabled() -> bool:
 
 def reranker_model_id() -> str:
     """Model id đã được chặn lỗi r9 (thiếu tiền tố `org/`)."""
-    raw = os.getenv(RERANKER_MODEL_ENV, "").strip() or DEFAULT_RERANKER_MODEL
+    raw = settings().text_strip_or(RERANKER_MODEL_ENV, DEFAULT_RERANKER_MODEL)
     if "/" not in raw and not os.path.isdir(raw):
         raise RerankerUnavailable(
             f"RERANKER_MODEL={raw!r} thiếu tiền tố tổ chức. HF Hub cần id dạng "
@@ -114,7 +112,7 @@ def reranker_model_id() -> str:
 
 
 def reranker_device() -> str:
-    return os.getenv(RERANKER_DEVICE_ENV, "").strip() or DEFAULT_DEVICE
+    return settings().text_strip_or(RERANKER_DEVICE_ENV, DEFAULT_DEVICE)
 
 
 def reranker_candidate_pool() -> int:
@@ -238,7 +236,7 @@ def reranker_status() -> dict[str, Any]:
         requested = reranker_model_id()
         model_error = None
     except RerankerUnavailable as exc:
-        requested = os.getenv(RERANKER_MODEL_ENV, "").strip()
+        requested = settings().text_strip_or(RERANKER_MODEL_ENV, "")
         model_error = str(exc)
     return {
         "enabled": reranker_enabled(),
@@ -311,7 +309,7 @@ def rerank_documents(
         n_candidates=len(candidates),
         n_scored=len(window),
         seconds=time.perf_counter() - started,
-        model=os.getenv(RERANKER_MODEL_ENV, "").strip() or DEFAULT_RERANKER_MODEL,
+        model=settings().text_strip_or(RERANKER_MODEL_ENV, DEFAULT_RERANKER_MODEL),
         device=reranker_device(),
         pool=pool_size,
         top_score=round(max(scores), 4),

@@ -23,14 +23,21 @@ Ba nguyên tắc
 
 Phạm vi
 -------
-Chỉ 9 module đã chuyển: contextual_header, evidence_selection, refusal_policy, retrieval,
-loader, vector_db, local_slm, classifier, chunking. CỐ Ý không chuyển:
-`generator/pipeline/query_normalizer/router` (đóng băng PA-26), `answer_guard` (file trọng
-tài — chữ ký `referee_fingerprint` băm byte), `evaluation` (runner đo), `reranker` (chưa
-được track). Các file đó vẫn đọc env trực tiếp; việc gom nốt nằm ở PA-44. Hai ngoại lệ đã
-đăng ký: `pipeline` đọc **một** cờ mới (`ENABLE_DENSE_ORIGINAL_QUERY`, PA-48a) qua
-`settings()._flag(...)`; và REVIEW §3 (31-10) gom `RAG_TOP_K` về `top_k_from_env()` cho
-`main`/`router` — các cờ cũ của hai module đó vẫn đọc trực tiếp như trước.
+Đã chuyển: contextual_header, evidence_selection, refusal_policy, retrieval, loader,
+vector_db, local_slm, classifier, chunking; REVIEW §5 (31-10) chuyển thêm **router**
+(trọng số + 3 site cờ/ngưỡng), **reranker** (8 site), **query_normalizer** (2 site) và
+**hai trọng số RRF của pipeline** — mỗi accessor sao chép đúng ngữ nghĩa site cũ, có test
+đối chiếu ở `tests/test_env_accessor_equivalence.py`.
+
+CỐ Ý KHÔNG chuyển (đăng ký ngoại lệ, không phải bỏ sót):
+- `generator` và các cờ của `pipeline` (`ENABLE_HYBRID_SEARCH`, `ENABLE_QUERY_EXPANSION`,
+  `ENABLE_CLASSIFIER`) — đóng băng PA-26; ba cờ này cố ý dùng ba ngữ nghĩa khác nhau
+  (không strip / có strip / tập TẮT khác nhau), gom lại sẽ đổi hành vi biên.
+- `answer_guard` — file trọng tài, chữ ký `referee_fingerprint` băm byte.
+- `evaluation` — runner đo đã công bố.
+Pipeline vẫn đọc **một** cờ mới (`ENABLE_DENSE_ORIGINAL_QUERY`, PA-48a) qua
+`settings()._flag(...)`; REVIEW §3 (31-10) gom `RAG_TOP_K` về `top_k_from_env()` cho
+`main`/`router`.
 """
 
 from __future__ import annotations
@@ -89,6 +96,22 @@ TRACKED_ENV: tuple[str, ...] = (
     "ENABLE_DENSE_ORIGINAL_QUERY",
     # top_k vận hành (REVIEW §3): một nguồn đọc chung cho main/router
     "RAG_TOP_K",
+    # router (REVIEW §5): cờ/ngưỡng lọc mềm + hạn ngạch nguồn
+    "ROUTER_SOFT_FILTER",
+    "ROUTER_FILTER_RANK_BONUS",
+    "ROUTER_SOURCE_QUOTA",
+    # reranker (REVIEW §5)
+    "ENABLE_RERANKER",
+    "RERANKER_KEEP_CANDIDATES",
+    "RERANKER_FALLBACK",
+    "RERANKER_CANDIDATE_POOL",
+    "RERANKER_MAX_LENGTH",
+    "RERANKER_BATCH_SIZE",
+    "RERANKER_MODEL",
+    "RERANKER_DEVICE",
+    # query normalizer (REVIEW §5)
+    "NORMALIZE_SANITY_GUARD",
+    "NORMALIZE_MIN_CONTAINMENT",
 )
 
 #: Giá trị được coi là BẬT khi dùng ngữ nghĩa `in _ON_VALUES` (contextual_header).
@@ -122,6 +145,14 @@ class Settings:
         """`os.getenv(name, default).strip() or default` (EVIDENCE_RERANKER)."""
         return self.text(name, default).strip() or default
 
+    def _env_str(self, name: str, default: str = "") -> str:
+        """`os.getenv(name, default)` dưới tên mà máy kiểm `env_flag_audit` nhận diện.
+
+        Dùng cho site cần parse riêng (router rank bonus/quota) — quy tắc parse vẫn
+        nằm tại chỗ gọi, nhưng mọi lần đọc env đều đi qua ảnh chụp `Settings`.
+        """
+        return self.text(name, default)
+
     # ------------------------------------------------------------- cờ
     def _flag(self, name: str, default: str = "0") -> bool:
         """Ngữ nghĩa `in _ON_VALUES` (contextual_header): giá trị lạ ⇒ TẮT."""
@@ -142,6 +173,21 @@ class Settings:
         except ValueError:
             return default
         return value if value >= minimum else default
+
+    def _int_env(self, name: str, default: int, *, minimum: int = 1) -> int:
+        """`max(minimum, int(float(raw)))`, rỗng/sai định dạng ⇒ default.
+
+        Đúng ngữ nghĩa site reranker (`RERANKER_CANDIDATE_POOL`…) và router
+        (`ROUTER_FILTER_RANK_BONUS`, `ROUTER_SOURCE_QUOTA`): nhận cả `"12.0"`,
+        và KẸP về `minimum` thay vì rơi default khi số quá nhỏ.
+        """
+        raw = self.text(name, "").strip()
+        if not raw:
+            return default
+        try:
+            return max(minimum, int(float(raw)))
+        except ValueError:
+            return default
 
     def _env_float(
         self,
@@ -174,6 +220,21 @@ class Settings:
         if hi is not None and value > hi:
             return default
         return value
+
+    def _env_float_clamped(self, name: str, default: float, *, lo: float, hi: float) -> float:
+        """Rỗng/sai định dạng ⇒ default; số ngoài khoảng bị KẸP vào `[lo, hi]`.
+
+        Đúng ngữ nghĩa `normalize_min_containment()` cũ (`min(hi, max(lo, value))`),
+        khác `_env_float` — accessor kia trả default khi ngoài khoảng.
+        """
+        raw = self.text(name, "").strip()
+        if not raw:
+            return default
+        try:
+            value = float(raw)
+        except ValueError:
+            return default
+        return min(hi, max(lo, value))
 
     def int_required(self, name: str, default: int) -> int:
         """`int(os.getenv(name, default))` — GIỮ hành vi ném `ValueError` khi env hỏng."""

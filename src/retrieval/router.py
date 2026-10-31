@@ -34,7 +34,6 @@ Bảng `TOPIC_SOURCE_FILTER` — chủ đề → danh sách file nguồn đượ
   gốc trong `data/corpus/**`), thống kê từ benchmark v3 ngày 2026-10-20.
 """
 
-import os
 from dataclasses import dataclass, replace
 from typing import List, Optional
 
@@ -42,7 +41,7 @@ from dotenv import load_dotenv
 from langchain_core.documents import Document
 
 from src.core.classifier import QUESTION_TYPES, TOPICS, _TOPIC_BY_FOLDED
-from src.core.config import DEFAULT_TOP_K, top_k_from_env
+from src.core.config import DEFAULT_TOP_K, settings, top_k_from_env
 from src.text_utils import fold
 from src.retrieval.vector_db import DEFAULT_BM25_WEIGHT, DEFAULT_VECTOR_WEIGHT
 
@@ -120,15 +119,9 @@ def base_config_from_env() -> RetrievalConfig:
     `src.core.config.top_k_from_env()` — một nguồn mặc định duy nhất (REVIEW §3).
     """
     top_k = top_k_from_env()
-
-    try:
-        bm25_weight = float(os.getenv("BM25_WEIGHT", str(DEFAULT_BM25_WEIGHT)))
-    except ValueError:
-        bm25_weight = DEFAULT_BM25_WEIGHT
-    try:
-        chroma_weight = float(os.getenv("CHROMA_WEIGHT", str(DEFAULT_VECTOR_WEIGHT)))
-    except ValueError:
-        chroma_weight = DEFAULT_VECTOR_WEIGHT
+    env = settings()
+    bm25_weight = env._env_float("BM25_WEIGHT", DEFAULT_BM25_WEIGHT)
+    chroma_weight = env._env_float("CHROMA_WEIGHT", DEFAULT_VECTOR_WEIGHT)
 
     return RetrievalConfig(
         top_k=top_k,
@@ -215,17 +208,12 @@ def router_soft_filter_enabled() -> bool:
     Dùng tập giá trị BẬT tường minh (chứ không phải "trừ các giá trị tắt") để
     một giá trị rác trong env không vô tình bật lever.
     """
-    return os.getenv(ROUTER_SOFT_FILTER_ENV, "0").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }
+    return settings()._flag(ROUTER_SOFT_FILTER_ENV, "0")
 
 
 def router_filter_rank_bonus(default: int = DEFAULT_FILTER_RANK_BONUS) -> int:
     """Số hạng được cộng cho chunk thuộc nguồn router chọn (>= 0)."""
-    raw = os.getenv(ROUTER_FILTER_RANK_BONUS_ENV, "").strip()
+    raw = settings()._env_str(ROUTER_FILTER_RANK_BONUS_ENV, "").strip()
     if not raw:
         return default
     try:
@@ -274,7 +262,7 @@ ROUTER_SOURCE_QUOTA_ENV = "ROUTER_SOURCE_QUOTA"
 
 def router_source_quota() -> int:
     """Số suất tối đa cho MỘT nguồn trong danh sách ứng viên (0 = không hạn ngạch)."""
-    raw = os.getenv(ROUTER_SOURCE_QUOTA_ENV, "").strip()
+    raw = settings()._env_str(ROUTER_SOURCE_QUOTA_ENV, "").strip()
     try:
         return max(0, int(float(raw)))
     except ValueError:
