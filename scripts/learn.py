@@ -4,7 +4,8 @@ Vòng lặp: nhập câu hỏi → hệ thống trả lời → người đánh 
 Nếu trả lời sai: dán thông tin đúng → bài học được ghi vào
 data/corpus/ghi_chu_hoc_them.txt (tự đóng gói theo cấu trúc 'Điều N.' để bộ
 chunk nhận được), rebuild ChromaDB (không reset thư mục, tái dùng bge-m3
-đã nạp) và ghi 1 dòng log vào logs/learning/learning_log.csv.
+đã nạp), làm mới cả bộ truy xuất lai (BM25 + vector) và ghi 1 dòng log vào
+logs/learning/learning_log.csv.
 """
 
 import csv
@@ -24,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from ingest import run_ingestion
 from src.generator import GeminiGenerator
 from src.generation.local_slm import LocalSLM
-from src.core.pipeline import HybridRAGPipeline
+from src.core.pipeline import HybridRAGPipeline, RetrieverRebuildError
 from src.retrieval.vector_db import VectorStoreManager
 
 NOTES_PATH = os.path.join("data", "corpus", "ghi_chu_hoc_them.txt")
@@ -133,7 +134,12 @@ def main():
         append_note(question, correction)
         print(f"\nĐã ghi bài học vào '{NOTES_PATH}'. Đang học lại (rebuild collection)...")
         _db, vector_db, _total = run_ingestion(db_manager=db_manager, reset=False)
-        pipeline.vector_db = vector_db
+        try:
+            # Gán vector_db là chưa đủ: BM25 vẫn giữ document cũ ⇒ phải dựng lại retriever.
+            pipeline.replace_vector_db(vector_db)
+        except RetrieverRebuildError as exc:
+            print(f"\n[LỖI] Đã nạp corpus mới nhưng chưa làm mới được bộ truy xuất: {exc}\n")
+            continue
         chunks_after = vector_db._collection.count()
         log_learning(question, result["answer"], correction, chunks_before, chunks_after)
         print(f"HỌC XONG: {chunks_before} → {chunks_after} chunks. Log: '{LOG_PATH}'.")

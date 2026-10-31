@@ -401,7 +401,8 @@ Nội dung chính xác: ...
 
 7. `run_ingestion(db_manager, reset=False)` quét lại **toàn bộ** corpus, chunk lại, nhúng
    lại, xóa collection cũ và tạo mới (không xóa thư mục, tái dùng bge-m3).
-8. Gán `pipeline.vector_db = vector_db` mới; ghi log CSV; in số chunk trước/sau.
+8. Gọi `pipeline.replace_vector_db(vector_db)` (dựng lại cả BM25 + Chroma); ghi log CSV;
+   in số chunk trước/sau.
 
 Đây không phải fine-tune, không phải RAG “học” bằng gradient; nó là **ghi chú vào corpus
 rồi rebuild index**. Tên “learn” dễ gây hiểu nhầm khi bảo vệ; nên gọi đúng là
@@ -409,14 +410,14 @@ rồi rebuild index**. Tên “learn” dễ gây hiểu nhầm khi bảo vệ; 
 
 ### 8.2. Ba vấn đề cần biết
 
-**Vấn đề 1 — retriever đang chạy không được dựng lại.** Sau bước 7, code chỉ gán
-`pipeline.vector_db = vector_db`. `pipeline.ensemble_retriever` vẫn là đối tượng dựng từ
-**trước** khi học: BM25 giữ danh sách chunk cũ trong bộ nhớ; Chroma retriever giữ handle
-cũ. Vì vậy câu hỏi tiếp theo trong cùng phiên có thể **không thấy bài học mới**, đặc biệt
-ở nhánh BM25. Lời nhắc “Hỏi lại câu đó để kiểm chứng kiến thức mới” vì thế không đáng
-tin cậy. Cách sửa tối thiểu: sau khi có `vector_db` mới, đặt
-`pipeline.ensemble_retriever = None` rồi gọi `pipeline._init_hybrid_retriever()` (hoặc
-dựng lại pipeline). Đây là bug thật, nên đưa vào phần hạn chế của báo cáo.
+**Vấn đề 1 — retriever đang chạy không được dựng lại (đã sửa).** Trước bản vá, sau
+bước 7 code chỉ gán `pipeline.vector_db = vector_db`; `pipeline.ensemble_retriever` vẫn
+là đối tượng dựng từ **trước** khi học: BM25 giữ danh sách chunk cũ trong bộ nhớ, Chroma
+retriever giữ handle cũ, nên câu hỏi tiếp theo có thể **không thấy bài học mới** (đặc
+biệt ở nhánh BM25). Mã hiện tại gọi `pipeline.replace_vector_db(vector_db)`: dựng
+retriever mới trước rồi hoán đổi nguyên tử cả DB lẫn retriever; nếu dựng hỏng thì ném
+`RetrieverRebuildError`, giữ nguyên trạng thái cũ và GUI/CLI phải báo lỗi thay vì báo
+thành công. Test ghim hành vi: `tests/test_pipeline_vector_db_refresh.py`.
 
 **Vấn đề 2 — không có kiểm chứng nội dung người dùng dán.** Bất kỳ ai cũng có thể nhập
 một “đáp án đúng” sai hoặc chứa chỉ dẫn độc hại; nó được ghi thẳng vào corpus. Không có
@@ -602,19 +603,21 @@ nhánh rỗng bằng `return []` hoặc ném lỗi cấu hình; khi đó generat
 `REFUSAL_TEXT`; Hit@K của các câu bị lọc oan sẽ về 0 (trung thực hơn so với việc âm thầm
 dùng kết quả sai nguồn), nhưng false refusal tăng. Cần đo cả hai.
 
-**E.** `scripts/learn.py` chỉ gán `pipeline.vector_db = vector_db` (`:131`), không cập nhật
-`pipeline.ensemble_retriever`. BM25 retriever vẫn giữ danh sách tài liệu cũ; Chroma
-retriever vẫn là handle cũ. Vì vậy bài học mới không được truy xuất (hoặc chỉ được qua
-nhánh Chroma nếu handle tình cờ trỏ sang collection mới). Sửa:
+**E.** Trước bản vá, `scripts/learn.py` chỉ gán `pipeline.vector_db = vector_db`, không
+cập nhật `pipeline.ensemble_retriever`: BM25 retriever vẫn giữ danh sách tài liệu cũ,
+Chroma retriever vẫn là handle cũ, nên bài học mới không được truy xuất (hoặc chỉ được
+qua nhánh Chroma nếu handle tình cờ trỏ sang collection mới). Nay script gọi
+`pipeline.replace_vector_db(vector_db)`; nếu dựng lại hỏng, script in lỗi kèm
+`RetrieverRebuildError` và bỏ qua lượt học thay vì chạy tiếp với retriever cũ:
 
 ```python
-pipeline.vector_db = vector_db
-pipeline.ensemble_retriever = None
-pipeline._init_hybrid_retriever()
+_db, vector_db, _total = run_ingestion(db_manager=db_manager, reset=False)
+pipeline.replace_vector_db(vector_db)   # dựng lại BM25 từ collection mới
 ```
 
-Ba dòng này dựng lại BM25 từ collection mới. Nên thêm test: sau khi thêm một file fake,
-`pipeline.retrieve("từ khóa mới", k=4)` phải trả chunk từ file mới.
+Test tương ứng: `tests/test_pipeline_vector_db_refresh.py` kiểm tra sau khi thay DB,
+`pipeline.retrieve("từ khóa mới", k=4)` trả chunk từ corpus mới và không còn chunk chỉ
+có trong corpus cũ.
 
 **F.** `$?` = 0. `ask_once` bắt `GeneratorError`, in `[LỖI GEMINI]`, rồi `return True`
 (`main.py:203–205`); `main` gọi `sys.exit(0 if ok else 1)` (`:248–249`), nên `True` →

@@ -482,10 +482,18 @@ class RAGApplication(tk.Tk):
             reset_mode = not reuse_model
             new_manager, new_vector_db, total = run_ingestion(db_manager=target_manager, reset=reset_mode)
 
-            # Cập nhật pipeline ngay sau khi ingest thành công
+            # Cập nhật pipeline ngay sau khi ingest thành công. Phải dựng lại CẢ bộ truy
+            # xuất (BM25 giữ danh sách document cũ nếu chỉ gán vector_db) — xem REVIEW §2.1.
             self.db_manager = new_manager
             if self.pipeline:
-                self.pipeline.vector_db = new_vector_db
+                try:
+                    self.pipeline.replace_vector_db(new_vector_db)
+                except Exception as exc:
+                    # Dữ liệu đã nạp nhưng tầng truy xuất chưa theo corpus mới: báo lỗi
+                    # rõ ràng, KHÔNG hiển thị thông báo thành công.
+                    self.after(0, self._append_ingest_log, f"\n[LỖI RETRIEVER] Đã nạp {total} chunks nhưng chưa làm mới được bộ truy xuất: {exc}\n")
+                    self.after(0, self._on_ingest_error, f"Đã nạp {total} chunks vào ChromaDB nhưng chưa làm mới được bộ truy xuất:\n{exc}")
+                    return
 
             msg = f"\n[HOÀN TẤT] Nạp thành công {total} chunks vào ChromaDB!\n"
             self.after(0, self._append_ingest_log, msg)

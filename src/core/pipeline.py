@@ -80,6 +80,14 @@ from langchain_community.retrievers import BM25Retriever
 DEFAULT_OVERSAMPLE_FACTOR = 2
 
 
+class RetrieverRebuildError(RuntimeError):
+    """Không dựng lại được bộ truy xuất sau khi thay vector DB.
+
+    Tách khỏi lỗi chung để caller (GUI/CLI) biết chính xác: DB đã nạp nhưng tầng
+    truy xuất chưa được làm mới — phải báo lỗi, không được coi là thành công.
+    """
+
+
 def dense_original_query_enabled() -> bool:
     """V1/PA-48a: chỉ nhánh dense (Chroma) nhận query NGUYÊN VĂN; BM25 vẫn `fold`.
 
@@ -156,39 +164,100 @@ class HybridRAGPipeline:
         elif self.use_hybrid:
             self._init_hybrid_retriever()
 
-    def _init_hybrid_retriever(self) -> None:
-        """Tự động thiết lập BM25 và kết hợp với ChromaDB qua EnsembleRetriever (RRF)."""
+    def _build_hybrid_retriever(self, vector_db: Any, *, strict: bool) -> Optional[Any]:
+        """Dựng retriever lai (BM25 + Chroma) cho một vector DB, KHÔNG đụng trạng thái pipeline.
+
+        Tách khỏi `_init_hybrid_retriever` để `replace_vector_db` dựng được bản mới TRƯỚC
+        rồi hoán đổi nguyên tử: dựng hỏng thì pipeline vẫn giữ DB + retriever cũ.
+
+        `strict=False` giữ đúng ngữ nghĩa khởi tạo cũ — không dựng được (không có `.get()`,
+        collection rỗng, lỗi BM25) thì trả `None` để lùi về Chroma thuần. `strict=True` là
+        đường sau ingest: mọi trường hợp không dựng được đều ném `RetrieverRebuildError`
+        để caller báo lỗi thật, không được coi là thành công.
+        """
+        # Nếu vector_db vốn đã là một retriever có phương thức invoke
+        if hasattr(vector_db, "invoke") and not hasattr(vector_db, "get"):
+            return vector_db
+
+        if not hasattr(vector_db, "get"):
+            if not strict:
+                return None
+            raise RetrieverRebuildError(
+                f"vector DB kiểu {type(vector_db).__name__} không có .get() nên không dựng được chỉ mục BM25."
+            )
+
         try:
-            # Nếu vector_db vốn đã là một retriever có phương thức invoke
-            if hasattr(self.vector_db, "invoke") and not hasattr(self.vector_db, "get"):
-                self.ensemble_retriever = self.vector_db
-                return
-
-            if not hasattr(self.vector_db, "get"):
-                return
-
-            docs = extract_documents_from_chroma(self.vector_db)
+            docs = extract_documents_from_chroma(vector_db)
             if not docs:
-                return
+                if not strict:
+                    return None
+                raise RetrieverRebuildError("Vector DB không có document nào để dựng chỉ mục BM25.")
 
             bm25 = BM25Retriever.from_documents(docs, preprocess_func=bm25_tokenize)
             bm25.k = 12  # Oversampling: truy xuất 12 ứng viên để tăng Recall/Hit@K
 
-            chroma_ret = self.vector_db.as_retriever(search_kwargs={"k": 12})  # Đồng bộ với BM25
+            chroma_ret = vector_db.as_retriever(search_kwargs={"k": 12})  # Đồng bộ với BM25
 
             weights = [self.bm25_weight, self.vector_weight]
-            self.ensemble_retriever = EnsembleRetriever(
+            return EnsembleRetriever(
                 retrievers=[bm25, chroma_ret],
                 weights=weights,
                 c=DEFAULT_RRF_C,
                 id_key="chunk_id",
             )
-            print(
-                f"[HybridSearch] Đã kích hoạt True Hybrid Search (BM25={weights[0]:.2f} + Chroma={weights[1]:.2f}, c={DEFAULT_RRF_C})."
-            )
+        except RetrieverRebuildError:
+            raise
         except Exception as exc:
-            print(f"[HybridSearch] Cảnh báo: không thể khởi tạo BM25 ({exc}) — tự động lùi về Chroma vector search.")
+            if not strict:
+                print(
+                    f"[HybridSearch] Cảnh báo: không thể khởi tạo BM25 ({exc}) — tự động lùi về Chroma vector search."
+                )
+                return None
+            raise RetrieverRebuildError(f"Không dựng được BM25/Ensemble: {exc}") from exc
+
+    def _init_hybrid_retriever(self) -> None:
+        """Tự động thiết lập BM25 và kết hợp với ChromaDB qua EnsembleRetriever (RRF)."""
+        built = self._build_hybrid_retriever(self.vector_db, strict=False)
+        self.ensemble_retriever = built
+        if built is not None and getattr(built, "retrievers", None):
+            print(
+                f"[HybridSearch] Đã kích hoạt True Hybrid Search (BM25={self.bm25_weight:.2f} + Chroma={self.vector_weight:.2f}, c={DEFAULT_RRF_C})."
+            )
+
+    def replace_vector_db(self, vector_db: Any) -> None:
+        """Thay vector DB và DỰNG LẠI retriever lai — API chính thức sau khi ingest.
+
+        Dựng retriever mới trước, chỉ hoán đổi khi dựng xong; hỏng thì pipeline giữ
+        nguyên DB + retriever cũ (không rơi vào trạng thái nửa vời, không để BM25 cũ
+        tiếp tục phục vụ trên corpus mới). Ném `RetrieverRebuildError` để GUI/CLI báo
+        lỗi thật thay vì báo thành công.
+
+        - `use_hybrid=False`: chỉ thay DB; nhánh vector thuần đọc thẳng `self.vector_db`.
+        - Pipeline đang dùng retriever tùy chỉnh: không suy ra được retriever mới từ DB
+          nên từ chối thay, tránh im lặng giữ retriever cũ trên corpus mới.
+        """
+        if self.custom_retriever is not None:
+            raise RetrieverRebuildError(
+                "Pipeline đang dùng retriever tùy chỉnh; hãy tạo pipeline mới hoặc truyền retriever mới thay vì thay vector DB."
+            )
+
+        if not self.use_hybrid:
+            self.vector_db = vector_db
             self.ensemble_retriever = None
+            self.last_leg_ranks = None
+            self.last_rerank_call = None
+            return
+
+        new_retriever = self._build_hybrid_retriever(vector_db, strict=True)
+        # Hoán đổi nguyên tử sau khi dựng xong: DB và retriever luôn đi cùng một corpus.
+        self.vector_db = vector_db
+        self.ensemble_retriever = new_retriever
+        self.last_leg_ranks = None
+        self.last_rerank_call = None
+        if getattr(new_retriever, "retrievers", None):
+            print(
+                f"[HybridSearch] Đã dựng lại retriever sau ingest (BM25={self.bm25_weight:.2f} + Chroma={self.vector_weight:.2f}, c={DEFAULT_RRF_C})."
+            )
 
     # ------------------------------------------------------------------ T3: đo hạng từng nhánh
     def _collect_leg_ranks(
