@@ -20,8 +20,8 @@
 (điền thẳng 3 câu hỏi từ `chuong3_kien_truc.md` mục 3.1.1 — nguồn docs/planning/ROADMAP.md mục 2)
 
 ### 1.4. Phạm vi và đối tượng
-- Trong phạm vi: 26 văn bản quy chế học vụ AGU (3 tầng corpus; `data/corpus/` trên đĩa có 29 tệp nhưng 3 PDF thêm 28-10 **chưa ingest** nên index sản xuất vẫn đúng 26 nguồn / 361 chunk), benchmark 100 câu v3, generator Qwen local/Gemini, không fine-tune embedding, không đổi vector DB. (nguồn: docs/planning/ROADMAP.md mục 4, 5; `README.md` §4.1)
-- Ngoài phạm vi: OCR chất lượng cao, mở rộng corpus ngoài học vụ, train mới embedding. (nguồn: docs/planning/ROADMAP.md mục 5)
+- Trong phạm vi: 26 văn bản quy chế học vụ AGU (3 tầng corpus; `data/corpus/` trên đĩa có 29 tệp nhưng 3 PDF thêm 28-10 **chưa ingest** nên index sản xuất vẫn đúng 26 nguồn / 361 chunk), benchmark 100 câu v3, generator Qwen local/Gemini, **không tinh chỉnh mô hình ngôn ngữ nào (embedding lẫn generator)**, không đổi vector DB. (nguồn: docs/planning/ROADMAP.md mục 4, 5; `README.md` §4.1)
+- Ngoài phạm vi: OCR chất lượng cao, mở rộng corpus ngoài học vụ, train mới embedding hoặc fine-tune generator (thực nghiệm LoRA SFT có trong repo nhưng không phải đóng góp công bố). (nguồn: docs/planning/ROADMAP.md mục 5)
 
 ### 1.5. Đóng góp của đề tài
 - Bộ phân loại 2 nhãn chạy offline (0 quota cloud) với guardrail suy giảm mềm.
@@ -76,7 +76,7 @@
 ### 5.1. Kết luận (trả lời 3 câu hỏi nghiên cứu — số chép từ chương 4)
 1. Bộ phân loại 2 nhãn: topic **85,0%**, question_type **81,0%**, recall lớp hiếm 100% — đạt cổng thiết kế. (nguồn: `logs/classifier/accuracy_report.md`)
 2. Gói thay đổi của lượt WITH (router chọn tham số + thu hẹp nguồn, tách truy vấn con, prompt theo loại) cải thiện rõ nhất nhóm TRA_CUU (Hit@3 58,6% → 77,0%); nhóm SO_SANH tăng MRR 0,4333 → 0,8286 nhờ tách truy vấn con; nhóm chủ đề tăng mạnh: chương trình đào tạo +45,5 pp, khen thưởng sinh viên +40,0 pp. **Không quy riêng cho lọc nguồn**: phép đo tách riêng trên 811 item (V2, 27-10) cho lọc mềm **−18 item** so all-off (CI cụm [−4,62; −0,69] điểm %, p=2,77e−4). (nguồn: `outputs/ab_comparison.md` mục 2, 3; `tmp/v2_rescore.json`)
-3. Bật tầng phân loại tốt hơn trên tổng thể **trong gói thay đổi đó**: Hit@3 +27,1% tương đối, MRR +50,9% tương đối, GATE ĐẠT (ngưỡng −5%); giá phải trả: +3 câu từ chối oan trên nền ~50% sẵn có, number support −3,05 pp. (nguồn: `outputs/ab_comparison.md` mục 1, 5, 8)
+3. Bật tầng phân loại tốt hơn trên tổng thể **trong gói thay đổi đó**: Hit@3 +27,1% tương đối, MRR +50,9% tương đối, GATE ĐẠT (ngưỡng −5%); giá phải trả: +3 câu từ chối oan trên nền ~50% sẵn có, number support −3,05 pp. Đây là kết quả của lượt **WITH chủ động bật** `ENABLE_CLASSIFIER=1`; mặc định shipped vẫn là `0` (công tắc an toàn giữ hành vi pipeline cũ, xem 4.5). (nguồn: `outputs/ab_comparison.md` mục 1, 5, 8; `docs/architecture/SYSTEM_ARCHITECTURE.md` bảng cờ)
 
 ### 5.2. Hạn chế
 (tóm tắt 5 mục hạn chế từ `chuong4_thuc_nghiem.md` mục 4.4.3: latency tham chiếu, NGOAI precision 25%, nhóm n nhỏ, faithfulness heuristic, từ chối đúng 33,3%)

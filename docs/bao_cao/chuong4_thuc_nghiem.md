@@ -171,3 +171,9 @@ Phân bố dự đoán {TRA_CUU 70, SO_SANH 14, NGOAI_PHAM_VI 11, THU_TUC 5} so 
 ## 4.5. Tiểu kết
 
 Trên cùng benchmark v3, cùng tham số, chỉ khác một biến `ENABLE_CLASSIFIER`, **gói thay đổi của lượt WITH** (router chọn tham số + thu hẹp nguồn, tách truy vấn con cho `SO_SANH`, prompt theo loại) giúp Hit@3 tăng 27,1% tương đối (60,8% → 77,3%) và MRR tăng 50,9% tương đối (0,5097 → 0,7689) mà không tụt chỉ số truy xuất nào vượt ngưỡng −5%; nhóm câu tăng rõ nhất là chương trình đào tạo (+45,5 pp) và khen thưởng sinh viên (+40,0 pp), cùng SO_SANH nhờ tách truy vấn con. **Không quy riêng cho lọc nguồn**: A/B này bật ba thay đổi cùng lúc, còn phép đo tách riêng trên vòng 811 item (V2, 27-10) cho thấy lọc mềm **−18 item** so với all-off (518 vs 536; CI cụm [−4,62; −0,69] điểm %, p=2,77e−4) và chậm 2,76 s vs 0,18 s/item. Giá phải trả được lượng hóa: 3 câu từ chối oan tăng thêm (trên nền ~50% sẵn có của generator), number support −3,05 pp — đều nằm ngoài chỉ số truy xuất là trọng tâm cổng đánh giá.
+
+*Về trạng thái mặc định:* `ENABLE_CLASSIFIER=0` được giữ làm mặc định shipped vì nó là **công tắc an toàn** —
+khi tắt, pipeline chạy y hệt hành vi trước khi thêm tầng phân loại nên mọi số neo cũ còn hiệu lực
+(bất biến tương thích P3.2/P5.4, `ROADMAP.md` mục 3). Kết luận 4.5 vì vậy mô tả lượt WITH **có chủ đích**,
+không phải hành vi mặc định. Điều kiện để đổi mặc định: tách được đóng góp từng thành phần trong gói
+(hướng đo ở 5.3) rồi xác nhận bằng một round đăng ký trước.
