@@ -5,6 +5,20 @@ import pytest
 from src.core.pipeline import HybridRAGPipeline
 from src.text_utils import fold
 
+
+@pytest.fixture(autouse=True)
+def _khoa_lever_chuan_hoa(monkeypatch):
+    """Test này dựng pipeline thật với SLM giả, nên phải chạy ở thể chế mặc định đã đăng ký.
+
+    `src/core/classifier.py:38` nạp `.env` bằng `load_dotenv()` ngay ở import; nếu máy dev
+    bật `NORMALIZE_SANITY_GUARD=1` thì guard từ chối chuỗi chuẩn hóa của `FakeLocalSLM`
+    (containment thấp) và pipeline truyền câu thô xuống generator => các assert về
+    `received_query` đỏ dù mã nguồn không đổi. Ghim giá trị đăng ký (dotenv không ghi đè
+    biến đã đặt) trả lại đúng thể chế mà test mô tả.
+    """
+    monkeypatch.setenv("NORMALIZE_SANITY_GUARD", "0")
+    monkeypatch.setenv("NORMALIZE_MIN_CONTAINMENT", "0.3")
+
 # Câu chuẩn hóa giả lập từ Qwen (có dấu tiếng Việt) — chỉ dùng hằng này xuyên suốt
 # để khỏi lệch chính tả giữa fake SLM và phần assert.
 NORMALIZED = "Sinh vien có 62 diem ren luyen duoc xep loai gi?"

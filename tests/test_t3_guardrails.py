@@ -106,6 +106,13 @@ def _env_and_reranker_sandbox():
         os.environ.pop(key, None)
     for key in OFF_LEVERS:
         os.environ[key] = "0"
+    # `src/core/classifier.py` gọi `load_dotenv()` NGAY ở import, nên một cờ BẬT trong
+    # `.env` của máy dev lọt vào mọi tiến trình test (đã xác minh 31-10: `NORMALIZE_SANITY_GUARD=1`
+    # trong `.env` làm lệch token thể chế cache => 9 test golden khóa cache đỏ trên máy này).
+    # dotenv KHÔNG ghi đè biến đã tồn tại, nên ghim sẵn giá trị đăng ký là đủ để bất biến
+    # "thể chế mặc định giữ khóa cũ từng byte" đo đúng thứ nó muốn đo.
+    os.environ["NORMALIZE_SANITY_GUARD"] = "0"
+    os.environ["NORMALIZE_MIN_CONTAINMENT"] = "0.3"
     broken = types.ModuleType("sentence_transformers")
     broken.CrossEncoder = lambda *a, **k: (_ for _ in ()).throw(
         RuntimeError("test môi trường: cấm tải model hàng GB")

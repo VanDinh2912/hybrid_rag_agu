@@ -56,6 +56,19 @@ def qwen():
     return QwenGenerator(use_cache=False)
 
 
+@pytest.fixture(autouse=True)
+def _khoa_lever_chuan_hoa(monkeypatch):
+    """Giữ thể chế cache ở mặc định đã đăng ký bất kể `.env` của máy dev.
+
+    `src/core/classifier.py:38` gọi `load_dotenv()` ngay ở import nên một cờ BẬT trong
+    `.env` (ca trực 31-10: `NORMALIZE_SANITY_GUARD=1`) lọt vào tiến trình test và làm đổi
+    token thể chế => khóa cache lệch, hai test bất biến khóa đỏ. dotenv không ghi đè biến
+    đã đặt, nên ghim trước giá trị đăng ký là đủ; không đổi mặc định nào của mã nguồn.
+    """
+    monkeypatch.setenv("NORMALIZE_SANITY_GUARD", "0")
+    monkeypatch.setenv("NORMALIZE_MIN_CONTAINMENT", "0.3")
+
+
 # ------------------------------------------------------------------------ cờ mặc định
 def test_flag_default_off(monkeypatch):
     monkeypatch.delenv("ENABLE_DECOUPLED_REFUSAL", raising=False)

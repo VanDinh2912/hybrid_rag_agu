@@ -81,6 +81,10 @@ RERANKER_ENVS = (
 def _clean_env(monkeypatch):
     for name in RERANKER_ENVS:
         monkeypatch.delenv(name, raising=False)
+    # `load_dotenv()` ở import (src/core/classifier.py:38) có thể đã nạp lever từ `.env`
+    # của máy dev; dotenv không ghi đè biến đã đặt nên ghim giá trị đăng ký trước khi test chạy.
+    monkeypatch.setenv("NORMALIZE_SANITY_GUARD", "0")
+    monkeypatch.setenv("NORMALIZE_MIN_CONTAINMENT", "0.3")
     reranker_module.reset_reranker_cache()
     reranker_module.last_call.record()
     yield
