@@ -20,6 +20,10 @@ Phạm vi (đúng B3): adapter SFT trong `models/`, toàn bộ `outputs/`, `logs
 được quét: `indexes/experimental/chroma_db*` (Phase 2b) và `.cache/ocr/*` (Phase 2) — glob cũ vẫn
 giữ nên máy còn layout cũ không mất scope. Artifact classifier/retrieval trong `models/` cũng được
 ghi để manifest đủ bộ — chúng chưa nằm trong phạm vi ignore của B3 (xem PA-33).
+
+Ngoại lệ có chủ đích: `logs/feedback/` và `logs/learning/` là log TỰ SINH VÔ HẠN (mỗi thao tác
+người dùng thêm một bản ghi). Ghim chúng sẽ biến mỗi lần lưu phản hồi thành một lần `--check` đỏ,
+nên hai vùng này bị loại khỏi phạm vi — xem `RUNTIME_UNBOUNDED_PREFIXES`.
 """
 
 from __future__ import annotations
@@ -37,6 +41,19 @@ DEFAULT_MANIFEST = ROOT / "ARTIFACT_MANIFEST.json"
 CHUNK = 1024 * 1024
 SKIP_DIRS = {"__pycache__", ".ipynb_checkpoints"}
 SKIP_NAMES = {".DS_Store", "Thumbs.db", "desktop.ini"}
+
+# Vùng log TỰ SINH VÔ HẠN — không ghim vào manifest.
+# `logs/feedback/` (bản ghi phản hồi + hàng đợi chờ duyệt) và `logs/learning/` (CSV học)
+# lớn thêm ở MỖI thao tác người dùng. Ghim chúng nghĩa là mỗi lần lưu phản hồi làm
+# `--check` đỏ và manifest phình mãi mà không có mốc dừng — trái mục đích "phát hiện
+# artifact đổi byte". Các log báo cáo có hạn (benchmark, classifier, export, README)
+# vẫn được ghim.
+RUNTIME_UNBOUNDED_PREFIXES = ("logs/feedback", "logs/learning")
+
+
+def _is_runtime_unbounded(rel: str) -> bool:
+    """True nếu `rel` nằm trong một vùng log tự sinh vô hạn (so khớp theo ranh giới thư mục)."""
+    return any(rel == p or rel.startswith(p + "/") for p in RUNTIME_UNBOUNDED_PREFIXES)
 
 
 def _scope_dirs() -> list[tuple[str, Path]]:
@@ -108,6 +125,8 @@ def build_manifest() -> dict:
             if f.name in SKIP_NAMES or f.name.startswith("~$"):
                 continue
             rel = f.relative_to(ROOT).as_posix()
+            if _is_runtime_unbounded(rel):
+                continue
             if rel in seen:
                 continue
             seen.add(rel)
