@@ -15,6 +15,7 @@ KHÔNG sửa src/assessment/evaluation.py. KHÔNG bịa nhận xét — mỗi k�
 
 from __future__ import annotations
 
+import argparse
 import json
 from collections import Counter, defaultdict
 from datetime import date
@@ -108,7 +109,39 @@ def group_metrics(entries: dict, ids: list[str]) -> dict:
     }
 
 
-def main() -> None:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """PA-29(c): thêm `--help`/`--dry-run` — script này ghi đè `outputs/` nên phải xem trước."""
+    parser = argparse.ArgumentParser(
+        prog="src/assessment/analyze_ab.py",
+        description="Phân tích 2 JSON A/B + vẽ 3 biểu đồ vào outputs/ (chỉ đọc nguồn).",
+        epilog="Chạy `--dry-run` trước: in đường dẫn nguồn/đích rồi thoát, không ghi gì.",
+    )
+    parser.add_argument("--dry-run", action="store_true",
+                        help="In các tệp sẽ đọc/ghi rồi thoát; không ghi outputs/, không vẽ hình.")
+    return parser.parse_args(argv)
+
+
+def print_dry_run() -> int:
+    sources = [BENCH_PATH, WITHOUT_PATH, WITH_PATH, CLASSIFIER_RESULTS]
+    targets = [OUT_MD, FIG_DIR / "fig1_overall.png", FIG_DIR / "fig2_hit_by_type.png",
+               FIG_DIR / "fig3_confusion.png"]
+    print("[DRY-RUN] Phân tích A/B — không ghi tệp nào.")
+    print("  nguồn (chỉ đọc):")
+    for p in sources:
+        state = f"{p.stat().st_size:,} B" if p.exists() else "THIẾU"
+        print(f"    - {p.relative_to(ROOT)}: {state}")
+    print("  đích (sẽ ghi đè):")
+    for p in targets:
+        state = "đã có — GHI ĐÈ" if p.exists() else "chưa có — tạo mới"
+        print(f"    - {p.relative_to(ROOT)}: {state}")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    if args.dry_run:
+        return print_dry_run()
+
     questions, wo, w, wo_e, w_e = load_all()
     ids = sorted(questions.keys())
     in_corpus_ids = [i for i in ids if questions[i].get("in_corpus")]
@@ -457,6 +490,7 @@ def main() -> None:
     n_oan_wo = len(oan_wo)
     print("[SPOT-CHECK] 3) Từ chối oan WITHOUT = %d | WITH = %d" % (n_oan_wo, len(oan_w)))
     print("[GATE] " + ("ĐẠT" if gate_pass and ss_gain > 0 else "CẦN XEM LẠI"))
+    return 0
 
 
 if __name__ == "__main__":

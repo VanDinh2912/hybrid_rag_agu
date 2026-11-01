@@ -14,9 +14,9 @@ snippet cuối `DECISION_LOG.md` đã dùng, nhưng lần này có test.
 (`src/…`, `tools/…`, `scripts/…`, `tests/…`, `data/…`, `docs/…`, `models/…`, `outputs/…`) phải tồn tại;
 (b) mỗi *lệnh* trong block code trỏ tới một script của repo phải có thật, và nếu script đó dùng
 `argparse` thì `--help` phải chạy với mã 0 (đó là chế độ "in hướng dẫn, không làm gì"). Script
-không có `argparse` (vd. `ingest.py`, `scripts/learn.py`) được xếp vào nhóm **cảnh báo** chứ không phải lỗi:
-đề bài yêu cầu "--help hoặc dry-run", nhưng thêm CLI vào các script đó là việc cần duyệt, không phải
-việc của bộ kiểm thử.
+không có `argparse` (vd. `ui/app.py` chạy bằng Tkinter/Streamlit) được xếp vào nhóm **cảnh báo** chứ
+không phải lỗi; riêng script GUI đã đăng ký trong `HELP_WHITELIST` (PA-29d) thì miễn hẳn vì `--help`
+vô nghĩa với ứng dụng GUI. Mọi script còn lại phải có `--help`/`--dry-run` (PA-29).
 
 Chỉ-đọc tuyệt đối: module không ghi file nào trừ khi người chạy truyền `--json`.
 
@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -39,6 +40,18 @@ ROOT = Path(__file__).resolve().parents[2]
 
 DECISION_LOG = "docs/DECISION_LOG.md"
 DOC_FILES = ("README.md", "docs/planning/ROADMAP.md")
+
+# PA-29(d): ứng dụng GUI chạy bằng `tkinter`/`streamlit run …`, không phải CLI ⇒ `--help` vô nghĩa.
+# Đăng ký ở đây thay vì thêm argparse giả; README ghi rõ lý do ("chạy: streamlit run …").
+HELP_WHITELIST = {
+    "ui/app.py": "ứng dụng Tkinter — chạy `python ui/app.py`, không có tham số CLI",
+    "ui/demo_streamlit.py": "ứng dụng Streamlit — chạy `streamlit run ui/demo_streamlit.py`",
+}
+
+# Biến môi trường chứa bí mật/khoá API — KHÔNG truyền xuống tiến trình con khi chạy `--help`.
+SECRET_ENV = (
+    "GEMINI_API_KEY", "GOOGLE_API_KEY", "GOOGLE_GENAI_API_KEY", "HF_TOKEN", "HUGGING_FACE_HUB_TOKEN",
+)
 
 # Tiền tố đường dẫn repo — chỉ những cái này mới bị kiểm tồn tại.
 REPO_TOP = ("src/", "tools/", "tests/", "data/", "docs/", "ui/", "models/", "outputs/", "logs/", "scripts/",
@@ -320,9 +333,14 @@ def check_command_scripts(root: Path, cmds: list[dict]) -> tuple[list[str], list
             continue
         if not (root / c["script"]).exists():
             problems.append(f"{c['doc']}: lệnh gọi `{c['script']}` nhưng không có file — `{c['line'][:70]}`")
-        elif not c["has_argparse"]:
+        elif not c["has_argparse"] and c["script"] not in HELP_WHITELIST:
             warnings.append(f"{c['doc']}: `{c['script']}` không có argparse ⇒ không có chế độ --help/dry-run")
     return problems, sorted(set(warnings))
+
+
+def _help_env() -> dict[str, str]:
+    """Môi trường cho tiến trình `--help`: bỏ khoá API/bí mật, không để chúng lọt sang con."""
+    return {k: v for k, v in os.environ.items() if k not in SECRET_ENV}
 
 
 def run_help(root: Path, scripts: list[str], timeout: int = 90) -> list[dict]:
@@ -336,7 +354,7 @@ def run_help(root: Path, scripts: list[str], timeout: int = 90) -> list[dict]:
         try:
             proc = subprocess.run(argv, cwd=str(root), capture_output=True, text=True,
                                   timeout=timeout, encoding="utf-8", errors="replace",
-                                  stdin=subprocess.DEVNULL)
+                                  stdin=subprocess.DEVNULL, env=_help_env())
             rc, err = proc.returncode, (proc.stderr or "")
         except subprocess.TimeoutExpired:
             rc, err = 124, "timeout"
@@ -352,6 +370,10 @@ def check_all(root: Path, *, run_help_checks: bool = False) -> dict:
     log_problems = check_decision_log(rows) + check_source_paths(root, rows)
     files_problems, notes = check_referenced_files(root)
     cmds = commands_from_docs(root)
+    exempt = sorted({c["script"] for c in cmds if c["kind"] == "repo-script"
+                     and c["script"] in HELP_WHITELIST})
+    if exempt:
+        notes.append("miễn --help (script GUI đã đăng ký PA-29d): " + ", ".join(f"`{s}`" for s in exempt))
     cmd_problems, cmd_warnings = check_command_scripts(root, cmds)
     help_results: list[dict] = []
     help_problems: list[str] = []
@@ -371,6 +393,7 @@ def check_all(root: Path, *, run_help_checks: bool = False) -> dict:
         "repo_scripts": len({c["script"] for c in cmds if c["kind"] == "repo-script" and c["script"]}),
         "command_problems": cmd_problems,
         "command_warnings": cmd_warnings,
+        "help_exempt": exempt,
         "help_checked": len(help_results),
         "help_results": help_results,
         "help_problems": help_problems,

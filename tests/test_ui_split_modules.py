@@ -160,8 +160,10 @@ def test_execute_search_tra_ket_qua_va_thoi_gian():
 def test_execute_ingest_goi_log_callback_va_thay_retriever(monkeypatch):
     logged = []
     new_db = object()
+    seen = {}
 
-    def _fake_run(db_manager=None, reset=True, log=print):
+    def _fake_run(db_manager=None, reset=True, log=print, allow_reset=False):
+        seen["allow_reset"] = allow_reset
         log("[1/4] dòng giả")
         return "manager-moi", new_db, 7
 
@@ -173,6 +175,8 @@ def test_execute_ingest_goi_log_callback_va_thay_retriever(monkeypatch):
     assert logged == ["[1/4] dòng giả"]
     assert outcome.total == 7 and outcome.vector_db is new_db
     assert pipeline.replaced == [new_db]
+    # PA-16: GUI đã hỏi xác nhận trước khi gọi ⇒ cổng env không được chặn oan đường GUI.
+    assert seen["allow_reset"] is True
 
 
 def test_execute_ingest_retriever_hong_van_giu_outcome(monkeypatch):

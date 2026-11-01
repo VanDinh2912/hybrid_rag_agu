@@ -38,11 +38,15 @@ def execute_ingest(
 
     `log` nhận từng dòng của `run_ingestion` (mặc định là `print` cho CLI). GUI truyền
     callback đẩy vào queue — không thay `sys.stdout` toàn cục.
+
+    PA-16: GUI đã hỏi xác nhận (`askyesno` ở `on_start_ingest`) trước khi gọi hàm này, nên
+    truyền `allow_reset=True`. Mọi đường gọi không có hộp thoại vẫn phải qua cổng env
+    `INGEST_ALLOW_RESET` của `run_ingestion`.
     """
     target_manager = db_manager if (reuse_model and db_manager) else None
     reset_mode = not reuse_model  # reset=False khi tái sử dụng để tránh khoá file ChromaDB
     new_manager, new_vector_db, total = run_ingestion(
-        db_manager=target_manager, reset=reset_mode, log=log
+        db_manager=target_manager, reset=reset_mode, log=log, allow_reset=True
     )
     outcome = IngestOutcome(db_manager=new_manager, vector_db=new_vector_db, total=total)
     if pipeline is not None:

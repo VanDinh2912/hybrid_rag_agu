@@ -8,6 +8,7 @@ chunk nhận được), rebuild ChromaDB (không reset thư mục, tái dùng bg
 logs/learning/learning_log.csv.
 """
 
+import argparse
 import csv
 import os
 import re
@@ -22,17 +23,47 @@ load_dotenv()
 # Script chạy từ gốc repo nhưng nằm ở scripts/ ⇒ tự thêm gốc dự án vào sys.path.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from ingest import run_ingestion
+from ingest import _corpus_files, _index_facts, describe_reset, run_ingestion
 from src.generator import GeminiGenerator
 from src.generation.local_slm import LocalSLM
 from src.core.config import DEFAULT_TOP_K
-from src.core.paths import CORPUS_DIR, LOGS_DIR
+from src.core.paths import CHROMA_DIR, CORPUS_DIR, LOGS_DIR
 from src.core.pipeline import HybridRAGPipeline, RetrieverRebuildError
 from src.retrieval.vector_db import VectorStoreManager
 
 # Neo theo gốc dự án (REVIEW §4) — script chạy được từ bất kỳ CWD nào.
 NOTES_PATH = str(CORPUS_DIR / "ghi_chu_hoc_them.txt")
 LOG_PATH = str(LOGS_DIR / "learning" / "learning_log.csv")
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """PA-29(c): thêm `--help`/`--dry-run` — bắt buộc trước khi chạy thật."""
+    parser = argparse.ArgumentParser(
+        prog="scripts/learn.py",
+        description="Chế độ test & học có trọng tài: hỏi - đáp, sai thì dạy lại và rebuild index.",
+        epilog="Chạy `--dry-run` trước để xem tệp nào sẽ bị ghi mà không mở ChromaDB, không gọi model.",
+    )
+    parser.add_argument("--dry-run", action="store_true",
+                        help="In các tệp sẽ đọc/ghi rồi thoát; không mở ChromaDB, không gọi model.")
+    return parser.parse_args(argv)
+
+
+def print_dry_run() -> int:
+    """Chỉ đọc metadata trên đĩa — không mở ChromaDB (mở ra có thể tái ghi byte, PA-60)."""
+    persist_dir = str(CHROMA_DIR)
+    facts = _index_facts(persist_dir)
+    plan = describe_reset(persist_dir)
+    corpus_files = _corpus_files(str(CORPUS_DIR))
+    print("[DRY-RUN] Chế độ learn — không ghi tệp nào, không mở ChromaDB, không gọi model.")
+    print(f"  corpus : {CORPUS_DIR} ({len(corpus_files)} tệp .txt/.pdf/.docx)")
+    print(f"  index  : {plan['path']} — {facts['n_files']} tệp, {facts['n_bytes']:,} B")
+    if not facts["exists"] or facts["n_files"] == 0:
+        print("           [CẢNH BÁO] index trống/không tồn tại ⇒ chạy `python ingest.py` trước.")
+    print(f"  bài học: {NOTES_PATH} — {'GHI THÊM mục mới' if os.path.exists(NOTES_PATH) else 'tạo mới'}")
+    print(f"  log    : {LOG_PATH}")
+    print("  không reset thư mục index; mỗi bài học dựng lại collection (reset=False).")
+    print("  (Số chunk hiện có: KHÔNG đọc — mở ChromaDB có thể tái ghi byte theo PA-60.)")
+    return 0
 
 
 def read_correction() -> str:
@@ -86,7 +117,11 @@ def log_learning(question: str, wrong_answer: str, correction: str,
         ])
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    if args.dry_run:
+        return print_dry_run()
+
     print("--- CHẾ ĐỘ TEST & HỌC (LEARN) ---")
     print("Người làm trọng tài: trả lời sai thì dán thông tin đúng, hệ thống học ngay và ghi log.")
     print("Gõ 'exit' để thoát.\n")
@@ -147,6 +182,8 @@ def main():
         log_learning(question, result["answer"], correction, chunks_before, chunks_after)
         print(f"HỌC XONG: {chunks_before} → {chunks_after} chunks. Log: '{LOG_PATH}'.")
         print("Hỏi lại câu đó để kiểm chứng kiến thức mới.\n")
+
+    return 0
 
 
 if __name__ == "__main__":
