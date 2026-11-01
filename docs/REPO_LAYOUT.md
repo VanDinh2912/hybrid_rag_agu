@@ -17,7 +17,7 @@ Nó cũng ghi lại hai đề xuất **chưa thực hiện** của `REVIEW_AND_R
 | Vùng | Vai trò | Ai được import / chạy |
 |---|---|---|
 | `src/` | **Thư viện runtime**: `core/`, `indexing/`, `retrieval/`, `generation/`, `assessment/`, `generator.py`, `answer_guard.py`, `text_utils.py` | Mọi entry point đều import từ đây. Module trong `src/` **không** được import ngược từ `ui/`, `scripts/`, `tools/`. |
-| `main.py`, `ingest.py` (gốc repo) | **Entry point CLI** người dùng chạy trực tiếp: hỏi–đáp và xây index | Chạy bằng `python main.py`, `python ingest.py`. Giữ ở gốc vì mọi tài liệu, lệnh trong README và test đều trỏ `ingest.py` / `main.py`. |
+| `main.py`, `ingest.py` (gốc repo) | **Entry point CLI** người dùng chạy trực tiếp: hỏi–đáp và xây index | Chạy bằng `python main.py`, `python ingest.py`. `ingest.py` có `--dry-run` và **từ chối xoá** index đã có dữ liệu trừ khi `INGEST_ALLOW_RESET=1` + `--yes` (PA-16/PA-29). Giữ ở gốc vì mọi tài liệu, lệnh trong README và test đều trỏ `ingest.py` / `main.py`. |
 | `ui/` | **Giao diện**: `app.py` (Tkinter 3 tab), `demo_streamlit.py` (demo chunking), các `*_controller.py` thuần logic (không import tkinter) | `python ui/app.py`, `streamlit run ui/demo_streamlit.py`. Controller được test trực tiếp (xem `tests/test_ui_split_modules.py`). |
 | `scripts/` | **Script phụ chạy tay khi làm báo cáo** — không thuộc pipeline, không có lịch chạy: `learn.py`, `benchmark_chunking.py`, `export_architecture.py` | Chạy từ gốc repo. Định nghĩa đầy đủ ở `scripts/README.md`. |
 | `tools/diag/` | **Chẩn đoán & kiểm chứng chỉ-đọc**: đo index, kiểm tài liệu, chốt manifest/evidence, quét secret, đo lại round | Mỗi tệp có `argparse` và mặc định không ghi gì (trừ khi truyền `--json`/`--write`). |
@@ -47,7 +47,7 @@ bình thường không; "Chỉ báo cáo" nghĩa là chỉ số liệu/bản th�
 
 | Đường dẫn | Ai sinh | Xoá được? | Lệnh tái tạo | Dùng lúc chạy? |
 |---|---|---|---|---|
-| `chroma_db/` | `ingest.py` / GUI tab "Nạp dữ liệu" (`run_ingestion`) | ❌ **Không** xoá tuỳ tiện — đây là **index sản xuất** 361 chunk đã công bố. Xoá = phải ingest lại và mọi số Hit@K cũ mất nền. | `python ingest.py` (ghi đè; chỉ chạy khi có chủ đích) | ✅ Runtime (mọi lượt truy xuất) |
+| `chroma_db/` | `ingest.py` / GUI tab "Nạp dữ liệu" (`run_ingestion`) | ❌ **Không** xoá tuỳ tiện — đây là **index sản xuất** 361 chunk đã công bố. Xoá = phải ingest lại và mọi số Hit@K cũ mất nền. | `python ingest.py --dry-run` để xem trước; `INGEST_ALLOW_RESET=1 python ingest.py --yes` mới ghi đè (PA-16) | ✅ Runtime (mọi lượt truy xuất) |
 | `indexes/experimental/chroma_db_vie/` | `tools/diag/reocr_vie.py` | ✅ Đo lại được (tốn công re-OCR) | Xem `indexes/experimental/README.md` §"Chạy lại" | ❌ Chỉ phép đo (index `_vie` **chưa kích hoạt**) |
 | `indexes/experimental/chroma_db_headers_old/` | `tools/diag/build_header_index.py` | ✅ Đo lại được | Xem `indexes/experimental/README.md` | ❌ Chỉ phép đo (nền r13, kết luận ÂM) |
 | `.cache/ocr/rapidocr/`, `.cache/ocr/easyocr_vie/` | `src/indexing/loader.py` | ✅ Xoá được — chỉ chậm hơn ở lần OCR kế tiếp | Tự sinh khi `ingest.py` / `scripts/learn.py` gặp PDF scan; có thể xoá rồi ingest lại | ✅ Runtime (tăng tốc OCR) |

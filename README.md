@@ -407,10 +407,14 @@ Trên corpus tại lượt dựng 16/10/2026 (26 tài liệu), 3 chiến lược
 ### 5.1. Nạp corpus vào ChromaDB (`ingest.py`)
 
 ```bash
-python ingest.py                            # Nạp corpus → ChromaDB (chạy lại mỗi khi thêm/sửa tài liệu)
+python ingest.py --dry-run                  # Xem trước: corpus, index, sẽ xoá gì — không đọc corpus/không mở DB
+python ingest.py                            # Nạp corpus → ChromaDB (chạy lần đầu hoặc khi index chưa có)
+INGEST_ALLOW_RESET=1 python ingest.py --yes # Build lại toàn bộ lên index đã có dữ liệu (đã xác nhận)
 ```
 
 Đường đi: `DocumentLoader` đọc + OCR toàn bộ corpus → `DocumentChunker` cắt chunk (lớp 1 ở mục 4.2) → `VectorStoreManager.create_vector_store()` nhúng bge-m3 và ghi vào `chroma_db/`. Collection cũ bị xóa trước khi index nên chạy lại nhiều lần không bao giờ nhân đôi chunks. Hiện trạng index sản xuất: **361 chunks**.
+
+**Chốt an toàn (PA-16/PA-29):** nếu `chroma_db/` đã có dữ liệu, `python ingest.py` **từ chối xoá** trừ khi đặt `INGEST_ALLOW_RESET=1`; khi cờ đã bật, CLI vẫn hỏi `yes` (hoặc cần `--yes` khi chạy không tương tác). `--dry-run` chỉ đọc metadata tệp — **không mở ChromaDB** (mở ra có thể tái ghi byte, PA-60) nên không in được số chunk hiện có. GUI tab 2 và learn mode có đường xác nhận riêng (hộp thoại / không reset thư mục) nên không cần cờ này.
 
 ### 5.2. Chạy thực (CLI — `main.py`)
 
@@ -458,6 +462,10 @@ Các lệnh trong vòng lặp: `help`/`h`/`?` (in hướng dẫn), `exit`/`quit`
 python ui/app.py
 ```
 
+`ui/app.py` là **ứng dụng GUI**, không phải CLI: không có `--help`/`--dry-run` (hai script GUI
+`ui/app.py` + `ui/demo_streamlit.py` được đăng ký miễn kiểm `--help` trong
+`tools/diag/docs_consistency_check.py`, PA-29d). Tab 2 đã có hộp thoại xác nhận trước khi nạp lại.
+
 App Tkinter 3 tab, backend khởi tạo ở luồng nền ngay khi mở (nên vài chục giây đầu giao diện vẫn thao tác được trong lúc nạp model):
 
 | Tab | Chức năng |
@@ -480,7 +488,8 @@ Chi tiết cơ chế học chuẩn hóa: `docs/guides/NORMALIZATION_ACTIVE_LEARN
 Vòng lặp hỏi - đáp với người làm trọng tài (bản CLI của Tab 3):
 
 ```bash
-python scripts/learn.py
+python scripts/learn.py --dry-run   # In tệp sẽ đọc/ghi, không mở ChromaDB, không gọi model
+python scripts/learn.py             # Vòng lặp hỏi - đáp có trọng tài
 ```
 
 Luồng hoạt động: nhập câu hỏi → hệ thống trả lời → bạn đánh giá (`Enter`/`y` = đúng, `n` = sai). Nếu sai, dán thông tin đúng (kết thúc bằng một dòng trống); hệ thống sẽ:
@@ -489,7 +498,7 @@ Luồng hoạt động: nhập câu hỏi → hệ thống trả lời → bạn
 2. Rebuild collection ChromaDB ngay tại chỗ (tái dùng bge-m3 đã nạp, không reset thư mục).
 3. Ghi 1 dòng log vào `logs/learning/learning_log.csv`: thời gian, câu hỏi, đáp án sai, thông tin đã học, số chunks trước/sau.
 
-Cả `ingest.py` và learn mode đều xóa collection cũ trước khi index, nên chạy lại nhiều lần không bao giờ nhân đôi chunks. Muốn dọn các mục đã học, sửa tay `ghi_chu_hoc_them.txt` rồi chạy lại `python ingest.py`.
+Cả `ingest.py` và learn mode đều xóa collection cũ trước khi index, nên chạy lại nhiều lần không bao giờ nhân đôi chunks. Muốn dọn các mục đã học, sửa tay `ghi_chu_hoc_them.txt` rồi chạy lại bằng lệnh **có chủ đích** `INGEST_ALLOW_RESET=1 python ingest.py --yes` (xem chốt an toàn ở §5.1).
 
 ### 5.5. Đánh giá định lượng (`src/assessment/evaluation.py`)
 
@@ -577,6 +586,7 @@ python src/assessment/evaluation.py --benchmark data/evaluation/benchmark_100_qu
     --summary-output outputs/ab_summary_with_classifier.md
 
 # Phân tích so sánh + vẽ 3 biểu đồ (chỉ đọc 2 JSON trên, không gọi API)
+python src/assessment/analyze_ab.py --dry-run   # xem tệp nguồn/đích, không ghi outputs/
 python src/assessment/analyze_ab.py
 ```
 

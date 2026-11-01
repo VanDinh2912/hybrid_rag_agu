@@ -222,7 +222,9 @@ ROWS: list[tuple[str, str, str, str]] = [
     ("T4", "2 slow passed (79,04 s)", "`tmp/pytest_t4_slow.log` + chạy lại 25-10 `tmp/pytest_final_t4_slow.txt`",
      lambda: tail_line("tmp/pytest_t4_slow.log") + " || " + tail_line("tmp/pytest_final_t4_slow.txt")),
     # --- T5
-    ("T5", "33 + 42 = 75 test", "collect-only 2 file",
+    # PA-48 (`ed0fc74`, 29-10) thêm đúng 2 test vào `test_t5_contextual_header.py` (42 → 44,
+    # commit message ghi "+2 test mới") ⇒ tổng 75 → 77. Không phải số đo hồi quy.
+    ("T5", "33 + 44 = 77 test", "collect-only 2 file",
      lambda: n_tests("test_t5_reranker_contract.py", "test_t5_contextual_header.py")),
     # PA-41: kỳ vọng cũ "46 test" (tới 25-10) đã đổi thành 51 vì B3 thêm test khoá
     # `query_convention` của PA-25 vào đúng file này — xem D-41, D-42.
@@ -277,7 +279,12 @@ ROWS: list[tuple[str, str, str, str]] = [
      lambda: mutation_total("tmp/mutation_check_t7_dot2.log")),
     ("T7", "DEFAULT_CACHE_TOKEN = d0b4c6a65f83", "`policy_cache_token()` dưới env đã bóc cờ lever",
      lambda: cache_token_clean_env()),
-    ("T7", "checker: 264 lệnh · 100 đường dẫn · 4 help · 0 lỗi · 5 cảnh báo · 30 dòng sổ",
+    # PA-41/01-11: con số 100 là của bố cục trước tái cấu trúc (25-10: README 42 + ROADMAP gốc 58).
+    # Hiện tại checker đếm README 59 + `docs/planning/ROADMAP.md` 61 = 120 — tài liệu đổi sau 25-10
+    # (PA-29 thêm nhắc `tools/diag/docs_consistency_check.py` ở README §5.3), không phải phép đo
+    # hồi quy; các thành phần còn lại (264 lệnh/4 help/0 lỗi/5 cảnh báo/30 dòng sổ) vẫn khớp mốc đã
+    # công bố. Đây là đếm THEO TÀI LIỆU, không phải số đường dẫn duy nhất.
+    ("T7", "checker: 264 lệnh · 120 đường dẫn · 4 help · 0 lỗi · 5 cảnh báo · 30 dòng sổ",
      "`tmp/docs_check_t7_dot3.json` + chạy lại `referenced_paths` trên README/ROADMAP",
      lambda: (lambda d, paths: f"{d['commands_checked']} lệnh, {paths} đường dẫn, help={d['help_checked']}, "
                                f"{len(d['decision_problems']) + len(d['referenced_file_problems']) + len(d['command_problems'])} lỗi, "

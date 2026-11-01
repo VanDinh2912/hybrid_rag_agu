@@ -142,6 +142,13 @@ PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/rescore_retrieval_roun
 | `docs_consistency_check.py` | **0 lỗi, 5 cảnh báo, 100 đường dẫn** | cảnh báo = 5 script chưa có argparse |
 | `final_number_audit.py` | **63 dòng, 2 LỆCH đã biết, rc=0** | hai kỳ vọng cũ chờ PA-41; phải chạy bằng venv |
 
+> **Ghi chú 01-11 (PA-41 + tài liệu đổi sau 25-10):** bảng trên giữ nguyên số đo 26-10. Chạy lại
+> trên cây hiện tại: `docs_consistency_check` đếm **120 đường dẫn** (README 59 +
+> `docs/planning/ROADMAP.md` 61 — tài liệu đổi bố cục/nội dung sau 25-10, trong đó PA-29 thêm 1
+> đường dẫn `tools/diag/docs_consistency_check.py` ở §5.3), và
+> `final_number_audit` còn **2 LỆCH thời điểm đó** (T5 `33 + 44 = 77` do PA-48 `ed0fc74` thêm 2 test;
+> T7 `119 → 120` đường dẫn). Cả hai là kỳ vọng cũ đã được vá, không phải số đo hồi quy.
+
 `rescore_retrieval_round_v2.py` cập nhật `generated_at` trong `round_summary_retrieval.json` của
 round nguồn (cây `data/loop/rounds_v2/` chưa tracked) và từ chối chạy nếu trọng tài là v1.
 
@@ -157,6 +164,12 @@ round nguồn (cây `data/loop/rounds_v2/` chưa tracked) và từ chối chạy
 | `final_number_audit.py` | **63 dòng, 4 LỆCH, rc=0** | 4 dòng LỆCH đều là **kỳ vọng cũ** so với cây hiện tại (2 dòng đếm test T5 đo trước khi bộ test lớn lên; 1 dòng checker ghi 100 đường dẫn; 1 dòng chữ ký trọng tài v1 `9f1179ccab74`) — không phải số đo hồi quy |
 | `referee_fingerprint()` | **`2911c69f740d`** | không đổi |
 | `tools/diag/repro_preflight.py` | **ĐẠT** (0 hỏng; 1 cảnh báo = lever `.env` như dòng trên) | 361 chunk / 26 nguồn / phân bố tầng / sha256 index / 29 tệp corpus / 24 tệp + 10.672 dòng `data/training`; pin `docs/repro_pins_20261031.json` (PA-57) |
+
+> **Ghi chú 01-11 (PA-41):** bản đo 31-10 giữ nguyên. Sau khi vá hai kỳ vọng `46 → 51` test và
+> chữ ký `9f1179ccab74 → 2911c69f740d`, audit còn **2 LỆCH thời điểm đó**: T5 `33 + 42 = 75 → 33 + 44 = 77`
+> (PA-48 `ed0fc74` thêm 2 test) và T7 `100 → 120 đường dẫn` (tài liệu đổi sau 25-10; PA-29 thêm 1
+> đường dẫn so với mốc 119). Các thành phần còn lại của dòng checker (264 lệnh · 4 help · 0 lỗi ·
+> 5 cảnh báo · 30 dòng sổ) không đổi.
 
 **Thứ tự cổng (PA-60):** ngày 31-10 đã thấy byte 3 tệp mỗi index bị đổi ngay sau một chuỗi cổng dù
 nội dung logic không đổi; **kiểm soát lại cùng ngày** (băm 10 tệp → chạy riêng

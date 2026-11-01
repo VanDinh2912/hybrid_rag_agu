@@ -72,7 +72,8 @@ Mỗi mũi tên là một **hợp đồng dữ liệu**. Khi debug, câu hỏi �
 
 | Entrypoint | Mục đích | Có gọi Gemini? | Có ghi DB? |
 |---|---|---|---|
-| `python ingest.py` | Nạp corpus → chunk → nhúng → ChromaDB | Không | Có (xóa và tạo lại) |
+| `python ingest.py --dry-run` | Xem trước việc nạp corpus (không đọc corpus, không mở DB) | Không | Không |
+| `python ingest.py` | Nạp corpus → chunk → nhúng → ChromaDB | Không | Có (xóa và tạo lại; **từ chối** nếu index đã có dữ liệu — cần `INGEST_ALLOW_RESET=1` + `--yes`) |
 | `python main.py "câu hỏi"` | Hỏi–đáp thật | Có (hoặc Qwen nếu `USE_QWEN_GENERATOR=1`) | Không |
 | `python evaluation.py` | Chạy benchmark 100 câu, ghi JSON/Markdown | Có (Generator + Judge) | Không (đọc DB) |
 | `python scripts/learn.py` | Test & học có trọng tài, lưu cặp sửa | Có | Có (rebuild index) |
