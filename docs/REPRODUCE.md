@@ -177,3 +177,33 @@ nội dung logic không đổi; **kiểm soát lại cùng ngày** (băm 10 tệ
 Phòng ngừa vẫn giữ: chạy `final_number_audit.py` **trước**, `artifact_manifest.py --check`
 **sau cùng**; nếu LỆCH, phục hồi 6 tệp từ backup rồi kiểm lại. `repro_preflight.py` đọc index
 bằng sqlite `mode=ro&immutable=1` nên không thể gây hiệu ứng này.
+
+## 6. Hàng đợi phản hồi và đối chiếu corpus ↔ index (hardening 01-11)
+
+Tab 3 mặc định **không** tự học (`LEARN_AUTO_APPLY=0`): mỗi phản hồi chỉ ghi
+`logs/feedback/user_feedback.json` + một tệp trong `logs/feedback/queue/`. Ba tệp học
+(`data/evaluation/benchmark_questions.json`, `data/learning/normalization_pairs.json`,
+`data/corpus/ghi_chu_hoc_them.txt`) và `chroma_db/` giữ nguyên byte cho tới khi có người duyệt.
+
+```bash
+# xem kế hoạch, không ghi gì (mặc định là dry-run)
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/feedback_promote.py
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/feedback_promote.py --json
+
+# áp thật: ghi 3 tệp văn bản (có sao lưu), rebuild index vào thư mục MỚI, chạy cổng rồi hoán đổi
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/feedback_promote.py --apply --yes
+
+# đối chiếu corpus ↔ index, chỉ đọc (chroma.sqlite3 mở mode=ro&immutable=1)
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/corpus_index_manifest.py
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/corpus_index_manifest.py --check
+```
+
+`--apply` từ chối khi: hàng đợi có tệp JSON hỏng, thiếu `--yes` (mã 2), đích index nằm trong
+vùng bảo vệ (`ensure_separate_index_target`), index mới thiếu `chroma.sqlite3`, chữ ký trọng tài
+khác `2911c69f740d`, hoặc `corpus_index_manifest` báo lệch. Mọi lỗi sau khi đã sửa tệp văn bản
+đều khôi phục từ bản sao; index cũ giữ ở `logs/feedback/promotions/<stamp>/chroma_db_before/`.
+Tệp hàng đợi được **chuyển** sang `queue/applied/<stamp>/`, không xoá.
+
+`corpus_index_manifest.py --check` đang trả **mã 1** vì 3 PDF thêm 28-10 chưa được ingest — đó là
+hiện trạng đã biết (PA-17), không phải lỗi mới; dùng nó làm cổng sau mỗi lần rebuild để không bỏ
+sót tệp mới.

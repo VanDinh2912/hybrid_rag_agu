@@ -472,14 +472,24 @@ App Tkinter 3 tab, backend khởi tạo ở luồng nền ngay khi mở (nên v�
 |---|---|
 | **1. Tra cứu (Search)** | Đặt câu hỏi như CLI; kết quả gồm tab con "Câu trả lời" và "Nguồn trích dẫn (ChromaDB)"; log backend hiển thị trực tiếp trên cửa sổ |
 | **2. Nạp dữ liệu (Ingest & Learn)** | Rebuild và nạp lại corpus vào ChromaDB ngay trong app (log streaming từng bước) — dùng sau khi thêm/sửa tài liệu trong `data/corpus/` |
-| **3. Vừa test vừa học (Feedback)** | Chạy câu hỏi rồi tự gắn nhãn **Đúng / Sai**; nhãn Sai mở form nhập đáp án chuẩn + căn cứ + nguồn + câu chuẩn hóa |
+| **3. Vừa test vừa học (Feedback)** | Chạy câu hỏi rồi tự gắn nhãn **Đúng / Sai**; nhãn Sai mở form nhập đáp án chuẩn + căn cứ + nguồn + câu chuẩn hóa — mặc định chỉ **xếp hàng chờ duyệt**, không tự sửa tệp học |
 
-Luồng lưu khi bấm "Sai" ở Tab 3:
+**Luồng lưu khi bấm "Sai" ở Tab 3 — mặc định `LEARN_AUTO_APPLY=0` (hardening 01-11):**
 
 1. Ghi phản hồi vào `logs/feedback/user_feedback.json` (cả hai nhãn đúng/sai đều được ghi).
-2. Nếu điền đủ căn cứ + nguồn: bổ sung câu hỏi vào `data/evaluation/benchmark_questions.json` — lượt đánh giá sau dùng luôn.
-3. Nếu có câu chuẩn hóa (auto-fill từ kết quả, sửa được trước khi lưu): thêm cặp (câu gốc → câu chuẩn hóa) vào `data/learning/normalization_pairs.json` — Qwen tự học ở các lượt sau (active learning).
-4. Nếu tick "học ngay": ghi bài học vào `data/corpus/ghi_chu_hoc_them.txt`, rebuild ChromaDB tại chỗ và ghi log vào `logs/learning/learning_log.csv`.
+2. Xếp **một tệp JSON cho mỗi lượt** vào `logs/feedback/queue/` (tạo độc quyền `O_CREAT|O_EXCL`, ghi xong `fsync`; tên `<thời điểm>-<sha8>.json`). Bản ghi ghi rõ ba yêu cầu tách biệt: bổ sung vào benchmark (có căn cứ + nguồn), cặp chuẩn hóa (có câu chuẩn hóa), ghi chú corpus (tick "học ngay").
+3. **Không** tệp học nào bị sửa và **không** index nào bị rebuild ở bước này: `data/evaluation/benchmark_questions.json`, `data/learning/normalization_pairs.json`, `data/corpus/ghi_chu_hoc_them.txt` và `chroma_db/` giữ nguyên byte. Nếu ghi hàng đợi lỗi, GUI báo rõ "đã ghi phản hồi nhưng chưa xếp được hàng" và giữ nguyên form.
+4. Người vận hành duyệt bằng lệnh (mặc định **dry-run**, không ghi gì):
+
+```bash
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/feedback_promote.py          # in kế hoạch
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/feedback_promote.py --json   # kế hoạch dạng JSON
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/feedback_promote.py --apply --yes
+```
+
+`--apply` ghi phản hồi vào 3 tệp đích (có sao lưu và khôi phục khi lỗi). Nếu có yêu cầu "học ngay", công cụ build index **vào thư mục mới** (`ensure_separate_index_target` chặn ghi đè index bảo vệ), chạy cổng trên index mới (chữ ký trọng tài `2911c69f740d` + `corpus_index_manifest` phải `ok`), chỉ khi xanh mới hoán đổi; index cũ giữ tại `logs/feedback/promotions/<stamp>/chroma_db_before/`. Tệp hàng đợi được **chuyển** sang `logs/feedback/queue/applied/<stamp>/`, không xoá. `--apply` thiếu `--yes` ⇒ mã 2, không ghi gì.
+
+`LEARN_AUTO_APPLY=1` khôi phục hành vi cũ (ghi thẳng benchmark/pairs/bài học rồi rebuild tại chỗ và ghi `logs/learning/learning_log.csv`) — chỉ dùng khi người vận hành chủ động và đã sao lưu.
 
 Chi tiết cơ chế học chuẩn hóa: `docs/guides/NORMALIZATION_ACTIVE_LEARNING.md`; sự cố thường gặp của GUI: `docs/guides/TROUBLESHOOTING_GUI.md`; ghi chú tối ưu layout Tab 3: `docs/guides/LAYOUT_OPTIMIZATION.md`.
 
@@ -499,6 +509,8 @@ Luồng hoạt động: nhập câu hỏi → hệ thống trả lời → bạn
 3. Ghi 1 dòng log vào `logs/learning/learning_log.csv`: thời gian, câu hỏi, đáp án sai, thông tin đã học, số chunks trước/sau.
 
 Cả `ingest.py` và learn mode đều xóa collection cũ trước khi index, nên chạy lại nhiều lần không bao giờ nhân đôi chunks. Muốn dọn các mục đã học, sửa tay `ghi_chu_hoc_them.txt` rồi chạy lại bằng lệnh **có chủ đích** `INGEST_ALLOW_RESET=1 python ingest.py --yes` (xem chốt an toàn ở §5.1).
+
+**Khác với Tab 3 (hardening 01-11):** `scripts/learn.py` là thao tác **có chủ đích của người vận hành** nên vẫn ghi thẳng vào `ghi_chu_hoc_them.txt` và rebuild collection tại chỗ; Tab 3 mặc định chỉ xếp hàng (`LEARN_AUTO_APPLY=0`, §5.3). Generator của learn.py là **Qwen local** (`QwenGenerator`) — không còn gọi Gemini, nên chạy offline không tốn quota. Vẫn nên chạy `--dry-run` trước để xem tệp sẽ ghi.
 
 ### 5.5. Đánh giá định lượng (`src/assessment/evaluation.py`)
 
@@ -702,10 +714,20 @@ Quy ước của repo (chi tiết ở `logs/README.md`): **mọi file tự sinh 
 | `logs/benchmark/` | `scripts/benchmark_chunking.py` | Log benchmark 3 chiến lược + index tạm | ✅ Xóa được — chạy lại là có lại |
 | `logs/classifier/` | `src/assessment/evaluate_classifier.py` | `accuracy_report.md`, `results.json`, 2 ma trận nhầm lẫn CSV | ⚠️ Giữ — là số liệu chốt P2.3 (chạy lại bị ghi đè) |
 | `logs/export/` | `scripts/export_architecture.py` | Biên nhận lần xuất `SYSTEM_ARCHITECTURE` | ✅ Xóa được |
-| `logs/learning/` | `scripts/learn.py` và GUI Tab 3 | `learning_log.csv` — lịch sử mỗi lần hệ thống trả lời sai và được "học thêm" | ❌ **KHÔNG xóa** — là lịch sử dữ liệu |
+| `logs/learning/` | `scripts/learn.py` (CLI) và GUI Tab 3 **khi `LEARN_AUTO_APPLY=1`** | `learning_log.csv` — lịch sử mỗi lần hệ thống trả lời sai và được "học thêm" | ❌ **KHÔNG xóa** — là lịch sử dữ liệu |
 | `logs/feedback/` | GUI Tab 3 | `user_feedback.json` — toàn bộ lượt đánh giá đúng/sai của người dùng | ❌ **KHÔNG xóa** |
+| `logs/feedback/queue/` | GUI Tab 3, mặc định `LEARN_AUTO_APPLY=0` | Mỗi phản hồi một tệp JSON chờ duyệt; `tools/diag/feedback_promote.py` chuyển sang `queue/applied/<stamp>/` sau khi áp | ❌ **KHÔNG xóa** — là dữ liệu người dùng, kể cả bản đã áp |
+| `logs/feedback/promotions/` | `tools/diag/feedback_promote.py` | Bản sao 3 tệp văn bản trước khi ghi + `chroma_db_before/` khi hoán đổi index | ❌ **KHÔNG xóa** — là đường lùi khi cần khôi phục |
 
-`.gitignore` bỏ qua `logs/*` **trừ** `logs/README.md`, `logs/learning/` và `logs/feedback/` (hai thư mục dữ liệu lịch sử được git track để không bao giờ mất khi dọn dẹp). Riêng `outputs/` là nơi chứa **kết quả chốt** dùng cho báo cáo (`evaluation_results.json`, `evaluation_summary.md`) và được git track đầy đủ.
+`.gitignore` bỏ qua `logs/*` **trừ** `logs/README.md`, `logs/learning/` và `logs/feedback/` (hai thư mục dữ liệu lịch sử được git track để không bao giờ mất khi dọn dẹp). `logs/feedback/` và `logs/learning/` là log **tự sinh vô hạn** nên bị loại khỏi phạm vi `ARTIFACT_MANIFEST.json` (mỗi thao tác người dùng thêm một bản ghi — ghim chúng sẽ làm `--check` đỏ sau mỗi phản hồi). Riêng `outputs/` là nơi chứa **kết quả chốt** dùng cho báo cáo (`evaluation_results.json`, `evaluation_summary.md`) và được git track đầy đủ.
+
+**Đối chiếu corpus ↔ index:** `tools/diag/corpus_index_manifest.py` liệt kê từng tệp trong `data/corpus/` kèm `sha256`, số chunk và trạng thái **đã nạp / chưa nạp** theo index hiện tại, kèm danh sách chunk mồ côi và tệp trùng tên. Công cụ chỉ đọc: mở `chroma.sqlite3` bằng sqlite `mode=ro&immutable=1`, không tạo Chroma client nên không tái ghi byte:
+
+```bash
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/corpus_index_manifest.py            # in bảng
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/corpus_index_manifest.py --json     # máy đọc
+PYTHONIOENCODING=utf-8 venv/Scripts/python.exe tools/diag/corpus_index_manifest.py --check    # rc=1 nếu lệch
+```
 
 Ba thư mục cache ẩn khác cũng tự sinh nhưng **không phải log**: `chroma_db/` (index sản xuất — xóa là phải ingest lại từ đầu), `.cache/ocr/` (kết quả OCR — xóa là phải OCR lại), `.generation_cache/` (cache câu trả lời Gemini — xóa là tốn lại quota).
 
@@ -732,7 +754,7 @@ Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ đư�
 - Để có kết quả ổn định, Generator sử dụng `Temperature = 0.0` và luôn kèm trích dẫn Điều/Khoản từ ngữ cảnh.
 - `main.py` và `ui/demo_streamlit.py` tự đặt `sys.stdout.reconfigure(encoding="utf-8")` nên tiếng Việt in đúng trên console Windows; nếu gọi Python thủ công thì chạy kèm `PYTHONUTF8=1` hoặc `PYTHONIOENCODING=utf-8`.
 - Mỗi lần chạy sẽ thấy một `FutureWarning` của `google-generativeai` — gói này đã bị Google khai tử nhưng vẫn hoạt động (0.8.6). Không phải lỗi; migrate sang `google-genai` là việc về sau, và lưu ý `google-genai` đổi cả tên model lẫn cách truyền `thinking_config`.
-- **Hiện trạng corpus và index:** 29 tài liệu (24 PDF + 5 DOCX, không còn `.doc` legacy) ở 3 tầng — 3 PDF thêm 28-10 **chưa ingest**; index sản xuất `chroma_db/` = **361 chunks** cắt bằng `DocumentChunker` (structure-aware cho văn bản có Điều, fallback theo đoạn cho văn bản thường). Ba index thực nghiệm của demo: fixed = 182, recursive = 189, structure = 378 chunks.
+- **Hiện trạng corpus và index:** 29 tài liệu (24 PDF + 5 DOCX, không còn `.doc` legacy) ở 3 tầng — 3 PDF thêm 28-10 (`dh24-ky`, `qd-1543-BGDDT`, `so-tay-sktt`) **chưa ingest**; index sản xuất `chroma_db/` = **361 chunks** cắt bằng `DocumentChunker` (structure-aware cho văn bản có Điều, fallback theo đoạn cho văn bản thường). Ba index thực nghiệm của demo: fixed = 182, recursive = 189, structure = 378 chunks. Đối chiếu tự động: `tools/diag/corpus_index_manifest.py --check` hiện báo đúng **3 tệp "chưa nạp"** (rc=1) — hiện trạng đã biết chờ PA-17 re-anchor, không phải lỗi mới.
 - **Hiện trạng tầng phân loại + kết quả A/B chốt (P2.3–P4.3, 2026-10-21):** index 361 chunks **không đổi** — tầng phân loại là lớp phía trên pipeline, không rebuild index. Độ chính xác bộ phân loại: chủ đề 85,0% / loại câu hỏi 81,0% (`logs/classifier/accuracy_report.md`). Kết quả A/B trên benchmark v3 100 câu (generator Local Qwen `qwen2.5:1.5b-instruct`, top_k=6, giám khảo tắt — nguồn `outputs/ab_comparison.md`):
 
 | Chỉ số | WITHOUT (tắt phân loại) | WITH (bật phân loại) | Chênh lệch |
@@ -743,7 +765,7 @@ Quy tắc nổi bật của `base_prompt.md`: mọi file trung gian chỉ đư�
 | Từ chối oan (trong 97 câu in corpus) | 46/97 | 49/97 | +3 câu |
 
 Nhóm tăng rõ nhất: chương trình đào tạo Hit@3 45,5% → 90,9% (n=22); `SO_SANH` MRR 0,4333 → 0,8286 (n=5, nhờ tách truy vấn con). Đây là chênh lệch của **cả gói thay đổi** ở lượt WITH (chọn tham số + thu hẹp nguồn + tách truy vấn con + prompt), **không tách riêng được lọc nguồn**: trên vòng 811 item (V2, 27-10) lọc mềm so all-off **−18 item** (518 vs 536; CI cụm [−4,62; −0,69] điểm %, p=2,77e−4) và chậm 2,76 s vs 0,18 s/item; lọc cứng (r0) chỉ đạt 363/700. GATE P4.3 **ĐẠT**: không chỉ số truy xuất nào giảm quá 5% tương đối. Lưu ý khi đọc: generator là Qwen 1.5B offline nên số tuyệt đối của tầng trích dẫn chỉ mang tính so sánh nội bộ giữa 2 lượt; điểm giảm trung thực cần nhắc: number support −3,05 pp, đánh giá rèn luyện Hit@3 −18,2 pp (n=11).
-- **Bộ unit test (1.124 test, 25-10):** chạy bằng `python -m pytest` — hoàn toàn offline (fake Qwen/ChromaDB/Gemini, monkeypatch), không tốn quota; gồm test 3 chiến lược chunking, pipeline (fold-query + oversampling), classifier + router (few-shot, guardrail, ánh xạ cấu hình), tách truy vấn con, prompt biến thể, guardrail Local SLM, các hàm đánh giá và cờ GUI/CLI, bộ test vòng lặp P5 (`tests/test_loop_*.py`, `test_run_chain.py`, `test_cache_policy.py`), bộ test T4 (`test_t4_sft_invariants.py`, `test_t4_generator_contract.py`; phần GPU `test_t4_gpu_slow.py` cần `T4_RUN_SLOW=1` nên mặc định được skip) và bộ test T5 (`test_t5_reranker_contract.py`, `test_t5_contextual_header.py`) và bộ test T6 (`test_t6_gate_refusal_and_regression.py`, `test_t6_referee_validation.py`, `test_t6_real_questions_and_metrics.py` — 60 test, trong đó cổng refusal chỉ chạy trên **bản đề xuất**, `gate.py` chưa đổi). Con số này là của **working tree**; xem PA-26 về khoảng trống giữa HEAD và cây đã test.
+- **Bộ unit test (1.904 passed / 5 skipped, 01-11):** chạy bằng `python -m pytest` — hoàn toàn offline (fake Qwen/ChromaDB/Gemini, monkeypatch), không tốn quota; gồm test 3 chiến lược chunking, pipeline (fold-query + oversampling), classifier + router (few-shot, guardrail, ánh xạ cấu hình), tách truy vấn con, prompt biến thể, guardrail Local SLM, các hàm đánh giá và cờ GUI/CLI, bộ test vòng lặp P5 (`tests/test_loop_*.py`, `test_run_chain.py`, `test_cache_policy.py`), bộ test T4 (`test_t4_sft_invariants.py`, `test_t4_generator_contract.py`; phần GPU `test_t4_gpu_slow.py` cần `T4_RUN_SLOW=1` nên mặc định được skip) và bộ test T5 (`test_t5_reranker_contract.py`, `test_t5_contextual_header.py`) và bộ test T6 (`test_t6_gate_refusal_and_regression.py`, `test_t6_referee_validation.py`, `test_t6_real_questions_and_metrics.py` — 60 test, trong đó cổng refusal chỉ chạy trên **bản đề xuất**, `gate.py` chưa đổi). Hardening 01-11 thêm `test_learn_auto_apply_flag.py`, `test_feedback_queue.py`, `test_feedback_promote.py`, `test_corpus_index_manifest.py`. Con số này là của **working tree**; xem PA-26 về khoảng trống giữa HEAD và cây đã test.
 - **Bộ benchmark:** 5 file trong `data/evaluation/` — 15 câu GUI tự sinh (schema 10 khóa cũ), **50 câu** và **100 câu v1/v2** (đúng 12 khóa, do các agent sinh theo playbook); benchmark mặc định của `src/assessment/evaluation.py` là 100 câu v2, của `scripts/benchmark_chunking.py` và demo là 50 câu. Ngoài ra `data/evaluation/manual_test_checklist.md` có **34 câu kiểm tra tay chia 7 nhóm tài liệu** (kèm nhóm câu ngoài corpus để thử hành vi từ chối) — dùng để đánh giá thủ công sau mỗi lần đổi pipeline.
 - **Benchmark v3 (2026-10-20):** `data/evaluation/benchmark_100_questions_v3.json` — 100 câu, 13 khóa (12 khóa v2 + `question_type` theo [TAXONOMY.md](docs/spec/TAXONOMY.md)), nhãn đã duyệt; phân bố `TRA_CUU`=87 / `SO_SANH`=5 / `THU_TUC`=5 / `NGOAI_PHAM_VI`=3. Mặc định của `src/assessment/evaluation.py` vẫn là 100 câu v2; **lượt A/B chính thức dùng `--benchmark ...v3.json`** (mục 5.7).
 - **Hành vi cần lưu ý của Qwen2.5-1.5B (tầng chuẩn hóa):** khi câu hỏi nằm ngoài phân bố few-shot, model có xu hướng **tự trả lời** thay vì viết lại câu hỏi, sinh ra nhận định không có căn cứ. Các lớp chặn hiện có: (1) system prompt chống bịa + few-shot của `src/core/query_normalizer.py` — đường đi chính trong pipeline, kèm active learning từ phản hồi người dùng; (2) `is_acceptable()` (4 điều kiện: không rỗng, ≤ 300 ký tự, phải có dấu `?`, không chứa mẫu lạc đề) và `guardrail_violation()` (bảo toàn con số + tỉ lệ token trùng với câu gốc ≥ 30%) trong `src/generation/local_slm.py` — dùng khi chuẩn hóa trực tiếp qua wrapper `LocalSLM`, có test riêng trong `tests/test_local_slm.py`. Mọi đường đều suy giảm mềm: nghi ngờ là dùng lại câu hỏi gốc để truy xuất.

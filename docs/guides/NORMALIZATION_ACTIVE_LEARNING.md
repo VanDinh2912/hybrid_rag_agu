@@ -25,11 +25,21 @@ Người dùng chỉnh sửa normalized query nếu cần
     ↓
 Nhấn "Lưu phản hồi & Ghi nhận"
     ↓
-Hệ thống thực hiện 4 việc:
-  1. Lưu vào outputs/user_feedback.json
-  2. Lưu vào benchmark_questions.json (nếu có citation + source)
-  3. Lưu vào data/learning/normalization_pairs.json (cặp chuẩn hóa) ← THÊM MỚI
-  4. Ghi vào ghi_chu_hoc_them.txt (nếu checkbox "Học ngay")
+Hệ thống thực hiện 2 việc (hardening 01-11, mặc định `LEARN_AUTO_APPLY=0`):
+  1. Lưu vào logs/feedback/user_feedback.json
+  2. Xếp một tệp vào logs/feedback/queue/ ghi rõ ba yêu cầu:
+     benchmark / cặp chuẩn hóa / ghi chú corpus — KHÔNG tự sửa tệp học, KHÔNG rebuild index
+    ↓
+Người vận hành duyệt:
+  tools/diag/feedback_promote.py            (dry-run, in kế hoạch)
+  tools/diag/feedback_promote.py --apply --yes
+    ↓
+--apply ghi:
+  1. data/evaluation/benchmark_questions.json (nếu yêu cầu benchmark)
+  2. data/learning/normalization_pairs.json (nếu yêu cầu cặp chuẩn hóa) ← THÊM MỚI
+  3. data/corpus/ghi_chu_hoc_them.txt (nếu yêu cầu ghi chú corpus)
+  Nếu có ghi chú corpus: build index vào thư mục mới → chạy cổng → hoán đổi;
+  index cũ giữ ở logs/feedback/promotions/<stamp>/chroma_db_before/
     ↓
 Lần test sau:
   Qwen TỰ ĐỘNG tải từ 3 nguồn:
@@ -44,7 +54,7 @@ Lần test sau:
 
 ## 3 Nguồn Dữ liệu Learning
 
-### 1. `data/learning/normalization_pairs.json` (Người dùng thêm qua GUI)
+### 1. `data/learning/normalization_pairs.json` (người dùng thêm qua Tab 3, duyệt bằng `tools/diag/feedback_promote.py`)
 
 **Format:**
 ```json
