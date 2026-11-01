@@ -4,7 +4,9 @@ Bao gồm 3 tab chức năng:
 1. Tab 1: Tra cứu (Search) - Giao diện tra cứu câu hỏi sinh viên với Qwen, ChromaDB và Gemini.
 2. Tab 2: Nạp dữ liệu (Ingest & Learn) - Rebuild & nạp lại corpus đa luồng với log hiển thị trực tiếp.
 3. Tab 3: Vừa test vừa học (Interactive Testing & Feedback) - Kiểm tra câu hỏi, gắn nhãn Đúng/Sai,
-   nhập đáp án đúng thực tế và lưu vào logs/feedback/user_feedback.json.
+   nhập đáp án đúng thực tế và lưu vào logs/feedback/user_feedback.json. Mặc định (LEARN_AUTO_APPLY=0)
+   phản hồi "Sai" còn được xếp vào logs/feedback/queue/ chờ `tools/diag/feedback_promote.py` duyệt;
+   KHÔNG tự sửa benchmark/pairs/corpus và KHÔNG rebuild index.
 
 Phần logic không cần widget đã tách sang các module cùng thư mục (REVIEW §7/§8/§13):
 `ui_state` (trạng thái + hàm định dạng), `backend_controller`, `search_controller`,
@@ -40,7 +42,7 @@ from dotenv import load_dotenv
 load_dotenv(ROOT_DIR / ".env")
 
 from src.generator import GeminiGenerator, QwenGenerator, _env_flag, is_fallback_answer
-from src.core.config import DEFAULT_TOP_K
+from src.core.config import DEFAULT_TOP_K, learn_auto_apply_enabled
 from ingest import run_ingestion
 from scripts.learn import append_note, log_learning
 
@@ -57,6 +59,7 @@ logger = logging.getLogger(__name__)
 
 # Đường dẫn lưu trữ
 FEEDBACK_PATH = ROOT_DIR / "logs" / "feedback" / "user_feedback.json"
+FEEDBACK_QUEUE_DIR = ROOT_DIR / "logs" / "feedback" / "queue"
 NOTES_PATH = ROOT_DIR / "data" / "corpus" / "ghi_chu_hoc_them.txt"
 BENCHMARK_PATH = ROOT_DIR / "data" / "evaluation" / "benchmark_questions.json"
 CORPUS_DIR = ROOT_DIR / "data" / "corpus"
@@ -888,11 +891,59 @@ class RAGApplication(tk.Tk):
             )
             return
 
+        learn_now = self.learn_now_var.get()
+
+        # 2. MẶC ĐỊNH (LEARN_AUTO_APPLY=0): chỉ xếp hàng chờ duyệt.
+        #    Không tự sửa benchmark/pairs/corpus, không rebuild index ⇒ ba tệp đang là
+        #    hash phụ của round paired không đổi giữa phiên và golden giữ nguyên.
+        if not learn_auto_apply_enabled():
+            requested = {
+                "benchmark": bool(citation and source_doc),
+                "normalization_pair": bool(normalized_truth),
+                "corpus_note": bool(learn_now),
+            }
+            try:
+                record = feedback_controller.queue_record(
+                    self.current_test_data,
+                    "wrong",
+                    feedback_detail,
+                    citation=citation,
+                    source_doc=source_doc,
+                    normalized_truth=normalized_truth,
+                    requested=requested,
+                )
+                queue_path = feedback_controller.enqueue_feedback(FEEDBACK_QUEUE_DIR, record)
+            except Exception as exc:
+                messagebox.showerror(
+                    "Lỗi xếp hàng phản hồi",
+                    "Đã ghi logs/feedback/user_feedback.json nhưng CHƯA xếp được hàng đợi:\n"
+                    f"{exc}",
+                )
+                return
+            self.wrong_frame.pack_forget()
+            cho = [
+                ten for ten, bat in (
+                    ("benchmark_questions.json", requested["benchmark"]),
+                    ("normalization_pairs.json", requested["normalization_pair"]),
+                    ("ghi_chu_hoc_them.txt + rebuild", requested["corpus_note"]),
+                ) if bat
+            ]
+            messagebox.showinfo(
+                "Đã xếp hàng chờ duyệt",
+                "Đã ghi phản hồi vào logs/feedback/user_feedback.json và xếp hàng:\n"
+                f"{queue_path.name}\n\n"
+                "Chờ duyệt cho: " + (", ".join(cho) if cho else "không có mục nào") + ".\n"
+                "Hệ thống KHÔNG tự sửa tệp học và KHÔNG rebuild index.\n"
+                "Áp thật: python tools/diag/feedback_promote.py (dry-run mặc định).",
+            )
+            return
+
+        # 3. LEARN_AUTO_APPLY=1 — hành vi cũ, chỉ dùng khi người vận hành chủ động.
         STATUSES = ("benchmark_saved", "normalization_pair_saved", "note_saved", "rebuild_succeeded")
         status = {key: None for key in STATUSES}  # None = không yêu cầu thao tác này
         errors = []
 
-        # 2. Lưu vào benchmark_questions.json nếu đầy đủ thông tin
+        # 3a. Lưu vào benchmark_questions.json nếu đầy đủ thông tin
         if citation and source_doc:
             status["benchmark_saved"], err = self._save_to_benchmark(
                 ground_truth, citation, source_doc, normalized_truth
@@ -900,7 +951,7 @@ class RAGApplication(tk.Tk):
             if err:
                 errors.append(f"benchmark_questions.json: {err}")
 
-        # 3. Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file riêng cho Qwen học
+        # 3b. Lưu cặp (câu_gốc -> câu_chuẩn_hóa) vào file riêng cho Qwen học
         if normalized_truth:
             status["normalization_pair_saved"], err = self._save_normalization_pair(
                 self.current_test_data["raw_query"], normalized_truth
@@ -908,26 +959,16 @@ class RAGApplication(tk.Tk):
             if err:
                 errors.append(f"normalization_pairs.json: {err}")
 
-        # 4. Nếu người dùng chọn học ngay qua ghi_chu_hoc_them.txt
-        learn_now = self.learn_now_var.get()
+        # 3c. Nếu người dùng chọn học ngay qua ghi_chu_hoc_them.txt
         if learn_now:
             raw_query = self.current_test_data["raw_query"]
             wrong_ans = self.current_test_data["answer"]
 
-            # Ghi vào ghi_chu_hoc_them.txt với format có cấu trúc
-            note = f"Câu hỏi: {raw_query}\n"
-            note += f"Đáp án chuẩn: {ground_truth}\n"
-            if citation:
-                note += f"Căn cứ: {citation}\n"
-            if source_doc:
-                note += f"Nguồn: {source_doc}\n"
-            if normalized_truth:
-                note += f"Chuẩn hóa: {normalized_truth}\n"
-            note += "-" * 80 + "\n"
-
             try:
                 chunks_before = self.pipeline.vector_db._collection.count()
-                append_note(note)
+                # `append_note(question, correction)` — đúng chữ ký scripts/learn.py.
+                # Bản cũ gọi 1 đối số nên luôn TypeError và không bao giờ rebuild.
+                append_note(raw_query, feedback_detail)
                 status["note_saved"] = True
             except Exception as exc:
                 status["note_saved"] = False

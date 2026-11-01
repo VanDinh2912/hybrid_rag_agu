@@ -24,7 +24,7 @@ load_dotenv()
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from ingest import _corpus_files, _index_facts, describe_reset, run_ingestion
-from src.generator import GeminiGenerator
+from src.generator import QwenGenerator
 from src.generation.local_slm import LocalSLM
 from src.core.config import DEFAULT_TOP_K
 from src.core.paths import CHROMA_DIR, CORPUS_DIR, LOGS_DIR
@@ -133,7 +133,9 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("ChromaDB rỗng — chạy 'python ingest.py' trước khi vào chế độ learn.")
 
     local_slm = LocalSLM(model_name=os.getenv("OLLAMA_MODEL", "qwen2.5:1.5b-instruct"))
-    pipeline = HybridRAGPipeline(local_slm=local_slm, vector_db=vector_db, generator=GeminiGenerator())
+    # D-44: sinh câu trả lời bằng Qwen local (Ollama). Không dùng Gemini trong chế độ
+    # learn — vòng lặp này chạy hoàn toàn offline và không tiêu quota.
+    pipeline = HybridRAGPipeline(local_slm=local_slm, vector_db=vector_db, generator=QwenGenerator())
     print(f"Pipeline sẵn sàng ({indexed} chunks).\n")
 
     while True:

@@ -1,14 +1,20 @@
-"""Lưu phản hồi/benchmark/cặp chuẩn hóa của GUI (REVIEW §7 + §13).
+"""Lưu phản hồi/benchmark/cặp chuẩn hóa của GUI (REVIEW §7 + §13 + hardening 01-11).
 
-Mọi ghi file đi qua `src/core/json_store.py`: khoá file, ghi file tạm rồi thay thế nguyên
-tử, và validate schema trước khi ghi. Controller không đụng widget; `ui/app.py` lo hộp thoại.
+Mọi ghi file JSON *theo khoá rồi thay thế* đi qua `src/core/json_store.py`: khoá file,
+ghi file tạm rồi thay thế nguyên tử, và validate schema trước khi ghi. Riêng hàng đợi
+duyệt (`enqueue_feedback`) cố ý dùng `O_CREAT|O_EXCL` — mỗi phản hồi là một tệp MỚI,
+không bao giờ sửa tệp đã có. Controller không đụng widget; `ui/app.py` lo hộp thoại.
 """
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
+import os
+from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from src.core.json_store import (
     JsonStoreError,
@@ -22,7 +28,16 @@ from src.core.json_store import (
 logger = logging.getLogger(__name__)
 
 FEEDBACK_SCHEMA_VERSION = 1
+QUEUE_SCHEMA_VERSION = 1
 BENCHMARK_SCHEMA_VERSION = "2.1"
+
+#: Ba mục một bản ghi hàng đợi có thể xin duyệt. Khoá lạ bị `validate_queue_record` từ chối
+#: để công cụ duyệt (`tools/diag/feedback_promote.py`) không phải đoán.
+QUEUE_REQUEST_KEYS = ("benchmark", "normalization_pair", "corpus_note")
+
+
+class QueueError(RuntimeError):
+    """Không xếp được bản ghi vào hàng đợi chờ duyệt (thư mục/khoá/ghi hỏng)."""
 
 
 def feedback_record(
@@ -58,6 +73,129 @@ def feedback_record(
 def append_feedback(path: Path, record: dict) -> None:
     """Thêm bản ghi feedback nguyên tử; lỗi nổi lên `JsonStoreError`."""
     update_json(path, [], lambda data: [*data, record], validate=validate_feedback_list)
+
+
+# ----------------------------------------------------------------------------- hàng đợi
+def queue_record(
+    test_data: dict,
+    feedback_type: str,
+    correct_answer: str | None,
+    *,
+    citation: str = "",
+    source_doc: str = "",
+    normalized_truth: str = "",
+    requested: dict,
+    source: str = "gui",
+) -> dict:
+    """Bản ghi hàng đợi: phản hồi + phần người dùng XIN duyệt (chưa áp gì).
+
+    `requested` chỉ được chứa ba khoá `QUEUE_REQUEST_KEYS`, giá trị bool — công cụ duyệt
+    đọc đúng ba khoá này và bỏ qua mục `False`. Trường `correct_answer` giữ nguyên chuỗi
+    nhiều dòng như bản ghi feedback gốc để người duyệt đọc được cả đáp án/căn cứ/nguồn.
+    """
+    unknown = sorted(set(requested) - set(QUEUE_REQUEST_KEYS))
+    if unknown:
+        raise QueueError(f"`requested` có khoá lạ: {unknown}")
+    base = feedback_record(test_data, feedback_type, correct_answer, source=source)
+    return {
+        **base,
+        "queue_schema_version": QUEUE_SCHEMA_VERSION,
+        "queued_at": base["created_at"],
+        "citation": citation,
+        "source_doc": source_doc,
+        "normalized_truth": normalized_truth,
+        "requested": {key: bool(requested.get(key, False)) for key in QUEUE_REQUEST_KEYS},
+    }
+
+
+def validate_queue_record(record: Any) -> None:
+    """Schema tối thiểu của một tệp hàng đợi — hỏng cấu trúc thì từ chối, không đoán."""
+    if not isinstance(record, dict):
+        raise QueueError("bản ghi hàng đợi phải là object")
+    if record.get("queue_schema_version") != QUEUE_SCHEMA_VERSION:
+        raise QueueError(
+            f"queue_schema_version phải là {QUEUE_SCHEMA_VERSION}, "
+            f"nhận {record.get('queue_schema_version')!r}"
+        )
+    raw_query = record.get("raw_query")
+    if not isinstance(raw_query, str) or not raw_query.strip():
+        raise QueueError("bản ghi hàng đợi thiếu `raw_query`")
+    requested = record.get("requested")
+    if not isinstance(requested, dict):
+        raise QueueError("bản ghi hàng đợi thiếu object `requested`")
+    unknown = sorted(set(requested) - set(QUEUE_REQUEST_KEYS))
+    if unknown:
+        raise QueueError(f"`requested` có khoá lạ: {unknown}")
+    for key, value in requested.items():
+        if not isinstance(value, bool):
+            raise QueueError(f"`requested[{key!r}]` phải là bool, nhận {type(value).__name__}")
+
+
+def _queue_stem(record: dict) -> str:
+    """Tên tệp đọc được: dấu thời gian + 8 ký tự băm của câu hỏi gốc."""
+    stamp = datetime.now().strftime("%Y%m%dT%H%M%S_%f")
+    digest = hashlib.sha256(
+        f"{record.get('queued_at')}|{record.get('raw_query')}".encode("utf-8")
+    ).hexdigest()[:8]
+    return f"{stamp}-{digest}"
+
+
+def enqueue_feedback(queue_dir: Path, record: dict) -> Path:
+    """Ghi MỘT bản ghi thành MỘT tệp mới trong hàng đợi; trả đường dẫn tệp đã tạo.
+
+    Dùng `os.O_CREAT | os.O_EXCL`: hai phiên GUI cùng ghi không đè nhau, và tệp đã có
+    không bao giờ bị thay — muốn sửa nội dung thì tạo bản ghi mới. Ghi hỏng ⇒ xoá phần
+    đã tạo rồi ném `QueueError`, để GUI báo thất bại thay vì để lại tệp cụt im lặng.
+    """
+    validate_queue_record(record)
+    try:
+        queue_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise QueueError(f"không tạo được thư mục hàng đợi {queue_dir}: {exc}") from exc
+
+    payload = json.dumps(record, ensure_ascii=False, indent=2).encode("utf-8")
+    stem = _queue_stem(record)
+    for attempt in range(100):
+        name = f"{stem}.json" if attempt == 0 else f"{stem}-{attempt + 1}.json"
+        path = queue_dir / name
+        try:
+            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_BINARY", 0))
+        except FileExistsError:
+            continue
+        except OSError as exc:
+            raise QueueError(f"không tạo được tệp hàng đợi {path}: {exc}") from exc
+        try:
+            with os.fdopen(fd, "wb") as fh:
+                fh.write(payload)
+                fh.flush()
+                os.fsync(fh.fileno())
+        except OSError as exc:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+            raise QueueError(f"không ghi được tệp hàng đợi {path}: {exc}") from exc
+        logger.info("Đã xếp phản hồi vào hàng đợi: %s", path)
+        return path
+    raise QueueError(f"không tìm được tên tệp trống trong {queue_dir} cho {stem}")
+
+
+def iter_queue(queue_dir: Path) -> Iterator[tuple[Path, Any, str]]:
+    """Duyệt hàng đợi theo thứ tự tên tệp: `(path, record | None, lỗi)`.
+
+    Tệp hỏng KHÔNG bị bỏ qua im lặng: trả `record=None` kèm thông điệp lỗi để công cụ
+    duyệt báo cáo và dừng, đúng nguyên tắc "không đoán dữ liệu người dùng".
+    """
+    if not queue_dir.is_dir():
+        return
+    for path in sorted(queue_dir.glob("*.json")):
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+            validate_queue_record(record)
+        except (OSError, ValueError, QueueError) as exc:
+            yield path, None, str(exc)
+            continue
+        yield path, record, ""
 
 
 def _next_question_id(questions: list[dict]) -> str:
