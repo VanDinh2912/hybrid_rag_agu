@@ -115,12 +115,18 @@ class TestRunFoldsQueryBeforeRetrieval:
         Lớp cứu từ chối oan (`ENABLE_ANSWER_RESCUE`) xét điều kiện "câu hỏi đòi một giá
         trị cụ thể" trên cả hai văn bản, vì bộ chuẩn hóa Local SLM đôi khi trả về một câu
         khác hẳn (đo: 16/300 lượt sinh ở r0/r1/r3 mất hơn 70% token câu gốc).
+
+        Bản chuẩn hóa ở đây phải TRUNG THÀNH với câu thô: hằng `NORMALIZED` dùng chung
+        (có "62 điểm") từng được nhét vào ca bảo hiểm y tế, tức chính là một ca lệch thật —
+        luật chặn cứng 01-11 bác nó (bịa thêm con số 62 không có trong câu gốc) và trả câu
+        thô xuống generator. Giữ nguyên câu thô ở đây để test đo đúng thứ nó muốn đo
+        (`raw_query` đi kèm), không đo lại luật chặn cứng (đã có ở test_query_normalizer_guard).
         """
-        pipeline, _, generator = make_pipeline()
         raw = "sinh viên đóng bảo hiểm y tế bao nhiêu tiền?"
+        pipeline, _, generator = make_pipeline(normalized=raw)
         pipeline.run(raw)
         assert generator.received_raw_query == raw
-        assert generator.received_query == NORMALIZED  # prompt không đổi, cache không đổi key
+        assert generator.received_query == raw  # prompt không đổi, cache không đổi key
 
 
 # --- P3.2: tầng phân loại + router qua ENABLE_CLASSIFIER ---------------------

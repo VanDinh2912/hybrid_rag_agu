@@ -29,10 +29,12 @@ from src.core.query_normalizer import (
     BASE_EXAMPLES,
     DEFAULT_NORMALIZE_MIN_CONTAINMENT,
     content_tokens,
+    hard_output_rejection,
     normalized_output_rejection,
     normalize_min_containment,
     normalize_sanity_guard_enabled,
     normalize_user_query,
+    number_tokens,
     prompt_example_lines,
     token_containment,
 )
@@ -186,3 +188,78 @@ class TestHanhViKhiBat:
 
         monkeypatch.setenv("NORMALIZE_SANITY_GUARD", "1")
         assert normalize_user_query(Boom(), RAW_NUMERIC_QUESTION) == RAW_NUMERIC_QUESTION
+
+
+# --- chặn cứng 01-11: tự trả lời / bịa con số (LUÔN BẬT, không phụ thuộc cờ) ---
+
+
+RAW_LIBRARY = "Thư viện mở cửa mấy giờ?"
+ANSWER_LIBRARY = "Thư viện mở cửa từ 8:00 đến 22:00 hàng ngày."
+RAW_FIVE_GOOD = "Điều kiện để sinh viên được xét danh hiệu Sinh viên 5 tốt là gì?"
+DRIFT_FIVE_GOOD = (
+    "Sinh viên có điểm học phần lần thứ nhất trên 8.0 có cơ hội "
+    "được xét danh hiệu Sinh viên 5 tốt không?"
+)
+RAW_REWARD = "Quy định khen thưởng sinh viên gồm những gì?"
+ECHO_REWARD = (
+    "Sinh viên có điểm học phần lần thứ nhất dưới 5.5 "
+    "có được xét khen thưởng và học bổng không?"
+)
+
+
+class TestChanCung:
+    """Ba ca hỏng ĐO THẬT ngày 01-11, lọt cả khi bật cờ gate mềm."""
+
+    def test_number_tokens_chuan_hoa_cach_viet(self):
+        assert number_tokens("7,0 và 8.00") == {"7", "8"}
+        assert number_tokens("ngày 05/5/2026") == {"5", "2026"}
+        assert number_tokens("Thông báo 722/TB") == {"722"}
+
+    def test_tu_tra_loi_bi_bac_du_containment_cao(self):
+        # containment 0,67 > ngưỡng 0,3 nên gate mềm cũ cho lọt.
+        assert hard_output_rejection(RAW_LIBRARY, ANSWER_LIBRARY).startswith(
+            "output không còn là câu hỏi"
+        )
+
+    def test_bia_them_con_so_bi_bac(self):
+        assert "8" in hard_output_rejection(RAW_FIVE_GOOD, DRIFT_FIVE_GOOD)
+
+    def test_chep_vi_du_few_shot_va_bia_so_cung_bi_bac(self):
+        assert "5.5" in hard_output_rejection(RAW_REWARD, ECHO_REWARD)
+
+    def test_giu_nguyen_so_cua_cau_goc_khong_bi_bac(self):
+        raw = "Thang điểm 10 từ 7,0 đến cận 8,0 quy đổi thế nào?"
+        out = "Thang điểm 10 từ 7.0 đến cận 8.0 được quy đổi thế nào?"
+        assert hard_output_rejection(raw, out) == ""
+
+    def test_cau_hoi_hop_le_khong_bi_bac(self):
+        assert hard_output_rejection(RAW_NUMERIC_QUESTION, GOOD_REWRITE) == ""
+
+    @pytest.mark.parametrize(
+        "raw,output",
+        [
+            (RAW_LIBRARY, ANSWER_LIBRARY),
+            (RAW_FIVE_GOOD, DRIFT_FIVE_GOOD),
+            (RAW_REWARD, ECHO_REWARD),
+        ],
+    )
+    def test_chan_cung_chay_khi_co_TAT(self, monkeypatch, raw, output):
+        """Mặc định TẮT vẫn phải chặn hai lỗi nguy hiểm này (không đụng cờ lever)."""
+        monkeypatch.delenv("NORMALIZE_SANITY_GUARD", raising=False)
+        client = FakeClient(output)
+        assert normalize_user_query(client, raw) == raw
+        assert len(client.calls) == 1
+
+    def test_chan_cung_in_log(self, monkeypatch, capsys):
+        monkeypatch.delenv("NORMALIZE_SANITY_GUARD", raising=False)
+        normalize_user_query(FakeClient(ANSWER_LIBRARY), RAW_LIBRARY)
+        out = capsys.readouterr().out
+        assert "[QueryNormalizer]" in out and "Bác bản chuẩn hóa" in out
+
+    def test_cau_hoi_giu_so_hop_le_van_qua_khi_TAT(self, monkeypatch):
+        monkeypatch.delenv("NORMALIZE_SANITY_GUARD", raising=False)
+        client = FakeClient("Thang điểm 10 từ 7.0 đến cận 8.0 được quy đổi thế nào?")
+        raw = "Thang điểm 10 từ 7,0 đến cận 8,0 quy đổi thế nào?"
+        assert normalize_user_query(client, raw) == (
+            "Thang điểm 10 từ 7.0 đến cận 8.0 được quy đổi thế nào?"
+        )

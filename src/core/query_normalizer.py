@@ -360,6 +360,44 @@ def normalized_output_rejection(
     return ""
 
 
+# ---------------------------------------------------------------------------
+# Chặn cứng — LUÔN BẬT, không phụ thuộc NORMALIZE_SANITY_GUARD
+# ---------------------------------------------------------------------------
+# Ngày 01-11 đo lại trên pipeline thật (8 câu, Qwen 1.5B) gặp hai lỗi mà gate mềm
+# (echo + containment) cho lọt, kể cả khi bật cờ:
+#   (a) "Thư viện mở cửa mấy giờ?" → "Thư viện mở cửa từ 8:00 đến 22:00 hàng ngày."
+#       — model TỰ TRẢ LỜI, containment 0,67 nên qua ngưỡng 0,3;
+#   (b) "Điều kiện xét Sinh viên 5 tốt?" → "…lần thứ nhất trên 8.0…" — bịa thêm con số.
+# Hai luật dưới đây là bất biến của System Prompt ("không tự trả lời câu hỏi", "bảo toàn
+# con số") nên áp cả khi cờ TẮT; không đụng ngưỡng containment đã đăng ký (0,3).
+_NUMBER_TOKEN_RE = re.compile(r"\d+(?:[.,]\d+)?")
+
+
+def number_tokens(text: str) -> set:
+    """Tập số trong câu, đã chuẩn hóa để so nghĩa: `7,0` = `7.0` = `7`, `05` = `5`."""
+    tokens = set()
+    for raw in _NUMBER_TOKEN_RE.findall(text or ""):
+        value = raw.replace(",", ".")
+        if "." in value:
+            value = value.rstrip("0").rstrip(".") or "0"
+        else:
+            value = str(int(value))
+        tokens.add(value)
+    return tokens
+
+
+def hard_output_rejection(raw_query: str, normalized: str) -> str:
+    """Lý do BÁC cứng (luôn bật), hoặc chuỗi rỗng nếu đạt. Deterministic, không gọi model."""
+    if not (normalized or "").strip():
+        return "output rỗng"
+    if "?" not in normalized:
+        return "output không còn là câu hỏi (thiếu '?') — nghi model tự trả lời"
+    added = number_tokens(normalized) - number_tokens(raw_query)
+    if added:
+        return f"bịa thêm con số không có trong câu gốc ({', '.join(sorted(added))})"
+    return ""
+
+
 def normalize_user_query(llm_client: Any, user_query: str) -> str:
     """Chuyển đổi câu hỏi thông tục của sinh viên sang từ khóa pháp lý chuẩn ĐHAG.
 
@@ -474,6 +512,14 @@ def normalize_user_query(llm_client: Any, user_query: str) -> str:
 
         cleaned = clean_normalized_text(text)
         if not cleaned:
+            return raw_text
+        # Chặn cứng chạy TRƯỚC cờ: model tự trả lời / bịa con số là hỏng bất kể ngưỡng.
+        hard_reason = hard_output_rejection(raw_text, cleaned)
+        if hard_reason:
+            print(
+                f"[QueryNormalizer] Bác bản chuẩn hóa: {hard_reason} — dùng câu gốc "
+                f"(gốc={raw_text[:60]!r} -> model={cleaned[:60]!r})"
+            )
             return raw_text
         if normalize_sanity_guard_enabled():
             # P5.16: output phải còn LÀ câu hỏi này. Không đạt -> dùng câu gốc, tức đúng
