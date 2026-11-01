@@ -907,6 +907,7 @@ class RAGApplication(tk.Tk):
                     self.current_test_data,
                     "wrong",
                     feedback_detail,
+                    ground_truth=ground_truth,
                     citation=citation,
                     source_doc=source_doc,
                     normalized_truth=normalized_truth,

@@ -26,13 +26,16 @@ def _test_data(raw_query="học phí ngành CNTT bao nhiêu?"):
 
 def _record(test_data=None, **overrides):
     kwargs = dict(
+        ground_truth="15 triệu đồng",
         citation="Điều 12",
         source_doc="1054.pdf",
         normalized_truth="Học phí ngành CNTT là bao nhiêu?",
         requested={"benchmark": True, "normalization_pair": True, "corpus_note": False},
     )
     kwargs.update(overrides)
-    return fc.queue_record(test_data or _test_data(), "wrong", "Đáp án chuẩn: 15 triệu", **kwargs)
+    return fc.queue_record(
+        test_data or _test_data(), "wrong", "Đáp án chuẩn: 15 triệu", **kwargs
+    )
 
 
 def test_ban_ghi_hang_doi_tu_chua_va_giu_lien_ket_feedback():
@@ -43,6 +46,7 @@ def test_ban_ghi_hang_doi_tu_chua_va_giu_lien_ket_feedback():
     assert record["raw_query"] == "học phí ngành CNTT bao nhiêu?"
     assert record["feedback_type"] == "wrong"
     assert record["source"] == "gui"
+    assert record["ground_truth"] == "15 triệu đồng"
     assert record["citation"] == "Điều 12"
     assert record["source_doc"] == "1054.pdf"
     assert record["normalized_truth"] == "Học phí ngành CNTT là bao nhiêu?"
@@ -58,6 +62,29 @@ def test_ban_ghi_hang_doi_tu_chua_va_giu_lien_ket_feedback():
 def test_requested_bo_qua_khoa_ngoai_ba_muc():
     with pytest.raises(fc.QueueError):
         _record(requested={"benchmark": True, "xoa_index": True})
+
+
+@pytest.mark.parametrize(
+    "overrides, manh_loi",
+    [
+        ({"ground_truth": ""}, "ground_truth"),
+        ({"citation": "  "}, "citation"),
+        ({"source_doc": ""}, "source_doc"),
+        ({"normalized_truth": ""}, "normalized_truth"),
+    ],
+)
+def test_xin_duyet_thieu_nguyen_lieu_thi_tu_choi(overrides, manh_loi):
+    with pytest.raises(fc.QueueError) as excinfo:
+        _record(**overrides)
+    assert manh_loi in str(excinfo.value)
+
+
+def test_xin_ghi_corpus_thieu_noi_dung_sua_thi_tu_choi():
+    record = _record(requested={"corpus_note": True})
+    record["correct_answer"] = "   "
+    with pytest.raises(fc.QueueError) as excinfo:
+        fc.validate_queue_record(record)
+    assert "correct_answer" in str(excinfo.value)
 
 
 @pytest.mark.parametrize(

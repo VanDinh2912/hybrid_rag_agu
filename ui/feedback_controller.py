@@ -81,6 +81,7 @@ def queue_record(
     feedback_type: str,
     correct_answer: str | None,
     *,
+    ground_truth: str = "",
     citation: str = "",
     source_doc: str = "",
     normalized_truth: str = "",
@@ -91,21 +92,26 @@ def queue_record(
 
     `requested` chỉ được chứa ba khoá `QUEUE_REQUEST_KEYS`, giá trị bool — công cụ duyệt
     đọc đúng ba khoá này và bỏ qua mục `False`. Trường `correct_answer` giữ nguyên chuỗi
-    nhiều dòng như bản ghi feedback gốc để người duyệt đọc được cả đáp án/căn cứ/nguồn.
+    nhiều dòng như bản ghi feedback gốc để người duyệt đọc được cả đáp án/căn cứ/nguồn;
+    `ground_truth` là đáp án trần để công cụ duyệt ghi thẳng vào benchmark (không phải
+    bóc chuỗi tổng hợp).
     """
     unknown = sorted(set(requested) - set(QUEUE_REQUEST_KEYS))
     if unknown:
         raise QueueError(f"`requested` có khoá lạ: {unknown}")
     base = feedback_record(test_data, feedback_type, correct_answer, source=source)
-    return {
+    record = {
         **base,
         "queue_schema_version": QUEUE_SCHEMA_VERSION,
         "queued_at": base["created_at"],
+        "ground_truth": ground_truth,
         "citation": citation,
         "source_doc": source_doc,
         "normalized_truth": normalized_truth,
         "requested": {key: bool(requested.get(key, False)) for key in QUEUE_REQUEST_KEYS},
     }
+    validate_queue_record(record)
+    return record
 
 
 def validate_queue_record(record: Any) -> None:
@@ -129,6 +135,20 @@ def validate_queue_record(record: Any) -> None:
     for key, value in requested.items():
         if not isinstance(value, bool):
             raise QueueError(f"`requested[{key!r}]` phải là bool, nhận {type(value).__name__}")
+    # Mục đã xin duyệt phải có ĐỦ nguyên liệu để áp; thiếu thì từ chối ngay, không để
+    # công cụ duyệt ghi một nửa rồi báo lỗi giữa chừng.
+    for key, value in requested.items():
+        if not value:
+            continue
+        required = {
+            "benchmark": ("ground_truth", "citation", "source_doc"),
+            "normalization_pair": ("normalized_truth",),
+            "corpus_note": ("correct_answer",),
+        }[key]
+        for field in required:
+            text = record.get(field)
+            if not isinstance(text, str) or not text.strip():
+                raise QueueError(f"xin duyệt `{key}` nhưng thiếu `{field}`")
 
 
 def _queue_stem(record: dict) -> str:

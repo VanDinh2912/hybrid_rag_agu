@@ -77,21 +77,23 @@ def read_correction() -> str:
     return "\n".join(lines).strip()
 
 
-def append_note(question: str, correction: str) -> None:
-    os.makedirs(os.path.dirname(NOTES_PATH), exist_ok=True)
-    if os.path.exists(NOTES_PATH):
-        with open(NOTES_PATH, "r", encoding="utf-8") as f:
+def append_note(question: str, correction: str, notes_path: str | None = None) -> None:
+    """Ghi một mục học vào `data/corpus/ghi_chu_hoc_them.txt` (hoặc `notes_path` khác)."""
+    notes_path = notes_path or NOTES_PATH
+    os.makedirs(os.path.dirname(notes_path), exist_ok=True)
+    if os.path.exists(notes_path):
+        with open(notes_path, "r", encoding="utf-8") as f:
             # Chỉ quét heading do chính hệ thống sinh ("Điều N. Ghi chú học thêm ..."):
             # quét mọi mốc "Điều N." sẽ đếm nhầm cả trích dẫn ngườê dùng dán trong phần chỉnh sửa,
             # làm bộ đếm nhảy loạn và ghi đè mất Điều cũ.
             numbers = [int(n) for n in re.findall(r"Điều\s+(\d+)\.\s+Ghi chú học thêm", f.read())]
         article_no = max(numbers, default=1000) + 1
     else:
-        with open(NOTES_PATH, "w", encoding="utf-8") as f:
+        with open(notes_path, "w", encoding="utf-8") as f:
             f.write("FILE GHI CHÚ HỌC THÊM — các mục bên dưới do chế độ learn (learn.py) bổ sung.\n\n")
         article_no = 1001
 
-    with open(NOTES_PATH, "a", encoding="utf-8") as f:
+    with open(notes_path, "a", encoding="utf-8") as f:
         f.write(f"Điều {article_no}. Ghi chú học thêm ngày {datetime.now():%Y-%m-%d %H:%M}\n")
         f.write(f"Câu hỏi: {question}\n")
         f.write(f"Nội dung chính xác: {correction}\n\n")
