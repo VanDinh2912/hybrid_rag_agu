@@ -112,6 +112,8 @@ TRACKED_ENV: tuple[str, ...] = (
     # query normalizer (REVIEW §5)
     "NORMALIZE_SANITY_GUARD",
     "NORMALIZE_MIN_CONTAINMENT",
+    # học từ phản hồi GUI (hardening 01-11): 0 = chỉ xếp hàng chờ duyệt
+    "LEARN_AUTO_APPLY",
 )
 
 #: Giá trị được coi là BẬT khi dùng ngữ nghĩa `in _ON_VALUES` (contextual_header).
@@ -270,3 +272,14 @@ def top_k_from_env() -> int:
     `--top-k`/tham số như trước — review §3 chỉ gom *mặc định*, không đổi quyền ưu tiên.
     """
     return settings()._env_int("RAG_TOP_K", DEFAULT_TOP_K)
+
+
+def learn_auto_apply_enabled() -> bool:
+    """`LEARN_AUTO_APPLY` — cho phép Tab 3 tự áp phản hồi + rebuild index ngay.
+
+    Mặc định TẮT: phản hồi chỉ vào `logs/feedback/user_feedback.json` và một tệp hàng đợi
+    `logs/feedback/queue/`; muốn áp thật thì chạy `tools/diag/feedback_promote.py` (duyệt tay).
+    Bật (=1) khôi phục hành vi cũ: ghi ngay benchmark/pairs/corpus rồi rebuild tại chỗ —
+    chỉ dùng khi người vận hành chủ động và đã chấp nhận index đổi giữa phiên.
+    """
+    return settings()._flag("LEARN_AUTO_APPLY")

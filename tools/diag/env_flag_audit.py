@@ -79,6 +79,9 @@ LEVERS: List[FlagRow] = [
     dict(name="ENABLE_DENSE_ORIGINAL_QUERY", group="lever",
          intro="V1/PA-48a — chỉ nhánh dense dùng query nguyên văn",
          expect=False, probe=("src.core.pipeline", "dense_original_query_enabled")),
+    dict(name="LEARN_AUTO_APPLY", group="lever",
+         intro="hardening — Tab 3 ghi ngay benchmark/pairs/corpus + rebuild tại chỗ",
+         expect=False, probe=("src.core.config", "learn_auto_apply_enabled")),
     # Ngưỡng: chỉ có tác dụng khi cờ bật, nhưng vẫn phải có mặc định "không đổi hành vi cũ".
     dict(name="ROUTER_SOURCE_QUOTA", group="ngưỡng", intro="quota nguồn (0 = không áp trần)",
          expect=0, probe=("src.retrieval.router", "router_source_quota")),
